@@ -1,5 +1,5 @@
 % =============================================================================================================================
-% Deep Taxonomy - depth 10 - expanded N3-style via
+% Deep Taxonomy - depth 10 - expanded N3-style deriva
 %
 % Adjacent rules mirror the Eyeling N3 deep-taxonomy chain. Each step derives
 % the next taxonomy class together with two side labels.

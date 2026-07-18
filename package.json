@@ -1,15 +1,15 @@
 {
-  "name": "@josd/via",
+  "name": "deriva",
   "publishConfig": {
     "access": "public"
   },
   "version": "0.0.3",
-  "description": "A small reasoning language with ISO Prolog-compatible surface syntax.",
+  "description": "Deriva turns facts and rules into answers and proofs.",
   "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",
   "bin": {
-    "via": "./bin/via.js"
+    "deriva": "./bin/deriva.js"
   },
   "keywords": [
     "logic",
@@ -22,9 +22,9 @@
   "author": "Jos De Roo",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/josd/via.git"
+    "url": "git+https://github.com/josd/deriva.git"
   },
-  "homepage": "https://github.com/josd/via#readme",
+  "homepage": "https://github.com/josd/deriva#readme",
   "files": [
     "LICENSE.md",
     "README.md",
@@ -43,7 +43,7 @@
   },
   "scripts": {
     "test": "node test/run-all.mjs",
-    "test:via": "node test/run-all.mjs",
+    "test:deriva": "node test/run-all.mjs",
     "test:conformance": "node test/run-conformance.mjs",
     "test:examples": "node test/run-examples.mjs",
     "test:regression": "node test/run-regression.mjs",

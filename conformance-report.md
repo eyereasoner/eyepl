@@ -1,4 +1,4 @@
-# Conformance Via report
+# Conformance Deriva report
 
 This report summarizes the file-based conformance corpus under `test/conformance/`.
 

@@ -1,4 +1,4 @@
-% ODRL + DPV + local FPV trust-flow decisioning in Via.
+% ODRL + DPV + local FPV trust-flow decisioning in Deriva.
 %
 % Each flow has a source, recipient, data item, action, and purpose.  Permissions
 % and prohibitions are checked together with source trust scores to produce

@@ -1,2 +1,2 @@
-answer(str_concat, "via").
+answer(str_concat, "deriva").
 answer(contains, true).

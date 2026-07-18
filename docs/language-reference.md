@@ -1,4 +1,4 @@
-# Via Language Reference
+# Deriva Language Reference
 
 ## Table of contents
 
@@ -48,7 +48,7 @@
 - [11. Declarations](#11-declarations)
   - [11.1 Automatic hybrid reasoning](#111-automatic-hybrid-reasoning)
   - [11.2 Default-output materialization](#112-default-output-materialization)
-- [12. via Sockets](#12-via-sockets)
+- [12. deriva Sockets](#12-deriva-sockets)
   - [12.1 Socket vocabulary](#121-socket-vocabulary)
   - [12.2 Socket example](#122-socket-example)
   - [12.3 Sockets and AI agents](#123-sockets-and-ai-agents)
@@ -65,9 +65,9 @@
 
 ## Abstract
 
-Via is a compact definite-clause language whose surface syntax is Prolog-like term and clause syntax with deliberate via choices for rule-based programs over ordinary terms, lists, arithmetic, strings, and finite search. A Via program is a finite sequence of facts and Horn clauses. The underlying declarative semantics of the pure language is **Herbrand semantics**: constants, compound terms, and lists denote themselves, and predicates denote sets of ground atomic formulas over those terms. Evaluation is goal-directed: goals are solved by unification against facts, rules, and a fixed set of built-in predicates.
+Deriva is a compact definite-clause language whose surface syntax is Prolog-like term and clause syntax with deliberate deriva choices for rule-based programs over ordinary terms, lists, arithmetic, strings, and finite search. A Deriva program is a finite sequence of facts and Horn clauses. The underlying declarative semantics of the pure language is **Herbrand semantics**: constants, compound terms, and lists denote themselves, and predicates denote sets of ground atomic formulas over those terms. Evaluation is goal-directed: goals are solved by unification against facts, rules, and a fixed set of built-in predicates.
 
-Via is intentionally smaller than ISO Prolog. It supports compact Horn-clause reasoning, list processing, arithmetic examples, finite search, and context data, without operators, cut, modules, dynamic predicates, DCGs, zero-arity compound syntax, or a complete ISO standard library.
+Deriva is intentionally smaller than ISO Prolog. It supports compact Horn-clause reasoning, list processing, arithmetic examples, finite search, and context data, without operators, cut, modules, dynamic predicates, DCGs, zero-arity compound syntax, or a complete ISO standard library.
 
 ## 1. Terminology and normative language
 
@@ -87,11 +87,11 @@ A **goal** is an atomic formula, a built-in call, or a comma conjunction.
 
 A **source fact** is a fact written directly in the input program. A **new derivation** is a ground consequence found through at least one rule and not merely repeated from the source facts.
 
-The **Herbrand universe** of a program is the set of all ground via terms constructible from the constants and functors in the program, together with the built-in list constructors `[]` and `./2` where lists are used. The **Herbrand base** is the set of all ground atomic formulas whose predicate symbols occur in the program and whose arguments are terms from the Herbrand universe.
+The **Herbrand universe** of a program is the set of all ground deriva terms constructible from the constants and functors in the program, together with the built-in list constructors `[]` and `./2` where lists are used. The **Herbrand base** is the set of all ground atomic formulas whose predicate symbols occur in the program and whose arguments are terms from the Herbrand universe.
 
 ## 2. Design goals
 
-Via is designed to be:
+Deriva is designed to be:
 
 - small enough to embed and audit;
 - deterministic in textual output order after duplicate suppression;
@@ -107,11 +107,11 @@ Input is Unicode text. Whitespace separates tokens and is otherwise insignifican
 
 
 ### 3.2 Unicode and UTF-8
-Via source files are UTF-8.
+Deriva source files are UTF-8.
 
 Quoted atoms and strings may contain Unicode text:
 
-```via
+```deriva
 name(alice, 'Élodie').
 city('München').
 message("café").
@@ -124,7 +124,7 @@ Use quoted atoms for non-ASCII names.
 ### 3.3 Comments
 A percent sign starts a line comment outside quoted strings and quoted atom constants. The comment extends to the end of the line.
 
-```via
+```deriva
 parent(pat, jan).  % this is a comment
 ```
 
@@ -142,7 +142,7 @@ A variable is either the bare anonymous variable `_`, or starts with an uppercas
 
 Examples:
 
-```via
+```deriva
 X
 Person
 _thing
@@ -154,7 +154,7 @@ Each bare `_` anonymous variable occurrence is fresh. A name such as `_thing` is
 ### 3.6 Atom constants
 A plain atom constant starts with a lowercase ASCII letter and is followed by zero or more ASCII letters, digits, or underscores. A dot is not part of a plain atom; dotted web spaces such as `'be.ugent'` or `'org.schema'` MUST be quoted if they are meant as one atom constant. Names such as `a-b` MUST also be quoted if they are meant as one atom constant:
 
-```via
+```deriva
 pat
 type
 case_123
@@ -166,7 +166,7 @@ case_123
 
 IRI-shaped atom constants SHOULD be written as quoted atoms containing the angle brackets. This keeps the surface syntax ISO Prolog-compatible while preserving the visible web identifier text:
 
-```via
+```deriva
 '<https://example.org/alice>'
 '<urn:example:bob>'
 triple('<https://example.org/alice>', '<https://schema.org/name>', "Alice").
@@ -176,7 +176,7 @@ Unquoted angle-bracket IRI syntax is not part of the source language. If the ang
 
 A quoted atom constant is enclosed in single quotes. A single quote inside a quoted atom constant is represented by doubling it:
 
-```via
+```deriva
 'atom with spaces'
 'needs''quote'
 ''
@@ -196,7 +196,7 @@ A string is enclosed in double quotes. The implementation supports common escape
 ### 3.8 Numbers
 Numbers are scalar terms. Integers, decimal numbers, and scientific notation are accepted:
 
-```via
+```deriva
 0
 -42
 0.25
@@ -288,17 +288,17 @@ graphic-char        ::= "#" | "$" | "&" | "*" | "+" | "-" | "/" | "<"
 
 ### 4.2 Grammar notes
 
-The `atom-constant` nonterminal is a lexical class for symbolic scalar terms, not an atomic formula. Atomic formulas are represented by the `compound` alternative when such a term appears as a clause head, rule body, or selected goal. The functor or predicate name is always an atom constant; Via does not support variables in functor or predicate position.
+The `atom-constant` nonterminal is a lexical class for symbolic scalar terms, not an atomic formula. Atomic formulas are represented by the `compound` alternative when such a term appears as a clause head, rule body, or selected goal. The functor or predicate name is always an atom constant; Deriva does not support variables in functor or predicate position.
 
 A portable clause head SHOULD be a compound term. Non-compound heads are parsed, but they are not useful in the current predicate index.
 
 Compound syntax always has at least one argument. Arity-zero data is written as an atom constant, not as a zero-arity compound:
 
-```via
+```deriva
 value(example, nil).
 ```
 
-The syntax `nil()` is intentionally rejected so Via source and read-back output use one representation for arity-zero data. Host APIs SHOULD follow the same rule: constructing a term with an atom name and an empty argument list is canonicalized to the atom constant itself.
+The syntax `nil()` is intentionally rejected so Deriva source and read-back output use one representation for arity-zero data. Host APIs SHOULD follow the same rule: constructing a term with an atom name and an empty argument list is canonicalized to the atom constant itself.
 
 Parentheses around a single term are accepted and denote that same term. Parentheses around two or more comma-separated terms denote a right-associated comma term using the functor `','/2`. When such a comma term appears as a goal, it is evaluated as conjunction.
 
@@ -320,20 +320,20 @@ Atom constants, strings, and numbers are distinct scalar term kinds. Two scalar 
 
 A compound term has a functor name and arity:
 
-```via
+```deriva
 parent(pat, jan)
 pair(3, nested(atom, [x, y]))
 ```
 
 The same concrete syntax is used for atomic formulas when the compound appears as a fact, rule head, or goal. In `parent(pat, jan).`, `parent/2` is a predicate symbol and the whole expression is an atomic formula. In `value(x, parent(pat, jan)).`, the inner `parent(pat, jan)` is ordinary compound data.
 
-The functor or predicate name is fixed syntactically and is written as an atom constant. via does not support variables in predicate or functor position.
+The functor or predicate name is fixed syntactically and is written as an atom constant. deriva does not support variables in predicate or functor position.
 
 ### 5.4 Lists
 
 Lists use Prolog surface syntax and are represented internally with `./2` and `[]`:
 
-```via
+```deriva
 []
 [a, b, c]
 [a, b | tail]
@@ -343,7 +343,7 @@ Lists use Prolog surface syntax and are represented internally with `./2` and `[
 
 Parenthesized comma terms may be goals or data:
 
-```via
+```deriva
 (parent(pat, jan), parent(jan, emma))
 (name(alice, "Alice"), knows(alice, bob))
 ```
@@ -354,13 +354,13 @@ When a comma term appears as a goal, it is evaluated as conjunction. When it app
 
 A fact has no body:
 
-```via
+```deriva
 parent(pat, jan).
 ```
 
 A rule has a head and a body:
 
-```via
+```deriva
 ancestor(X, Y) :-
   parent(X, Y).
 
@@ -373,7 +373,7 @@ Clauses with the same predicate name and arity define one predicate group. Predi
 
 ## 7. Goals and proof search
 
-Goals are solved left-to-right. For a user-defined atomic-formula goal, via selects candidate clauses by predicate name, arity, and available indexes. A candidate clause is freshened, its head is unified with the goal, and then its body is solved.
+Goals are solved left-to-right. For a user-defined atomic-formula goal, deriva selects candidate clauses by predicate name, arity, and available indexes. A candidate clause is freshened, its head is unified with the goal, and then its body is solved.
 
 A conjunction goal succeeds when all conjunct goals succeed in order. An answer is printed as the resolved answer term followed by a period.
 
@@ -383,27 +383,27 @@ Unification follows the ordinary first-order term structure used by the language
 
 ### 7.2 Failure
 
-A goal fails when no built-in case or user clause can prove it. via has no exception term language; parse errors and resource failures are implementation errors reported to the host.
+A goal fails when no built-in case or user clause can prove it. deriva has no exception term language; parse errors and resource failures are implementation errors reported to the host.
 
 ### 7.3 Finite search expectation
 
-Programs and selected output goals SHOULD be written so the relevant search space is finite. via includes recursion guards and tabling support, but it is not required to terminate for arbitrary recursive logic programs.
+Programs and selected output goals SHOULD be written so the relevant search space is finite. deriva includes recursion guards and tabling support, but it is not required to terminate for arbitrary recursive logic programs.
 
 ## 8. Logical reading: Herbrand semantics
 
-The pure Via language is interpreted over the **Herbrand universe** and **Herbrand base**. The Herbrand universe is the first-order universe made only of the ground terms that can be built from the program's atom constants, strings, numbers, list constructors, and compound functors. There are no hidden domain elements: a term denotes itself. For example, the atom constant `pat` denotes the Herbrand constant `pat`, and the number `3` denotes the numeric Herbrand constant written `3`. The Herbrand base is separate from the universe: it contains ground atomic formulas such as `parent(pat, jan)`, whose predicate symbol is `parent/2` and whose arguments are Herbrand terms.
+The pure Deriva language is interpreted over the **Herbrand universe** and **Herbrand base**. The Herbrand universe is the first-order universe made only of the ground terms that can be built from the program's atom constants, strings, numbers, list constructors, and compound functors. There are no hidden domain elements: a term denotes itself. For example, the atom constant `pat` denotes the Herbrand constant `pat`, and the number `3` denotes the numeric Herbrand constant written `3`. The Herbrand base is separate from the universe: it contains ground atomic formulas such as `parent(pat, jan)`, whose predicate symbol is `parent/2` and whose arguments are Herbrand terms.
 
 An atom constant by itself is not true or false. For example, `pat` is a term, not a proposition. Truth applies to atomic formulas: `person(pat)` may be true or false in a Herbrand interpretation, while `pat` is simply one possible argument term.
 
 A **Herbrand interpretation** for a program is a set of ground atomic formulas that are considered true. A source fact such as:
 
-```via
+```deriva
 parent(pat, jan).
 ```
 
 places the ground atomic formula `parent(pat, jan)` in the interpretation. A rule such as:
 
-```via
+```deriva
 ancestor(X, Z) :- parent(X, Y), ancestor(Y, Z).
 ```
 
@@ -413,11 +413,11 @@ Equivalently, the least Herbrand model is obtained by repeatedly applying the im
 
 ### 8.1 Variables and quantification
 
-Variables do not range over external objects, records, pointers, or host-language values. In the logical reading, variables range over Herbrand terms. A rule is implicitly universally quantified over its variables. A selected goal is existential in the usual logic-programming sense: via searches for substitutions of its variables by Herbrand terms that make the goal true with respect to the program.
+Variables do not range over external objects, records, pointers, or host-language values. In the logical reading, variables range over Herbrand terms. A rule is implicitly universally quantified over its variables. A selected goal is existential in the usual logic-programming sense: deriva searches for substitutions of its variables by Herbrand terms that make the goal true with respect to the program.
 
-via has no blank nodes and no existential variables in rule heads. Existential-style consequences SHOULD be represented by explicit Herbrand witness terms written directly in rule heads:
+deriva has no blank nodes and no existential variables in rule heads. Existential-style consequences SHOULD be represented by explicit Herbrand witness terms written directly in rule heads:
 
-```via
+```deriva
 has_parent(Child, parent_of(Child)) :-
   person(Child).
 
@@ -425,17 +425,17 @@ registration(Student, Course, registration_of(Student, Course)) :-
   takes(Student, Course).
 ```
 
-These rules may derive `parent_of(alice)` or `registration_of(alice, logic)` as ordinary visible Herbrand terms. The witness is deterministic: the same functor and inputs produce the same term, while different inputs produce different terms by normal syntactic identity. This is the practical executable form of existential-style consequences in Via; it does not introduce hidden blank nodes or special quantifier syntax.
+These rules may derive `parent_of(alice)` or `registration_of(alice, logic)` as ordinary visible Herbrand terms. The witness is deterministic: the same functor and inputs produce the same term, while different inputs produce different terms by normal syntactic identity. This is the practical executable form of existential-style consequences in Deriva; it does not introduce hidden blank nodes or special quantifier syntax.
 
 ### 8.2 Equality, identity, and unification
 
 Because the domain is Herbrand, equality in the pure language is syntactic identity of terms after substitution. Two distinct atom constants are distinct. Two compound terms are equal only when they have the same functor, the same arity, and pairwise equal arguments. Lists follow the same rule through their `[]` and `./2` representation.
 
-Operationally, via uses first-order unification to find substitutions. The implementation does not perform an occurs check, so cyclic terms are not part of the portable Herbrand reading even if a particular implementation can temporarily construct recursive bindings internally. Portable programs SHOULD avoid relying on occurs-check-sensitive cases such as `eq(X, f(X))`.
+Operationally, deriva uses first-order unification to find substitutions. The implementation does not perform an occurs check, so cyclic terms are not part of the portable Herbrand reading even if a particular implementation can temporarily construct recursive bindings internally. Portable programs SHOULD avoid relying on occurs-check-sensitive cases such as `eq(X, f(X))`.
 
 ### 8.3 Goal-directed execution versus model-theoretic meaning
 
-via's CLI and library evaluator are goal-directed. They try to prove requested goals by resolving them against facts, rules, and built-ins, using clause order, goal order, indexing, tabling, and deterministic built-in execution. This operational strategy is intended to enumerate answers that are true in the least Herbrand model for the pure Horn-clause fragment, but it is not a complete bottom-up model enumerator. Non-terminating recursion or infinite generators can prevent an answer from being found even when the answer belongs to the least Herbrand model.
+deriva's CLI and library evaluator are goal-directed. They try to prove requested goals by resolving them against facts, rules, and built-ins, using clause order, goal order, indexing, tabling, and deterministic built-in execution. This operational strategy is intended to enumerate answers that are true in the least Herbrand model for the pure Horn-clause fragment, but it is not a complete bottom-up model enumerator. Non-terminating recursion or infinite generators can prevent an answer from being found even when the answer belongs to the least Herbrand model.
 
 Default CLI output is also a host behavior, not a separate semantics. It asks broad materialization goals, suppresses duplicates, excludes source facts, keeps ground answers, and prints selected consequences. Embedders can still access the goal-directed solver directly through the implementation API.
 
@@ -443,7 +443,7 @@ Default CLI output is also a host behavior, not a separate semantics. It asks br
 
 Built-ins are specified relations or operations added to the Herbrand core. A built-in call in a goal has the syntax of an atomic formula, but its success relation is specified procedurally here rather than by source clauses. Some built-ins, such as `eq/2`, `append/3`, `member/2`, and `length/2`, can be understood as relations over Herbrand terms. Others, such as arithmetic, string matching, date/time predicates, aggregation, `once/1`, and negation-as-failure, are operational extensions whose behavior is defined by this specification rather than by pure least-Herbrand-model semantics alone.
 
-Arithmetic and string built-ins do not introduce a separate semantic universe. They inspect the lexical values of already represented Herbrand constants and, when they succeed, bind output arguments to via terms such as numbers, strings, or atom constants. For example, `add(2, 3, X)` may bind `X` to the number term `5`; it does not mean that variables range over host-language numbers outside the Herbrand universe.
+Arithmetic and string built-ins do not introduce a separate semantic universe. They inspect the lexical values of already represented Herbrand constants and, when they succeed, bind output arguments to deriva terms such as numbers, strings, or atom constants. For example, `add(2, 3, X)` may bind `X` to the number term `5`; it does not mean that variables range over host-language numbers outside the Herbrand universe.
 
 Negation-as-failure `not(Goal)` is especially operational: it succeeds when the current goal-directed search finds no solution for `Goal`. It is not classical negation and should not be read as adding negative facts to the Herbrand model. Programs using negation SHOULD keep the negated goal sufficiently ground and finite.
 
@@ -453,14 +453,14 @@ Portable programs using user-defined predicates under `not/1` SHOULD be **strati
 
 For example, this is stratified because `open/1` depends negatively on `closed/1`, but `closed/1` does not depend back on `open/1`:
 
-```via
+```deriva
 closed(X) :- blocked(X).
 open(X) :- candidate(X), not(closed(X)).
 ```
 
 This is not stratified because `p/1` and `q/1` form a cycle that contains a negative dependency:
 
-```via
+```deriva
 p(X) :- q(X).
 q(X) :- not(p(X)).
 ```
@@ -469,7 +469,7 @@ The JavaScript implementation records stratification metadata on `Program` insta
 
 ## 9. Standard built-in predicates
 
-This section specifies the **standard built-ins** of the Via language. An implementation that claims support for this standard built-in profile MUST implement the predicates in this section with the meanings described here.
+This section specifies the **standard built-ins** of the Deriva language. An implementation that claims support for this standard built-in profile MUST implement the predicates in this section with the meanings described here.
 
 A built-in call is still written as an atomic formula, but the relation is provided by the host implementation rather than by source clauses. Several built-ins are mode-sensitive: they are intended to run when their input arguments are sufficiently ground, and implementations may leave user-defined clauses visible when that mode is not yet satisfied.
 
@@ -516,7 +516,7 @@ Comparisons interpret numeric-looking terms numerically. Other scalar terms are 
 
 | Built-in | Meaning |
 |---|---|
-| `local_time(T)` | Binds `T` to the local date string. For deterministic runs, `VIA_LOCAL_TIME=YYYY-MM-DD` overrides the current date. |
+| `local_time(T)` | Binds `T` to the local date string. For deterministic runs, `DERIVA_LOCAL_TIME=YYYY-MM-DD` overrides the current date. |
 | `difference(A, B, D)` | Computes an ISO-like date/duration difference. |
 
 ### 9.5 Generators
@@ -542,7 +542,7 @@ Comparisons interpret numeric-looking terms numerically. Other scalar terms are 
 | `lowercase(Text, Out)`, `uppercase(Text, Out)`, `trim(Text, Out)` | Text normalization helpers. |
 | `number_string(Number, String)` | Converts a number to a string or parses a numeric string into a number. |
 | `atom_string(Atom, String)` | Converts between atom constants and strings. |
-| `term_string(Term, String)` | Renders a ground term as its via source string. |
+| `term_string(Term, String)` | Renders a ground term as its deriva source string. |
 
 ### 9.7 Lists
 
@@ -591,7 +591,7 @@ Context terms are data representations of atomic formulas and comma conjunctions
 
 Example:
 
-```via
+```deriva
 holds((name(alice, "Alice"), knows(alice, bob)), name(S, O)).
 holds((ready, name(alice, "Alice"), route(alice, bob, 7)), Name, Args).
 functor(route(alice, bob, 7), route, 3).
@@ -614,15 +614,15 @@ The first goal can yield `holds((name(alice, "Alice"), knows(alice, bob)), name(
 
 ## 10. Implementation-specific built-ins
 
-Implementations MAY provide additional built-ins beyond the standard predicates listed above. Such built-ins are **implementation-specific built-ins**. They are useful for embedding via in particular host environments, exposing efficient finite-domain solvers, or providing domain-specific relations for applications.
+Implementations MAY provide additional built-ins beyond the standard predicates listed above. Such built-ins are **implementation-specific built-ins**. They are useful for embedding deriva in particular host environments, exposing efficient finite-domain solvers, or providing domain-specific relations for applications.
 
-Implementation-specific built-ins are not required for conformance to this specification. A portable via program SHOULD NOT depend on one unless the target implementation explicitly documents it.
+Implementation-specific built-ins are not required for conformance to this specification. A portable deriva program SHOULD NOT depend on one unless the target implementation explicitly documents it.
 
 An implementation-specific built-in SHOULD obey the same surface-language discipline as standard built-ins:
 
 - it is called using ordinary atomic-formula syntax, for example `some_extension(A, B)`;
-- its arguments and results are via terms from the Herbrand universe;
-- it succeeds, fails, and binds variables as a relation over via terms;
+- its arguments and results are deriva terms from the Herbrand universe;
+- it succeeds, fails, and binds variables as a relation over deriva terms;
 - it SHOULD document its intended modes, especially which arguments must be ground before it runs deterministically;
 - it MUST NOT change the meaning of ordinary facts, rules, unification, or standard built-ins.
 
@@ -636,7 +636,7 @@ Declarations are written as ordinary facts, but the host treats them specially.
 
 ### 11.1 Automatic hybrid reasoning
 
-via automatically combines ordinary goal-directed resolution with tabled
+deriva automatically combines ordinary goal-directed resolution with tabled
 resolution. Predicate dependency cycles are detected when a program is loaded,
 including dependencies inside conjunctions, negation, `once/1`, `forall/2`, and
 aggregation goals. Positive recursive predicate groups, including directly
@@ -656,7 +656,7 @@ and does not change the logical meaning of a program.
 
 ### 11.2 Default-output materialization
 
-```via
+```deriva
 materialize(answer, 2).
 ```
 
@@ -664,7 +664,7 @@ The first argument MUST be an atom constant and the second argument MUST be a no
 
 Example:
 
-```via
+```deriva
 materialize(status, 2).
 materialize(reason, 2).
 ```
@@ -673,7 +673,7 @@ materialize(reason, 2).
 
 ### 11.3 Advisory modes and determinism
 
-```via
+```deriva
 mode(path, 2, [in, out]).
 det(root, 1).
 semidet(edge, 2).
@@ -691,18 +691,18 @@ For `mode(Name, Arity, Modes)`, the first argument MUST be an atom constant nami
 
 Example:
 
-```via
+```deriva
 mode(member, 2, [out, in]).
 semidet(member, 2).
 ```
 
 The example documents the common checking/generation mode where the list is supplied and the member is enumerated. A future linting host could warn if a program calls `member/2` outside that intended mode, but a conforming solver still treats `mode/3` and `semidet/2` as ordinary facts plus metadata.
 
-## 12. Via Sockets
+## 12. Deriva Sockets
 
-A **via Socket** is a declared semantic opening in a via program where facts, rules, tools, datasets, or agents can plug in knowledge through an explicit contract while preserving via-readable reasoning and explanations.
+A **deriva Socket** is a declared semantic opening in a deriva program where facts, rules, tools, datasets, or agents can plug in knowledge through an explicit contract while preserving deriva-readable reasoning and explanations.
 
-The term follows the ordinary socket pattern: a socket defines a place where a matching provider can connect. In via, the matching part is knowledge. A socket identifies what shape of knowledge a program expects; a plug identifies which provider supplies it. This separates reasoning logic from knowledge providers and makes composition boundaries visible as via data.
+The term follows the ordinary socket pattern: a socket defines a place where a matching provider can connect. In deriva, the matching part is knowledge. A socket identifies what shape of knowledge a program expects; a plug identifies which provider supplies it. This separates reasoning logic from knowledge providers and makes composition boundaries visible as deriva data.
 
 In this specification, sockets are a portable **programming pattern** expressed with ordinary facts. The core solver does not give `socket/2`, `plug/2`, `provides/1`, or `requires/1` special proof-search behavior unless a host explicitly documents such an extension. Because they are ordinary facts, socket declarations remain readable, inspectable, explainable, and safe to ignore by hosts that do not validate them.
 
@@ -710,22 +710,22 @@ In this specification, sockets are a portable **programming pattern** expressed 
 
 The minimal socket vocabulary is:
 
-```via
+```deriva
 socket(Name, Contract).
 plug(Provider, Name).
 provides(Signature).
 requires(Signature).
 ```
 
-`Name` and `Provider` are ordinary via terms, usually atom constants. `Contract` is an ordinary via term that describes the expected or offered knowledge. A portable signature form is:
+`Name` and `Provider` are ordinary deriva terms, usually atom constants. `Contract` is an ordinary deriva term that describes the expected or offered knowledge. A portable signature form is:
 
-```via
+```deriva
 predicate(Predicatename, Arity)
 ```
 
 For example:
 
-```via
+```deriva
 socket(family_source, provides(predicate(parent, 2))).
 plug(family_file, family_source).
 ```
@@ -736,7 +736,7 @@ This says that `family_source` is a named opening for knowledge of the shape `pa
 
 A rule module can declare the knowledge it expects:
 
-```via
+```deriva
 materialize(ancestor, 2).
 
 socket(family_source, provides(predicate(parent, 2))).
@@ -753,21 +753,21 @@ ancestor(X, Z) :-
     ancestor(Y, Z).
 ```
 
-The `ancestor/2` rules do not depend on a particular storage mechanism for `parent/2`. In a small test, the provider may be the same file. In an embedded host, it may be a database adapter, a document extractor, a remote service, or another via module. The socket facts make that boundary explicit without changing the logical meaning of the rules.
+The `ancestor/2` rules do not depend on a particular storage mechanism for `parent/2`. In a small test, the provider may be the same file. In an embedded host, it may be a database adapter, a document extractor, a remote service, or another deriva module. The socket facts make that boundary explicit without changing the logical meaning of the rules.
 
-When via derives `ancestor(pat, emma)`, the answer explanation can still refer to the source clauses that were actually used, for example facts for `parent/2` and rules for `ancestor/2`. The socket facts add an inspectable description of where such knowledge is intended to enter.
+When deriva derives `ancestor(pat, emma)`, the answer explanation can still refer to the source clauses that were actually used, for example facts for `parent/2` and rules for `ancestor/2`. The socket facts add an inspectable description of where such knowledge is intended to enter.
 
 ### 12.3 Sockets and AI agents
 
-via Sockets are especially useful for AI-facing systems. An AI agent can extract or propose candidate claims, but those claims should enter a reasoning program as explicit via facts or rules through a declared socket rather than as opaque text. via can then check the claims against other facts and rules, derive consequences, and optionally return ordinary `why/2` explanations.
+deriva Sockets are especially useful for AI-facing systems. An AI agent can extract or propose candidate claims, but those claims should enter a reasoning program as explicit deriva facts or rules through a declared socket rather than as opaque text. deriva can then check the claims against other facts and rules, derive consequences, and optionally return ordinary `why/2` explanations.
 
-This gives a clear division of labor: AI can help generate, translate, and connect knowledge; via can represent, check, and explain the reasoning; sockets define the boundary between them.
+This gives a clear division of labor: AI can help generate, translate, and connect knowledge; deriva can represent, check, and explain the reasoning; sockets define the boundary between them.
 
 ## 13. Output and read-back profile
 
 Normal answer output prints one resolved answer term followed by a period. Strings are double-quoted; atom constants are quoted when needed; lists use list syntax; compound terms use functor notation. Host interfaces MAY provide an option such as `--proof` to add `why/2` explanation facts; this option MUST NOT change the answers found. Host interfaces MAY also provide a non-fatal warning option such as `--warnings` for portability diagnostics such as unstratified negation; this option MUST NOT change the answers found.
 
-Output SHOULD be accepted as via input when it contains only supported term syntax. Explanations are ordinary via facts, so answer output can be read back and processed by via.
+Output SHOULD be accepted as deriva input when it contains only supported term syntax. Explanations are ordinary deriva facts, so answer output can be read back and processed by deriva.
 
 Default host output behavior is:
 
@@ -781,11 +781,11 @@ Default host output behavior is:
 
 ### 13.1 Explanation output
 
-When proof output is enabled, each answer SHOULD be followed by a machine-readable `why/2` fact. Explanation output is ordinary via syntax whose second argument is a nested abstract proof term such as `proof(goal(G), by(Method), bindings(Bindings), uses(Proofs))`; implementations SHOULD print `goal(...)` and `by(...)` on separate lines for readability. A proof term preserves the answer goal, derivation method, relevant bindings, and nested uses while omitting proof IDs. User clauses SHOULD be referenced explicitly as `fact(Filename, clause(N))` or `rule(Filename, clause(N))`, where `N` is the 1-based clause number within that source. Built-ins SHOULD be referenced as `builtin(Name, Arity)` because they do not come from source clauses. Explanation output is outside the logical semantics of the input program and MUST NOT change the set of answers.
+When proof output is enabled, each answer SHOULD be followed by a machine-readable `why/2` fact. Explanation output is ordinary deriva syntax whose second argument is a nested abstract proof term such as `proof(goal(G), by(Method), bindings(Bindings), uses(Proofs))`; implementations SHOULD print `goal(...)` and `by(...)` on separate lines for readability. A proof term preserves the answer goal, derivation method, relevant bindings, and nested uses while omitting proof IDs. User clauses SHOULD be referenced explicitly as `fact(Filename, clause(N))` or `rule(Filename, clause(N))`, where `N` is the 1-based clause number within that source. Built-ins SHOULD be referenced as `builtin(Name, Arity)` because they do not come from source clauses. Explanation output is outside the logical semantics of the input program and MUST NOT change the set of answers.
 
 ## 14. Conformance
 
-A conforming via implementation supports the standard language described above as one conformance surface rather than as separate core and extension profiles. This includes:
+A conforming deriva implementation supports the standard language described above as one conformance surface rather than as separate core and extension profiles. This includes:
 
 - lexical syntax described above;
 - facts and definite clauses;
@@ -802,11 +802,11 @@ A conforming via implementation supports the standard language described above a
 
 Browser execution, package layout, CLI URL loading, and any implementation-specific built-ins described in host documentation are outside this conformance surface unless separately standardized.
 
-Conformance cases live in the repository under `test/conformance/`. They are run by `npm test` before the example suite, and can be run alone with `node test/run-conformance.mjs`. Positive cases have input programs under `conformance/cases/` and exact expected standard-output files under `conformance/expected/`; both use `.pl` so expected output remains via-readable. Expected-error cases live under `conformance/errors/` with exact messages under `conformance/expected-errors/`. Expected-warning cases live under `conformance/warnings/` with exact `--warnings` stdout and stderr files under `conformance/expected-warnings/`. The corpus is grouped by language area, including arithmetic, strings, lists, terms, atoms, variables, negation, declarations, materialization, rules, syntax, and errors.
+Conformance cases live in the repository under `test/conformance/`. They are run by `npm test` before the example suite, and can be run alone with `node test/run-conformance.mjs`. Positive cases have input programs under `conformance/cases/` and exact expected standard-output files under `conformance/expected/`; both use `.pl` so expected output remains deriva-readable. Expected-error cases live under `conformance/errors/` with exact messages under `conformance/expected-errors/`. Expected-warning cases live under `conformance/warnings/` with exact `--warnings` stdout and stderr files under `conformance/expected-warnings/`. The corpus is grouped by language area, including arithmetic, strings, lists, terms, atoms, variables, negation, declarations, materialization, rules, syntax, and errors.
 
 ## 15. Relationship to ISO Prolog
 
-via source is intended to be familiar to Prolog readers and uses ISO Prolog-compatible variable and quoted-atom spelling, but via is not ISO Prolog. Notable differences include:
+deriva source is intended to be familiar to Prolog readers and uses ISO Prolog-compatible variable and quoted-atom spelling, but deriva is not ISO Prolog. Notable differences include:
 - no operators or operator declarations;
 - no zero-arity compound syntax such as `nil()`;
 - no cut;
@@ -817,13 +817,13 @@ via source is intended to be familiar to Prolog readers and uses ISO Prolog-comp
 - no variables in functor or predicate position;
 - no occurs check in unification.
 
-Programs intended to be portable to via SHOULD use uppercase or underscore variables, avoid ISO-specific features that via does not implement, and keep terms explicit. Atom names that are not plain lowercase-starting names or graphic atom tokens SHOULD be written as quoted atoms, for example `'a-b'` or `'<abc>'`.
+Programs intended to be portable to deriva SHOULD use uppercase or underscore variables, avoid ISO-specific features that deriva does not implement, and keep terms explicit. Atom names that are not plain lowercase-starting names or graphic atom tokens SHOULD be written as quoted atoms, for example `'a-b'` or `'<abc>'`.
 
 ## 16. Examples
 
 ### 16.1 Transitive closure
 
-```via
+```deriva
 parent(pat, jan).
 parent(jan, emma).
 
@@ -833,21 +833,21 @@ ancestor(X, Z) :- parent(X, Y), ancestor(Y, Z).
 
 ### 16.2 Arithmetic
 
-```via
+```deriva
 square(X, Y) :- mul(X, X, Y).
 answer(three, Y) :- square(3, Y).
 ```
 
 ### 16.3 Lists
 
-```via
+```deriva
 first([X | _rest], X).
 answer(example, X) :- first([a, b, c], X).
 ```
 
 ### 16.4 Negation as failure
 
-```via
+```deriva
 closed(b).
 open(X) :- not(closed(X)).
 status(a, open) :- open(a).

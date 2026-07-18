@@ -1,7 +1,7 @@
 % Population statistics for a small numeric sample.
 %
 % The sample is the textbook data set [2,4,4,4,5,5,7,9], whose population
-% mean is 5, variance is 4, and standard deviation is 2.
+% mean is 5, variance is 4, and standard dederivation is 2.
 
 % Output declarations: materialize/2 selects the relations written to this example's golden output.
 materialize(count, 2).
@@ -15,7 +15,7 @@ sample(scores, [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]).
 
 sum([], 0.0).
 % sum/2 and squared_error_sum/3 are recursive folds; the public relations then
-% derive count, mean, population variance, and standard deviation.
+% derive count, mean, population variance, and standard dederivation.
 sum([X|Xs], Total) :-
   sum(Xs, Rest),
   add(X, Rest, Total).

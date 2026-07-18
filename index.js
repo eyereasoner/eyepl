@@ -1,4 +1,4 @@
-// Public Via JavaScript API.
+// Public Deriva JavaScript API.
 export * from './src/index.js';
-import * as via from './src/index.js';
-export default via;
+import * as deriva from './src/index.js';
+export default deriva;

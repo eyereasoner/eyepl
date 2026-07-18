@@ -1,6 +1,6 @@
-% Via language-identity example.
+% Deriva language-identity example.
 %
-% This file intentionally uses the modern Via surface syntax:
+% This file intentionally uses the modern Deriva surface syntax:
 %   - `.pl` source files instead of Prolog `.pl` files
 %   - ISO Prolog-style uppercase variables
 %   - automatic tabling for recursive predicates

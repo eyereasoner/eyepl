@@ -1,2 +1,2 @@
-via warning: unstratified negation
+deriva warning: unstratified negation
   p/1 depends negatively on blocked/1

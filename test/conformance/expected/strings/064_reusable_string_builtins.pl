@@ -1,10 +1,10 @@
-answer(trim, "Hello Via").
-answer(lower, "hello via").
-answer(upper, "HELLO VIA").
+answer(trim, "Hello Deriva").
+answer(lower, "hello deriva").
+answer(upper, "HELLO DERIVA").
 answer(split, ["red", "green", "blue"]).
 answer(join, "red:green:blue").
 answer(substring, "cde").
 answer(replace, "blue-green-blue").
 answer(number_to_string, "42").
 answer(string_to_number, 3.5).
-answer(atom_string, "via").
+answer(atom_string, "deriva").

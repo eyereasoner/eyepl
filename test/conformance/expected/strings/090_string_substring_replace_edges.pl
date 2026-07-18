@@ -1,4 +1,4 @@
-answer(prefix, "via").
+answer(prefix, "deriva").
 answer(middle, "la").
 answer(suffix, "ala").
 answer(empty_at_end, "").

@@ -1,6 +1,6 @@
 % ODRL + DPV ranked-risk assessment adapted from Eyeling odrl-dpv-risk-ranked.n3.
 % Eyeling keeps the ODRL rules inside an N3 quoted policy formula and prints a
-% Markdown report.  This via translation also keeps the
+% Markdown report.  This deriva translation also keeps the
 % policy as a formula-valued term, projects local predicates from that formula for
 % reasoning, and materializes the derived DPV risks as relation output.
 

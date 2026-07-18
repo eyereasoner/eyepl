@@ -1,7 +1,7 @@
 % Peano addition, multiplication, and factorial over explicit Herbrand terms.
 %
 % The original logic-programming example uses `0` and `s(...)`.  Here zero is
-% the atom `z`, so every natural number is an ordinary Via term: z, s(z),
+% the atom `z`, so every natural number is an ordinary Deriva term: z, s(z),
 % s(s(z)), and so on.  The rules are relational; the materialized facts choose
 % a few finite calculations as readable examples.
 

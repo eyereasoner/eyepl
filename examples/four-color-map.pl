@@ -1,7 +1,7 @@
 % EYE reasoning-inspired example: four-colour map check for the European Union.
 %
 % The source EYE example encodes the EU neighbourhood map and an answer assigning
-% four colours. This via version keeps the same map/assignment shape and adds
+% four colours. This deriva version keeps the same map/assignment shape and adds
 % a rule-level validation layer that rejects equal colours across borders.
 
 % Output declarations: materialize/2 selects the relations written to this example's golden output.

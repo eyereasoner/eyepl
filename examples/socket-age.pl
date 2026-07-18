@@ -1,8 +1,8 @@
 % socket-age.pl
 %
-% A small runnable via Socket example for age reasoning.
+% A small runnable deriva Socket example for age reasoning.
 %
-% The socket facts are ordinary via data. They document the semantic
+% The socket facts are ordinary deriva data. They document the semantic
 % openings that this rule module expects:
 %
 %   - a patient registry that provides birthDay/2
@@ -12,7 +12,7 @@
 % The plug facts say which concrete providers are connected.
 %
 % Run:
-%   via socket-age.pl
+%   deriva socket-age.pl
 
 % Output declarations: materialize/2 selects the relations written to this example's golden output.
 materialize(ageAbove, 2).

@@ -1,1 +1,1 @@
-answer(string, "via").
+answer(string, "deriva").

@@ -1,7 +1,7 @@
 % Quadratic formula over sample equations.
 %
 % Each equation is represented as a*x^2 + b*x + c = 0.  The example uses
-% via arithmetic predicates to derive the discriminant and the two roots.
+% deriva arithmetic predicates to derive the discriminant and the two roots.
 
 % Output declarations: materialize/2 selects the relations written to this example's golden output.
 materialize(discriminant, 2).

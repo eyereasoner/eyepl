@@ -1,7 +1,7 @@
 % Socrates is mortal, adapted from Eyelet's input/socrates.pl.
 %
 % Eyelet uses type('Socrates', 'Man') and a single rule deriving Mortal.
-% via keeps the same reasoning shape and emits relation facts.
+% deriva keeps the same reasoning shape and emits relation facts.
 
 % Output declarations: materialize/2 selects the relations written to this example's golden output.
 materialize(type, 2).

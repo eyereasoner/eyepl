@@ -1,6 +1,6 @@
-# Via conformance suite
+# Deriva conformance suite
 
-This directory contains the executable conformance cases for the Via language and reference engine. The normative language description is in the [Via language reference](../../../docs/language-reference.md).
+This directory contains the executable conformance cases for the Deriva language and reference engine. The normative language description is in the [Deriva language reference](../../../docs/language-reference.md).
 
 The suite is intentionally file-based so another implementation can run the same programs and compare exact standard output, expected errors, expected warnings, and expected proof output. The conformance corpus is part of the public language contract, not just an implementation smoke test.
 
@@ -9,7 +9,7 @@ All conformance files live under topic directories such as `arithmetic/`, `lists
 A normal positive case consists of:
 
 - `conformance/cases/<name>.pl` — input program;
-- `conformance/expected/<name>.pl` — exact expected standard output, stored as via-readable facts.
+- `conformance/expected/<name>.pl` — exact expected standard output, stored as deriva-readable facts.
 
 Expected-error cases consist of:
 
@@ -63,9 +63,9 @@ The runner executes normal materialized programs in-process through the public J
 
 ## Scope
 
-The conformance corpus is a single via suite. It covers the standard language described by the language reference: lexical syntax, facts, definite clauses, first-order terms, lists, conjunction, structured unification, left-to-right goal-directed proof search, materialized output, read-back printing, standard built-ins, declarations, warnings, errors, proof output, and standard host behavior.
+The conformance corpus is a single deriva suite. It covers the standard language described by the language reference: lexical syntax, facts, definite clauses, first-order terms, lists, conjunction, structured unification, left-to-right goal-directed proof search, materialized output, read-back printing, standard built-ins, declarations, warnings, errors, proof output, and standard host behavior.
 
-The suite deliberately does not separate `core` and `extension` profiles. Reusable built-ins such as arithmetic, strings, lists, aggregation, context terms, term inspection, and search control are part of the standard via conformance surface. Implementation-specific built-ins may still exist in downstream hosts, but they should have their own tests outside this corpus unless they are standardized.
+The suite deliberately does not separate `core` and `extension` profiles. Reusable built-ins such as arithmetic, strings, lists, aggregation, context terms, term inspection, and search control are part of the standard deriva conformance surface. Implementation-specific built-ins may still exist in downstream hosts, but they should have their own tests outside this corpus unless they are standardized.
 
 ## Updating expected output
 
