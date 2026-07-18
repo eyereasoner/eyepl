@@ -8,6 +8,9 @@
 
 Deriva is a small reasoning language for turning facts and rules into answers and proofs.
 
+The name *Deriva* evokes movement, wandering, and change—something derived from,
+or set in motion by, another source.
+
 Prolog-like syntax. Small core. Inspectable results.
 
 Its default execution is automatically hybrid: ordinary goals use indexed
