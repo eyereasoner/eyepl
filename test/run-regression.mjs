@@ -989,7 +989,7 @@ function playgroundStaticIssues() {
   const html = fs.readFileSync(playgroundPath, 'utf8');
   const readme = fs.readFileSync(path.join(packageRoot, 'README.md'), 'utf8');
   if (!pkg.files?.includes('playground.html')) issues.push('package files must include playground.html');
-  if (!readme.includes('[Playground](https://josd.github.io/deriva/playground)')) issues.push('README must link to the GitHub Pages playground URL');
+  if (!readme.includes('[Playground](https://eyereasoner.github.io/deriva/playground)')) issues.push('README must link to the GitHub Pages playground URL');
   if (!html.includes('<meta name="viewport" content="width=device-width, initial-scale=1">')) issues.push('missing mobile viewport meta');
   if (!html.includes('main {') || !html.includes('display: block;')) {
     issues.push('playground must use a simple vertical layout');

@@ -22,9 +22,9 @@
   "author": "Jos De Roo",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/josd/deriva.git"
+    "url": "git+https://github.com/eyereasoner/deriva.git"
   },
-  "homepage": "https://github.com/josd/deriva#readme",
+  "homepage": "https://github.com/eyereasoner/deriva#readme",
   "files": [
     "LICENSE.md",
     "README.md",

@@ -49,7 +49,7 @@ console.log(result.stdout);
 
 ## Documentation
 
-- [Playground](https://josd.github.io/deriva/playground)
+- [Playground](https://eyereasoner.github.io/deriva/playground)
 - [Guide](docs/guide.md)
 - [Language reference](docs/language-reference.md)
 - [A Compact Reasoning Workbench](docs/compact-reasoning-workbench.md)
