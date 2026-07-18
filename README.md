@@ -1,6 +1,6 @@
 # Deriva
 
-<p align="center">
+<p align="left">
   <img src="docs/assets/deriva-logo.png" alt="Deriva logo" width="180">
 </p>
 
