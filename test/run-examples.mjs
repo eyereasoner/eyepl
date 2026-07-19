@@ -38,6 +38,7 @@ const proofExamples = [
   'graph-reachability.pl',
   'greatest-lower-bound-uniqueness.pl',
   'group-inverse-uniqueness.pl',
+  'herbrand-semantics.pl',
   'list-collection.pl',
   'proof-contrapositive.pl',
   'reusable-builtins.pl',

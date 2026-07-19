@@ -416,6 +416,7 @@ Use `holds/2` when you want to match the member term directly, for example `name
 | [`hamming-code.pl`](../examples/hamming-code.pl) | Corrects a single-bit Hamming word. | [`output/hamming-code.pl`](../examples/output/hamming-code.pl) |
 | [`hanoi.pl`](../examples/hanoi.pl) | Derives the Towers of Hanoi moves. | [`output/hanoi.pl`](../examples/output/hanoi.pl) |
 | [`heat-loss.pl`](../examples/heat-loss.pl) | Computes conductive heat loss. | [`output/heat-loss.pl`](../examples/output/heat-loss.pl) |
+| [`herbrand-semantics.pl`](../examples/herbrand-semantics.pl) | Shows how unique names and free constructors make symbolic identity predictable. | [`output/herbrand-semantics.pl`](../examples/output/herbrand-semantics.pl) |
 | [`herbrand-witnesses.pl`](../examples/herbrand-witnesses.pl) | Represents existential-style consequences as stable Herbrand witness terms. | [`output/herbrand-witnesses.pl`](../examples/output/herbrand-witnesses.pl) |
 | [`heron-theorem.pl`](../examples/heron-theorem.pl) | Computes triangle area by Heron's theorem. | [`output/heron-theorem.pl`](../examples/output/heron-theorem.pl) |
 | [`ideal-gas-law.pl`](../examples/ideal-gas-law.pl) | Applies the ideal gas law. | [`output/ideal-gas-law.pl`](../examples/output/ideal-gas-law.pl) |

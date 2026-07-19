@@ -440,6 +440,11 @@ different(alice, bob).
 different(ticket(alice), ticket(bob)).
 ```
 
+The complete runnable example, normal output, and proof output are available as
+[`examples/herbrand-semantics.pl`](../examples/herbrand-semantics.pl),
+[`examples/output/herbrand-semantics.pl`](../examples/output/herbrand-semantics.pl),
+and [`examples/proof/herbrand-semantics.pl`](../examples/proof/herbrand-semantics.pl).
+
 In an unrestricted Tarskian interpretation, the constants `alice` and `bob`
 may denote the same domain element unless a distinctness axiom says otherwise.
 Even if they denote different elements, the function denoted by `ticket` need
