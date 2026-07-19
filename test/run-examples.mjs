@@ -45,6 +45,7 @@ const proofExamples = [
   'socket-age.pl',
   'socket-family.pl',
   'socrates.pl',
+  'spacecraft-battery-diagnosis.pl',
   'term-tools.pl',
   'witch.pl',
   'beam-deflection.pl',

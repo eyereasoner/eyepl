@@ -51,6 +51,22 @@ npm link
 deriva --version
 ```
 
+## STEM showcase: evidence-backed diagnosis
+
+The spacecraft battery example combines sensor telemetry, the physical relation
+`P = I²R`, engineering limits, redundant measurements, and causal rules to
+derive a diagnosis and safety action:
+
+```bash
+node bin/deriva.js examples/spacecraft-battery-diagnosis.pl
+node bin/deriva.js -p examples/spacecraft-battery-diagnosis.pl
+```
+
+The normal output reports computed metrics, a thermal-runaway precursor, and an
+`isolate_and_cool` action. With `-p`, every conclusion carries machine-readable
+evidence back to telemetry facts, arithmetic operations, threshold comparisons,
+and the independent temperature channel.
+
 ## JavaScript API
 
 ```js

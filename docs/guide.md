@@ -479,6 +479,7 @@ Use `holds/2` when you want to match the member term directly, for example `name
 | [`socket-age.pl`](../examples/socket-age.pl) | Shows socket-declared age reasoning inputs and plugs. | [`output/socket-age.pl`](../examples/output/socket-age.pl) |
 | [`socket-family.pl`](../examples/socket-family.pl) | Shows socket-declared family-source inputs and ancestry rules. | [`output/socket-family.pl`](../examples/output/socket-family.pl) |
 | [`socrates.pl`](../examples/socrates.pl) | Derives that Socrates is mortal. | [`output/socrates.pl`](../examples/output/socrates.pl) |
+| [`spacecraft-battery-diagnosis.pl`](../examples/spacecraft-battery-diagnosis.pl) | Combines telemetry, resistive-heating physics, thresholds, and redundant sensing into an evidence-backed diagnosis and safety action. | [`output/spacecraft-battery-diagnosis.pl`](../examples/output/spacecraft-battery-diagnosis.pl) |
 | [`stable-marriage.pl`](../examples/stable-marriage.pl) | Finds stable matchings by excluding blocking pairs. | [`output/stable-marriage.pl`](../examples/output/stable-marriage.pl) |
 | [`statistics-summary.pl`](../examples/statistics-summary.pl) | Computes population statistics for a sample. | [`output/statistics-summary.pl`](../examples/output/statistics-summary.pl) |
 | [`stirling-bell-numbers.pl`](../examples/stirling-bell-numbers.pl) | Computes Stirling numbers and Bell numbers. | [`output/stirling-bell-numbers.pl`](../examples/output/stirling-bell-numbers.pl) |
