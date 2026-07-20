@@ -1,2 +1,2 @@
-deriva warning: unstratified negation
+eyepl warning: unstratified negation
   helper/1 depends negatively on q/1

@@ -1,4 +1,4 @@
-// Public Deriva JavaScript API.
+// Public Eyepl JavaScript API.
 export * from './src/index.js';
-import * as deriva from './src/index.js';
-export default deriva;
+import * as eyepl from './src/index.js';
+export default eyepl;

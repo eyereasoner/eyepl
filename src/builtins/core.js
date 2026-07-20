@@ -48,7 +48,7 @@ export const coreBuiltins = {
 
 
 function localDateText() {
-  const fixed = typeof process !== 'undefined' ? process.env?.DERIVA_LOCAL_TIME : null;
+  const fixed = typeof process !== 'undefined' ? process.env?.EYEPL_LOCAL_TIME : null;
   if (fixed) return fixed;
 
   const now = new Date();

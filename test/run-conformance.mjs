@@ -10,12 +10,12 @@ import { TestReporter, isMainModule } from './test-style.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)));
 const packageRoot = path.resolve(root, '..');
-const cliBin = path.join(packageRoot, 'bin', 'deriva.js');
+const cliBin = path.join(packageRoot, 'bin', 'eyepl.js');
 const filterArg = process.argv[2] ?? null;
 
 export function runConformance(reporter = new TestReporter(), requestedFilter = null) {
   const filter = requestedFilter ?? filterArg;
-  const label = filter == null ? 'deriva' : `deriva ${filter}`;
+  const label = filter == null ? 'eyepl' : `eyepl ${filter}`;
   reporter.section(`Conformance ${label}`);
   for (const file of listCaseFiles('cases', filter)) runCaseFile(reporter, file);
   for (const file of listCaseFiles('errors', filter)) runErrorFile(reporter, file);
@@ -27,7 +27,7 @@ export function runConformance(reporter = new TestReporter(), requestedFilter = 
 function listCaseFiles(kind, filter = null) {
   const base = path.join(root, 'conformance', kind);
   if (!fs.existsSync(base)) return [];
-  return listDerivaFiles(base)
+  return listEyeplFiles(base)
     .filter((name) => matchesFilter(kind, name, filter))
     .sort();
 }
@@ -43,12 +43,12 @@ function matchesFilter(kind, name, filter) {
     || `${label}/${stem}`.includes(filter);
 }
 
-function listDerivaFiles(base, dir = base) {
+function listEyeplFiles(base, dir = base) {
   const files = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      files.push(...listDerivaFiles(base, full));
+      files.push(...listEyeplFiles(base, full));
     } else if (entry.isFile() && entry.name.endsWith('.pl')) {
       files.push(path.relative(base, full).split(path.sep).join('/'));
     }

@@ -2,7 +2,7 @@
 % structured terms.
 %
 % Each report/2 answer demonstrates one meta-programming operation over ordinary
-% Deriva terms: functor/3 and arg/3 inspect shape, compound_name_arguments/3 can
+% Eyepl terms: functor/3 and arg/3 inspect shape, compound_name_arguments/3 can
 % decompose or rebuild a compound, term_string/2 renders a term, and forall/2
 % validates all edge weights.
 %

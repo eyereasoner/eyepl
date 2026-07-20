@@ -1,8 +1,8 @@
-export interface DerivaStats {
+export interface EyeplStats {
   [key: string]: number;
 }
 
-export interface DerivaRunOptions {
+export interface EyeplRunOptions {
   proof?: boolean;
   why?: boolean;
   explain?: boolean;
@@ -16,29 +16,29 @@ export interface DerivaRunOptions {
   [key: string]: unknown;
 }
 
-export interface DerivaRunResult {
+export interface EyeplRunResult {
   stdout: string;
-  stats: DerivaStats;
+  stats: EyeplStats;
 }
 
-export interface DerivaSourcePart {
+export interface EyeplSourcePart {
   text?: string;
   source?: string;
   filename?: string;
 }
 
-export interface DerivaClause {
-  head: DerivaTerm;
-  body: DerivaTerm[];
+export interface EyeplClause {
+  head: EyeplTerm;
+  body: EyeplTerm[];
   index?: number;
   filename?: string;
   clauseNumber?: number;
 }
 
-export interface DerivaPredicateGroup {
+export interface EyeplPredicateGroup {
   name: string;
   arity: number;
-  clauses: DerivaClause[];
+  clauses: EyeplClause[];
   argIndexes: unknown[];
   pairIndexes: unknown[];
   tabled: boolean;
@@ -49,49 +49,49 @@ export interface DerivaPredicateGroup {
   negationStratum: number | null;
 }
 
-export type DerivaTerm = Term | { type: string; name: string; args?: DerivaTerm[]; arity?: number };
+export type EyeplTerm = Term | { type: string; name: string; args?: EyeplTerm[]; arity?: number };
 
 export class Term {
-  constructor(type: string, name?: unknown, args?: DerivaTerm[]);
+  constructor(type: string, name?: unknown, args?: EyeplTerm[]);
   type: string;
   name: string;
-  args: DerivaTerm[];
+  args: EyeplTerm[];
   get arity(): number;
 }
 
 export class Env {
-  constructor(bindings?: Iterable<readonly [string, DerivaTerm]> | null);
-  bindings: Map<string, DerivaTerm>;
+  constructor(bindings?: Iterable<readonly [string, EyeplTerm]> | null);
+  bindings: Map<string, EyeplTerm>;
   clone(): Env;
   has(name: string): boolean;
-  get(name: string): DerivaTerm | undefined;
-  bind(name: string, term: DerivaTerm): void;
+  get(name: string): EyeplTerm | undefined;
+  bind(name: string, term: EyeplTerm): void;
 }
 
 export class Program {
-  constructor(clauses?: DerivaClause[], options?: DerivaRunOptions);
-  clauses: DerivaClause[];
-  groups: Map<string, DerivaPredicateGroup>;
+  constructor(clauses?: EyeplClause[], options?: EyeplRunOptions);
+  clauses: EyeplClause[];
+  groups: Map<string, EyeplPredicateGroup>;
   materializedGroups: Set<string>;
   hasMaterialize: boolean;
   negationDependencies: Array<{ from: string; to: string; negative: boolean }>;
   negationStratificationErrors: Array<{ from: string; to: string }>;
   stratifiedNegation: boolean;
-  static parse(source: string, options?: DerivaRunOptions): Program;
-  static parseSources(sources?: Array<string | DerivaSourcePart>, options?: DerivaRunOptions): Program;
-  makeGroup(name: string, arity: number): DerivaPredicateGroup;
-  indexClause(clause: DerivaClause): void;
-  findGroup(name: string, arity: number): DerivaPredicateGroup | null;
-  applyDeclarations(options?: DerivaRunOptions): void;
+  static parse(source: string, options?: EyeplRunOptions): Program;
+  static parseSources(sources?: Array<string | EyeplSourcePart>, options?: EyeplRunOptions): Program;
+  makeGroup(name: string, arity: number): EyeplPredicateGroup;
+  indexClause(clause: EyeplClause): void;
+  findGroup(name: string, arity: number): EyeplPredicateGroup | null;
+  applyDeclarations(options?: EyeplRunOptions): void;
   markRecursivePredicates(): void;
   analyzeNegationStratification(): Array<{ from: string; to: string }>;
   assertStratifiedNegation(): true;
   isStratifiedNegation(): boolean;
   hasMaterializeDeclarations(): boolean;
-  groupIsMaterialized(group: DerivaPredicateGroup): boolean;
-  groupHasRule(group: DerivaPredicateGroup): boolean;
+  groupIsMaterialized(group: EyeplPredicateGroup): boolean;
+  groupHasRule(group: EyeplPredicateGroup): boolean;
   sourceFactLines(predicateKeys?: Set<string> | null): Set<string>;
-  materializationGoals(): DerivaTerm[];
+  materializationGoals(): EyeplTerm[];
 }
 
 export interface BuiltinDefinition {
@@ -99,12 +99,12 @@ export interface BuiltinDefinition {
   arity: number;
   handler: BuiltinHandler;
   deterministic: boolean;
-  ready: ((solver: Solver, goal: DerivaTerm, env: Env) => boolean) | null;
+  ready: ((solver: Solver, goal: EyeplTerm, env: Env) => boolean) | null;
   fallbackWhenNotReady: boolean;
-  shouldUse: ((solver: Solver, goal: DerivaTerm, env: Env) => boolean) | null;
+  shouldUse: ((solver: Solver, goal: EyeplTerm, env: Env) => boolean) | null;
 }
 
-export type BuiltinHandler = (context: { solver: Solver; goal: DerivaTerm; env: Env }) => Iterable<Env>;
+export type BuiltinHandler = (context: { solver: Solver; goal: EyeplTerm; env: Env }) => Iterable<Env>;
 
 export class BuiltinRegistry {
   constructor();
@@ -114,7 +114,7 @@ export class BuiltinRegistry {
 }
 
 export class Solver {
-  constructor(program: Program, options?: DerivaRunOptions);
+  constructor(program: Program, options?: EyeplRunOptions);
   program: Program;
   registry: BuiltinRegistry;
   maxDepth: number;
@@ -122,10 +122,10 @@ export class Solver {
   solutionsSeen: number;
   active: unknown[];
   memo: Map<string, unknown>;
-  stats: DerivaStats;
+  stats: EyeplStats;
   cloneForInnerGoal(solutionLimit?: number): Solver;
-  solve(goals: DerivaTerm | DerivaTerm[], env?: Env, depth?: number): Iterable<Env>;
-  activeVariant(goal: DerivaTerm, env: Env): boolean;
+  solve(goals: EyeplTerm | EyeplTerm[], env?: Env, depth?: number): Iterable<Env>;
+  activeVariant(goal: EyeplTerm, env: Env): boolean;
 }
 
 export const VAR: 'var';
@@ -139,44 +139,44 @@ export function atom(name: string): Term;
 export function stringTerm(value: string): Term;
 export function numberTerm(value: string | number): Term;
 /** Construct a compound term; an empty argument list is canonicalized to atom(name). */
-export function compound(name: string, args?: DerivaTerm[]): Term;
+export function compound(name: string, args?: EyeplTerm[]): Term;
 export function emptyList(): Term;
-export function cons(head: DerivaTerm, tail: DerivaTerm): Term;
-export function deref(term: DerivaTerm, env: Env): DerivaTerm;
-export function isScalar(term: DerivaTerm | null | undefined): boolean;
-export function isEmptyList(term: DerivaTerm | null | undefined): boolean;
-export function isCons(term: DerivaTerm | null | undefined): boolean;
-export function isConjunction(term: DerivaTerm | null | undefined): boolean;
-export function unify(left: DerivaTerm, right: DerivaTerm, env: Env): boolean;
-export function cloneTerm(term: DerivaTerm): Term;
-export function freshTerm(term: DerivaTerm, suffix: string | number): Term;
-export function copyResolved(term: DerivaTerm, env: Env): Term;
-export function termIsGround(term: DerivaTerm, env?: Env): boolean;
-export function termToString(term: DerivaTerm, env?: Env, quoteStrings?: boolean): string;
-export function lexicalValue(term: DerivaTerm, env: Env): string | null;
-export function properListItems(list: DerivaTerm, env: Env): DerivaTerm[] | null;
-export function listFromItems(items: DerivaTerm[], start?: number, end?: number, tail?: DerivaTerm): Term;
-export function flattenConjunction(goal: DerivaTerm): DerivaTerm[];
-export function termSignature(term: DerivaTerm | null | undefined): string | null;
-export function variantTerms(left: DerivaTerm, leftEnv: Env, right: DerivaTerm, rightEnv: Env, pairs?: Map<string, string>, reverse?: Map<string, string>): boolean;
-export function compareTerms(left: DerivaTerm, right: DerivaTerm): number;
+export function cons(head: EyeplTerm, tail: EyeplTerm): Term;
+export function deref(term: EyeplTerm, env: Env): EyeplTerm;
+export function isScalar(term: EyeplTerm | null | undefined): boolean;
+export function isEmptyList(term: EyeplTerm | null | undefined): boolean;
+export function isCons(term: EyeplTerm | null | undefined): boolean;
+export function isConjunction(term: EyeplTerm | null | undefined): boolean;
+export function unify(left: EyeplTerm, right: EyeplTerm, env: Env): boolean;
+export function cloneTerm(term: EyeplTerm): Term;
+export function freshTerm(term: EyeplTerm, suffix: string | number): Term;
+export function copyResolved(term: EyeplTerm, env: Env): Term;
+export function termIsGround(term: EyeplTerm, env?: Env): boolean;
+export function termToString(term: EyeplTerm, env?: Env, quoteStrings?: boolean): string;
+export function lexicalValue(term: EyeplTerm, env: Env): string | null;
+export function properListItems(list: EyeplTerm, env: Env): EyeplTerm[] | null;
+export function listFromItems(items: EyeplTerm[], start?: number, end?: number, tail?: EyeplTerm): Term;
+export function flattenConjunction(goal: EyeplTerm): EyeplTerm[];
+export function termSignature(term: EyeplTerm | null | undefined): string | null;
+export function variantTerms(left: EyeplTerm, leftEnv: Env, right: EyeplTerm, rightEnv: Env, pairs?: Map<string, string>, reverse?: Map<string, string>): boolean;
+export function compareTerms(left: EyeplTerm, right: EyeplTerm): number;
 export function isDecimalInteger(text: string | null | undefined): boolean;
 export function compareIntegerText(left: string, right: string): number;
 export function parseFiniteNumber(text: string | null | undefined): number | null;
 export function numberTextFromDouble(value: number): string | null;
 export function compareNumberText(left: string, right: string): number;
 
-export function makeProgram(source: string, options?: DerivaRunOptions): Program;
-export function parseClauses(source: string, options?: DerivaRunOptions): DerivaClause[];
-export function parseProgramText(source: string, options?: DerivaRunOptions): DerivaClause[];
+export function makeProgram(source: string, options?: EyeplRunOptions): Program;
+export function parseClauses(source: string, options?: EyeplRunOptions): EyeplClause[];
+export function parseProgramText(source: string, options?: EyeplRunOptions): EyeplClause[];
 export function createDefaultRegistry(): BuiltinRegistry;
 export function getDefaultRegistry(): BuiltinRegistry;
-export function run(source: string | Program, options?: DerivaRunOptions): DerivaRunResult;
-export function whyProof(program: Program, goal: DerivaTerm, options?: DerivaRunOptions): { ok: boolean; text: string };
-export function whyNoProof(goal: DerivaTerm): string;
-export function explainProof(program: Program, goal: DerivaTerm, options?: DerivaRunOptions): { ok: boolean; text: string };
+export function run(source: string | Program, options?: EyeplRunOptions): EyeplRunResult;
+export function whyProof(program: Program, goal: EyeplTerm, options?: EyeplRunOptions): { ok: boolean; text: string };
+export function whyNoProof(goal: EyeplTerm): string;
+export function explainProof(program: Program, goal: EyeplTerm, options?: EyeplRunOptions): { ok: boolean; text: string };
 
-declare const deriva: {
+declare const eyepl: {
   VAR: typeof VAR;
   ATOM: typeof ATOM;
   STRING: typeof STRING;
@@ -228,4 +228,4 @@ declare const deriva: {
   explainProof: typeof explainProof;
 };
 
-export default deriva;
+export default eyepl;

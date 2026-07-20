@@ -6,7 +6,7 @@
 materialize(different, 2).
 
 % Under unrestricted Tarskian semantics, alice and bob could denote the same
-% element. In Deriva's Herbrand universe, their different syntax is enough.
+% element. In Eyepl's Herbrand universe, their different syntax is enough.
 different(alice, bob) :-
   neq(alice, bob).
 

@@ -1,4 +1,4 @@
 % Reference 9.6: atom and string built-ins.
-answer(str_concat, X) :- str_concat("der", "iva", X).
-answer(contains, true) :- contains("deriva", "de").
+answer(str_concat, X) :- str_concat("eye", "pl", X).
+answer(contains, true) :- contains("eyepl", "ey").
 materialize(answer, 2).

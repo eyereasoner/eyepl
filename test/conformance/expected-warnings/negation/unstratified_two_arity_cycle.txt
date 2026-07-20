@@ -1,3 +1,3 @@
-deriva warning: unstratified negation
+eyepl warning: unstratified negation
   p/2 depends negatively on q/2
   q/2 depends negatively on p/2

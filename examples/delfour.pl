@@ -1,5 +1,5 @@
 % Delfour insight-economy case adapted from Eyeling delfour.n3.
-% The original N3 emits a Markdown answer.  This deriva
+% The original N3 emits a Markdown answer.  This eyepl
 % translation derives the same authorization, shopping banner, alternative, and
 % checklist facts as relation materialization.
 %

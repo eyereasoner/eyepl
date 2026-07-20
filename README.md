@@ -1,15 +1,15 @@
-# Deriva
+# Eyepl
 
 <p align="left">
-  <img src="docs/assets/deriva-logo.png" alt="Deriva logo" width="70">
+  <img src="docs/assets/eyepl-logo.png" alt="Eyepl logo" width="70">
 </p>
 
-[![npm version](https://img.shields.io/npm/v/deriva.svg)](https://www.npmjs.com/package/deriva)
+[![npm version](https://img.shields.io/npm/v/eyepl.svg)](https://www.npmjs.com/package/eyepl)
 [![DOI](https://zenodo.org/badge/1305066220.svg)](https://zenodo.org/badge/latestdoi/1305066220)
 
-Deriva is a small reasoning language for turning facts and rules into answers and proofs.
+Eyepl is a small reasoning language for turning facts and rules into answers and proofs.
 
-The name *Deriva* evokes movement, wandering, and change—something derived from,
+The name *Eyepl* evokes movement, wandering, and change—something derived from,
 or set in motion by, another source.
 
 Prolog-like syntax. Small core. Inspectable results.
@@ -23,32 +23,32 @@ and tabled automatically.
 Install the published CLI globally:
 
 ```bash
-npm install --global deriva
-deriva --version
-printf 'works(stdin, true) :- eq(ok, ok).\n' | deriva -
+npm install --global eyepl
+eyepl --version
+printf 'works(stdin, true) :- eq(ok, ok).\n' | eyepl -
 ```
 
-Deriva has no runtime npm dependencies and no build step. From a source checkout, run the CLI directly with Node.js 18 or newer:
+Eyepl has no runtime npm dependencies and no build step. From a source checkout, run the CLI directly with Node.js 18 or newer:
 
 ```bash
-node bin/deriva.js examples/ancestor.pl
-node bin/deriva.js --proof examples/socrates.pl
-node bin/deriva.js --warnings test/conformance/warnings/negation/unstratified_mutual.pl
-printf 'works(stdin, true) :- eq(ok, ok).\n' | node bin/deriva.js -
+node bin/eyepl.js examples/ancestor.pl
+node bin/eyepl.js --proof examples/socrates.pl
+node bin/eyepl.js --warnings test/conformance/warnings/negation/unstratified_mutual.pl
+printf 'works(stdin, true) :- eq(ok, ok).\n' | node bin/eyepl.js -
 ```
 
 For one-off local CLI use from the checkout, npm can run the package bin without a manual symlink:
 
 ```bash
-npm exec --yes --package=. -- deriva --version
-npm exec --yes --package=. -- deriva examples/ancestor.pl
+npm exec --yes --package=. -- eyepl --version
+npm exec --yes --package=. -- eyepl examples/ancestor.pl
 ```
 
-To install the checkout's `deriva` command on your `PATH`, use npm's package link:
+To install the checkout's `eyepl` command on your `PATH`, use npm's package link:
 
 ```bash
 npm link
-deriva --version
+eyepl --version
 ```
 
 ## STEM showcase: evidence-backed diagnosis
@@ -58,8 +58,8 @@ The spacecraft battery example combines sensor telemetry, the physical relation
 derive a diagnosis and safety action:
 
 ```bash
-node bin/deriva.js examples/spacecraft-battery-diagnosis.pl
-node bin/deriva.js -p examples/spacecraft-battery-diagnosis.pl
+node bin/eyepl.js examples/spacecraft-battery-diagnosis.pl
+node bin/eyepl.js -p examples/spacecraft-battery-diagnosis.pl
 ```
 
 The normal output reports computed metrics, a thermal-runaway precursor, and an
@@ -70,7 +70,7 @@ and the independent temperature channel.
 ## JavaScript API
 
 ```js
-import { run, Program, Solver } from 'deriva';
+import { run, Program, Solver } from 'eyepl';
 
 const result = run(`
 materialize(answer, 1).
@@ -81,7 +81,7 @@ console.log(result.stdout);
 
 ## Documentation
 
-- [Playground](https://eyereasoner.github.io/deriva/playground)
+- [Playground](https://eyereasoner.github.io/eyepl/playground)
 - [Guide](docs/guide.md)
 - [Language reference](docs/language-reference.md)
 - [A Compact Reasoning Workbench](docs/compact-reasoning-workbench.md)

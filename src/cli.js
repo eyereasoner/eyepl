@@ -1,4 +1,4 @@
-// Command-line interface for Deriva.
+// Command-line interface for Eyepl.
 // It loads programs from files, URLs, or stdin, then materializes derived output predicates.
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -47,7 +47,7 @@ export async function main(argv) {
   }
 
   if (options.version) {
-    process.stdout.write(`deriva ${await packageVersion()}\n`);
+    process.stdout.write(`eyepl ${await packageVersion()}\n`);
     return;
   }
 
@@ -133,14 +133,14 @@ function writeExplanation(explanation, program, resolved, registry) {
 }
 
 async function usage(stream) {
-  stream.write(`deriva ${await packageVersion()}
+  stream.write(`eyepl ${await packageVersion()}
 
 Usage:
-  deriva [options] [file-or-url.pl|- ...]
+  eyepl [options] [file-or-url.pl|- ...]
 
 Input:
-  file-or-url.pl        Read a Deriva program from a local file or http(s) URL.
-  -                     Read a Deriva program from standard input.
+  file-or-url.pl        Read a Eyepl program from a local file or http(s) URL.
+  -                     Read a Eyepl program from standard input.
 
 Options:
   -h, --help            Show this help text and exit.
@@ -168,14 +168,14 @@ function printWarnings(program) {
   const errors = program.negationStratificationErrors;
   if (errors.length === 0) return;
 
-  process.stderr.write('deriva warning: unstratified negation\n');
+  process.stderr.write('eyepl warning: unstratified negation\n');
   for (const edge of errors) {
     process.stderr.write(`  ${edge.from} depends negatively on ${edge.to}\n`);
   }
 }
 
 function printStats(stats) {
-  process.stderr.write('deriva stats:\n');
+  process.stderr.write('eyepl stats:\n');
   for (const [key, value] of Object.entries(stats)) {
     process.stderr.write(`  ${key}: ${value}\n`);
   }

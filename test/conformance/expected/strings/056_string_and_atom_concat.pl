@@ -1,1 +1,1 @@
-answer(string, "deriva").
+answer(string, "eyepl").

@@ -1,6 +1,6 @@
-answer(prefix, "deriva").
+answer(prefix, "eyepl").
 answer(middle, "la").
-answer(suffix, "ala").
+answer(suffix, "lla").
 answer(empty_at_end, "").
 answer(out_of_range_rejected, ok).
 answer(replace_all, "baNANA").

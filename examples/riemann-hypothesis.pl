@@ -1,4 +1,4 @@
-% Riemann hypothesis, as a finite deriva check.
+% Riemann hypothesis, as a finite eyepl check.
 %
 % This example does not prove the Riemann hypothesis.  It models the
 % finite statement: every non-trivial zero in the local catalogue has
@@ -81,7 +81,7 @@ finite_catalog_supports_rh(yes) :-
 % --- Materialized audit output --------------------------------------------
 
 % These tiny support facts make the summary rows derived output rather than
-% source facts; deriva intentionally does not reprint source facts.
+% source facts; eyepl intentionally does not reprint source facts.
 
 summary_row(scope, finite_catalog_only).
 summary_row(caveat, "finite catalogue evidence only; this is not a proof of RH").

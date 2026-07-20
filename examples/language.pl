@@ -1,6 +1,6 @@
-% Deriva language-identity example.
+% Eyepl language-identity example.
 %
-% This file intentionally uses the modern Deriva surface syntax:
+% This file intentionally uses the modern Eyepl surface syntax:
 %   - `.pl` source files instead of Prolog `.pl` files
 %   - ISO Prolog-style uppercase variables
 %   - automatic tabling for recursive predicates

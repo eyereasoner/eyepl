@@ -1,15 +1,15 @@
 {
-  "name": "deriva",
+  "name": "eyepl",
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.0.16",
-  "description": "Deriva turns facts and rules into answers and proofs.",
+  "version": "0.0.17",
+  "description": "Eyepl turns facts and rules into answers and proofs.",
   "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",
   "bin": {
-    "deriva": "./bin/deriva.js"
+    "eyepl": "./bin/eyepl.js"
   },
   "keywords": [
     "logic",
@@ -22,9 +22,9 @@
   "author": "Jos De Roo",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/eyereasoner/deriva.git"
+    "url": "git+https://github.com/eyereasoner/eyepl.git"
   },
-  "homepage": "https://github.com/eyereasoner/deriva#readme",
+  "homepage": "https://github.com/eyereasoner/eyepl#readme",
   "files": [
     "LICENSE.md",
     "README.md",
@@ -43,7 +43,7 @@
   },
   "scripts": {
     "test": "node test/run-all.mjs",
-    "test:deriva": "node test/run-all.mjs",
+    "test:eyepl": "node test/run-all.mjs",
     "test:conformance": "node test/run-conformance.mjs",
     "test:examples": "node test/run-examples.mjs",
     "test:regression": "node test/run-regression.mjs",

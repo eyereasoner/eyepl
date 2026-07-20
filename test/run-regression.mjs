@@ -40,13 +40,13 @@ import { hashHex } from '../src/hash.js';
 
 const testRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)));
 const packageRoot = path.resolve(testRoot, '..');
-const bin = path.join(packageRoot, 'bin', 'deriva.js');
+const bin = path.join(packageRoot, 'bin', 'eyepl.js');
 const pkg = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
 let tmp = null;
 let tmpCounter = 0;
 
 export function runRegression(reporter = new TestReporter()) {
-  tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'deriva-regression.'));
+  tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'eyepl-regression.'));
   tmpCounter = 0;
 
   try {
@@ -159,11 +159,11 @@ why(
       },
     },
     {
-      name: 'DERIVA_LOCAL_TIME fixes local_time builtin',
+      name: 'EYEPL_LOCAL_TIME fixes local_time builtin',
       run: () => {
         const result = runCli(['-'], {
           input: 'materialize(local_time_answer, 1).\nlocal_time_answer(D) :- local_time(D).\n',
-          env: { DERIVA_LOCAL_TIME: '2024-01-02' },
+          env: { EYEPL_LOCAL_TIME: '2024-01-02' },
         });
         assertEqual(result.status, 0, 'exit status');
         assertEqual(result.stdout, 'local_time_answer("2024-01-02").\n', 'stdout');
@@ -175,13 +175,13 @@ why(
       run: () => {
         const result = runCli([]);
         assertEqual(result.status, 0, 'exit status');
-        assertIncludes(result.stdout, 'Usage:\n  deriva [options] [file-or-url.pl|- ...]', 'stdout');
+        assertIncludes(result.stdout, 'Usage:\n  eyepl [options] [file-or-url.pl|- ...]', 'stdout');
         assertIncludes(result.stdout, '-p, --proof', 'stdout');
         assertIncludes(result.stdout, '-s, --stats', 'stdout');
         assertIncludes(result.stdout, '-v, --version', 'stdout');
         assertIncludes(result.stdout, '-w, --warnings', 'stdout');
         assertIncludes(result.stdout, '-v, --version         Show the package version and exit.\n  -w, --warnings        Print non-fatal portability warnings to stderr.', 'stdout');
-        assertIncludes(result.stdout, 'Read a Deriva program', 'stdout');
+        assertIncludes(result.stdout, 'Read a Eyepl program', 'stdout');
         assertEqual(result.stderr, '', 'stderr');
       },
     },
@@ -190,7 +190,7 @@ why(
       run: () => {
         const result = runCli(['--version']);
         assertEqual(result.status, 0, 'exit status');
-        assertEqual(result.stdout, `deriva ${pkg.version}\n`, 'stdout');
+        assertEqual(result.stdout, `eyepl ${pkg.version}\n`, 'stdout');
         assertEqual(result.stderr, '', 'stderr');
       },
     },
@@ -199,20 +199,20 @@ why(
       run: () => {
         const result = runCli(['-v']);
         assertEqual(result.status, 0, 'exit status');
-        assertEqual(result.stdout, `deriva ${pkg.version}\n`, 'stdout');
+        assertEqual(result.stdout, `eyepl ${pkg.version}\n`, 'stdout');
         assertEqual(result.stderr, '', 'stderr');
       },
     },
     {
       name: 'npm exec can run package CLI bin from checkout',
       run: () => {
-        const result = spawnSync('npm', ['exec', '--loglevel=silent', '--yes', '--package=.', '--', 'deriva', '--version'], {
+        const result = spawnSync('npm', ['exec', '--loglevel=silent', '--yes', '--package=.', '--', 'eyepl', '--version'], {
           cwd: packageRoot,
           encoding: 'utf8',
           env: { ...process.env, npm_config_update_notifier: 'false' },
         });
         assertEqual(result.status, 0, 'exit status');
-        assertEqual(result.stdout, `deriva ${pkg.version}\n`, 'stdout');
+        assertEqual(result.stdout, `eyepl ${pkg.version}\n`, 'stdout');
         assertEqual(result.stderr, '', 'stderr');
       },
     },
@@ -252,7 +252,7 @@ why(
         const result = runCli(['--stats', '-'], { input: 'p(a, b).\nq(X, Y) :- p(X, Y).\n' });
         assertEqual(result.status, 0, 'exit status');
         assertEqual(result.stdout, 'q(a, b).\n', 'stdout');
-        assertIncludes(result.stderr, 'deriva stats:\n', 'stderr');
+        assertIncludes(result.stderr, 'eyepl stats:\n', 'stderr');
         assertIncludes(result.stderr, '  solve_goals_calls:', 'stderr');
       },
     },
@@ -262,7 +262,7 @@ why(
         const result = runCli(['-s', '-'], { input: 'p(a, b).\nq(X, Y) :- p(X, Y).\n' });
         assertEqual(result.status, 0, 'exit status');
         assertEqual(result.stdout, 'q(a, b).\n', 'stdout');
-        assertIncludes(result.stderr, 'deriva stats:\n', 'stderr');
+        assertIncludes(result.stderr, 'eyepl stats:\n', 'stderr');
         assertIncludes(result.stderr, '  solve_goals_calls:', 'stderr');
       },
     },
@@ -279,7 +279,7 @@ why(
         const result = runCli(['--warnings', '-'], { input });
         assertEqual(result.status, 0, 'exit status');
         assertEqual(result.stdout, '', 'stdout');
-        assertIncludes(result.stderr, 'deriva warning: unstratified negation\n', 'stderr');
+        assertIncludes(result.stderr, 'eyepl warning: unstratified negation\n', 'stderr');
         assertIncludes(result.stderr, 'p/1 depends negatively on q/1', 'stderr');
         assertIncludes(result.stderr, 'q/1 depends negatively on p/1', 'stderr');
       },
@@ -297,7 +297,7 @@ why(
         const result = runCli(['-w', '-'], { input });
         assertEqual(result.status, 0, 'exit status');
         assertEqual(result.stdout, '', 'stdout');
-        assertIncludes(result.stderr, 'deriva warning: unstratified negation\n', 'stderr');
+        assertIncludes(result.stderr, 'eyepl warning: unstratified negation\n', 'stderr');
       },
     },
     {
@@ -358,7 +358,7 @@ function documentationSyncCases() {
       run: () => assertArrayEqual(findBrokenDocLinks(), [], 'broken documentation links'),
     },
     {
-      name: 'documentation uses Deriva source style',
+      name: 'documentation uses Eyepl source style',
       run: () => assertArrayEqual(documentationSourceStyleIssues(), [], 'documentation source style'),
     },
     {
@@ -391,8 +391,8 @@ function documentationSyncCases() {
     {
       name: 'source-checkout setup docs match package bin',
       run: () => {
-        assertEqual(pkg.bin?.deriva, './bin/deriva.js', 'package deriva bin');
-        const binPath = path.join(packageRoot, pkg.bin.deriva);
+        assertEqual(pkg.bin?.eyepl, './bin/eyepl.js', 'package eyepl bin');
+        const binPath = path.join(packageRoot, pkg.bin.eyepl);
         const binText = fs.readFileSync(binPath, 'utf8');
         assertEqual(binText.startsWith('#!/usr/bin/env node\n'), true, 'bin shebang');
         assertArrayEqual(misleadingDependencyInstallDocs(), [], 'misleading dependency install docs');
@@ -989,7 +989,7 @@ function playgroundStaticIssues() {
   const html = fs.readFileSync(playgroundPath, 'utf8');
   const readme = fs.readFileSync(path.join(packageRoot, 'README.md'), 'utf8');
   if (!pkg.files?.includes('playground.html')) issues.push('package files must include playground.html');
-  if (!readme.includes('[Playground](https://eyereasoner.github.io/deriva/playground)')) issues.push('README must link to the GitHub Pages playground URL');
+  if (!readme.includes('[Playground](https://eyereasoner.github.io/eyepl/playground)')) issues.push('README must link to the GitHub Pages playground URL');
   if (!html.includes('<meta name="viewport" content="width=device-width, initial-scale=1">')) issues.push('missing mobile viewport meta');
   if (!html.includes('main {') || !html.includes('display: block;')) {
     issues.push('playground must use a simple vertical layout');
@@ -1148,7 +1148,7 @@ function documentationSourceStyleIssues() {
   for (const file of docs) {
     const text = fs.readFileSync(file, 'utf8');
     if (text.includes('```prolog')) {
-      issues.push(`${path.relative(packageRoot, file)}: use deriva code fences instead of prolog fences`);
+      issues.push(`${path.relative(packageRoot, file)}: use eyepl code fences instead of prolog fences`);
     }
   }
 
@@ -1157,7 +1157,7 @@ function documentationSourceStyleIssues() {
   const staleQuestionVariables = /`[^`]*\?[A-Za-z_][A-Za-z0-9_]*[^`]*`|`[^`]*\?(?=[,.)\] |])[^`]*`/;
   for (const [index, line] of builtins.split('\n').entries()) {
     if (!line.trim().startsWith('|')) continue;
-    if (line.includes('DERIVA_LOCAL_TIME=')) continue;
+    if (line.includes('EYEPL_LOCAL_TIME=')) continue;
     if (staleQuestionVariables.test(line)) {
       issues.push(`docs/language-reference.md section 9 line ${index + 1}: stale question-mark variable in built-in description: ${line.trim()}`);
     }

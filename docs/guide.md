@@ -1,11 +1,11 @@
-# Deriva Guide
+# Eyepl Guide
 
-This guide introduces Deriva, a small Horn-clause language and engine whose source syntax is Prolog-like but deliberately its own compact language for facts, rules, goals, answers, and proofs. Deriva works over ordinary terms, lists, arithmetic, strings, and finite search. Run it with the `deriva` CLI, or use `node bin/deriva.js` when working directly from a source checkout.
+This guide introduces Eyepl, a small Horn-clause language and engine whose source syntax is Prolog-like but deliberately its own compact language for facts, rules, goals, answers, and proofs. Eyepl works over ordinary terms, lists, arithmetic, strings, and finite search. Run it with the `eyepl` CLI, or use `node bin/eyepl.js` when working directly from a source checkout.
 
-This documentation uses **Deriva** for the project, language, and engine, and
-`deriva` for the npm package and CLI command.
+This documentation uses **Eyepl** for the project, language, and engine, and
+`eyepl` for the npm package and CLI command.
 
-Programs write relations directly, for example `ancestor(pat, emma)` or `status(case1, accepted)`. Web identifiers can be written as ordinary quoted atoms that include angle brackets, for example `'<https://schema.org/name>'`, when a program needs explicit IRI-shaped names without prefix declarations. Deriva output is ordinary Deriva syntax: by default, the CLI materializes selected answer facts and prints those facts only. Pass `--proof` (or `-p`) when you also want each answer followed by a `why/2` explanation fact that records the proof. Programs may add `materialize/2` declarations such as `materialize(answer, 2).` to focus output on selected predicates.
+Programs write relations directly, for example `ancestor(pat, emma)` or `status(case1, accepted)`. Web identifiers can be written as ordinary quoted atoms that include angle brackets, for example `'<https://schema.org/name>'`, when a program needs explicit IRI-shaped names without prefix declarations. Eyepl output is ordinary Eyepl syntax: by default, the CLI materializes selected answer facts and prints those facts only. Pass `--proof` (or `-p`) when you also want each answer followed by a `why/2` explanation fact that records the proof. Programs may add `materialize/2` declarations such as `materialize(answer, 2).` to focus output on selected predicates.
 
 Execution is automatically hybrid. Ordinary predicates use indexed
 goal-directed resolution, while dependency analysis detects recursive groups
@@ -13,12 +13,12 @@ and tables their bound calls. Programs describe relations without choosing the
 engine's search strategy.
 
 
-For the normative language definition, including lexical syntax, terms, clauses, goals, built-ins, automatic hybrid reasoning, `materialize/2`, and conformance boundaries, read the [Deriva language reference](language-reference.md).
+For the normative language definition, including lexical syntax, terms, clauses, goals, built-ins, automatic hybrid reasoning, `materialize/2`, and conformance boundaries, read the [Eyepl language reference](language-reference.md).
 
 ## Contents
 
 1. [Quick start](#quick-start)
-2. [Running the `deriva` CLI](#running-the-deriva-cli)
+2. [Running the `eyepl` CLI](#running-the-eyepl-cli)
 3. [Default output](#default-output)
 4. [Writing programs](#writing-programs)
 5. [Aggregation helpers](#aggregation-helpers)
@@ -32,65 +32,65 @@ For the normative language definition, including lexical syntax, terms, clauses,
 
 ## Quick start
 
-Deriva has no runtime npm dependencies and no build step. From a source checkout, run the CLI entry point directly with Node.js 18 or newer:
+Eyepl has no runtime npm dependencies and no build step. From a source checkout, run the CLI entry point directly with Node.js 18 or newer:
 
 ```sh
-node bin/deriva.js --version
-node bin/deriva.js examples/ancestor.pl
-node bin/deriva.js facts.pl rules.pl
-printf 'works(stdin, true) :- eq(ok, ok).\n' | node bin/deriva.js -
+node bin/eyepl.js --version
+node bin/eyepl.js examples/ancestor.pl
+node bin/eyepl.js facts.pl rules.pl
+printf 'works(stdin, true) :- eq(ok, ok).\n' | node bin/eyepl.js -
 ```
 
 To install the published CLI instead, use:
 
 ```sh
-npm install --global deriva
-deriva --version
+npm install --global eyepl
+eyepl --version
 ```
 
 You can also use npm's local package-bin runner from the checkout:
 
 ```sh
-npm exec --yes --package=. -- deriva --version
-npm exec --yes --package=. -- deriva examples/ancestor.pl
+npm exec --yes --package=. -- eyepl --version
+npm exec --yes --package=. -- eyepl examples/ancestor.pl
 ```
 
-To make the `deriva` command available on your `PATH` while developing this checkout, prefer npm's package link instead of a manual symlink:
+To make the `eyepl` command available on your `PATH` while developing this checkout, prefer npm's package link instead of a manual symlink:
 
 ```sh
 npm link
-deriva --version
+eyepl --version
 ```
 
 `npm install -g .` is another local-checkout option if you want npm to install the package globally instead of linking it. Avoid hand-written `/usr/local/bin` symlinks unless you really need one; npm already reads the `bin` entry in `package.json` and creates the correct executable shim.
 
-## Running the `deriva` CLI
+## Running the `eyepl` CLI
 
-The commands in this section use `deriva` for readability. In a source checkout where you have not run `npm link` or `npm install -g .`, replace `deriva` with `node bin/deriva.js`, or run the command through `npm exec --yes --package=. -- deriva`.
+The commands in this section use `eyepl` for readability. In a source checkout where you have not run `npm link` or `npm install -g .`, replace `eyepl` with `node bin/eyepl.js`, or run the command through `npm exec --yes --package=. -- eyepl`.
 
 Show the package version:
 
 ```sh
-deriva --version
-deriva -v
+eyepl --version
+eyepl -v
 ```
 
-Run a program and let Deriva print derived binary facts:
+Run a program and let Eyepl print derived binary facts:
 
 ```sh
-deriva examples/ancestor.pl
+eyepl examples/ancestor.pl
 ```
 
 Enable proof explanations when you want machine-readable provenance:
 
 ```sh
-deriva --proof examples/ancestor.pl
-deriva -p examples/ancestor.pl
+eyepl --proof examples/ancestor.pl
+eyepl -p examples/ancestor.pl
 ```
 
-Deriva-readable explanations are opt-in proof output. Each `why/2` fact contains a nested abstract proof term, and a blank line separates consecutive explanations. Using Deriva syntax for explanations keeps them in the same language as the answers themselves: they are readable by humans, parseable by Deriva, easy to test, and can be transformed or explained further like any other Deriva data. For example:
+Eyepl-readable explanations are opt-in proof output. Each `why/2` fact contains a nested abstract proof term, and a blank line separates consecutive explanations. Using Eyepl syntax for explanations keeps them in the same language as the answers themselves: they are readable by humans, parseable by Eyepl, easy to test, and can be transformed or explained further like any other Eyepl data. For example:
 
-```deriva
+```eyepl
 type(socrates, mortal).
 why(
   type(socrates, mortal),
@@ -109,23 +109,23 @@ why(
 
 ```
 
-The explanation output can itself be read as Deriva input; for example, another program can materialize `why/2` facts such as `why(type(socrates, mortal), Proof)`. `--proof` adds only these explanation facts; it does not change the answers found by the solver.
+The explanation output can itself be read as Eyepl input; for example, another program can materialize `why/2` facts such as `why(type(socrates, mortal), Proof)`. `--proof` adds only these explanation facts; it does not change the answers found by the solver.
 
 ### Explanation cookbook
 
-Deriva answers can carry their own provenance when proof output is enabled.
+Eyepl answers can carry their own provenance when proof output is enabled.
 
 Explain one derived fact:
 
 ```sh
-deriva --proof examples/socrates.pl
+eyepl --proof examples/socrates.pl
 ```
 
 The output contains the answer and a `why/2` fact. The proof term shows the source rule that produced the answer and the source fact used below it. Source references use `rule("file.pl", clause(N))` and `fact("file.pl", clause(N))`, where `N` is the 1-based clause number in that file.
 
 Inspect variable bindings with a small policy program:
 
-```deriva
+```eyepl
 score(case1, 95).
 threshold(90).
 
@@ -136,12 +136,12 @@ status(Case, accepted) :-
 ```
 
 ```sh
-deriva --proof policy.pl
+eyepl --proof policy.pl
 ```
 
 The explanation contains the instantiated answer and the variables that made the rule succeed:
 
-```deriva
+```eyepl
 status(case1, accepted).
 why(
   status(case1, accepted),
@@ -159,24 +159,24 @@ Use the `uses([...])` list to follow the proof tree. In the policy example it co
 Reuse explanations as data:
 
 ```sh
-deriva --proof examples/socrates.pl > socrates.why.pl
+eyepl --proof examples/socrates.pl > socrates.why.pl
 ```
 
-The resulting file is ordinary Deriva syntax containing both answers and `why/2` proof facts.
+The resulting file is ordinary Eyepl syntax containing both answers and `why/2` proof facts.
 
 Compose multiple files, stdin, and URLs:
 
 ```sh
-deriva facts.pl rules.pl
-printf 'works(stdin, true) :- eq(ok, ok).\n' | deriva -
-deriva https://example.test/program.pl
+eyepl facts.pl rules.pl
+printf 'works(stdin, true) :- eq(ok, ok).\n' | eyepl -
+eyepl https://example.test/program.pl
 ```
 
 ## Default output
 
-Deriva programs write relation predicates directly:
+Eyepl programs write relation predicates directly:
 
-```deriva
+```eyepl
 parent(pat, jan).
 parent(jan, emma).
 
@@ -184,9 +184,9 @@ ancestor(X, Y) :- parent(X, Y).
 ancestor(X, Z) :- parent(X, Y), ancestor(Y, Z).
 ```
 
-By default, Deriva asks for new ground consequences of selected output predicates, suppresses duplicates, excludes source facts, sorts the result, and prints Prolog facts:
+By default, Eyepl asks for new ground consequences of selected output predicates, suppresses duplicates, excludes source facts, sorts the result, and prints Prolog facts:
 
-```deriva
+```eyepl
 ancestor(jan, emma).
 ancestor(pat, emma).
 ancestor(pat, jan).
@@ -198,7 +198,7 @@ This default is intentionally output-oriented. It is not a complete bottom-up sa
 
 Large examples often have internal helper predicates. Add `materialize/2` declarations to restrict default output to selected predicates:
 
-```deriva
+```eyepl
 materialize(answer, 2).
 
 seed(case1).
@@ -208,7 +208,7 @@ answer(Case, accepted) :- helper(Case, score(95)).
 
 The default output is then:
 
-```deriva
+```eyepl
 answer(case1, accepted).
 ```
 
@@ -216,7 +216,7 @@ answer(case1, accepted).
 
 ## Writing programs
 
-A good Deriva program normally has three layers:
+A good Eyepl program normally has three layers:
 
 1. source facts;
 2. helper predicates for calculation or search;
@@ -224,7 +224,7 @@ A good Deriva program normally has three layers:
 
 Example:
 
-```deriva
+```eyepl
 score(case1, 95).
 threshold(90).
 
@@ -239,7 +239,7 @@ reason(Case, "score exceeds threshold") :- accepted(Case).
 
 When `status/2` and `reason/2` are derived, they appear in default output. If the program has many helper binary predicates, declare the intended output predicates:
 
-```deriva
+```eyepl
 materialize(status, 2).
 materialize(reason, 2).
 ```
@@ -255,13 +255,13 @@ The CLI is output-oriented and uses `materialize/2` to decide what to print. Emb
 Add `-s` or `--stats` when you want lightweight solver counters on stderr without changing stdout:
 
 ```sh
-deriva -s examples/observability-log-correlation.pl
+eyepl -s examples/observability-log-correlation.pl
 ```
 
 Add `-w` or `--warnings` when you want non-fatal portability diagnostics, such as unstratified `not/1` dependencies, printed to stderr while normal answer output still goes to stdout:
 
 ```sh
-deriva --warnings test/conformance/warnings/negation/unstratified_mutual.pl
+eyepl --warnings test/conformance/warnings/negation/unstratified_mutual.pl
 ```
 
 The playground has matching `--stats` and `--proof` checkboxes, so browser runs can show the same counters or explanations like the CLI.
@@ -269,7 +269,7 @@ The playground has matching `--stats` and `--proof` checkboxes, so browser runs 
 
 ### Builtins
 
-Deriva builtins are registered by name and arity in small modules under [`src/builtins`](../src/builtins). This keeps the runtime portable to Node.js and the browser while giving each builtin family a clear boundary. Built-ins are called as ordinary Deriva predicates. See the [Deriva language reference](language-reference.md#9-standard-built-in-predicates) for the portable profile. The bundled implementation currently registers 80 name/arity entries across 78 predicate names:
+Eyepl builtins are registered by name and arity in small modules under [`src/builtins`](../src/builtins). This keeps the runtime portable to Node.js and the browser while giving each builtin family a clear boundary. Built-ins are called as ordinary Eyepl predicates. See the [Eyepl language reference](language-reference.md#9-standard-built-in-predicates) for the portable profile. The bundled implementation currently registers 80 name/arity entries across 78 predicate names:
 
 | Family | Count | Built-ins |
 |---|---:|---|
@@ -288,9 +288,9 @@ To add a builtin, create or extend a module with `register(registry)` and call `
 
 ## Aggregation helpers
 
-Deriva includes goal-directed aggregation helpers for finite searches:
+Eyepl includes goal-directed aggregation helpers for finite searches:
 
-```deriva
+```eyepl
 countall(Goal, Count).
 sumall(Value, Goal, Sum).
 aggregate_min(Key, Template, Goal, Bestkey, Besttemplate).
@@ -301,7 +301,7 @@ Use `countall/2` for solution counts, `sumall/3` for numeric totals, and `aggreg
 
 Example:
 
-```deriva
+```eyepl
 best_cycle(Cycle, Cost) :-
   cities(Cities),
   aggregate_min([Cost, Cycle], Cycle, candidate_cycle(Cities, Cycle, Cost), [Cost, Cycle], Cycle).
@@ -309,9 +309,9 @@ best_cycle(Cycle, Cost) :-
 
 ## Context data
 
-Comma terms can be data as well as conjunctions. Deriva provides two context utilities:
+Comma terms can be data as well as conjunctions. Eyepl provides two context utilities:
 
-```deriva
+```eyepl
 holds((name(alice, "Alice"), knows(alice, bob)), name(S, O)).
 holds((ready, name(alice, "Alice"), route(alice, bob, 7)), Name, Args).
 ```
@@ -427,7 +427,7 @@ Use `holds/2` when you want to match the member term directly, for example `name
 | [`knapsack-optimization.pl`](../examples/knapsack-optimization.pl) | Optimizes a finite 0/1 knapsack pack with aggregation. | [`output/knapsack-optimization.pl`](../examples/output/knapsack-optimization.pl) |
 | [`knuth-bendix-completion.pl`](../examples/knuth-bendix-completion.pl) | Checks bounded Knuth-Bendix-style critical pairs for joinability. | [`output/knuth-bendix-completion.pl`](../examples/output/knuth-bendix-completion.pl) |
 | [`knowledge-engineering-alignment-flow.pl`](../examples/knowledge-engineering-alignment-flow.pl) | Specializes reusable alignment rules into a target-shaped flow view. | [`output/knowledge-engineering-alignment-flow.pl`](../examples/output/knowledge-engineering-alignment-flow.pl) |
-| [`language.pl`](../examples/language.pl) | Shows the modern Deriva surface syntax in one compact recursive graph example. | [`output/language.pl`](../examples/output/language.pl) |
+| [`language.pl`](../examples/language.pl) | Shows the modern Eyepl surface syntax in one compact recursive graph example. | [`output/language.pl`](../examples/output/language.pl) |
 | [`law-of-cosines.pl`](../examples/law-of-cosines.pl) | Computes a triangle side by cosine law. | [`output/law-of-cosines.pl`](../examples/output/law-of-cosines.pl) |
 | [`least-squares-regression.pl`](../examples/least-squares-regression.pl) | Fits a least-squares regression line. | [`output/least-squares-regression.pl`](../examples/output/least-squares-regression.pl) |
 | [`linear-logic-resources.pl`](../examples/linear-logic-resources.pl) | Emulates linear logic resource consumption with explicit state threading. | [`output/linear-logic-resources.pl`](../examples/output/linear-logic-resources.pl) |
@@ -503,28 +503,28 @@ Use `holds/2` when you want to match the member term directly, for example `name
 
 ## Golden outputs, tests, and conformance
 
-Golden answer outputs live in [`examples/output`](../examples/output). `npm run test:deriva` covers the deriva integration check, conformance cases, regression checks, runnable examples, and proof-output examples. A curated proof-output suite for `.pl` examples lives in [`examples/proof`](../examples/proof). Example tests pin `local_time/1` to `2026-05-30` so date-dependent examples stay deterministic. Regenerate them after an intentional output or explanation change:
+Golden answer outputs live in [`examples/output`](../examples/output). `npm run test:eyepl` covers the eyepl integration check, conformance cases, regression checks, runnable examples, and proof-output examples. A curated proof-output suite for `.pl` examples lives in [`examples/proof`](../examples/proof). Example tests pin `local_time/1` to `2026-05-30` so date-dependent examples stay deterministic. Regenerate them after an intentional output or explanation change:
 
 ```sh
 for f in examples/*.pl; do
   [ -e "$f" ] || continue
   b=$(basename "$f")
-  DERIVA_LOCAL_TIME=2026-05-30 deriva "$f" > "examples/output/$b"
+  EYEPL_LOCAL_TIME=2026-05-30 eyepl "$f" > "examples/output/$b"
 done
 
 for f in examples/proof/*.pl; do
   b=$(basename "$f")
-  DERIVA_LOCAL_TIME=2026-05-30 deriva --proof "examples/$b" > "examples/proof/$b"
+  EYEPL_LOCAL_TIME=2026-05-30 eyepl --proof "examples/$b" > "examples/proof/$b"
 done
 ```
 
-Run the full Deriva suite:
+Run the full Eyepl suite:
 
 ```sh
-npm run test:deriva
+npm run test:eyepl
 ```
 
-The Deriva corpus runner runs in this order: Conformance, Regression/API/White-box, Examples. Each section prints its own subtotal, followed by a suite-specific grand total. The suite checks the conformance cases derived from the language reference, supplemental regression/API/white-box checks, and every runnable example against its golden output.
+The Eyepl corpus runner runs in this order: Conformance, Regression/API/White-box, Examples. Each section prints its own subtotal, followed by a suite-specific grand total. The suite checks the conformance cases derived from the language reference, supplemental regression/API/white-box checks, and every runnable example against its golden output.
 
 Run only one internal suite when you are iterating:
 
@@ -542,26 +542,26 @@ node test/run-conformance-report.mjs
 
 Release preparation runs the same report and writes [`conformance-report.md`](../conformance-report.md), so each published package carries a current conformance summary.
 
-The conformance suite lives in [`test/conformance/`](../test/conformance/) as a file-based Deriva corpus. Positive cases pair `cases/<name>.pl` with exact expected stdout under `expected/<name>.pl`; negative cases pair `errors/<name>.pl` with exact expected error text under `expected-errors/<name>.txt`; warning cases pair `warnings/<name>.pl` with exact `--warnings` stdout and stderr files under `expected-warnings/`; proof cases pair `proofs/<name>.pl` with exact `--proof` output under `expected-proofs/`. Cases may be grouped in category directories such as `arithmetic/`, `strings/`, `lists/`, `terms/`, `atoms/`, `variables/`, `negation/`, and `syntax/`, so another implementation can reuse the same corpus as an executable language contract. The suite covers the standard language surface from the language reference, including reusable built-ins, standard errors, standard warnings, and the machine-readable `why/2` proof-output contract. The regression suite lives in [`test/run-regression.mjs`](../test/run-regression.mjs) and covers CLI regressions, the public JavaScript API, and white-box invariants for parser, unification, and indexing behavior.
+The conformance suite lives in [`test/conformance/`](../test/conformance/) as a file-based Eyepl corpus. Positive cases pair `cases/<name>.pl` with exact expected stdout under `expected/<name>.pl`; negative cases pair `errors/<name>.pl` with exact expected error text under `expected-errors/<name>.txt`; warning cases pair `warnings/<name>.pl` with exact `--warnings` stdout and stderr files under `expected-warnings/`; proof cases pair `proofs/<name>.pl` with exact `--proof` output under `expected-proofs/`. Cases may be grouped in category directories such as `arithmetic/`, `strings/`, `lists/`, `terms/`, `atoms/`, `variables/`, `negation/`, and `syntax/`, so another implementation can reuse the same corpus as an executable language contract. The suite covers the standard language surface from the language reference, including reusable built-ins, standard errors, standard warnings, and the machine-readable `why/2` proof-output contract. The regression suite lives in [`test/run-regression.mjs`](../test/run-regression.mjs) and covers CLI regressions, the public JavaScript API, and white-box invariants for parser, unification, and indexing behavior.
 
 ## Development and release
 
 Common commands:
 
 ```sh
-npm run test:deriva        # alias for npm test
+npm run test:eyepl        # alias for npm test
 npm test                    # full conformance, regression/API/white-box, examples, and proof examples
 node test/run-conformance-report.mjs  # conformance coverage summary by category
 node test/run-conformance.mjs
 node test/run-regression.mjs
 node test/run-examples.mjs
-deriva --help
+eyepl --help
 ```
 
 Useful profiling smoke test:
 
 ```sh
-deriva -s examples/observability-log-correlation.pl > /dev/null
+eyepl -s examples/observability-log-correlation.pl > /dev/null
 ```
 
 For a release:
@@ -575,24 +575,24 @@ The `preversion` script reruns the full test suite and refreshes [`conformance-r
 
 ## Relationship to Eyeling
 
-[Eyeling](https://github.com/eyereasoner/eyeling) and Deriva share the same goal of small, inspectable rule-based reasoning in JavaScript, but they make different language and implementation trade-offs.
+[Eyeling](https://github.com/eyereasoner/eyeling) and Eyepl share the same goal of small, inspectable rule-based reasoning in JavaScript, but they make different language and implementation trade-offs.
 
 Eyeling is the RDF/Notation3 member of the family. It reads N3-style triples, quoted formulas, forward rules written with `=>`, backward rules written with `<=`, RDF terms, RDF-JS data, and RDF-oriented streams. That makes it the better fit when data interchange with RDF/N3 tools is the main requirement.
 
-Deriva is the compact Prolog-style member of the family. It uses ordinary predicate syntax such as `parent(alice, bob).` and `ancestor(X, Z) :- parent(X, Y), ancestor(Y, Z).` The core remains close to the Prolog tradition while deliberately staying smaller and more explicit than ISO Prolog. It is a good fit when the problem is naturally relational, goal-directed, finite, and does not need RDF graph interchange.
+Eyepl is the compact Prolog-style member of the family. It uses ordinary predicate syntax such as `parent(alice, bob).` and `ancestor(X, Z) :- parent(X, Y), ancestor(Y, Z).` The core remains close to the Prolog tradition while deliberately staying smaller and more explicit than ISO Prolog. It is a good fit when the problem is naturally relational, goal-directed, finite, and does not need RDF graph interchange.
 
 A useful rule of thumb:
 
 | Use case | Prefer | Why |
 | --- | --- | --- |
 | RDF/N3 data, triples, prefixes, graph terms, RDF-JS, RDF message streams | Eyeling | The surface language and APIs are RDF/Notation3-native. |
-| Compact relational rules over ordinary terms, lists, arithmetic, and finite search | Deriva | The syntax is shorter for non-RDF relation programs and output is ordinary facts. |
+| Compact relational rules over ordinary terms, lists, arithmetic, and finite search | Eyepl | The syntax is shorter for non-RDF relation programs and output is ordinary facts. |
 | Human-auditable derivations | Either | Both can emit proof explanations when requested. |
-| Large generated Horn-clause workloads | Deriva | The engine specializes in predicate/arity indexing, scalar argument indexes, fast fact paths, and materialized output goals. |
+| Large generated Horn-clause workloads | Eyepl | The engine specializes in predicate/arity indexing, scalar argument indexes, fast fact paths, and materialized output goals. |
 
-On local smoke benchmarks, Deriva is substantially faster on large generated Horn-clause and recursion-heavy workloads. These numbers are 5-run medians with stdout redirected to `/dev/null`, using Node.js `v22.16.0`, Deriva from this checkout, and Eyeling package version `1.34.6` with its default output mode. The ratio is `Eyeling median / Deriva median`, so larger numbers mean Deriva was faster.
+On local smoke benchmarks, Eyepl is substantially faster on large generated Horn-clause and recursion-heavy workloads. These numbers are 5-run medians with stdout redirected to `/dev/null`, using Node.js `v22.16.0`, Eyepl from this checkout, and Eyeling package version `1.34.6` with its default output mode. The ratio is `Eyeling median / Eyepl median`, so larger numbers mean Eyepl was faster.
 
-| Example | Deriva median | Eyeling median | Ratio |
+| Example | Eyepl median | Eyeling median | Ratio |
 | --- | ---: | ---: | ---: |
 | `fundamental-theorem-arithmetic` | `0.16 sec` | `2.00 sec` | `12.66x` |
 | `deep-taxonomy-100000` | `1.69 sec` | `4.72 sec` | `2.79x` |
@@ -602,25 +602,25 @@ On local smoke benchmarks, Deriva is substantially faster on large generated Hor
 
 Treat these as smoke comparisons rather than a formal benchmark: hardware, Node.js version, package version, CLI startup, and output mode all matter.
 
-The projects are therefore complementary rather than replacements for each other: Eyeling optimizes for Semantic Web interoperability and N3 expressiveness; Deriva optimizes for a small standard-looking relational rule language and fast finite goal-directed execution.
+The projects are therefore complementary rather than replacements for each other: Eyeling optimizes for Semantic Web interoperability and N3 expressiveness; Eyepl optimizes for a small standard-looking relational rule language and fast finite goal-directed execution.
 
 ## Performance notes
 
 Use `-s` or `--stats` for a quick sanity check while optimizing solver changes. It prints counters such as `solve_goals_calls`, `unify_calls`, `deterministic_rule_expansions`, `candidate_lists_selected`, `clause_candidates_considered`, `clauses_tried`, `max_depth`, and `max_solver_call_depth` to stderr, leaving normal output stable for golden-file tests. The `max_solver_call_depth` counter is especially useful for browser regressions, where the VM call stack can be tighter than a command-line run. Use `-w` or `--warnings` separately when you want portability diagnostics without enabling stricter parsing.
 
-Deriva hashes predicate groups by name and arity, then indexes clauses by scalar argument values. It also builds two-argument composite indexes for scalar pairs and probes those composite indexes without per-lookup heap allocation. This helps both large generated programs with many predicates and selective queries such as:
+Eyepl hashes predicate groups by name and arity, then indexes clauses by scalar argument values. It also builds two-argument composite indexes for scalar pairs and probes those composite indexes without per-lookup heap allocation. This helps both large generated programs with many predicates and selective queries such as:
 
-```deriva
+```eyepl
 edge(g1, a, X).
 path(a, Y).
 status(Case, accepted).
 ```
 
-Ground facts use a fast path that avoids freshening and copying a rule body. Recursive-predicate detection uses an explicit work stack, which keeps large predicate chains safer in the browser. Deriva automatically tables positive recursive groups, including dependencies reached through supported meta-goals and directly materialized relations. Cyclic calls iterate to an answer fixed point before replay. Recursive components containing a negative dependency retain guarded ordinary resolution because positive fixed-point tabling is not a semantics for unstratified negation. The engine also infers common structurally decreasing input positions; calls with an unbound structural input and fully open calls retain ordinary resolution rather than trying to materialize a potentially infinite relation. Authors do not need a search-control declaration.
+Ground facts use a fast path that avoids freshening and copying a rule body. Recursive-predicate detection uses an explicit work stack, which keeps large predicate chains safer in the browser. Eyepl automatically tables positive recursive groups, including dependencies reached through supported meta-goals and directly materialized relations. Cyclic calls iterate to an answer fixed point before replay. Recursive components containing a negative dependency retain guarded ordinary resolution because positive fixed-point tabling is not a semantics for unstratified negation. The engine also infers common structurally decreasing input positions; calls with an unbound structural input and fully open calls retain ordinary resolution rather than trying to materialize a potentially infinite relation. Authors do not need a search-control declaration.
 
 Predicates can also carry advisory mode and determinism declarations for documentation and host tooling:
 
-```deriva
+```eyepl
 mode(path, 2, [in, out]).
 semidet(edge, 2).
 ```
@@ -631,4 +631,4 @@ When using `not/1` over user-defined predicates, keep the dependency graph strat
 
 ## Implementation limits
 
-Deriva is intentionally smaller than ISO Prolog. It has no operators, zero-arity compound syntax, cut, modules, dynamic database updates, DCGs, or complete ISO library. Arity-zero data is always written and read back as an atom, such as `nil`, never `nil()`. Negation is negation-as-failure through `not/1`. Search is goal-directed and expected to be finite for the selected output goals. Output explanations are non-normative proof printouts and do not change answer semantics.
+Eyepl is intentionally smaller than ISO Prolog. It has no operators, zero-arity compound syntax, cut, modules, dynamic database updates, DCGs, or complete ISO library. Arity-zero data is always written and read back as an atom, such as `nil`, never `nil()`. Negation is negation-as-failure through `not/1`. Search is goal-directed and expected to be finite for the selected output goals. Output explanations are non-normative proof printouts and do not change answer semantics.
