@@ -28,9 +28,11 @@ eyepl --version
 printf 'works(stdin, true) :- eq(ok, ok).\n' | eyepl -
 ```
 
-Eyepl has no runtime npm dependencies and no build step. From a source checkout, run the CLI directly with Node.js 18 or newer:
+Eyepl has no build step. From a source checkout, install its RDF parser
+dependencies and run the CLI directly with Node.js 18 or newer:
 
 ```bash
+npm install
 node bin/eyepl.js examples/ancestor.pl
 node bin/eyepl.js --proof examples/socrates.pl
 node bin/eyepl.js --warnings test/conformance/warnings/negation/unstratified_mutual.pl
@@ -79,11 +81,37 @@ answer(ok) :- eq(ok, ok).
 console.log(result.stdout);
 ```
 
+## RDF 1.2 files
+
+The tools convert standard RDF files to ordinary Eyepl `rdf/4` facts, run
+Eyepl rules, and serialize materialized facts as RDF 1.2 N-Quads:
+
+```bash
+node tools/rdf-to-eyepl.mjs --rules rules.pl data.ttl -o program.pl
+node bin/eyepl.js program.pl > derived.pl
+node tools/eyepl-to-rdf.mjs derived.pl -o derived.nq
+```
+
+The input format is detected from the filename. Supported inputs include RDF
+1.2 Turtle, TriG, N-Triples, N-Quads and RDF/XML, as well as JSON-LD, RDFa,
+Microdata, Notation3 and SHACL Compact Syntax. For stdin, provide the format;
+use `--base` when relative IRIs need an explicit base:
+
+```bash
+node tools/rdf-to-eyepl.mjs --format turtle --base https://example/ -
+```
+
+RDF IRIs, scoped blank nodes, literals, directional language strings, nested
+triple terms, named graphs and the default graph all have lossless Eyepl term
+encodings. See the [RDF tools documentation](tools/README.md) for the mapping
+and `--include-source` behavior.
+
 ## Documentation
 
 - [Playground](https://eyereasoner.github.io/eyepl/playground)
 - [Guide](docs/guide.md)
 - [Language reference](docs/language-reference.md)
+- [RDF tools](tools/README.md)
 - [A Compact Reasoning Workbench](docs/compact-reasoning-workbench.md)
 
 For local browser use, serve the checkout first so the playground can load ES modules and example files:

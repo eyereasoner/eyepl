@@ -13,7 +13,7 @@ const reporter = new TestReporter();
 try {
   runConformance(reporter);
   runRegression(reporter);
-  runRdfTools(reporter);
+  await runRdfTools(reporter);
   runExamples(reporter);
   reporter.totalLine();
   process.exit(0);

@@ -19,22 +19,25 @@ For the normative language definition, including lexical syntax, terms, clauses,
 
 1. [Quick start](#quick-start)
 2. [Running the `eyepl` CLI](#running-the-eyepl-cli)
-3. [Default output](#default-output)
-4. [Writing programs](#writing-programs)
-5. [Aggregation helpers](#aggregation-helpers)
-6. [Context data](#context-data)
-7. [Example catalog](#example-catalog)
-8. [Golden outputs, tests, and conformance](#golden-outputs-tests-and-conformance)
-9. [Development and release](#development-and-release)
-10. [Relationship to Eyeling](#relationship-to-eyeling)
-11. [Performance notes](#performance-notes)
-12. [Implementation limits](#implementation-limits)
+3. [RDF 1.2 interoperability](#rdf-12-interoperability)
+4. [Default output](#default-output)
+5. [Writing programs](#writing-programs)
+6. [Aggregation helpers](#aggregation-helpers)
+7. [Context data](#context-data)
+8. [Example catalog](#example-catalog)
+9. [Golden outputs, tests, and conformance](#golden-outputs-tests-and-conformance)
+10. [Development and release](#development-and-release)
+11. [Relationship to Eyeling](#relationship-to-eyeling)
+12. [Performance notes](#performance-notes)
+13. [Implementation limits](#implementation-limits)
 
 ## Quick start
 
-Eyepl has no runtime npm dependencies and no build step. From a source checkout, run the CLI entry point directly with Node.js 18 or newer:
+Eyepl has no build step. From a source checkout, install dependencies and run
+the CLI entry point directly with Node.js 18 or newer:
 
 ```sh
+npm install
 node bin/eyepl.js --version
 node bin/eyepl.js examples/ancestor.pl
 node bin/eyepl.js facts.pl rules.pl
@@ -171,6 +174,63 @@ eyepl facts.pl rules.pl
 printf 'works(stdin, true) :- eq(ok, ok).\n' | eyepl -
 eyepl https://example.test/program.pl
 ```
+
+## RDF 1.2 interoperability
+
+RDF support is an adapter around the ordinary Eyepl language; the parser and
+solver remain RDF-agnostic. A typical round trip has three stages:
+
+```sh
+node tools/rdf-to-eyepl.mjs --rules rules.pl data.trig -o program.pl
+eyepl program.pl > derived.pl
+node tools/eyepl-to-rdf.mjs derived.pl -o derived.nq
+```
+
+`rdf-to-eyepl.mjs` detects the input syntax from its extension. It accepts RDF
+1.2 Turtle (`.ttl`), TriG (`.trig`), N-Triples (`.nt`), N-Quads (`.nq`) and
+RDF/XML (`.rdf`, `.rdfxml`, `.owl`). It also accepts JSON-LD, RDFa, Microdata,
+Notation3 and SHACL Compact Syntax. Relative IRIs resolve against the input
+file URL unless `--base IRI` overrides it.
+
+When reading stdin there is no filename to inspect, so `--format` is required.
+It accepts either an extension-style name or an RDF media type:
+
+```sh
+node tools/rdf-to-eyepl.mjs --format ttl --base https://example/ - -o program.pl
+node tools/rdf-to-eyepl.mjs --format application/ld+json - -o program.pl
+```
+
+The generated program declares `materialize(rdf, 4)` and represents every quad
+as `rdf(Subject, Predicate, Object, Graph)`. The lossless term mapping is:
+
+| RDF value | Eyepl term |
+| --- | --- |
+| IRI | `iri(Value)` |
+| blank node | `bnode(Scope, Label)` |
+| typed literal | `literal(Value, datatype(IRI))` |
+| language string | `literal(Value, lang(Language))` |
+| directional language string | `literal(Value, lang(Language, ltr))` or `lang(Language, rtl)` |
+| RDF 1.2 triple term | `triple(Subject, Predicate, Object)` |
+| default graph | `default_graph` |
+
+Triple terms may be nested. Named graphs use their IRI or blank-node term in
+the fourth position. Blank-node scopes prevent labels from different input
+documents from being conflated.
+
+By default, source quads are inputs but are not copied to output: only quads
+derived by a rule are emitted. Pass `--include-source` to retain both source
+and derived quads. In that mode the generated program stores input as
+`source_rdf/4` and adds a rule that copies it into `rdf/4`.
+
+Rules use the same `rdf/4` representation. For example:
+
+```eyepl
+rdf(S, iri("https://example/ancestor"), O, G) :-
+  rdf(S, iri("https://example/parent"), O, G).
+```
+
+Output is always RDF 1.2 N-Quads. See the compact
+[RDF tools reference](../tools/README.md) for all command options.
 
 ## Default output
 
@@ -579,13 +639,14 @@ The `preversion` script reruns the full test suite and refreshes [`conformance-r
 
 Eyeling is the RDF/Notation3 member of the family. It reads N3-style triples, quoted formulas, forward rules written with `=>`, backward rules written with `<=`, RDF terms, RDF-JS data, and RDF-oriented streams. That makes it the better fit when data interchange with RDF/N3 tools is the main requirement.
 
-Eyepl is the compact Prolog-style member of the family. It uses ordinary predicate syntax such as `parent(alice, bob).` and `ancestor(X, Z) :- parent(X, Y), ancestor(Y, Z).` The core remains close to the Prolog tradition while deliberately staying smaller and more explicit than ISO Prolog. It is a good fit when the problem is naturally relational, goal-directed, finite, and does not need RDF graph interchange.
+Eyepl is the compact Prolog-style member of the family. It uses ordinary predicate syntax such as `parent(alice, bob).` and `ancestor(X, Z) :- parent(X, Y), ancestor(Y, Z).` The core remains close to the Prolog tradition while deliberately staying smaller and more explicit than ISO Prolog. Its RDF tools provide file interchange through an explicit `rdf/4` adapter, while the language itself remains relational and RDF-agnostic.
 
 A useful rule of thumb:
 
 | Use case | Prefer | Why |
 | --- | --- | --- |
-| RDF/N3 data, triples, prefixes, graph terms, RDF-JS, RDF message streams | Eyeling | The surface language and APIs are RDF/Notation3-native. |
+| RDF/N3-native rules, quoted formulas, RDF-JS, RDF message streams | Eyeling | The surface language and APIs are RDF/Notation3-native. |
+| Standard RDF files with compact relational Eyepl rules | Eyepl | The RDF tools losslessly map RDF 1.2 datasets to ordinary `rdf/4` terms. |
 | Compact relational rules over ordinary terms, lists, arithmetic, and finite search | Eyepl | The syntax is shorter for non-RDF relation programs and output is ordinary facts. |
 | Human-auditable derivations | Either | Both can emit proof explanations when requested. |
 | Large generated Horn-clause workloads | Eyepl | The engine specializes in predicate/arity indexing, scalar argument indexes, fast fact paths, and materialized output goals. |

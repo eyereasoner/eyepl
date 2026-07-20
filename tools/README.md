@@ -1,7 +1,10 @@
 # RDF round-trip tools
 
-These dependency-free tools translate N-Quads into ordinary Eyepl and
-materialized `rdf/4` facts back into N-Quads. Eyepl remains RDF-agnostic.
+These tools translate RDF files into ordinary Eyepl and materialized `rdf/4`
+facts back into RDF 1.2 N-Quads. Input formats are selected automatically from
+the file extension. Supported inputs include RDF 1.2 Turtle, TriG, N-Triples,
+N-Quads and RDF/XML, plus JSON-LD, RDFa, Microdata, Notation3 and SHACL Compact
+Syntax. Eyepl remains RDF-agnostic.
 
 ```bash
 node tools/rdf-to-eyepl.mjs --rules rules.pl data.nq -o program.pl
@@ -9,11 +12,18 @@ node bin/eyepl.js program.pl > derived.pl
 node tools/eyepl-to-rdf.mjs derived.pl -o derived.nq
 ```
 
+For standard input, specify an extension or media type with `--format`:
+
+```bash
+node tools/rdf-to-eyepl.mjs --format turtle --base https://example/ -o program.pl
+```
+
 Use `--include-source` when the result should contain input and derived quads.
 Without it, the pipeline emits only derived quads. The lossless encoding uses
-`iri/1`, scoped `bnode/2`, `literal/2`, and `default_graph`.
+`iri/1`, scoped `bnode/2`, `literal/2`, `triple/3`, and `default_graph`.
+Language annotations use `lang/1`; directional language annotations use
+`lang/2`, with `ltr` or `rtl` as the second argument.
 
-Rules currently use ordinary Eyepl `rdf/4`. An SRL front end can compile to
-that contract without changing these tools or Eyepl. The reader accepts
-N-Triples and N-Quads; richer RDF syntaxes should first be converted by a
-dedicated RDF parser.
+Triple terms may be nested. The reader accepts the RDF 1.2 `VERSION "1.2"`
+directive and directional language strings while remaining compatible with
+RDF 1.1 N-Triples and N-Quads.
