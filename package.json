@@ -52,7 +52,6 @@
     "postversion": "git push origin HEAD --follow-tags"
   },
   "dependencies": {
-    "n3": "^2.1.1",
     "rdf-parse": "^5.0.0"
   }
 }

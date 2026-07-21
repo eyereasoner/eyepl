@@ -1,17 +1,155 @@
 // Lossless RDF 1.2 <-> ordinary Eyepl term encoding.
-import { Parser } from 'n3';
 export const XSD_STRING = 'http://www.w3.org/2001/XMLSchema#string';
 export const RDF_LANG_STRING = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString';
 export const RDF_DIR_LANG_STRING = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#dirLangString';
 
 export function parseNQuads(source, { scope = 'input' } = {}) {
-  return new Parser({ format: 'application/n-quads', blankNodePrefix: '' })
-    .parse(stripVersionDirective(source))
-    .map((quad) => fromRdfJsQuad(quad, scope));
+  return new NQuadsParser(stripVersionDirective(source), scope).parse();
 }
 
 function stripVersionDirective(source) {
   return String(source ?? '').replace(/^([ \t]*)VERSION[ \t]+"1\.2"[ \t]*(?:#.*)?$/m, '$1');
+}
+
+class NQuadsParser {
+  constructor(source, scope) { this.source = source; this.scope = scope; this.offset = 0; }
+
+  parse() {
+    const quads = [];
+    this.space();
+    while (!this.done()) {
+      const subject = this.resource('subject');
+      this.requiredSpace();
+      const predicate = this.iri();
+      this.requiredSpace();
+      const object = this.term('object');
+      const hadSpace = this.space();
+      const graph = this.peek() === '.' ? { kind: 'defaultGraph' } : this.resource('graph');
+      if (graph.kind !== 'defaultGraph') this.space();
+      if (this.take() !== '.') this.fail('expected a terminating period');
+      if (!hadSpace && graph.kind !== 'defaultGraph') this.fail('expected whitespace before graph');
+      quads.push({ subject, predicate, object, graph });
+      this.space();
+    }
+    return quads;
+  }
+
+  term(position) {
+    if (this.starts('<<(')) return this.triple();
+    if (this.peek() === '<') return this.iri();
+    if (this.starts('_:')) return this.blank();
+    if (this.peek() === '"') return this.literal();
+    this.fail(`expected RDF ${position}`);
+  }
+
+  resource(position) {
+    const term = this.term(position);
+    if (!['namedNode', 'blankNode'].includes(term.kind)) this.fail(`${position} must be an IRI or blank node`);
+    return term;
+  }
+
+  triple() {
+    this.offset += 3;
+    this.space();
+    const subject = this.resource('triple subject');
+    this.requiredSpace();
+    const predicate = this.iri();
+    this.requiredSpace();
+    const object = this.term('triple object');
+    this.space();
+    if (!this.starts(')>>')) this.fail('expected )>> after triple term');
+    this.offset += 3;
+    return { kind: 'triple', subject, predicate, object };
+  }
+
+  iri() {
+    if (this.take() !== '<') this.fail('expected IRI');
+    let value = '';
+    while (!this.done() && this.peek() !== '>') {
+      const c = this.take();
+      if (c === '\\') value += this.unicodeEscape();
+      else {
+        if (/[\u0000-\u0020<>"{}|^`]/u.test(c)) this.fail('invalid character in IRI');
+        value += c;
+      }
+    }
+    if (this.take() !== '>') this.fail('unterminated IRI');
+    return { kind: 'namedNode', value };
+  }
+
+  blank() {
+    this.offset += 2;
+    const start = this.offset;
+    while (!this.done() && !/[\s<>"{}|^`\\()]/u.test(this.peek())) this.offset++;
+    while (this.offset > start && this.source[this.offset - 1] === '.') this.offset--;
+    const value = this.source.slice(start, this.offset);
+    if (!/^[\p{L}\p{N}_](?:[\p{L}\p{N}\p{M}_\-\u00b7\u203f\u2040.]*[\p{L}\p{N}\p{M}_\-\u00b7\u203f\u2040])?$/u.test(value)) this.fail('invalid blank-node label');
+    return { kind: 'blankNode', scope: this.scope, value };
+  }
+
+  literal() {
+    this.offset++;
+    let value = '';
+    while (!this.done() && this.peek() !== '"') {
+      const c = this.take();
+      if (c === '\\') value += this.stringEscape();
+      else {
+        if (c.codePointAt(0) < 0x20) this.fail('control character in literal');
+        value += c;
+      }
+    }
+    if (this.take() !== '"') this.fail('unterminated literal');
+    if (this.takeIf('@')) {
+      const language = this.match(/[A-Za-z]+(?:-[A-Za-z0-9]+)*/y, 'language tag').toLowerCase();
+      let direction = '';
+      if (this.starts('--')) {
+        this.offset += 2;
+        direction = this.match(/(?:ltr|rtl)/iy, 'base direction').toLowerCase();
+      }
+      return { kind: 'literal', value, language, direction, datatype: direction ? RDF_DIR_LANG_STRING : RDF_LANG_STRING };
+    }
+    const datatype = this.starts('^^') ? (this.offset += 2, this.iri().value) : XSD_STRING;
+    return { kind: 'literal', value, language: '', direction: '', datatype };
+  }
+
+  unicodeEscape() {
+    const marker = this.take();
+    const size = marker === 'u' ? 4 : marker === 'U' ? 8 : 0;
+    if (!size) this.fail('IRI escapes must use \\u or \\U');
+    const hexValue = this.source.slice(this.offset, this.offset + size);
+    if (!new RegExp(`^[0-9A-Fa-f]{${size}}$`).test(hexValue)) this.fail('invalid Unicode escape');
+    this.offset += size;
+    const point = Number.parseInt(hexValue, 16);
+    if (point > 0x10ffff || (point >= 0xd800 && point <= 0xdfff)) this.fail('invalid Unicode code point');
+    return String.fromCodePoint(point);
+  }
+
+  stringEscape() {
+    const c = this.take();
+    const simple = { t: '\t', b: '\b', n: '\n', r: '\r', f: '\f', '"': '"', "'": "'", '\\': '\\' };
+    if (Object.hasOwn(simple, c)) return simple[c];
+    this.offset--;
+    return this.unicodeEscape();
+  }
+
+  space() {
+    const start = this.offset;
+    for (;;) {
+      while (/\s/u.test(this.peek() ?? '')) this.offset++;
+      if (this.peek() !== '#') break;
+      while (!this.done() && this.peek() !== '\n' && this.peek() !== '\r') this.offset++;
+    }
+    return this.offset > start;
+  }
+
+  requiredSpace() { if (!this.space()) this.fail('expected whitespace'); }
+  match(pattern, label) { pattern.lastIndex = this.offset; const found = pattern.exec(this.source); if (!found) this.fail(`invalid ${label}`); this.offset = pattern.lastIndex; return found[0]; }
+  starts(value) { return this.source.startsWith(value, this.offset); }
+  takeIf(value) { if (!this.starts(value)) return false; this.offset += value.length; return true; }
+  peek() { return this.source[this.offset]; }
+  take() { return this.source[this.offset++]; }
+  done() { return this.offset >= this.source.length; }
+  fail(message) { const line = this.source.slice(0, this.offset).split(/\r\n?|\n/).length; throw new Error(`${message} on line ${line}`); }
 }
 
 export function fromRdfJsQuad(quad, scope = 'input') {
