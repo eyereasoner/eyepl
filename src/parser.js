@@ -458,6 +458,22 @@ function parseClausesFastNoSource(source) {
     return bodyGoal ? { head, body: [bodyGoal] } : null;
   };
 
+  const parseFastRange = (text, start, end) => {
+    if (start >= end || text.charCodeAt(end - 1) !== 46) return null;
+    const termEnd = end - 1;
+    const rule = text.indexOf(':-', start);
+    if (rule < 0 || rule >= termEnd) {
+      const head = parseBinaryCompoundRange(text, start, termEnd);
+      return head ? { head, body: [] } : null;
+    }
+    const nextRule = text.indexOf(':-', rule + 2);
+    if (nextRule >= 0 && nextRule < termEnd) return null;
+    const head = parseBinaryCompoundRange(text, start, rule);
+    if (!head) return null;
+    const bodyGoal = parseBinaryCompoundRange(text, rule + 2, termEnd);
+    return bodyGoal ? { head, body: [bodyGoal] } : null;
+  };
+
   const scalarOrVariable = (text) => scalarOrVariableFast(text.trim());
   const parseBinaryCompound = (text) => {
     const parsed = parseBinaryCompoundRange(text, 0, text.length);
@@ -514,20 +530,21 @@ function parseClausesFastNoSource(source) {
   while (lineStart <= source.length) {
     let lineEnd = source.indexOf('\n', lineStart);
     if (lineEnd < 0) lineEnd = source.length;
-    let line = source.slice(lineStart, lineEnd);
-    if (line.endsWith('\r')) line = line.slice(0, -1);
-    const trimmed = line.trim();
-    if (trimmed && !trimmed.startsWith('%')) {
-      if (!chunk && trimmed.endsWith('.')) {
-        const simple = parseFastLine(trimmed) ?? parseSimple(trimmed);
+    let contentStart = lineStart;
+    let contentEnd = lineEnd;
+    if (contentEnd > contentStart && source.charCodeAt(contentEnd - 1) === 13) contentEnd--;
+    [contentStart, contentEnd] = trimRange(source, contentStart, contentEnd);
+    if (contentStart < contentEnd && source.charCodeAt(contentStart) !== 37) {
+      if (!chunk && source.charCodeAt(contentEnd - 1) === 46) {
+        const simple = parseFastRange(source, contentStart, contentEnd);
         if (simple) clauses.push(simple);
         else {
-          chunk = line + '\n';
+          chunk = source.slice(lineStart, lineEnd) + '\n';
           if (!flush()) return null;
         }
       } else {
-        chunk += line + '\n';
-        if (trimmed.endsWith('.')) {
+        chunk += source.slice(lineStart, lineEnd) + '\n';
+        if (source.charCodeAt(contentEnd - 1) === 46) {
           if (!flush()) return null;
         }
       }

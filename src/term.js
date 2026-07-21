@@ -5,6 +5,7 @@ export const ATOM = 'atom';
 export const STRING = 'string';
 export const NUMBER = 'number';
 export const COMPOUND = 'compound';
+const EMPTY_ARGS = Object.freeze([]);
 
 export class Term {
   constructor(type, name, args = []) {
@@ -17,10 +18,10 @@ export class Term {
   }
 }
 
-export const variable = (name) => new Term(VAR, name);
-export const atom = (name) => new Term(ATOM, name);
-export const stringTerm = (value) => new Term(STRING, value);
-export const numberTerm = (value) => new Term(NUMBER, value);
+export const variable = (name) => new Term(VAR, name, EMPTY_ARGS);
+export const atom = (name) => new Term(ATOM, name, EMPTY_ARGS);
+export const stringTerm = (value) => new Term(STRING, value, EMPTY_ARGS);
+export const numberTerm = (value) => new Term(NUMBER, value, EMPTY_ARGS);
 export const compound = (name, args = []) => args.length === 0 ? atom(name) : new Term(COMPOUND, name, args);
 export const emptyList = () => atom('[]');
 export const cons = (head, tail) => compound('.', [head, tail]);
