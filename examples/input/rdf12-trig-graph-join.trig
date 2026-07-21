@@ -1,0 +1,9 @@
+VERSION "1.2"
+
+@prefix ex: <https://example.org/> .
+
+ex:sensorGraph ex:reportedBy ex:station7 .
+
+ex:sensorGraph {
+  ex:sensor1 ex:temperature "21.5" .
+}
