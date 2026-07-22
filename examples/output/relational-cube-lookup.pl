@@ -1,2 +1,2 @@
 lookupResult(case, passed).
-reason(case, "2000 lookups use one clause each instead of 225 single-key candidates").
+reason(case, "2000 two-key lookups over 3375 facts").
