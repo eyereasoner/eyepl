@@ -9,20 +9,13 @@
 
 Eyepl is a small reasoning language for turning facts and rules into answers and proofs.
 
-The name *Eyepl* combines *EYE* with *pl*, reflecting EYE-style reasoning
-expressed with Prolog-like syntax.
-
 Prolog-like syntax. Small core. Inspectable results.
 
-Its default execution is automatically hybrid: ordinary goals use indexed
-depth-first resolution, while recursive helper predicate groups are detected
-and tabled automatically.
+[Try the playground](https://eyereasoner.github.io/eyepl/playground) ·
+[Read *The Art of Eyepl*](https://eyereasoner.github.io/eyepl/the-art-of-eyepl) ·
+[View the npm package](https://www.npmjs.com/package/eyepl)
 
-Clause selection combines compact any-argument scalar indexes with
-demand-driven multi-argument indexes. SWI-Prolog-inspired quality checks avoid
-building indexes for small, weakly selective, or variable-heavy clause groups.
-
-## Install and run
+## Quick start
 
 Install the published CLI globally:
 
@@ -57,6 +50,22 @@ npm link
 eyepl --version
 ```
 
+## JavaScript API
+
+```js
+import { run, Program, Solver } from 'eyepl';
+
+const result = run(`
+query(answer(X0)).
+answer(ok) :- eq(ok, ok).
+`);
+console.log(result.stdout);
+```
+
+Rules headed by `false` are inference fuses. A matching fuse aborts before
+queries run; the CLI exits with code `65`, while the JavaScript API throws an
+`InferenceFuseError` carrying the same code and a matched-rule diagnostic.
+
 ## STEM showcase: evidence-backed diagnosis
 
 The spacecraft battery example combines sensor telemetry, the physical relation
@@ -73,21 +82,18 @@ The normal output reports computed metrics, a thermal-runaway precursor, and an
 evidence back to telemetry facts, arithmetic operations, threshold comparisons,
 and the independent temperature channel.
 
-## JavaScript API
+## How it works
 
-```js
-import { run, Program, Solver } from 'eyepl';
+The name *Eyepl* combines *EYE* with *pl*, reflecting EYE-style reasoning
+expressed with Prolog-like syntax.
 
-const result = run(`
-query(answer(X0)).
-answer(ok) :- eq(ok, ok).
-`);
-console.log(result.stdout);
-```
+Its default execution is automatically hybrid: ordinary goals use indexed
+depth-first resolution, while recursive helper predicate groups are detected
+and tabled automatically.
 
-Rules headed by `false` are inference fuses. A matching fuse aborts before
-queries run; the CLI exits with code `65`, while the JavaScript API throws an
-`InferenceFuseError` carrying the same code and a matched-rule diagnostic.
+Clause selection combines compact any-argument scalar indexes with
+demand-driven multi-argument indexes. SWI-Prolog-inspired quality checks avoid
+building indexes for small, weakly selective, or variable-heavy clause groups.
 
 ## RDF 1.2 files
 
@@ -114,11 +120,10 @@ triple terms, named graphs and the default graph all have lossless Eyepl term
 encodings. See the [RDF tools documentation](tools/README.md) for the mapping
 and `--include-source` behavior.
 
-## Documentation
+## More documentation
 
 - [Playground](https://eyereasoner.github.io/eyepl/playground)
-- [The Art of Eyepl](https://eyereasoner.github.io/eyepl/the-art-of-eyepl)
-- [RDF tools](tools/README.md)
+- [RDF tools and term mapping](tools/README.md)
 
 For local browser use, serve the checkout first so the playground can load ES modules and example files:
 
