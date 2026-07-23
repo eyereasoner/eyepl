@@ -11,9 +11,8 @@ Eyepl is a small reasoning language for turning facts and rules into answers and
 
 Prolog-like syntax. Small core. Inspectable results.
 
-[Try the playground](https://eyereasoner.github.io/eyepl/playground) ·
-[Read *The Art of Eyepl*](https://eyereasoner.github.io/eyepl/the-art-of-eyepl) ·
-[View the npm package](https://www.npmjs.com/package/eyepl)
+[Playground](https://eyereasoner.github.io/eyepl/playground) ·
+[*The Art of Eyepl*](https://eyereasoner.github.io/eyepl/the-art-of-eyepl)
 
 ## Quick start
 
@@ -49,6 +48,9 @@ To install the checkout's `eyepl` command on your `PATH`, use npm's package link
 npm link
 eyepl --version
 ```
+
+For local browser use, run `python3 -m http.server` from the checkout and open
+`http://localhost:8000/playground.html`.
 
 ## JavaScript API
 
@@ -117,20 +119,9 @@ node tools/rdf-to-eyepl.mjs --format turtle --base https://example/ -
 
 RDF IRIs, scoped blank nodes, literals, directional language strings, nested
 triple terms, named graphs and the default graph all have lossless Eyepl term
-encodings. See the [RDF tools documentation](tools/README.md) for the mapping
-and `--include-source` behavior.
-
-## More documentation
-
-- [Playground](https://eyereasoner.github.io/eyepl/playground)
-- [RDF tools and term mapping](tools/README.md)
-
-For local browser use, serve the checkout first so the playground can load ES modules and example files:
-
-```bash
-python3 -m http.server
-# then open http://localhost:8000/playground.html
-```
+encodings. The
+[RDF 1.2 chapter](https://eyereasoner.github.io/eyepl/the-art-of-eyepl#15-rdf-12-as-relational-data)
+in *The Art of Eyepl* covers the mapping and `--include-source` behavior.
 
 ## Tests
 
