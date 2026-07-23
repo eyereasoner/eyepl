@@ -1,5 +1,9 @@
 # The Art of Eyepl
 
+<p align="left">
+  <img src="eyepl-logo.png" alt="Eyepl logo" width="100">
+</p>
+
 ## Relations, search, and explanations in a small logic language
 
 Eyepl turns facts and rules into answers and inspectable proofs. This book is an
@@ -234,6 +238,155 @@ high_score(Case) :-
 status(Case, accepted) :- high_score(Case).
 reason(Case, "score meets threshold") :- high_score(Case).
 ```
+
+### The Herbrand world
+
+The declarative reading needs a precise answer to a deceptively simple
+question: what can a term denote? Eyepl uses **Herbrand semantics**. Its
+universe contains exactly the ground terms that can be constructed from the
+program's atom constants, strings, numbers, list constructors, and compound
+functors. There are no unnamed elements hiding behind the notation. A ground
+term denotes itself.
+
+This separates the **Herbrand universe**, whose members are terms such as
+`pat`, `3`, `[red, blue]`, and `ticket(alice)`, from the **Herbrand base**,
+whose members are ground atomic formulas such as `person(pat)` and
+`owns(alice, ticket(17))`. A term is not true or false merely by existing:
+`pat` is a possible argument, whereas `person(pat)` is a proposition that an
+interpretation may make true.
+
+A **Herbrand interpretation** is a set of ground atomic formulas regarded as
+true. A source fact contributes one such formula:
+
+```eyepl
+parent(pat, jan).
+```
+
+A rule stands for all of its ground instances. Thus:
+
+```eyepl
+ancestor(X, Z) :- parent(X, Y), ancestor(Y, Z).
+```
+
+says that for every substitution of `X`, `Y`, and `Z` by Herbrand terms, truth
+of both body formulas entails truth of the head formula. Variables in rules
+are implicitly universally quantified.
+
+The declarative meaning of a pure Eyepl program is its **least Herbrand
+model**: the smallest interpretation containing every fact and closed under
+every rule. One mathematical way to obtain it is the immediate-consequence
+operation. Begin with the facts; add each ground rule head whose ground body is
+already true; repeat until reaching the least fixed point. This construction
+defines meaning. It does not prescribe that the implementation enumerate the
+model from the bottom up.
+
+### Why terms denote themselves
+
+Herbrand semantics is a particular form of ordinary model theory, chosen
+because logic programs inspect and construct symbolic terms. Consider:
+
+```eyepl
+different(alice, bob) :- neq(alice, bob).
+different(ticket(alice), ticket(bob)) :-
+  neq(ticket(alice), ticket(bob)).
+```
+
+In an unrestricted first-order interpretation, `alice` and `bob` could denote
+the same object unless a unique-name axiom forbids it. Even if they denote
+different objects, the interpretation of `ticket` need not be injective.
+Additional axioms would be required to show that `ticket(alice)` and
+`ticket(bob)` differ.
+
+In the Herbrand universe those terms differ by construction. Different atom
+constants are different terms; compound terms are free constructors and are
+identical only when functor, arity, and corresponding arguments are identical.
+Lists follow the same rule through `[]` and the internal `./2` constructor.
+Unification, read-back, witness construction, and proof explanations therefore
+share one predictable notion of identity.
+
+This is a property of the representation, not a claim that two names can never
+refer to one real-world entity. If `robert` and `bob` name the same person, say
+so with `same_as(robert, bob)` or normalize them to one canonical term. The
+Herbrand layer keeps names unambiguous; domain rules express equivalence.
+
+The runnable
+[`examples/herbrand-semantics.pl`](examples/herbrand-semantics.pl) example and
+its normal and proof outputs make this distinction concrete.
+
+### Quantification and visible witnesses
+
+Variables range over Herbrand terms, not external records, pointers, or
+host-language objects. Variables in a selected goal are existential in the
+logic-programming sense: Eyepl searches for substitutions that make the goal
+follow from the program.
+
+Eyepl has no blank nodes or existential variables in rule heads. When a rule
+needs to name a consequent object, construct an explicit witness:
+
+```eyepl
+has_parent(Child, parent_of(Child)) :-
+  person(Child).
+
+registration(Student, Course, registration_of(Student, Course)) :-
+  takes(Student, Course).
+```
+
+The same inputs construct the same witness term; different inputs construct
+different terms. The witness is printable, queryable, and visible in a proof,
+rather than being an anonymous object created behind the program's back.
+
+### Equality, unification, and the occurs check
+
+Equality in the pure Herbrand reading is syntactic identity after substitution.
+Operationally, unification discovers a substitution that makes terms
+identical. Eyepl does not perform an occurs check. Cyclic terms therefore lie
+outside the portable Herbrand reading even if an internal binding can
+temporarily be recursive. Portable programs should not depend on calls such as:
+
+```eyepl
+eq(X, wrapper(X)).
+```
+
+### Meaning is not the search strategy
+
+Eyepl's evaluator is goal-directed. It resolves selected goals against facts,
+rules, and built-ins using left-to-right goal order, clause selection,
+indexing, tabling, and deterministic host operations. For the pure Horn-clause
+fragment, the answers it finds are intended to belong to the least Herbrand
+model. The evaluator is not, however, a complete bottom-up enumerator.
+Infinite generation or nonterminating recursion can prevent it from reaching a
+true answer.
+
+Built-ins extend the pure core. Relational built-ins such as `eq/2`,
+`append/3`, and `member/2` are readily understood over Herbrand terms.
+Arithmetic, date handling, regular expressions, aggregation, `once/1`, and
+negation have additional operational definitions. They still consume and
+produce Eyepl terms: `add(2, 3, X)` binds `X` to the Herbrand number term `5`,
+not to an invisible host value.
+
+`not(Goal)` succeeds when the current finite search finds no solution for
+`Goal`; it does not insert a negative formula into the Herbrand model.
+User-defined negative dependencies should be stratified. In a stratified
+program, positive dependencies may remain in the same or a lower layer, while
+every negative dependency points strictly downward:
+
+```eyepl
+closed(X) :- blocked(X).
+open(X) :- candidate(X), not(closed(X)).
+```
+
+A cycle containing a negative edge is not stratified:
+
+```eyepl
+p(X) :- q(X).
+q(X) :- not(p(X)).
+```
+
+The CLI reports such portability problems with `--warnings`. JavaScript
+embedders can inspect `stratifiedNegation`, `negationStratificationErrors`,
+`negationDependencies`, and per-group `negationStratum`; request eager analysis
+with `analyzeNegation`, reject it with `strictNegation`, or call
+`program.assertStratifiedNegation()`.
 
 ## 4. Recursion: describing reachability
 
@@ -554,6 +707,19 @@ Proof output is valid Eyepl input:
 ```sh
 eyepl --proof examples/socrates.pl > socrates.why.pl
 ```
+
+A normal answer is one resolved ground term followed by a period. Strings,
+quoted atoms, lists, and compounds are rendered in supported source syntax so
+the output can be read back. Enabling `--proof`, `--warnings`, or `--stats`
+must not change which answers are found.
+
+The second argument of `why/2` is an abstract proof term of the general shape
+`proof(goal(G), by(Method), bindings(Bindings), uses(Proofs))`. User clauses
+are identified as `fact(Filename, clause(N))` or
+`rule(Filename, clause(N))`, with one-based source clause numbers. Built-ins
+are identified as `builtin(Name, Arity)`. Explanation data is outside the
+logical semantics of the input program: it describes the derivation but does
+not participate in finding it.
 
 A second program can query `why/2`. Read a proof as an argument. If it contains
 irrelevant detours, improve the helpers. If a key premise is hidden inside an
@@ -1167,17 +1333,33 @@ Graphic atoms may contain `#$&*+-/<=>@^~\`. Colon names and unquoted
 angle-bracket IRIs are not syntax; quote names containing such punctuation.
 
 ```text
-program      ::= { clause }
-clause       ::= head "." | head ":-" goals "."
-goals        ::= term { "," term }
-term         ::= variable | atom | string | number
-               | atom "(" term { "," term } ")"
-               | "[" [ term { "," term } [ "|" term ] ] "]"
-               | "(" term { "," term } ")"
+program             ::= { clause }
+clause              ::= head "."
+                      | head ":-" goal-list "."
+head                ::= term
+goal-list           ::= term { "," term }
+term                ::= variable | atom-constant | string | number
+                      | compound | list | parenthesized-term
+compound            ::= atom-constant "(" term { "," term } ")"
+list                ::= "[" "]"
+                      | "[" term { "," term } [ "|" term ] "]"
+parenthesized-term  ::= "(" term [ "," term { "," term } ] ")"
+variable            ::= "_"
+                      | variable-start { name-continue }
+atom-constant       ::= plain-atom | quoted-atom | graphic-atom
+plain-atom          ::= lowercase-letter { name-continue }
+number              ::= [ "-" ] digits [ "." digits ] [ exponent ]
+exponent            ::= ( "e" | "E" ) [ "+" | "-" ] digits
+variable-start      ::= uppercase-letter | "_"
+name-continue       ::= uppercase-letter | lowercase-letter | digit | "_"
 ```
 
 Zero-arity compounds such as `ready()` are unsupported; use `ready`. Every
-clause ends in a period. There are no user-defined operators.
+clause ends in a period. There are no user-defined operators and no variables
+in functor or predicate position. Parentheses around one term denote that term;
+parentheses around two or more comma-separated terms construct a
+right-associated `','/2` term. In goal position it is conjunction; in data
+position it remains inspectable data.
 
 The pure definite-clause fragment has a Herbrand reading: ground terms denote
 themselves, predicates denote sets of ground atomic formulas, variables have
@@ -1212,26 +1394,238 @@ time. Source facts are not echoed as new conclusions, and duplicate answers
 are suppressed. Answers are not asserted back into the running program.
 Supported output syntax is designed to be readable as Eyepl input.
 
+#### Automatic hybrid reasoning
+
+The program loader detects predicate-dependency cycles, including dependencies
+inside conjunction, `not/1`, `once/1`, `forall/2`, and aggregate goals.
+Positive recursive components—including directly queried recursive
+relations—are tabled to an answer fixed point before answers are replayed.
+Components with a negative dependency retain guarded ordinary resolution,
+because positive least-fixed-point tabling does not define unstratified
+negation. Nonrecursive groups use indexed, depth-first resolution.
+
+For calls with ground structural input, tabled answers can be reused within a
+solver run. The engine infers common structurally decreasing inputs from
+recursive heads. Fully open calls and calls whose inferred structural input is
+not ground may remain under ordinary resolution rather than forcing a possibly
+infinite relation into a table. This changes control, not declarative meaning.
+
+#### Query execution
+
+The argument of `query/1` must be callable and may contain constants or
+variables. A program without queries prints no normal answers. The host:
+
+1. parses all inputs into one program;
+2. collects source facts, queries, and inference fuses;
+3. checks every fuse;
+4. solves each declared query;
+5. retains only ground answers;
+6. removes answers identical to source facts and suppresses duplicates;
+7. prints each answer and, only when requested, its `why/2` explanation.
+
+`query/1` affects host execution rather than the program's logical meaning.
+One query's answers are not asserted for later queries, although internal
+tables may be reused during the solver run.
+
+#### Modes and determinism
+
+For `mode(Name, Arity, Modes)`, `Name` is an atom constant, `Arity` is a
+nonnegative integer, and `Modes` is a proper list of the same length. Portable
+mode values are `in` (supplied by the caller), `out` (produced by the
+predicate), and `any` (no commitment).
+
+`det(Name, Arity)` documents exactly one intended answer in the documented
+modes. `semidet(Name, Arity)` documents zero or one. Eyepl does not enforce
+these promises during search; hosts may use them for documentation, linting,
+editor support, or indexing advice. Since all three declarations are also
+ordinary facts, a program may query them.
+
 # Appendix B. Built-in predicates
 
 The implementation registers 80 name/arity entries across 78 names. The
 conformance corpus under `test/conformance/cases/` is the precise executable
 contract.
 
-| Family | Built-ins |
-| --- | --- |
-| Core and dates | `eq/2`, `neq/2`, `local_time/1`, `difference/3` |
-| Unary arithmetic | `neg/2`, `abs/2`, `sin/2`, `cos/2`, `tan/2`, `asin/2`, `acos/2`, `sqrt/2`, `floor/2`, `ceiling/2`, `trunc/2`, `rounded/2`, `exp/2`, `log/2` |
-| Binary arithmetic | `add/3`, `sub/3`, `mul/3`, `div/3`, `mod/3`, `min/3`, `max/3`, `pow/3`, `atan2/3` |
-| Compare/generate | `lt/2`, `gt/2`, `le/2`, `ge/2`, `between/3`, `smallest_divisor_from/3` |
-| Strings | `str_concat/3`, `contains/2`, `matches/2`, `matches/3`, `not_matches/2`, `split/3`, `join/3`, `substring/4`, `replace/4`, `lowercase/2`, `uppercase/2`, `trim/2`, `number_string/2`, `atom_string/2`, `term_string/2` |
-| Lists | `append/3`, `nth0/3`, `set_nth0/4`, `head/2`, `rest/2`, `last/2`, `take/3`, `drop/3`, `slice/4`, `member/2`, `select/3`, `not_member/2`, `reverse/2`, `length/2`, `sum_list/2`, `min_list/2`, `max_list/2`, `list_to_set/2`, `sort/2` |
-| Aggregation | `findall/3`, `countall/2`, `sumall/3`, `aggregate_min/5`, `aggregate_max/5` |
-| Control | `not/1`, `once/1`, `forall/2` |
-| Context/terms | `holds/2`, `holds/3`, `functor/3`, `arg/3`, `compound_name_arguments/3` |
+A built-in looks like any other atomic formula, but its relation is supplied by
+the implementation instead of source clauses. Many are mode-sensitive: their
+input arguments must be sufficiently bound before they can run. If a relation
+is conceptually sound but mysteriously fails, check the binding state at the
+built-in call before checking the arithmetic or text operation itself.
 
-`nth0/3` uses zero-based indexes; `arg/3` uses one-based indexes. `sort/2`
-deduplicates. Invalid numeric domains fail. Aggregation requires finite search.
+## B.1 Equality and unification
+
+| Built-in | Meaning |
+| --- | --- |
+| `eq(A, B)` | Succeeds when `A` and `B` unify, retaining the resulting bindings. |
+| `neq(A, B)` | Succeeds when `A` and `B` do not unify. |
+
+`eq/2` is the direct operational form of unification. `neq/2` is a test, not a
+constraint store: call it only when its arguments have enough structure for
+the intended decision.
+
+## B.2 Arithmetic
+
+| Built-in | Meaning |
+| --- | --- |
+| `neg(A, B)` | `B` is the numeric negation of `A`. |
+| `abs(A, B)` | `B` is the absolute value of `A`. |
+| `sin(A, B)`, `cos(A, B)`, `tan(A, B)` | Trigonometric floating-point functions. |
+| `asin(A, B)`, `acos(A, B)` | Inverse trigonometric floating-point functions. |
+| `atan2(Y, X, Angle)` | Two-argument inverse tangent. |
+| `sqrt(A, B)` | `B` is the square root of `A`; fails for negative input. |
+| `floor(A, B)` | `B` is `A` rounded toward negative infinity. |
+| `ceiling(A, B)` | `B` is `A` rounded toward positive infinity. |
+| `trunc(A, B)` | `B` is `A` rounded toward zero. |
+| `rounded(A, B)` | `B` is `A` rounded to the nearest integer. |
+| `exp(A, B)` | `B` is the natural exponential of `A`. |
+| `log(A, B)` | `B` is the natural logarithm of `A`; fails when `A` is not positive. |
+| `add(A, B, C)` | `C = A + B`. |
+| `sub(A, B, C)` | `C = A - B`. |
+| `mul(A, B, C)` | `C = A * B`. |
+| `div(A, B, C)` | `C = A / B`; integer inputs use integer division and division by zero fails. |
+| `mod(A, B, C)` | `C` is the integer remainder of `A` divided by `B`. |
+| `pow(A, B, C)` | `C = A^B`. |
+| `min(A, B, C)`, `max(A, B, C)` | `C` is the numeric minimum or maximum. |
+
+Integer arithmetic uses arbitrary-precision decimal representations where
+possible. Floating operations follow the host's IEEE-754 double-precision
+behavior. In particular, `sqrt/2` rejects negative input and `log/2` rejects
+nonpositive input. Numeric domain errors fail rather than introducing an Eyepl
+exception term.
+
+## B.3 Comparison, dates, and generators
+
+| Built-in | Meaning |
+| --- | --- |
+| `lt(A, B)` | `A < B`. |
+| `gt(A, B)` | `A > B`. |
+| `le(A, B)` | `A =< B`. |
+| `ge(A, B)` | `A >= B`. |
+| `local_time(T)` | Binds `T` to the local date string. |
+| `difference(A, B, D)` | Computes an ISO-like date or duration difference. |
+| `between(Low, High, X)` | Enumerates inclusive integers or checks a bound `X`. |
+| `smallest_divisor_from(N, Start, D)` | Finds a divisor of `N` beginning at `Start`. |
+
+Comparisons interpret numeric-looking scalar terms numerically and compare
+other scalar terms lexically. For repeatable tests,
+`EYEPL_LOCAL_TIME=YYYY-MM-DD` overrides the date returned by `local_time/1`.
+Generators must have finite bounds in productive calls.
+
+## B.4 Strings and atom constants
+
+| Built-in | Meaning |
+| --- | --- |
+| `str_concat(A, B, C)` | Concatenates textual values. |
+| `contains(Text, Needle)` | Succeeds when `Text` contains `Needle`. |
+| `matches(Text, Pattern)` | Matches a simple implementation regular-expression/search pattern. |
+| `matches(Text, Pattern, Context)` | Applies a JavaScript regular expression with named captures and returns a comma context of unary capture terms. |
+| `not_matches(Text, Pattern)` | Succeeds when `matches/2` does not. |
+| `split(Text, Separator, Parts)` | Splits text into a proper list of strings. |
+| `join(Parts, Separator, Text)` | Joins a proper list of scalar terms into a string. |
+| `substring(Text, Start, Length, Out)` | Extracts a zero-based substring. |
+| `replace(Text, Search, Replacement, Out)` | Replaces every nonempty literal occurrence of `Search`. |
+| `lowercase(Text, Out)` | Converts text to lowercase. |
+| `uppercase(Text, Out)` | Converts text to uppercase. |
+| `trim(Text, Out)` | Removes leading and trailing whitespace. |
+| `number_string(Number, String)` | Renders a number or parses a numeric string. |
+| `atom_string(Atom, String)` | Converts between an atom constant and a string. |
+| `term_string(Term, String)` | Renders a ground term as Eyepl source text. |
+
+Text operations are valuable at an input boundary, but structured terms make a
+better internal model. In `matches/3`, a pattern such as
+`"(?<kind>[a-z]+)-(?<id>[0-9]+)"` can produce a context such as
+`(kind("sensor"), id("17"))`, which ordinary `holds/2` or `holds/3` calls can
+inspect.
+
+## B.5 Lists
+
+| Built-in | Meaning |
+| --- | --- |
+| `append(A, B, C)` | Appends lists or enumerates splits of a bound proper list. |
+| `nth0(Index, List, Value)` | Performs zero-based lookup and can enumerate indexes. |
+| `set_nth0(Index, List, Value, Out)` | Functionally replaces one zero-based position. |
+| `head(List, Head)` | Returns the head of a nonempty list. |
+| `rest(List, Tail)` | Returns the tail of a nonempty list. |
+| `last(List, Last)` | Returns the final item of a nonempty proper list. |
+| `take(N, List, Prefix)` | Takes the first `N` items of a proper list. |
+| `drop(N, List, Suffix)` | Drops the first `N` items of a proper list. |
+| `slice(Start, Length, List, Slice)` | Extracts a zero-based proper-list slice. |
+| `member(X, List)` | Enumerates or checks members. |
+| `select(X, List, Rest)` | Selects one occurrence and returns the remaining list. |
+| `not_member(X, List)` | Succeeds when `X` is absent. |
+| `reverse(A, B)` | Reverses a proper list. |
+| `length(List, N)` | Returns a proper list's length. |
+| `sum_list(List, Sum)` | Sums numeric items; `[]` produces `0`. |
+| `min_list(List, Min)`, `max_list(List, Max)` | Return the minimum or maximum under standard term ordering. |
+| `list_to_set(List, Set)` | Removes duplicates while preserving first-occurrence order. |
+| `sort(Input, Output)` | Sorts and deduplicates a proper list. |
+
+The word “proper” matters: `[a | Tail]` is a valid term, but operations that
+must find the end of a list fail unless the tail eventually reaches `[]`.
+`nth0/3` is zero-based, unlike the one-based `arg/3`.
+
+## B.6 Aggregation and ordering
+
+| Built-in | Meaning |
+| --- | --- |
+| `findall(Template, Goal, Bag)` | Collects a resolved template for every solution of `Goal`; no solutions produce `[]`. |
+| `countall(Goal, Count)` | Counts solutions; no solutions produce `0`. |
+| `sumall(Template, Goal, Sum)` | Sums numeric template values; no solutions produce `0`. |
+| `aggregate_min(Key, Template, Goal, BestKey, BestTemplate)` | Returns the solution with the smallest resolved key; fails when there is no solution. |
+| `aggregate_max(Key, Template, Goal, BestKey, BestTemplate)` | Returns the solution with the largest resolved key; fails when there is no solution. |
+
+An aggregate evaluates a nested solution space. That space must be finite.
+Structured keys give deterministic lexicographic tie-breaking; for example
+`[Cost, Route]` orders equal-cost results by `Route`.
+
+## B.7 Context and term inspection
+
+| Built-in | Meaning |
+| --- | --- |
+| `holds(Context, Term)` | Enumerates member terms of a comma context. |
+| `holds(Context, Name, Args)` | Exposes every context member as an atom name and proper argument list, for any arity. |
+| `functor(Term, Name, Arity)` | Decomposes a non-variable term into name and arity. |
+| `arg(Index, Term, Arg)` | Extracts a compound term's one-based argument. |
+| `compound_name_arguments(Term, Name, Args)` | Decomposes a compound, treats an atom as zero-argument data, or constructs a term from an atom name and proper argument list. |
+
+```eyepl
+holds((ready, name(alice, "Alice"), route(alice, bob, 7)), Name, Args).
+functor(route(alice, bob, 7), route, 3).
+arg(2, route(alice, bob, 7), bob).
+compound_name_arguments(Term, route, [alice, bob, 7]).
+compound_name_arguments(nil, nil, []).
+```
+
+`holds/3` is the schema-oriented form: the one relation can inspect
+`heartbeat/0`, `source/1`, `temperature/2`, and `signature/4` without assuming
+one arity. A context remains data; inspecting `temperature(sensor17, 38)` in a
+context does not assert it as a global `temperature/2` fact.
+
+## B.8 Search control
+
+| Built-in | Meaning |
+| --- | --- |
+| `not(Goal)` | Negation as failure; succeeds when the nested goal has no solution. |
+| `once(Goal)` | Retains at most the first solution. |
+| `forall(Generator, Test)` | Succeeds when every generated solution passes `Test`, including vacuously when there are none. |
+
+These predicates deliberately expose operational control. Their nested goals
+must terminate, and order is observable for `once/1`. Portable user-defined
+negation should be sufficiently ground, finite, and stratified.
+
+## B.9 Implementation-specific built-ins
+
+A host may add predicates beyond this standard catalog—for example a
+finite-domain accelerator or an application integration. Such a predicate is
+not required for conformance, and a portable program should not depend on it
+without naming its target environment.
+
+An extension should still behave like an Eyepl relation: use ordinary
+atomic-formula syntax, accept and return Herbrand terms, document its intended
+modes, and succeed or fail without changing the meaning of facts, unification,
+or standard built-ins. Proof-capable hosts should report a successful
+extension at least as an opaque built-in step, rather than claiming that no
+clause supported it.
 
 # Appendix C. Command-line reference
 
