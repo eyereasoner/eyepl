@@ -258,7 +258,10 @@ eligible(Person) :-
 
 Read it declaratively: a person is eligible if the person has an age of at
 least 18 and is registered. Read it operationally: to solve the head, solve the
-body goals from left to right, carrying bindings into later goals.
+body goals in their written dependency order, carrying bindings into later
+goals. Eyepl normally selects from left to right. As a safe optimization, it
+may run a ready deterministic built-in filter early; such a filter cannot add
+alternative answers and already has the inputs its registered mode requires.
 
 Both readings matter. The declarative reading checks the model. The operational
 reading helps make search finite and selective. Put a generator before a
@@ -423,12 +426,13 @@ eq(X, wrapper(X)).
 ### Meaning is not the search strategy
 
 Eyepl's evaluator is goal-directed. It resolves selected goals against facts,
-rules, and built-ins using left-to-right goal order, clause selection,
-indexing, tabling, and deterministic host operations. For the pure Horn-clause
-fragment, the answers it finds are intended to belong to the least Herbrand
-model. The evaluator is not, however, a complete bottom-up enumerator.
-Infinite generation or nonterminating recursion can prevent it from reaching a
-true answer.
+rules, and built-ins using ordered conjunction, clause selection, indexing,
+tabling, and deterministic host operations. Written order defines the normal
+dataflow; a mode-ready deterministic built-in may be selected early as a pure
+filter. For the pure Horn-clause fragment, the answers it finds are intended to
+belong to the least Herbrand model. The evaluator is not, however, a complete
+bottom-up enumerator. Infinite generation or nonterminating recursion can
+prevent it from reaching a true answer.
 
 Built-ins extend the pure core. Relational built-ins such as `eq/2`,
 `append/3`, and `member/2` are readily understood over Herbrand terms.
@@ -876,6 +880,21 @@ iterate toward a fixed point. Fully open or structurally unbounded calls may
 retain ordinary resolution. Recursive components with negative dependencies
 are not positive fixed points.
 
+### How clause indexing stays semantic
+
+Every predicate group keeps compact indexes for scalar values in each argument
+position. A clause whose indexed head argument is a variable or structured term
+stays in a fallback set, and the selected candidates are merged back into
+source order before unification. An index narrows where to look; it never
+decides whether a clause matches.
+
+For groups of at least ten clauses, a call with several bound scalar arguments
+may cause a wider combined index to be built on demand. The admission policy
+rejects indexes with too many variable fallbacks or too little expected
+speedup, and requires a combined index to improve substantially over the best
+single-argument index. These choices are performance details: removing every
+index should change running time, not answers or clause order.
+
 Authors choose query modes, finite domains, visited-state representations,
 negation strata, and witness size. They normally do not choose the engine's
 search strategy.
@@ -885,6 +904,12 @@ Inspect counters without changing answer output:
 ```sh
 eyepl --stats examples/observability-log-correlation.pl
 ```
+
+The reported counters include completed goal lists, calls to the goal solver
+and single-goal solver, unification attempts, maximum depth and goal-list size,
+deterministic built-in successes and failures, and table fixed-point rounds.
+They describe work performed, not logical truth. Compare counters only across
+equivalent queries and the same implementation version.
 
 Common sources of nontermination are recursive calls made before constraints,
 ever-growing terms, infinite open mathematical queries, negative cycles, and
@@ -992,7 +1017,84 @@ query(answer(X)).
 answer(ok) :- eq(ok, ok).
 `);
 console.log(result.stdout);
+console.log(result.stats);
 ```
+
+`run/2` accepts source text or an already parsed `Program`. Its options include
+`proof` (with `why` and `explain` as aliases), `maxDepth`, `solutionLimit`, a
+custom `registry`, and `strictNegation` or `analyzeNegation`. It returns
+`stdout` and the solver's numeric `stats`; it does not write to the process
+streams.
+
+For applications that inspect or prepare a theory before running it, use
+`Program` directly:
+
+```js
+const source = `
+query(path(a, X)).
+edge(a, b).
+edge(b, c).
+path(X, Y) :- edge(X, Y).
+path(X, Z) :- edge(X, Y), path(Y, Z).
+`;
+
+const program = Program.parse(source, { analyzeNegation: true });
+const path = program.findGroup('path', 2);
+
+console.log(program.queries);
+console.log(program.stratifiedNegation);
+console.log(path?.recursive, path?.tabled, path?.tableInputPositions);
+
+const solver = new Solver(program, {
+  maxDepth: 50_000,
+  solutionLimit: 100_000
+});
+```
+
+The limits are safety ceilings, not logical declarations. Reaching one may
+truncate search; it does not prove that no further answer exists.
+
+### Extending the built-in registry
+
+An embedder can start from the standard registry and add a host relation. A
+handler is a generator over environments. It should clone before binding and
+yield only environments in which its result unifies:
+
+```js
+import {
+  atom,
+  createDefaultRegistry,
+  run,
+  unify
+} from 'eyepl';
+
+const registry = createDefaultRegistry();
+
+registry.add(
+  'host_status',
+  2,
+  function* ({ goal, env }) {
+    const next = env.clone();
+    if (
+      unify(goal.args[0], atom('service'), next) &&
+      unify(goal.args[1], atom('ready'), next)
+    ) {
+      yield next;
+    }
+  },
+  { deterministic: true }
+);
+
+const result = run(`
+query(answer(X)).
+answer(X) :- host_status(service, X).
+`, { registry });
+```
+
+Only mark a built-in deterministic when it can produce at most one environment
+for a call. A mode-sensitive extension can additionally provide `ready`,
+`fallbackWhenNotReady`, and `shouldUse` metadata. This metadata affects
+dispatch and safe early filtering, so it belongs to the extension's contract.
 
 Fired fuses throw `InferenceFuseError` with code
 `INFERENCE_FUSE_EXIT_CODE`. Programs expose stratification diagnostics through
@@ -1477,7 +1579,9 @@ message("café").
 
 Inside a quoted atom, a single quote is doubled: `'don''t'`. Strings support
 the common escapes `\n`, `\t`, `\"`, and `\\`. Whitespace is insignificant
-between tokens, and a `%` comment continues to the end of its line.
+between tokens, and a `%` comment continues to the end of its line. Doubling
+the active delimiter is also accepted inside either quoted form, so `""`
+inside a string denotes one literal double quote.
 
 Graphic atoms may contain `#$&*+-/<=>@^~\`. Colon names and unquoted
 angle-bracket IRIs are not syntax; quote names containing such punctuation.
@@ -1524,9 +1628,11 @@ another term; its role comes from context. Predicate identity includes arity,
 so `edge/2` and `edge/3` are different predicates.
 
 Execution is goal-directed rather than complete bottom-up saturation. Goals in
-a body are selected from left to right. Ordinary calls use depth-first
-resolution; eligible positive recursive groups are tabled automatically.
-`not/1` is stratified negation as failure, not classical negation.
+a body normally run from left to right; the solver may select a ready
+deterministic built-in early as a pure filter. Ordinary user-defined calls use
+depth-first resolution, while eligible positive recursive groups are tabled
+automatically. `not/1` is stratified negation as failure, not classical
+negation.
 
 Eyepl deliberately omits cut, operator declarations, modules, dynamic database
 updates, DCGs, and a complete ISO Prolog library.
@@ -1575,7 +1681,10 @@ variables. A program without queries prints no normal answers. The host:
 
 `query/1` affects host execution rather than the program's logical meaning.
 One query's answers are not asserted for later queries, although internal
-tables may be reused during the solver run.
+tables may be reused during the solver run. For stable output, queries for
+known predicates are grouped by the source order in which their predicate
+groups first appear; declarations within one group retain their declaration
+order. Queries for predicates with no group follow the known groups.
 
 #### Modes and determinism
 
@@ -1601,6 +1710,38 @@ the implementation instead of source clauses. Many are mode-sensitive: their
 input arguments must be sufficiently bound before they can run. If a relation
 is conceptually sound but mysteriously fails, check the binding state at the
 built-in call before checking the arithmetic or text operation itself.
+
+The following index is deliberately written with canonical predicate
+indicators so it can be compared mechanically with the implementation
+registry:
+
+| Family | Registered predicate indicators |
+| --- | --- |
+| Core | `eq/2`, `neq/2`, `local_time/1`, `difference/3` |
+| Arithmetic | `neg/2`, `abs/2`, `sin/2`, `cos/2`, `tan/2`, `asin/2`, `acos/2`, `sqrt/2`, `floor/2`, `ceiling/2`, `trunc/2`, `rounded/2`, `exp/2`, `log/2`, `add/3`, `sub/3`, `mul/3`, `div/3`, `mod/3`, `min/3`, `max/3`, `pow/3`, `atan2/3` |
+| Comparison and generation | `lt/2`, `gt/2`, `le/2`, `ge/2`, `between/3`, `smallest_divisor_from/3` |
+| Strings | `str_concat/3`, `contains/2`, `matches/2`, `matches/3`, `not_matches/2`, `split/3`, `join/3`, `substring/4`, `replace/4`, `lowercase/2`, `uppercase/2`, `trim/2`, `number_string/2`, `atom_string/2`, `term_string/2` |
+| Lists | `append/3`, `nth0/3`, `set_nth0/4`, `head/2`, `rest/2`, `last/2`, `take/3`, `drop/3`, `slice/4`, `member/2`, `select/3`, `not_member/2`, `reverse/2`, `length/2`, `sum_list/2`, `min_list/2`, `max_list/2`, `list_to_set/2`, `sort/2` |
+| Aggregation | `findall/3`, `countall/2`, `sumall/3`, `aggregate_min/5`, `aggregate_max/5` |
+| Context | `holds/2`, `holds/3` |
+| Search control | `not/1`, `once/1`, `forall/2` |
+| Term inspection | `functor/3`, `arg/3`, `compound_name_arguments/3` |
+
+### Readiness, determinism, and fallback
+
+The registry records more than a handler. It also records whether a built-in is
+deterministic, when its arguments make it ready, and whether user clauses of
+the same name and arity should remain available while the built-in is not
+ready. This is why an early deterministic filter is safe and why a
+mode-sensitive projection need not hide a user-defined relation in other
+modes.
+
+For example, `lowercase(Text, Lower)` becomes ready when `Text` has a lexical
+value. `arg(Index, Term, Arg)` becomes ready when `Index` is a nonnegative
+integer spelling and `Term` is compound. `compound_name_arguments/3` becomes
+ready either for decomposition of an atom or compound, or for construction
+when its name and proper argument list are known. These are operational modes,
+not extra logical axioms.
 
 ## B.1 Equality and unification
 
@@ -1652,12 +1793,15 @@ exception term.
 | `le(A, B)` | `A =< B`. |
 | `ge(A, B)` | `A >= B`. |
 | `local_time(T)` | Binds `T` to the local date string. |
-| `difference(A, B, D)` | Computes an ISO-like date or duration difference. |
+| `difference(End, Start, D)` | Computes the calendar difference from ISO-like `Start` to `End`; fails for invalid dates or when `End` precedes `Start`. |
 | `between(Low, High, X)` | Enumerates inclusive integers or checks a bound `X`. |
 | `smallest_divisor_from(N, Start, D)` | Finds a divisor of `N` beginning at `Start`. |
 
-Comparisons interpret numeric-looking scalar terms numerically and compare
-other scalar terms lexically. For repeatable tests,
+Comparisons interpret integer or finite numeric-looking scalar terms
+numerically, ISO-like `P…Y…M…D` durations componentwise, and other scalar terms
+lexically. `difference/3` returns a string such as `"P1Y2M3D"` or `"P0D"`;
+it borrows calendar days when needed rather than reducing every month to a
+fixed number of days. For repeatable tests,
 `EYEPL_LOCAL_TIME=YYYY-MM-DD` overrides the date returned by `local_time/1`.
 Generators must have finite bounds in productive calls.
 
@@ -1667,7 +1811,7 @@ Generators must have finite bounds in productive calls.
 | --- | --- |
 | `str_concat(A, B, C)` | Concatenates textual values. |
 | `contains(Text, Needle)` | Succeeds when `Text` contains `Needle`. |
-| `matches(Text, Pattern)` | Matches a simple implementation regular-expression/search pattern. |
+| `matches(Text, Pattern)` | Treats `Pattern` as literal alternatives separated by `|` and succeeds when any alternative occurs in `Text`. |
 | `matches(Text, Pattern, Context)` | Applies a JavaScript regular expression with named captures and returns a comma context of unary capture terms. |
 | `not_matches(Text, Pattern)` | Succeeds when `matches/2` does not. |
 | `split(Text, Separator, Parts)` | Splits text into a proper list of strings. |
@@ -1677,21 +1821,22 @@ Generators must have finite bounds in productive calls.
 | `lowercase(Text, Out)` | Converts text to lowercase. |
 | `uppercase(Text, Out)` | Converts text to uppercase. |
 | `trim(Text, Out)` | Removes leading and trailing whitespace. |
-| `number_string(Number, String)` | Renders a number or parses a numeric string. |
-| `atom_string(Atom, String)` | Converts between an atom constant and a string. |
-| `term_string(Term, String)` | Renders a ground term as Eyepl source text. |
+| `number_string(Number, String)` | Renders a number as a string, or parses a numeric string/atom into a number. |
+| `atom_string(Atom, String)` | Renders an atom as a string, or converts a string, atom, or number in the second argument to an atom. |
+| `term_string(Term, String)` | Renders a non-variable term as Eyepl source text. |
 
 Text operations are valuable at an input boundary, but structured terms make a
 better internal model. In `matches/3`, a pattern such as
 `"(?<kind>[a-z]+)-(?<id>[0-9]+)"` can produce a context such as
 `(kind("sensor"), id("17"))`, which ordinary `holds/2` or `holds/3` calls can
-inspect.
+inspect. Unlike `matches/3`, `matches/2` does not compile a JavaScript regular
+expression: `"red|blue"` means “contains `red` or contains `blue`.”
 
 ## B.5 Lists
 
 | Built-in | Meaning |
 | --- | --- |
-| `append(A, B, C)` | Appends lists or enumerates splits of a bound proper list. |
+| `append(A, B, C)` | When `A` is proper, places its items before tail `B`; when `C` is proper, enumerates proper prefix/suffix splits. |
 | `nth0(Index, List, Value)` | Performs zero-based lookup and can enumerate indexes. |
 | `set_nth0(Index, List, Value, Out)` | Functionally replaces one zero-based position. |
 | `head(List, Head)` | Returns the head of a nonempty list. |
@@ -1736,7 +1881,7 @@ Structured keys give deterministic lexicographic tie-breaking; for example
 | `holds(Context, Name, Args)` | Exposes every context member as an atom name and proper argument list, for any arity. |
 | `functor(Term, Name, Arity)` | Decomposes a non-variable term into name and arity. |
 | `arg(Index, Term, Arg)` | Extracts a compound term's one-based argument. |
-| `compound_name_arguments(Term, Name, Args)` | Decomposes a compound, treats an atom as zero-argument data, or constructs a term from an atom name and proper argument list. |
+| `compound_name_arguments(Term, Name, Args)` | Decomposes a compound, treats an atom as zero-argument data, or constructs an atom/compound from a lexical name and proper argument list. |
 
 ```eyepl
 holds((ready, name(alice, "Alice"), route(alice, bob, 7)), Name, Args).
@@ -1846,9 +1991,10 @@ Run the complete executable corpus with `npm test`.
 
 A conforming Eyepl implementation presents the language as one surface:
 lexical syntax, facts and definite clauses, first-order unification without an
-occurs check, left-to-right goal-directed search, lists, comma conjunctions,
-the standard built-ins, automatic hybrid execution, declarations, fuses,
-answer formatting, and—when exposed by the host—proof output.
+occurs check, ordered goal-directed search with safe early deterministic
+filters, lists, comma conjunctions, the standard built-ins, automatic hybrid
+execution, declarations, fuses, answer formatting, and—when exposed by the
+host—proof output.
 
 The executable contract lives under `test/conformance/`. Positive programs and
 their exact output cover arithmetic, strings, lists, terms, atoms, variables,
