@@ -21,7 +21,7 @@ Install the published CLI globally:
 ```bash
 npm install --global eyepl
 eyepl --version
-printf 'works(stdin, true) :- eq(ok, ok).\n' | eyepl -
+printf 'query(works(stdin, true)).\nworks(stdin, true) :- eq(ok, ok).\n' | eyepl -
 ```
 
 Eyepl has no build step. From a source checkout, install its RDF parser
@@ -32,7 +32,7 @@ npm install
 node bin/eyepl.js examples/ancestor.pl
 node bin/eyepl.js --proof examples/socrates.pl
 node bin/eyepl.js --warnings test/conformance/warnings/negation/unstratified_mutual.pl
-printf 'works(stdin, true) :- eq(ok, ok).\n' | node bin/eyepl.js -
+printf 'query(works(stdin, true)).\nworks(stdin, true) :- eq(ok, ok).\n' | node bin/eyepl.js -
 ```
 
 For one-off local CLI use from the checkout, npm can run the package bin without a manual symlink:
