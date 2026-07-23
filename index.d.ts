@@ -74,6 +74,7 @@ export class Program {
   clauses: EyeplClause[];
   groups: Map<string, EyeplPredicateGroup>;
   queries: EyeplTerm[];
+  fuses: EyeplClause[];
   negationDependencies: Array<{ from: string; to: string; negative: boolean }>;
   negationStratificationErrors: Array<{ from: string; to: string }>;
   stratifiedNegation: boolean;
@@ -91,6 +92,17 @@ export class Program {
   sourceFactLines(predicateKeys?: Set<string> | null): Set<string>;
   queryGoals(): EyeplTerm[];
 }
+
+export const INFERENCE_FUSE_EXIT_CODE: 65;
+
+export class InferenceFuseError extends Error {
+  code: 65;
+  clause: EyeplClause;
+  stdout: string;
+}
+
+export function checkInferenceFuses(program: Program, solver: Solver): void;
+export function formatInferenceFuse(clause: EyeplClause, env?: Env): string;
 
 export interface BuiltinDefinition {
   name: string;
@@ -184,6 +196,8 @@ declare const eyepl: {
   Env: typeof Env;
   Program: typeof Program;
   Solver: typeof Solver;
+  INFERENCE_FUSE_EXIT_CODE: typeof INFERENCE_FUSE_EXIT_CODE;
+  InferenceFuseError: typeof InferenceFuseError;
   BuiltinRegistry: typeof BuiltinRegistry;
   variable: typeof variable;
   atom: typeof atom;
@@ -221,6 +235,8 @@ declare const eyepl: {
   createDefaultRegistry: typeof createDefaultRegistry;
   getDefaultRegistry: typeof getDefaultRegistry;
   run: typeof run;
+  checkInferenceFuses: typeof checkInferenceFuses;
+  formatInferenceFuse: typeof formatInferenceFuse;
   whyProof: typeof whyProof;
   whyNoProof: typeof whyNoProof;
   explainProof: typeof explainProof;

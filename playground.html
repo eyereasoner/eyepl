@@ -532,6 +532,7 @@
           "ideal-gas-law",
           "illegitimate-reasoning",
           "integer-partitions",
+          "inference-fuse",
           "intuitionistic-logic-kripke",
           "job-shop-scheduling",
           "knapsack-optimization",
@@ -624,7 +625,7 @@ answer(ok) :- eq(ok, ok).
     const HIGHLIGHT_LIMIT = 200000;
     const MAX_SHARE_URL_LENGTH = 1900;
     const GIST_STATE_FILENAME = 'eyepl-playground-state.json';
-    const KEYWORDS = new Set(['query', 'table']);
+    const KEYWORDS = new Set(['false', 'query', 'table']);
     const BUILTINS = new Set([
             "abs",
             "acos",
@@ -943,7 +944,12 @@ answer(ok) :- eq(ok, ok).
               elapsedMs: performance.now() - started,
             });
           } catch (error) {
-            self.postMessage({ ok: false, error: error?.stack || error?.message || String(error) });
+            self.postMessage({
+              ok: false,
+              code: error?.code,
+              stdout: error?.stdout,
+              error: error?.stack || error?.message || String(error),
+            });
           }
         };
       `;
@@ -1022,6 +1028,12 @@ answer(ok) :- eq(ok, ok).
       runButton.disabled = false;
       stopButton.disabled = true;
       if (!message.ok) {
+        if (message.code === 65) {
+          output.textContent = message.stdout || '% Inference fuse triggered.\n';
+          elapsed.textContent = 'Fuse triggered.';
+          setStatus('Inference fuse triggered.', true);
+          return;
+        }
         const errorText = message.error || 'Unknown error.';
         const parseLine = extractParseErrorLine(errorText);
         const editorLine = editorLineForParseLine(parseLine);

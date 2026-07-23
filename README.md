@@ -85,6 +85,10 @@ answer(ok) :- eq(ok, ok).
 console.log(result.stdout);
 ```
 
+Rules headed by `false` are inference fuses. A matching fuse aborts before
+queries run; the CLI exits with code `65`, while the JavaScript API throws an
+`InferenceFuseError` carrying the same code and a matched-rule diagnostic.
+
 ## RDF 1.2 files
 
 The tools convert standard RDF files to ordinary Eyepl `rdf/4` facts, run

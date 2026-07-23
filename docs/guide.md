@@ -279,6 +279,25 @@ answer(case1, accepted).
 
 `query/1` is a host declaration, not a logical rule to prove. Its argument is a goal and may contain variables or constants. Query answers are not inserted back into the running program, and answers identical to source facts are not printed. Answers for automatically tabled recursive predicates are reused inside the same solver run.
 
+### Inference fuses
+
+Use a rule headed by `false` when a successful condition must abort reasoning:
+
+```eyepl
+false :-
+  probability(Disease, Probability),
+  gt(Probability, 1).
+```
+
+Eyepl checks fuses before running queries. On the first match, the CLI prints
+the fired rule and its matched instance, then exits with code `65`. The
+JavaScript API throws `InferenceFuseError` with `code ===
+INFERENCE_FUSE_EXIT_CODE` and the same diagnostic in `error.stdout`. A bare
+`false.` is an unconditional fuse.
+
+Fuses are integrity constraints, not search limits. `maxDepth` and
+`solutionLimit` still control the amount of proof search independently.
+
 ## Writing programs
 
 A good Eyepl program normally has three layers:
@@ -488,6 +507,7 @@ Use `holds/2` when you want to match the member term directly, for example `name
 | [`ideal-gas-law.pl`](../examples/ideal-gas-law.pl) | Applies the ideal gas law. | [`output/ideal-gas-law.pl`](../examples/output/ideal-gas-law.pl) |
 | [`illegitimate-reasoning.pl`](../examples/illegitimate-reasoning.pl) | Detects suspect reasoning patterns. | [`output/illegitimate-reasoning.pl`](../examples/output/illegitimate-reasoning.pl) |
 | [`integer-partitions.pl`](../examples/integer-partitions.pl) | Counts integer partitions with automatic tabling. | [`output/integer-partitions.pl`](../examples/output/integer-partitions.pl) |
+| [`inference-fuse.pl`](../examples/inference-fuse.pl) | Aborts on contradictory color facts and reports the matched integrity constraint. | [`output/inference-fuse.pl`](../examples/output/inference-fuse.pl) |
 | [`intuitionistic-logic-kripke.pl`](../examples/intuitionistic-logic-kripke.pl) | Emulates intuitionistic Kripke forcing and constructive implication. | [`output/intuitionistic-logic-kripke.pl`](../examples/output/intuitionistic-logic-kripke.pl) |
 | [`job-shop-scheduling.pl`](../examples/job-shop-scheduling.pl) | Searches a small job-shop schedule and minimizes makespan. | [`output/job-shop-scheduling.pl`](../examples/output/job-shop-scheduling.pl) |
 | [`knapsack-optimization.pl`](../examples/knapsack-optimization.pl) | Optimizes a finite 0/1 knapsack pack with aggregation. | [`output/knapsack-optimization.pl`](../examples/output/knapsack-optimization.pl) |

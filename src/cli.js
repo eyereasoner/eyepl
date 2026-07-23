@@ -82,13 +82,14 @@ export async function main(argv) {
 
 async function loadEngine() {
   if (engineModule == null) {
-    const [term, program, solver, registry] = await Promise.all([
+    const [term, program, solver, registry, fuse] = await Promise.all([
       import('./term.js'),
       import('./program.js'),
       import('./solver.js'),
       import('./builtins/registry.js'),
+      import('./fuse.js'),
     ]);
-    engineModule = { ...term, ...program, ...solver, ...registry };
+    engineModule = { ...term, ...program, ...solver, ...registry, ...fuse };
   }
   return engineModule;
 }
@@ -106,6 +107,7 @@ async function runDefault(engine, program, options) {
   const registry = engine.getDefaultRegistry();
   const explanation = options.proof ? await loadExplanation() : null;
   const solver = new engine.Solver(program, { registry });
+  engine.checkInferenceFuses(program, solver);
 
   for (const goal of goals) {
     solver.solutionsSeen = 0;

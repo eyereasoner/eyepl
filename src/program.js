@@ -8,9 +8,14 @@ export class Program {
     this.clauses = clauses;
     this.groups = new Map();
     this.queries = [];
+    this.fuses = [];
     for (let index = 0; index < this.clauses.length; index++) {
       const clause = this.clauses[index];
       clause.index = index;
+      if (isInferenceFuse(clause)) {
+        this.fuses.push(clause);
+        continue;
+      }
       if (isQueryDeclaration(clause)) {
         this.queries.push(clause.head.args[0]);
         continue;
@@ -271,6 +276,10 @@ function isQueryDeclaration(clause) {
     && clause.head.type === COMPOUND
     && clause.head.name === 'query'
     && clause.head.arity === 1;
+}
+
+function isInferenceFuse(clause) {
+  return clause.head.type === ATOM && clause.head.name === 'false';
 }
 
 function componentHasNegativeEdge(start, deps, negativeEdges) {

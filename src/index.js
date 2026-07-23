@@ -3,6 +3,7 @@
 export { Program, makeProgram } from './program.js';
 export { parseClauses, parseProgramText } from './parser.js';
 export { Solver } from './solver.js';
+export { INFERENCE_FUSE_EXIT_CODE, InferenceFuseError, checkInferenceFuses, formatInferenceFuse } from './fuse.js';
 export * from './term.js';
 export { BuiltinRegistry, createDefaultRegistry, getDefaultRegistry } from './builtins/registry.js';
 
@@ -11,6 +12,7 @@ import { Program } from './program.js';
 import { Solver } from './solver.js';
 import { whyNoProof, whyProof } from './explain.js';
 import { getDefaultRegistry } from './builtins/registry.js';
+import { checkInferenceFuses } from './fuse.js';
 
 export function run(source, options = {}) {
   const includeWhy = options.proof === true || options.why === true || options.explain === true;
@@ -18,6 +20,7 @@ export function run(source, options = {}) {
   const program = source instanceof Program ? source : Program.parse(source, parseOptions);
   const runOptions = options.registry ? options : { ...options, registry: getDefaultRegistry() };
   const solver = new Solver(program, runOptions);
+  checkInferenceFuses(program, solver);
   const output = [];
   const goals = program.queryGoals();
   const queriedKeys = new Set(goals.map((goal) => `${goal.name}/${goal.arity}`));

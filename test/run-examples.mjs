@@ -108,11 +108,19 @@ function runProgramExample(programFile, filename, options) {
   process.env.EYEPL_LOCAL_TIME = fixedExampleDate;
   try {
     const text = fs.readFileSync(programFile, 'utf8');
+    const expectedExit = text.match(/^%\s*expect-exit:\s*(\d+)\s*$/m);
     const program = Program.parseSources([{ text, filename }], {
       sourceMetadata: options.proof,
       markRecursive: options.proof,
     });
-    return run(program, options).stdout;
+    try {
+      const result = run(program, options);
+      if (expectedExit) throw new Error(`${filename} expected exit ${expectedExit[1]}, but reasoning succeeded`);
+      return result.stdout;
+    } catch (error) {
+      if (expectedExit && error?.code === Number(expectedExit[1])) return error.stdout ?? '';
+      throw error;
+    }
   } finally {
     if (oldLocalTime == null) delete process.env.EYEPL_LOCAL_TIME;
     else process.env.EYEPL_LOCAL_TIME = oldLocalTime;

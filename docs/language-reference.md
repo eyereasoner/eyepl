@@ -50,7 +50,8 @@
 - [11. Declarations](#11-declarations)
   - [11.1 Automatic hybrid reasoning](#111-automatic-hybrid-reasoning)
   - [11.2 Queries](#112-queries)
-  - [11.3 Advisory modes and determinism](#113-advisory-modes-and-determinism)
+  - [11.3 Inference fuses](#113-inference-fuses)
+  - [11.4 Advisory modes and determinism](#114-advisory-modes-and-determinism)
 - [12. Eyepl Sockets](#12-eyepl-sockets)
   - [12.1 Socket vocabulary](#121-socket-vocabulary)
   - [12.2 Socket example](#122-socket-example)
@@ -726,7 +727,32 @@ query(reason(X0, X1)).
 
 `query/1` affects host execution only; it does not change the logical meaning of the program. Answers identical to source facts are excluded from output. Query answers are not asserted as new facts for subsequent query goals. A host MAY solve several queries in one solver run, and automatically tabled predicate answers MAY be reused within that run.
 
-### 11.3 Advisory modes and determinism
+### 11.3 Inference fuses
+
+A clause whose head is the atom `false` is an **inference fuse**, or integrity
+constraint:
+
+```eyepl
+false :-
+  probability(Disease, Probability),
+  gt(Probability, 1).
+```
+
+Before running output queries, the host MUST try to prove the body of every
+inference fuse. If any body succeeds, reasoning MUST stop immediately. A bare
+`false.` is an unconditional fuse. The atom `false` is reserved in rule-head
+position for this purpose; it remains an ordinary atom when used as an
+argument.
+
+The CLI exits with `INFERENCE_FUSE_EXIT_CODE`, whose value is `65`, and prints
+a comment-form diagnostic containing the fired rule and, when bindings changed
+it, the matched instance. Library interfaces MUST expose the same code on the
+thrown error. Hosts MUST NOT print query answers after a fuse has triggered.
+
+Inference fuses express logical integrity failures. They are distinct from
+implementation search limits such as maximum depth or solution count.
+
+### 11.4 Advisory modes and determinism
 
 ```eyepl
 mode(path, 2, [in, out]).
@@ -850,6 +876,7 @@ A conforming Eyepl implementation supports the standard language described above
 - the standard built-ins listed in section 9;
 - automatic hybrid goal-directed and tabled execution;
 - `query/1` declarations;
+- inference fuses headed by `false`;
 - advisory `mode/3`, `det/2`, and `semidet/2` declarations;
 - declared query output;
 - explanation output when the host exposes proof output.

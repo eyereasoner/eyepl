@@ -321,6 +321,39 @@ why(
         assertEqual(result.stderr, '', 'stderr');
       },
     },
+    {
+      name: 'CLI inference fuse exits with code 65 and reports its match',
+      run: () => {
+        const input = [
+          'query(answer(X)).',
+          'bad(a).',
+          'false :- bad(X).',
+          'answer(ok) :- eq(ok, ok).',
+          '',
+        ].join('\n');
+        const result = runCli(['-'], { input });
+        assertEqual(result.status, 65, 'exit status');
+        assertEqual(result.stdout, [
+          '% Inference fuse triggered.',
+          '% Fired rule:',
+          '%   false :- bad(X).',
+          '% Matched instance:',
+          '%   false :- bad(a).',
+          '',
+        ].join('\n'), 'stdout');
+        assertEqual(result.stderr, '', 'stderr');
+      },
+    },
+    {
+      name: 'non-matching inference fuse permits queries',
+      run: () => {
+        const input = 'query(answer(X)).\nbad(a).\nfalse :- bad(X), eq(X, b).\nanswer(ok) :- eq(ok, ok).\n';
+        const result = runCli(['-'], { input });
+        assertEqual(result.status, 0, 'exit status');
+        assertEqual(result.stdout, 'answer(ok).\n', 'stdout');
+        assertEqual(result.stderr, '', 'stderr');
+      },
+    },
   ];
 }
 
@@ -426,6 +459,35 @@ function apiCases() {
       run: () => {
         const result = run('seed(a, one).\nanswer(K, V) :- seed(K, V).\n');
         assertEqual(result.stdout, '', 'stdout');
+      },
+    },
+    {
+      name: 'run exposes inference fuse errors and exit code',
+      run: () => {
+        let error = null;
+        try {
+          run('bad(a).\nfalse :- bad(X).\n');
+        } catch (caught) {
+          error = caught;
+        }
+        assertEqual(error?.name, 'InferenceFuseError', 'error name');
+        assertEqual(error?.code, publicApi.INFERENCE_FUSE_EXIT_CODE, 'error code');
+        assertEqual(error?.code, 65, 'standard fuse exit code');
+        assertIncludes(error?.stdout ?? '', '%   false :- bad(a).\n', 'matched fuse');
+      },
+    },
+    {
+      name: 'bare false is an unconditional inference fuse',
+      run: () => {
+        let error = null;
+        try {
+          run('false.\n');
+        } catch (caught) {
+          error = caught;
+        }
+        assertEqual(error?.code, 65, 'error code');
+        assertIncludes(error?.stdout ?? '', '%   false.\n', 'fired fuse');
+        assertNotIncludes(error?.stdout ?? '', 'Matched instance:', 'unconditional fuse output');
       },
     },
 
