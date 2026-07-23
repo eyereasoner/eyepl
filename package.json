@@ -46,6 +46,7 @@
   },
   "scripts": {
     "test": "node test/run-all.mjs",
+    "test:book": "node tools/check-book.mjs",
     "test:eyepl": "node test/run-all.mjs",
     "test:conformance": "node test/run-conformance.mjs",
     "test:examples": "node test/run-examples.mjs",

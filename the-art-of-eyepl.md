@@ -52,6 +52,49 @@ node bin/eyepl.js --proof examples/socrates.pl
 The best way to read is at a terminal. Copy a program into a `.pl` file, ask a
 slightly different question, and predict the answer before running it.
 
+### The promise of this book
+
+This book treats logic programming as a craft, not a collection of clever
+tricks. By the end, a reader should be able to:
+
+1. state a domain as relations whose ground instances have an unambiguous
+   meaning;
+2. read every clause both as a logical sentence and as a computation;
+3. design finite searches, justify termination, and recognize when a calling
+   mode is unsafe;
+4. construct programs from examples and invariants, then improve their control
+   without quietly changing their meaning;
+5. test conclusions, reject inconsistent inputs with fuses, and inspect proofs
+   as evidence; and
+6. connect an Eyepl theory to JavaScript and RDF without hiding the knowledge
+   boundary.
+
+That is the stake in the ground: a small language is enough to teach the large
+ideas when its semantics, execution, and evidence remain visible together.
+The reference implementation is therefore part of the argument. The examples
+are programs, the appendices describe the running system, and
+`npm run test:book` checks the complete code displays, local references, and
+built-in index against the source tree.
+
+### A working discipline
+
+Approach each example through the same six moves:
+
+1. **Sentence.** Say what one ground instance means.
+2. **Question.** Choose the bindings with which the relation will be called.
+3. **Prediction.** Write the expected answers before running the program.
+4. **Search.** Trace the first choice, the bindings it adds, and the next goal.
+5. **Evidence.** Inspect a proof and distinguish it from the failed search
+   branches that were explored.
+6. **Revision.** Change one fact, query, goal order, or representation and
+   explain what should remain invariant.
+
+This rhythm deliberately joins declarative reading, operational reading, and
+program construction. Readers new to logic programming can follow Parts I–III
+in order. Experienced Prolog programmers can begin with Chapters 3, 13, and
+17 to see where Eyepl's hybrid execution and proof-oriented design differ.
+Appendix D gives further routes through the material.
+
 ## Contents
 
 ### Part I — Relations
@@ -1268,7 +1311,7 @@ result; `why/2` records which supplied clauses actually supported an answer.
   <figcaption>Craft moves repeatedly between the real domain, the relations on paper, executable clauses, answers, and proofs.</figcaption>
 </figure>
 
-The final Part turns from language features to habits of construction. A good
+This Part turns from language features to habits of construction. A good
 program rarely arrives whole; it is discovered through examples, corrected by
 invariants, and refined without losing sight of the relation it means.
 
