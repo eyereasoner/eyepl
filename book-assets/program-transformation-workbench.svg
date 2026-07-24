@@ -31,7 +31,7 @@
   <rect class="blue" x="465" y="235" width="190" height="115" rx="10"/>
   <text class="label" x="560" y="267" text-anchor="middle">SPECIALIZE</text>
   <text class="prose" x="560" y="297" text-anchor="middle">fix known arguments;</text>
-  <text class="prose" x="560" y="320" text-anchor="middle">remove irrelevant choices</text>
+  <text class="prose" x="560" y="320" text-anchor="middle">remove irrelevant paths</text>
   <rect class="rose" x="670" y="235" width="185" height="115" rx="10"/>
   <text class="label" x="762" y="267" text-anchor="middle">ACCUMULATE</text>
   <text class="prose" x="762" y="297" text-anchor="middle">carry a partial result</text>

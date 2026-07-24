@@ -13,5 +13,5 @@
   <path class="cable" d="M225 80 C300 80 300 170 365 170 M225 190 H365 M225 300 C300 300 300 210 365 210"/>
   <rect class="socket" x="365" y="115" width="245" height="150" rx="25"/><text class="text" x="488" y="150" text-anchor="middle">SOCKET CONTRACT</text><text class="text" x="488" y="190" text-anchor="middle">provides(</text><text class="text" x="488" y="215" text-anchor="middle">predicate(parent,2))</text>
   <circle class="pin" cx="385" cy="170" r="7"/><circle class="pin" cx="385" cy="190" r="7"/><circle class="pin" cx="385" cy="210" r="7"/>
-  <path class="cable" d="M610 190 H680"/><rect class="engine" x="680" y="105" width="185" height="170" rx="10"/><text class="light" x="772" y="142" text-anchor="middle">Eyepl rules</text><text class="light" x="700" y="185">ancestor(X,Y)</text><text class="light" x="700" y="215">why(Answer,Proof)</text><text class="light" x="772" y="250" text-anchor="middle">same reasoning</text>
+  <path class="cable" d="M610 190 H680"/><rect class="engine" x="680" y="105" width="185" height="170" rx="10"/><text class="light" x="772" y="142" text-anchor="middle">Eyepl rules</text><text class="light" x="772" y="185" text-anchor="middle">ancestor(X,Y)</text><text class="light" x="772" y="215" text-anchor="middle">why(Answer,Proof)</text><text class="light" x="772" y="250" text-anchor="middle">same reasoning</text>
 </svg>

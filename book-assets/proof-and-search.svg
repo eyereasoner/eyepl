@@ -47,7 +47,7 @@
   <line class="line" x1="610" y1="280" x2="665" y2="345"/>
   <line class="line" x1="765" y1="280" x2="790" y2="345"/>
   <rect class="fail" x="520" y="345" width="100" height="45" rx="8"/>
-  <text class="text" x="570" y="373" text-anchor="middle">wrong edge ✕</text>
+  <text class="text" x="570" y="373" text-anchor="middle">bad edge ✕</text>
   <rect class="goal" x="630" y="345" width="70" height="45" rx="8"/>
   <text class="text" x="665" y="373" text-anchor="middle">success</text>
   <rect class="repeat" x="738" y="345" width="104" height="45" rx="8"/>
