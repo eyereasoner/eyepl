@@ -40,17 +40,38 @@ relation clearly enough that control can be studied and improved separately.
 Robert Kowalski's phrase “algorithm = logic + control” names this separation;
 Eyepl's small surface makes it unusually easy to see in running examples.
 
-All examples in this book are Eyepl programs. From a source checkout, replace
-`eyepl` below with `node bin/eyepl.js` if the package is not linked.
+Complete Eyepl code displays from the book are also available as files under
+[`examples/book/`](examples/book/), grouped by chapter. From a source checkout,
+use Node.js 18 or newer, install the dependencies, and run the CLI:
 
 ```sh
 npm install
-node bin/eyepl.js examples/ancestor.pl
+node bin/eyepl.js examples/socrates.pl
+```
+
+The first command should print:
+
+```text
+type(socrates, mortal).
+is(test, true).
+```
+
+Then ask for the derivations:
+
+```sh
 node bin/eyepl.js --proof examples/socrates.pl
 ```
 
-The best way to read is at a terminal. Copy a program into a `.pl` file, ask a
-slightly different question, and predict the answer before running it.
+Readers who do not want to install anything can begin in the
+[browser playground](https://eyereasoner.github.io/eyepl/playground). Paste
+the source of `examples/socrates.pl` into the editor and run it. The playground
+and local CLI use the same language, though filesystem, URL, and embedding
+examples naturally require a local checkout.
+
+The best way to read is beside a running interpreter. Before each run, predict
+the answer; after it, change one fact or query and explain the difference.
+Use `npm run generate` after editing the book to refresh the extracted
+`examples/book/` files.
 
 ### The promise of this book
 
@@ -94,6 +115,24 @@ program construction. Readers new to logic programming can follow Parts I–III
 in order. Experienced Prolog programmers can begin with Chapters 3, 13, and
 17 to see where Eyepl's hybrid execution and proof-oriented design differ.
 Appendix D gives further routes through the material.
+
+### Choose a route
+
+The book supports several paths; reading every chapter in order is not a test
+of seriousness.
+
+| Reader | Suggested route | What to postpone |
+| --- | --- | --- |
+| New to programming | Chapters 1–10, 11–12, 18–20, then Laboratories I.1–I.4 | The formal parts of Chapter 3, embedding, RDF, and Parts V–VI |
+| Programmer new to logic | Parts I–II, Chapters 11–13 and 17–25, then Part VII | Detailed history and mathematical foundations on the first pass |
+| Experienced Prolog programmer | Chapters 3, 7, 11–13, 16–17, and 31–33 | Introductory syntax and list material |
+| Knowledge engineer | Chapters 7, 11–16, 25, 31–33, then Laboratories I.9–I.12 | Symbolic mathematics unless it serves the domain |
+| Mathematics reader | Chapters 1–5, 19, and 26–30 | Embedding and RDF until an application needs them |
+| Instructor or study group | Parts I–III, one route through Part V or VI, then selected laboratories | Appendix details until reference work begins |
+
+On a first pass, treat sections marked **Deeper foundations** as optional. They
+make the semantics precise but are not prerequisites for writing and running
+the next program.
 
 ## Contents
 
@@ -206,6 +245,12 @@ child(clara, byron).
 child(diego, clara).
 ```
 
+Eyepl distinguishes solutions found by the solver from answers printed by the
+CLI. A query such as `query(parent(X, Y)).` can find the three source facts
+internally, but the normal CLI output suppresses answers that merely repeat
+source facts. Derived `child/2` answers are printed. Chapter 11 explains this
+output policy; it does not change what calls inside rules can prove.
+
 The program did not copy values through named slots. It found substitutions
 for `Child` and `Parent` that made the rule body true, then applied those same
 substitutions to the head.
@@ -256,6 +301,11 @@ an argument, split the concept before the ambiguity spreads into later rules.
 
 **Exercise.** Add `grandparent/2` using two calls to `parent/2`. Query all
 grandparents, then only the grandparents of `diego`.
+
+**Checkpoint.** Before continuing, make sure you can (1) read
+`parent(ada, byron)` as a sentence, (2) explain what the two variables in
+`query(child(X, Y))` ask for, and (3) predict which output changes after adding
+`parent(diego, elena).`
 
 ## 2. Terms, variables, and substitution
 
@@ -330,6 +380,11 @@ web_name(sensor_1, '<https://example.org/sensor/1>').
 **Exercise.** Write `diagonal/1`, which succeeds for `point(X, X)`. Then write
 `same_ends/1` for a three-element list whose first and last values agree.
 
+**Checkpoint.** Without running Eyepl, decide whether each pair unifies:
+`point(X, X)` with `point(red, red)`, `point(X, X)` with
+`point(red, blue)`, and `[Head | Tail]` with `[a, b, c]`. Then run a small
+`eq/2` query to check each prediction.
+
 ## 3. Rules and their two readings
 
 The executable-clause idea emerged from work on automated theorem proving.
@@ -396,7 +451,11 @@ status(Case, accepted) :- high_score(Case).
 reason(Case, "score meets threshold") :- high_score(Case).
 ```
 
-### Herbrand's foundational move
+### Deeper foundations: Herbrand's move
+
+This section through “Meaning is not the search strategy” supplies the formal
+model behind the earlier examples. On a first practical reading, it is safe to
+continue at Chapter 4 and return here after writing a recursive relation.
 
 The terminology in the next section honors a remarkably early source. Jacques
 Herbrand developed the relevant ideas in his 1930 doctoral thesis,
@@ -595,6 +654,11 @@ embedders can inspect `stratifiedNegation`, `negationStratificationErrors`,
 with `analyzeNegation`, reject it with `strictNegation`, or call
 `program.assertStratifiedNegation()`.
 
+**Checkpoint.** Read one rule twice: first as a sentence about all its ground
+instances, then as a left-to-right sequence of subquestions. Identify which
+body goal first binds each variable. If you took the practical route, defer
+Herbrand bases and interpretations without guilt; recursion is next.
+
 ## 4. Recursion: describing reachability
 
 Recursive rules define an unbounded family of finite proofs. An ancestor is a
@@ -637,6 +701,11 @@ path(X, Z, [X | Rest]) :-
 On cyclic graphs, track visited vertices and use `not_member/2` to obtain finite
 simple paths rather than arbitrary walks.
 
+**Checkpoint.** In the three-edge family from Chapter 1, predict the direct and
+indirect `ancestor/2` answers. Point to the base clause and recursive clause,
+then say what becomes smaller or moves closer to a known fact in one successful
+derivation.
+
 ## 5. Lists as relations
 
 `[a, b, c]` abbreviates nested cons cells. `[Head | Tail]` exposes one cell;
@@ -675,6 +744,10 @@ No mutation occurs; every call receives a new term. Eyepl also includes
 `sort/2`, slicing helpers, and numeric summaries. Improper lists such as
 `[a | Tail]` are valid terms, but operations requiring a proper finite list
 fail unless the tail is `[]`.
+
+**Checkpoint.** Trace `joins([a], [b, c], Whole)` by hand. Then reverse the
+question: bind `Whole` to `[a, b, c]` and predict all prefix/suffix splits.
+Finally explain why `[a | Tail]` is not yet known to be a proper finite list.
 
 ## Part I summary
 
@@ -772,6 +845,10 @@ mode(factorial, 2, [in, out]).
 Mode and determinism declarations are advisory facts for readers and tooling;
 they do not direct the solver.
 
+**Checkpoint.** For every arithmetic goal above, mark which arguments must be
+numbers before the goal can run. Explain why `between/3` is a generator in
+`square/2` but merely a check when its third argument is already bound.
+
 ## 7. Failure, negation, and quantification
 
 A goal fails when no clause or built-in proves it under current bindings.
@@ -822,6 +899,10 @@ Use negation where the knowledge boundary is closed: a complete roster,
 configuration, or finite result set. In open-world data, model explicit states
 such as `confirmed_absent` instead of deriving absence from silence.
 
+**Checkpoint.** Compare `user(User), not(blocked(User))` with
+`not(blocked(User)), user(User)`. State the question each ordering asks and the
+completeness assumption needed before calling either result “allowed.”
+
 ## 8. Collecting and choosing answers
 
 Finite aggregation asks about a solution set:
@@ -864,6 +945,10 @@ The key `[Cost, Route]` supplies deterministic tie-breaking through term order.
 `aggregate_min/5` and `aggregate_max/5` fail when their goal has no answers.
 An aggregate opens a smaller query scope inside the surrounding proof, and its
 inner search must be finite.
+
+**Checkpoint.** For an empty route relation, predict the behavior of
+`findall/3`, `countall/2`, `sumall/3`, and `aggregate_min/5`. Then identify the
+finite generator that bounds each aggregate in a program of your own.
 
 ## 9. Structured data, strings, and contexts
 
@@ -908,6 +993,10 @@ hot_event(Id) :-
 Context members remain quoted data; inspecting them does not assert them as
 ambient facts.
 
+**Checkpoint.** Distinguish the atomic formula `message(...)` from the nested
+data term `(severity(high), source(sensor_3), reading(temp, 91))`. Explain why
+`holds/2` can inspect the latter without asserting `severity(high)` globally.
+
 ## 10. From puzzles to models
 
 A robust finite search has three layers: generate candidates, constrain them,
@@ -945,6 +1034,23 @@ The visited list makes a finite state space explicit. Eyepl is strongest when
 the result is a logical consequence with a compact witness: a path, matching,
 classification, schedule, proof, or bounded model. Mutable arrays and large
 numerical kernels generally belong in a host, with Eyepl as the decision layer.
+
+For the coloring program, the six printed answers are the permutations of
+`red`, `green`, and `blue`:
+
+```text
+answer(colors(red, green, blue)).
+answer(colors(red, blue, green)).
+answer(colors(green, red, blue)).
+answer(colors(green, blue, red)).
+answer(colors(blue, red, green)).
+answer(colors(blue, green, red)).
+```
+
+**Checkpoint.** Label the generator, each constraint, and the final witness in
+the coloring program. Before changing it, predict how many answers remain if
+`neq(A, C)` is removed; then run the program and account for every additional
+answer.
 
 ## Part II summary
 
