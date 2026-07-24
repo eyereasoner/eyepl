@@ -145,6 +145,12 @@ Appendix D gives further routes through the material.
 29. [Search as experimental mathematics](#29-search-as-experimental-mathematics)
 30. [What mathematics promises](#30-what-mathematics-promises)
 
+### Part VII — The reasoning laboratory
+
+31. [Testing a theory](#31-testing-a-theory)
+32. [Debugging by meaning, search, and proof](#32-debugging-by-meaning-search-and-proof)
+33. [A pattern language for Eyepl](#33-a-pattern-language-for-eyepl)
+
 ### Appendices
 
 - [A. Language summary](#appendix-a-language-summary)
@@ -154,6 +160,8 @@ Appendix D gives further routes through the material.
 - [E. Further examples](#appendix-e-further-examples)
 - [F. Conformance and portability](#appendix-f-conformance-and-portability)
 - [G. Notes and references](#appendix-g-notes-and-references)
+- [H. Glossary](#appendix-h-glossary)
+- [I. Twelve laboratories](#appendix-i-twelve-laboratories)
 
 ---
 
@@ -3237,6 +3245,631 @@ Preserve the proof.
    sources, model scope, numeric assumptions, resource bounds, proof retention,
    and known limits.
 
+---
+
+# Part VII — The reasoning laboratory
+
+<figure>
+  <img src="book-assets/part-7-laboratory.svg" alt="A reasoning laboratory bench connects a small theory to predictions, tests, search statistics, proofs, and revisions.">
+  <figcaption>A theory becomes dependable through a repeated laboratory cycle: predict, test, inspect the search and proof, then revise one assumption at a time.</figcaption>
+</figure>
+
+The final craft is experimental without being careless. A logic programmer
+works like a mathematician at a blackboard and an engineer at a test bench:
+state a claim precisely, derive consequences, seek counterexamples, measure the
+computation, and preserve enough evidence for another person to repeat the
+work.
+
+This Part turns the book's ideas into a daily discipline. It does not add a new
+language feature. It shows how to make theories survive change.
+
+## 31. Testing a theory
+
+A conventional unit test often presents an input to a function and compares
+one returned value with an expected value. A relational program needs a wider
+test vocabulary. One call may have several answers, no answer, duplicate
+proofs, or different useful modes. Correctness includes the answer set, the
+absence of forbidden answers, the shape of witnesses, and the finiteness of
+the intended search.
+
+### Begin with a semantic test table
+
+Before writing test code, make a table in domain language:
+
+| Case | Given | Question | Expected | Why this case matters |
+| --- | --- | --- | --- | --- |
+| direct | `edge(a,b)` | path from `a` to `b`? | yes | base clause |
+| composed | `a→b→c` | path from `a` to `c`? | yes | recursive clause |
+| absent | disconnected `d` | path from `a` to `d`? | no | false positive |
+| cycle | `c→a` | all destinations from `a`? | finite set | tabling or visited state |
+| reflexive | no explicit loop | path from `a` to `a`? | design choice | relation boundary |
+
+The last row is especially valuable. Many bugs are not implementation mistakes
+but unresolved meanings. Does a path require at least one edge, or may it be
+empty? No test framework can choose the definition for you.
+
+### Positive and negative observers
+
+Queries naturally record positive expectations:
+
+```eyepl
+edge(a, b).
+edge(b, c).
+
+path(X, Y) :- edge(X, Y).
+path(X, Z) :- edge(X, Y), path(Y, Z).
+
+query(path(a, b)).
+query(path(a, c)).
+```
+
+To make an expected absence visible, define a finite observer:
+
+```eyepl
+unexpected_path :-
+  path(a, d).
+
+expected_absence :-
+  not(unexpected_path).
+
+query(expected_absence).
+```
+
+This is a test over a ground, terminating goal. It does not turn negation as
+failure into classical negation; it records that this finite theory derives no
+such path.
+
+For a reusable package, prefer a dedicated test program that loads or repeats
+the relevant theory and declares only test queries. For a small example, the
+golden answer file is an executable specification of the expected answer set.
+
+### Test the relation from more than one mode
+
+Suppose `append/3` is intended both to concatenate and to split:
+
+```eyepl
+query(append([a, b], [c], Whole)).
+query(append(Prefix, Suffix, [a, b])).
+```
+
+The first call should construct one list. The second should enumerate three
+splits. Testing only the first mode would miss a regression in relational
+generality; testing the completely open mode would request an infinite
+relation and prove little beyond the absence of a useful bound.
+
+For every public predicate, record:
+
+1. the principal mode;
+2. any secondary supported modes;
+3. modes that are meaningful but intentionally unsupported;
+4. calls expected to be finite;
+5. calls whose answer order is part of the observable contract.
+
+The advisory `mode/3`, `det/2`, and `semidet/2` declarations can keep this
+design close to the clauses, but tests must still exercise the promise.
+
+### Properties over finite domains
+
+Examples test selected points. A finite generated property tests every point
+in a declared scope:
+
+```eyepl
+double(N, D) :- add(N, N, D).
+
+double_is_even(N) :-
+  double(N, D),
+  mod(D, 2, 0).
+
+bounded_double_law :-
+  forall(between(-100, 100, N), double_is_even(N)).
+
+query(bounded_double_law).
+```
+
+This is exhaustive for the 201 generated integers, not for all integers.
+Naming the predicate `bounded_double_law/0` keeps the scope honest.
+
+Useful finite properties include:
+
+- round trips: parse then render, or encode then decode;
+- preservation: normalization keeps the represented value;
+- idempotence: normalizing twice equals normalizing once;
+- symmetry: an undirected adjacency relation works in both directions;
+- invariants: every generated plan state is safe;
+- agreement: a simple reference relation and an optimized relation return the
+  same bounded answer set.
+
+### Metamorphic tests
+
+Sometimes the correct answer is hard to list, but a controlled change has a
+predictable effect. These are metamorphic tests.
+
+If an isolated graph vertex is added, existing reachability answers should not
+change. If every edge cost is multiplied by a positive constant, the cheapest
+route should retain the same vertices. If the order of source facts changes,
+the set of logical answers should remain unchanged even if their discovery
+order changes.
+
+A metamorphic test states a relation between runs. It is particularly useful
+for optimizations because it checks a preserved invariant rather than one
+frozen implementation trace.
+
+### Proof regression and answer regression
+
+An answer golden asks, “Did the public conclusions change?” A proof golden
+asks, “Did their supporting derivations change?”
+
+Proof changes may be desirable after introducing a clearer helper. They may
+also reveal that a decision now depends on an unintended fact. Treat proof
+goldens as reviewed evidence, not snapshots updated automatically whenever a
+test fails.
+
+Use answer regression broadly. Use proof regression selectively where
+provenance, explanation, or policy accountability is part of the product.
+
+### Test failures, fuses, and warnings
+
+Three outcomes carry different meanings:
+
+- an ordinary query has no answer: the relation did not establish that goal;
+- an inference fuse fires: the supplied theory violates a forbidden condition;
+- `--warnings` reports unstratified negation: execution may proceed, but the
+  program crosses a portability and semantic boundary.
+
+A mature suite covers all three. Include malformed source in parser tests,
+inconsistent source in fuse tests, and semantically dubious dependency cycles
+in warning tests.
+
+### A release-quality test matrix
+
+Before releasing a theory or embedded service, cover:
+
+| Dimension | Minimum evidence |
+| --- | --- |
+| Meaning | one positive, one absent, and one boundary case per public relation |
+| Modes | every documented mode; explicit rejection or warning for unsafe uses |
+| Recursion | base case, multi-step case, cycle, and termination argument |
+| Search | smallest witness, competing witnesses, ties, and empty domain |
+| Negation | ground success, ground failure, and stratification check |
+| Aggregation | empty, singleton, duplicates, and deterministic tie handling |
+| Integrity | every fuse matched once and shown not to overfire |
+| Proof | representative derivation with source premises visible |
+| Scale | a case large enough to expose indexing or table behavior |
+| Reproducibility | fixed time, source version, stable fixtures, and clean output |
+
+**Exercises.**
+
+1. Build the semantic test table for `ancestor/2`, including a cycle and a
+   disputed reflexive case.
+2. Write bounded commutativity and associativity tests for a finite operation
+   table. Explain why one is cheaper.
+3. Create a metamorphic test for a route planner.
+4. Choose one proof golden and identify changes that should be accepted versus
+   changes that should block a release.
+5. Design a test that distinguishes “no answer” from “invalid input theory.”
+
+## 32. Debugging by meaning, search, and proof
+
+Debugging a logic program is difficult when every symptom is described as
+“the query failed.” Failure can mean the fact is absent, a variable was bound
+too early, a built-in ran outside its mode, a negative goal saw an unintended
+answer, recursion did not reach its base case, or the original relation was
+misstated.
+
+Use four views in a fixed order:
+
+1. **meaning:** what should a ground instance say?
+2. **bindings:** what is known before each goal?
+3. **search:** which alternatives are explored, repeated, or pruned?
+4. **proof:** which successful premises support the observed answer?
+
+### Reduce to the smallest disputed ground question
+
+Do not begin with an open query that prints hundreds of answers. Name one
+conclusion that is missing or surprising:
+
+```eyepl
+query(eligible(alex)).
+```
+
+Then expand only the clause intended to prove it. Replace broad generators
+with the relevant ground facts. A small ground question removes accidental
+branching and makes every failed subgoal discussable.
+
+If the ground question is itself ambiguous, stop debugging the implementation.
+Rewrite the domain sentence first.
+
+### Follow bindings from left to right
+
+Consider:
+
+```eyepl
+eligible(Person) :-
+  ge(Age, 18),
+  age(Person, Age).
+```
+
+The intended mathematics is easy to recognize, but `ge/2` sees an unbound
+`Age`. Write a binding ledger:
+
+| Before goal | Goal | Bindings produced |
+| --- | --- | --- |
+| `{}` | `ge(Age,18)` | none; not ready |
+| — | `age(Person,Age)` | never productively reached |
+
+Reordering the goals repairs the operational mode:
+
+```eyepl
+eligible(Person) :-
+  age(Person, Age),
+  ge(Age, 18).
+```
+
+For a clause with five goals, the ledger is often more revealing than staring
+at the source. Record structures as well as scalar bindings: a variable may be
+bound to an improper list or a compound term whose inner variables remain
+open.
+
+### Use a symptom atlas
+
+**No answers**
+
+- Confirm the queried predicate name and arity.
+- Ground one expected answer and locate a clause whose head unifies with it.
+- Walk the body with a binding ledger.
+- Check readiness of arithmetic, string, list, and term built-ins.
+- Inspect whether a negative goal is too early.
+- Verify that a base clause is reachable.
+
+**Too many answers**
+
+- State which answer violates the domain sentence.
+- Find its proof and identify the first overbroad premise.
+- Look for missing joins: the same conceptual entity may use two variables
+  where one shared variable was intended.
+- Check whether a closed-world assumption was omitted.
+- Decide whether duplicate answers or duplicate proofs are the real issue.
+
+**Right answers, wrong order**
+
+- Inspect clause order and generator order.
+- Identify `once/1` or aggregate tie-breaking that makes order observable.
+- Do not confuse order-sensitive behavior with declarative completeness.
+
+**Nontermination or explosive search**
+
+- Name the intended finite domain.
+- Identify the recursive call and its decreasing measure, or the finite tabled
+  call/answer space.
+- Move selective generators and ready filters earlier.
+- Check for terms that grow on every recursive call.
+- Run with `--stats` and compare one controlled revision at a time.
+
+**A surprising proof**
+
+- Verify that the answer itself is intended.
+- Find the earliest source premise that should not have participated.
+- Distinguish a misleading helper name from a semantically wrong clause.
+- Check whether two source versions or contexts were accidentally combined.
+
+### Create diagnostic relations
+
+Temporary helpers can expose intermediate concepts:
+
+```eyepl
+candidate_debug(Person, Age) :-
+  age(Person, Age).
+
+adult_debug(Person, Age) :-
+  candidate_debug(Person, Age),
+  ge(Age, 18).
+
+query(candidate_debug(Person, Age)).
+query(adult_debug(Person, Age)).
+```
+
+Once the fault is understood, either remove the helper or rename it as a
+permanent domain concept. Do not leave `debug2/3` archaeology in a theory whose
+proofs people must read.
+
+### Compare specification and implementation
+
+For a bounded domain, write a deliberately simple reference relation and
+compare it with the optimized one. The reference may be slow; its purpose is
+clarity.
+
+```eyepl
+reference_square(N, S) :-
+  between(0, 20, N),
+  mul(N, N, S).
+
+optimized_square(N, S) :-
+  between(0, 20, N),
+  mul(N, N, S).
+
+disagreement(N, S) :-
+  reference_square(N, S),
+  not(optimized_square(N, S)).
+
+query(disagreement(N, S)).
+```
+
+A complete equivalence check needs both directions and must account for
+duplicates if proof multiplicity matters. Within a finite domain, differential
+testing is a powerful guard during program transformation.
+
+### Read statistics as questions
+
+`--stats` reports work, not meaning. A high solution count may be necessary or
+may indicate a generator that should be constrained. Many table hits may show
+effective reuse; many distinct table entries may reveal an argument that
+prevents calls from sharing.
+
+Compare statistics only between runs with the same query, data, and observable
+answer contract. A faster program that silently loses answers is not an
+optimization.
+
+### Preserve the failure that taught you
+
+Every repaired defect should leave behind one of:
+
+- a new positive or negative case;
+- a fuse;
+- a mode declaration and mode test;
+- a bounded property;
+- a proof golden;
+- a comment stating a non-obvious invariant.
+
+Otherwise the repository remembers the repair but forgets the reason.
+
+**Exercises.**
+
+1. Deliberately misorder a numeric filter and diagnose it with a binding
+   ledger.
+2. Introduce a missing-variable join into a two-relation rule. Use the proof of
+   one false positive to locate it.
+3. Create a recursive term-growing rule, then state why tabling cannot make its
+   answer space finite.
+4. Compare statistics before and after moving an invariant calculation out of
+   recursion.
+5. Write a bidirectional bounded equivalence check for two list relations.
+
+## 33. A pattern language for Eyepl
+
+A pattern is not a copied code fragment. It is a recurring arrangement of
+meaning, representation, and control that solves a named design problem. The
+following patterns summarize the strongest constructions in this book.
+
+### Pattern 1: Ground sentence first
+
+**Problem:** a predicate's argument order and meaning drift while rules are
+being written.
+
+**Form:** write one representative ground fact and read it aloud before adding
+variables.
+
+```eyepl
+assigned_badge(alex, badge_17).
+```
+
+**Consequence:** argument roles become reviewable; modes and indexes can be
+discussed against a stable sentence.
+
+### Pattern 2: Normalize at the boundary
+
+**Problem:** spelling, aliases, units, or source-specific terms leak into every
+domain rule.
+
+**Form:** retain source facts, derive one canonical vocabulary, and make core
+rules depend only on the normalized layer.
+
+```eyepl
+source_role(person_7, "Doctor").
+
+canonical_role(Person, clinician) :-
+  source_role(Person, Text),
+  lowercase(Text, "doctor").
+```
+
+**Consequence:** adapters change independently from policy; proofs still trace
+back to source data.
+
+### Pattern 3: Generate, constrain, describe
+
+**Problem:** a search relation mixes candidate production, pruning, and
+explanation until none can be reasoned about separately.
+
+**Form:** generate a finite candidate, apply the cheapest selective constraints
+in dependency order, then construct a witness or reason.
+
+```eyepl
+chosen_pair(pair(X, Y), reason(sum_is_ten)) :-
+  between(0, 10, X),
+  between(X, 10, Y),
+  add(X, Y, 10).
+```
+
+**Consequence:** the search domain and each pruning step are visible.
+
+### Pattern 4: Carry the witness
+
+**Problem:** a Boolean-like conclusion proves existence but loses the object
+needed for explanation or later computation.
+
+**Form:** add a structured output containing the path, assignment, schedule, or
+evidence summary.
+
+```eyepl
+path(X, Y, [X, Y]) :- edge(X, Y).
+path(X, Z, [X | Rest]) :-
+  edge(X, Y),
+  path(Y, Z, Rest).
+```
+
+**Consequence:** answers become constructive; witness size and duplicate paths
+become explicit design concerns.
+
+### Pattern 5: Bound absence
+
+**Problem:** the domain needs a negative conclusion, but absence is meaningful
+only after a complete finite search.
+
+**Form:** bind the subject and finite scope before `not/1`; isolate the
+closed-world step behind a clearly named predicate.
+
+```eyepl
+unregistered(Person) :-
+  person(Person),
+  not(registered(Person)).
+```
+
+**Consequence:** the closed-world assumption has one reviewable home. It must
+not be mistaken for an explicit fact that the person is not registered.
+
+### Pattern 6: Explicit state transition
+
+**Problem:** planning or interpretation appears to require mutable state.
+
+**Form:** represent the old and new states as terms related by an action.
+
+```eyepl
+step(state(Room, outside), enter(Room), state(Room, inside)).
+```
+
+**Consequence:** histories are ordinary lists, transitions can be queried, and
+the state representation exposes invariants.
+
+### Pattern 7: Fixed-point closure
+
+**Problem:** reachability, inheritance, or dataflow revisits the same finite
+subquestions.
+
+**Form:** state the positive recursive relation directly and let eligible
+components be tabled.
+
+```eyepl
+depends(X, Y) :- direct_dependency(X, Y).
+depends(X, Z) :- direct_dependency(X, Y), depends(Y, Z).
+```
+
+**Consequence:** termination rests on a finite call and answer space, not on
+pretending the graph is acyclic.
+
+### Pattern 8: Proof façade
+
+**Problem:** low-level helper clauses produce technically correct but
+unreadable explanations.
+
+**Form:** introduce stable domain concepts and a small public decision relation
+whose premises are meaningful reasons.
+
+```eyepl
+within_limit(Device) :-
+  reading(Device, Value),
+  maximum(Max),
+  le(Value, Max).
+
+status(Device, safe) :-
+  within_limit(Device).
+```
+
+**Consequence:** internal calculations remain available, while the successful
+proof reads in domain vocabulary.
+
+### Pattern 9: Integrity before inference
+
+**Problem:** contradictory or impossible input would make ordinary conclusions
+misleading.
+
+**Form:** encode forbidden combinations as rules headed by `false`.
+
+```eyepl
+false :-
+  assigned_badge(PersonA, Badge),
+  assigned_badge(PersonB, Badge),
+  neq(PersonA, PersonB).
+```
+
+**Consequence:** the theory fails closed before queries run. A fuse is not a
+replacement for a reportable `invalid/1` relation when callers need to collect
+all defects.
+
+### Pattern 10: Version the evidence boundary
+
+**Problem:** an answer can be reproduced only if its facts, rules, and external
+semantics are known.
+
+**Form:** retain source snapshot, theory version, adapter version, and relevant
+clock or numeric assumptions beside the proof.
+
+```eyepl
+theory_version("2026-07-24").
+source_snapshot("telemetry-0042").
+numeric_model(ieee_754_double).
+```
+
+**Consequence:** an old decision can be reconstructed under the system that
+actually made it rather than silently rerun under today's theory.
+
+### Anti-patterns
+
+**The unbounded open generator.** A relation is queried with every argument
+free even though its mathematical extension is infinite.
+
+**The premature test.** A mode-sensitive built-in or negative goal appears
+before the goals that bind its inputs.
+
+**The accidental Cartesian product.** Two goals use different variables for
+what should be the same entity.
+
+**The opaque mega-clause.** One rule performs normalization, search, policy,
+and explanation with no named intermediate concepts.
+
+**The Boolean witness eraser.** A relation returns only `yes` after doing the
+work needed to construct a useful path or reason.
+
+**The silent closed world.** Failure to derive a fact is used as its opposite
+without documenting finite scope and completeness assumptions.
+
+**The proof-hostile helper.** Names such as `step3/2` or `tmp/4` expose an
+implementation sequence instead of a domain idea.
+
+**The optimization by answer loss.** `once/1`, early aggregation, or reordered
+search makes a benchmark faster by changing the public answer contract.
+
+**The floating theorem.** A numerical result is described as mathematically
+exact without naming units, approximation, or host floating-point behavior.
+
+**The timeless decision.** Sources and rules change, but conclusions retain no
+snapshot or theory version.
+
+### Selecting patterns
+
+Patterns compose. A robust decision service often uses:
+
+```text
+normalize at the boundary
+  -> generate, constrain, describe
+  -> carry the witness
+  -> proof façade
+  -> integrity before inference
+  -> version the evidence boundary
+```
+
+Do not apply every pattern mechanically. A three-fact teaching example does
+not need six architectural layers. Introduce a pattern when its named problem
+is present, and keep the smallest theory that makes meaning and control clear.
+
+**Exercises.**
+
+1. Find three patterns and two anti-patterns in an existing large example.
+2. Refactor an opaque rule into boundary, concept, and decision layers; compare
+   proofs before and after.
+3. Add witness carrying to a Boolean reachability relation and analyze the new
+   duplicate-answer behavior.
+4. Replace a silent closed-world decision with a named bounded-absence helper.
+5. Write a versioned evidence envelope for the Chapter 25 decision service.
+
 # Appendix A. Language summary
 
 Eyepl source is UTF-8. `%` starts a line comment. Plain atoms begin with a
@@ -4144,3 +4777,467 @@ specifications.
 The aim of Eyepl is not to make every difficult problem easy. It is to keep the
 theory visible while the machine searches it: facts you can inspect, rules you
 can discuss, answers you can test, and proofs you can carry forward as data.
+
+# Appendix H. Glossary
+
+This glossary fixes the book's vocabulary. Definitions describe Eyepl unless a
+broader mathematical meaning is explicitly stated.
+
+**Aggregate.** A relation that evaluates a finite nested solution space and
+combines its solutions, as `findall/3`, `countall/2`, `sumall/3`,
+`aggregate_min/5`, or `aggregate_max/5` does.
+
+**Answer.** A ground instance of a declared query goal produced by successful
+search. Eyepl suppresses duplicate printed answers and source facts already
+identical to queried conclusions.
+
+**Answer set.** The distinct ground answers for a query, considered without
+their discovery order or number of proofs.
+
+**Arity.** The number of arguments of a predicate or compound term. Predicate
+identity includes arity: `edge/2` and `edge/3` are different.
+
+**Atom constant.** A symbolic scalar such as `alice`, `ready`, or
+`'a quoted atom'`. An atom constant is data; an atomic formula uses a predicate
+name, possibly with arguments, as a proposition.
+
+**Atomic formula.** A callable proposition such as `ready` or
+`parent(ada, byron)`.
+
+**Base case.** A nonrecursive clause that gives recursion a directly solvable
+case.
+
+**Binding.** An association between a variable and a term accumulated during
+unification and search.
+
+**Binding pattern.** Which arguments of a call are known, unknown, or partly
+structured at call time. See also *mode*.
+
+**Body.** The comma-separated goals to the right of `:-` in a rule. Every body
+goal must succeed for that rule use to succeed.
+
+**Built-in.** A predicate whose relation is supplied by the host implementation
+rather than by source clauses. Built-ins may have restricted operational modes.
+
+**Call.** A goal selected for solving, together with its current bindings.
+
+**Canonical form.** A chosen representative for all values considered
+equivalent in a domain. Canonicalization can make some domain equality
+decidable by structural equality.
+
+**Clause.** A fact or rule terminated by a period.
+
+**Closed-world assumption.** The decision to treat failure to derive a
+sufficiently scoped claim as evidence for its absence. Eyepl's `not/1` performs
+negation as failure; the modeler is responsible for justifying the scope.
+
+**Compound term.** Structured data with a functor and one or more arguments,
+such as `point(3, 4)` or `reason(limit, exceeded)`.
+
+**Conformance corpus.** The executable cases defining the portable language
+contract under `test/conformance/`.
+
+**Conjunction.** Several goals joined by commas. Operationally they normally
+run left to right while carrying bindings forward.
+
+**Constraint.** In this book, a goal that rejects candidates not satisfying a
+property. Eyepl does not provide a general persistent constraint store.
+
+**Declarative reading.** What ground instances of clauses mean independently
+of the particular order in which a solver searches.
+
+**Definite clause.** A clause with exactly one positive head and a conjunction
+of positive body goals. The pure definite fragment has a least-Herbrand-model
+semantics.
+
+**Dependency graph.** A graph whose vertices are predicate indicators and
+whose edges record calls between predicates. Recursive components are cycles
+in this graph.
+
+**Determinism declaration.** Advisory `det/2` or `semidet/2` documentation
+stating an intended answer cardinality in documented modes.
+
+**Environment.** The current collection of variable bindings during a branch
+of search.
+
+**Fact.** A clause with no body, such as `parent(ada, byron).`
+
+**Failure.** The absence of a solution for the selected goal along the current
+branch. Failure causes search to reconsider alternatives; it is not an
+exception and not automatically an explicit negative fact.
+
+**Finite domain.** An explicitly bounded set of candidates a search can
+exhaust. Finiteness is a property of a call and its generators, not merely of
+a predicate name.
+
+**Fixed point.** A stage of repeated consequence generation at which no new
+answers are added.
+
+**Functor.** The name at the root of a compound term. In `point(3,4)`, the
+functor is `point` and the arity is two.
+
+**Generator.** A goal that produces candidate bindings, usually from facts,
+finite lists, or bounded numeric ranges.
+
+**Goal.** An atomic formula the solver is asked to establish.
+
+**Golden file.** Checked expected output stored in the repository. Normal
+example goldens record answers; proof goldens record explanations.
+
+**Ground.** Containing no variables. Eyepl prints only ground query answers.
+
+**Head.** The atomic formula to the left of `:-`, or the entire formula in a
+fact. A successful rule use derives an instance of its head.
+
+**Herbrand base.** The set of all ground atomic formulas constructible from a
+language's predicate symbols and Herbrand universe.
+
+**Herbrand interpretation.** A selection of ground atomic formulas treated as
+true over the Herbrand universe.
+
+**Herbrand universe.** The set of ground terms constructible from the constants
+and function symbols of a program.
+
+**Indexing.** Implementation machinery that narrows candidate clauses using
+bound arguments without changing the intended answer set.
+
+**Inference fuse.** A rule headed by `false`. If its body succeeds, Eyepl aborts
+before ordinary query execution.
+
+**Least Herbrand model.** The smallest Herbrand interpretation satisfying a
+definite program; equivalently, the fixed point obtained by repeatedly adding
+supported ground consequences.
+
+**List.** Either `[]` or a cons cell written `[Head | Tail]`. A proper list
+eventually ends in `[]`.
+
+**Mode.** An intended direction of use described by which arguments are
+supplied and which are produced. `mode/3` declarations document modes but do
+not alter execution.
+
+**Negation as failure.** The operational meaning of `not(Goal)`: succeed when a
+terminating nested search finds no solution for `Goal`.
+
+**Operational reading.** How a clause directs computation: which subgoal is
+selected, which bindings it needs and produces, and which alternatives it
+creates.
+
+**Occurs check.** A unification check that prevents binding a variable to a
+term containing that variable. Eyepl does not perform it.
+
+**Predicate indicator.** A predicate name paired with its arity, conventionally
+written `name/arity`.
+
+**Proof.** A successful derivation showing which clauses, facts, and built-ins
+support a ground answer. A proof records success, not every failed search
+branch.
+
+**Proof tree.** The tree of successful subgoals supporting one derivation.
+Unlike a search tree, it omits failed alternatives.
+
+**Proper list.** A finite list whose final tail is `[]`.
+
+**Query declaration.** A source fact `query(Goal)` selecting a goal for host
+execution.
+
+**Readiness.** The binding condition under which a mode-sensitive built-in can
+run safely and productively.
+
+**Recursion.** A predicate depending on itself directly or through other
+predicates.
+
+**Relation.** A set of tuples described by the ground instances for which a
+predicate holds.
+
+**Resolution.** The proof-search step that matches a goal with a clause head
+and replaces it with the instantiated clause body.
+
+**Rule.** A clause with a head and body, written `Head :- Body.`
+
+**Search branch.** One sequence of clause and solution choices considered by
+the solver.
+
+**Search tree.** The tree of successful, failed, and repeated alternatives
+explored while seeking answers.
+
+**Socket.** A named declaration of an expected knowledge boundary to be
+satisfied by an embedding host or provider.
+
+**Source fact.** A fact explicitly present in loaded input, as opposed to a
+derived conclusion.
+
+**Stratified negation.** Negative dependencies arranged in layers so no
+predicate depends negatively on itself through a dependency cycle.
+
+**Substitution.** A mapping from variables to terms. Applying a substitution
+replaces those variables consistently throughout a term or clause.
+
+**Tabling.** Evaluation that shares recursive calls and accumulates their
+answers toward a fixed point.
+
+**Term.** An atom constant, string, number, variable, compound term, list, or
+parenthesized comma term.
+
+**Termination measure.** A value in a well-founded order that strictly
+decreases along every recursive branch in a stated mode.
+
+**Theory.** The collection of source facts and rules loaded together and
+interpreted as claims about a domain.
+
+**Unification.** Structural equation solving that finds a substitution making
+two terms identical, when one exists.
+
+**Variable.** A clause-local placeholder beginning with uppercase or
+underscore. Bare `_` is fresh at every occurrence.
+
+**Variant call.** A call identical to another up to consistent renaming of
+variables. Variant recognition is important for tabling and cycle analysis.
+
+**Witness.** A constructed ground term demonstrating an existential result,
+such as a path, assignment, factorization, schedule, or proof-relevant object.
+
+# Appendix I. Twelve laboratories
+
+These laboratories turn the book into a course. Each has a deliverable, an
+acceptance test, and a reflection question. Complete them in order or choose a
+route suited to a study group.
+
+## I.1 A family theory
+
+**Build:** facts for at least six people and relations for parent, sibling,
+grandparent, and cousin.
+
+**Requirements:**
+
+- state the ground reading and principal modes of every predicate;
+- prevent a person from being their own parent with a fuse;
+- include one family branch that produces multiple cousins;
+- query both forward and inverse modes.
+
+**Acceptance:** normal output contains the predicted ground relations; one
+proof for a cousin conclusion passes through named intermediate concepts.
+
+**Reflect:** which conclusions depend on absence, and are those closed-world
+assumptions justified?
+
+## I.2 A relational list toolkit
+
+**Build:** user-defined relations for membership, concatenation, reversal, and
+prefix.
+
+**Requirements:**
+
+- use only facts, rules, unification, and list syntax for the core relations;
+- document every finite mode;
+- test empty, singleton, proper, and improper lists;
+- compare one relation with its built-in counterpart over a finite corpus.
+
+**Acceptance:** bounded differential queries find no disagreement in either
+direction.
+
+**Reflect:** which logically meaningful modes are operationally infinite?
+
+## I.3 A cyclic transport network
+
+**Build:** a network with at least ten stations, cycles, weighted edges, and
+two disconnected components.
+
+**Requirements:**
+
+- derive reachability;
+- construct simple path witnesses;
+- choose a least-cost path with deterministic tie-breaking;
+- test a cycle, absence, and equal-cost routes;
+- compare `--stats` before and after one justified control improvement.
+
+**Acceptance:** every returned witness begins and ends at the queried stations,
+uses known edges, and contains no repeated station.
+
+**Reflect:** why can endpoint reachability table finitely while the set of
+arbitrary walks is infinite?
+
+## I.4 A finite puzzle
+
+**Build:** encode a small Latin square, scheduling puzzle, or house puzzle.
+
+**Requirements:**
+
+- write the complete finite-domain calculation;
+- separate generation from constraints;
+- identify and remove at least one symmetry;
+- retain a structured witness;
+- predict the naive and symmetry-reduced search spaces.
+
+**Acceptance:** the solver returns every intended solution and no permutation
+duplicate representing the same mathematical object.
+
+**Reflect:** which source line contributes the greatest pruning power?
+
+## I.5 Arithmetic by construction
+
+**Build:** Peano addition and multiplication, then one relation of your choice:
+exponentiation, comparison, division with remainder, or factorial.
+
+**Requirements:**
+
+- state a termination measure for each intended mode;
+- prove one property by structural induction on paper;
+- add a bounded executable property test;
+- distinguish the inductive proof from the bounded test.
+
+**Acceptance:** the proof and program share a clearly identified base and
+recursive structure.
+
+**Reflect:** did the representation make the induction easier or merely the
+computation slower?
+
+## I.6 Counterexample laboratory
+
+**Build:** finite operation tables over carriers of two or three elements.
+
+**Requirements:**
+
+- test closure, identity, commutativity, and associativity;
+- search for a counterexample before testing the full universal property;
+- return the offending tuple as a witness;
+- explain which checks exhaust the model and which claims remain external.
+
+**Acceptance:** one deliberately nonassociative table is rejected with a
+specific triple; one valid group table passes every finite law.
+
+**Reflect:** why does one counterexample settle the negative question while a
+thousand random confirmations do not settle the positive one?
+
+## I.7 A symbolic language
+
+**Build:** a small expression language with literals, variables, addition,
+conditionals, and local bindings.
+
+**Requirements:**
+
+- represent syntax as explicit terms;
+- evaluate under an explicit environment;
+- define a structural size relation;
+- transform constant subexpressions;
+- show that evaluation agrees before and after transformation on a finite set
+  of environments.
+
+**Acceptance:** the transformation is idempotent over the chosen corpus and
+does not change evaluated results.
+
+**Reflect:** where is the boundary between Eyepl syntax and the object language
+represented by Eyepl terms?
+
+## I.8 A static analyzer
+
+**Build:** a sign, nullness, taint, or permission analysis for a tiny statement
+language.
+
+**Requirements:**
+
+- define a finite abstract domain and join;
+- propagate facts to a fixed point;
+- emit both safe conclusions and conservative warnings;
+- include a concrete execution illustrating one abstract result;
+- explain the approximation direction.
+
+**Acceptance:** every tested concrete behavior is covered by its abstract
+result; the analyzer may overapproximate but must not miss the chosen unsafe
+case.
+
+**Reflect:** why is a warning not necessarily evidence that a concrete failure
+occurs?
+
+## I.9 An auditable policy
+
+**Build:** an access, consent, eligibility, or compliance theory.
+
+**Requirements:**
+
+- separate source, normalized concept, decision, and reason layers;
+- state every closed-world assumption;
+- add at least three inference fuses;
+- retain source and theory version facts;
+- produce proof goldens for one permit and one denial-like conclusion.
+
+**Acceptance:** changing one source fact changes exactly the predicted decision
+and its supporting proof.
+
+**Reflect:** which trust claims are established by derivation, and which require
+authentication outside the theory?
+
+## I.10 A scientific model
+
+**Build:** encode a compact model from mechanics, circuits, chemistry,
+epidemiology, or statistics.
+
+**Requirements:**
+
+- document every quantity and unit;
+- expose derived intermediate quantities;
+- include valid, boundary, and invalid scenarios;
+- use a fuse for an impossible input state;
+- state floating-point and approximation assumptions.
+
+**Acceptance:** a proof for the final classification includes measurements,
+equations represented by built-ins, and thresholds in an intelligible order.
+
+**Reflect:** what has been proved conditionally, and what empirical claim
+remains outside formal logic?
+
+## I.11 An RDF knowledge boundary
+
+**Build:** start with a small Turtle or TriG fixture, convert it to `rdf/4`
+facts, derive one new relation, and serialize the result.
+
+**Requirements:**
+
+- preserve IRIs, literals, graph identity, and one RDF 1.2 feature;
+- keep adapter rules separate from domain rules;
+- query the generated Eyepl program directly;
+- compare the final N-Quads with a checked golden;
+- document what the host authenticates.
+
+**Acceptance:** the round trip retains the selected RDF term distinctions, and
+nested triple data is not accidentally asserted as a global fact.
+
+**Reflect:** what simplicity does the explicit adapter preserve in the Eyepl
+core?
+
+## I.12 A release-quality reasoning service
+
+**Build:** combine the preceding techniques into a small embedded service.
+
+**Requirements:**
+
+- define a JavaScript boundary that supplies or loads facts;
+- validate inputs before constructing the theory;
+- declare modes and determinism for public predicates;
+- include semantic cases, bounded properties, metamorphic tests, fuses,
+  warnings, proof goldens, and one scale case;
+- retain source snapshot, theory version, and proof with every audited result;
+- state time, memory, solution, and proof-size budgets;
+- write a one-page trust contract and a one-page known-limitations statement.
+
+**Acceptance:** another person can clone the repository, run one command, and
+reproduce answers and proofs from the preserved inputs without oral
+instructions.
+
+**Reflect:** if the service gives a wrong real-world decision, which of the four
+trust layers—source, model, engine, or derivation—would reveal the fault?
+
+## Laboratory review rubric
+
+Evaluate each project on five independent axes:
+
+| Axis | Excellent work demonstrates |
+| --- | --- |
+| Meaning | every public ground relation has one stable domain sentence |
+| Logic | clauses derive the intended answers and reject counterexamples |
+| Control | supported modes terminate for a stated mathematical reason |
+| Evidence | tests, witnesses, and proofs expose why results hold |
+| Boundary | sources, assumptions, versions, limits, and host duties are named |
+
+A beautiful program is not merely short. It makes the reason for its
+correctness, the shape of its search, and the boundary of its trust available
+to the next reader.
