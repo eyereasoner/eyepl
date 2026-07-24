@@ -73,7 +73,7 @@ That is the stake in the ground: a small language is enough to teach the large
 ideas when its semantics, execution, and evidence remain visible together.
 The reference implementation is therefore part of the argument. The examples
 are programs, the appendices describe the running system, and
-`npm run test:book` checks the complete code displays, local references, and
+`npm test` checks the complete code displays, local references, and
 built-in index against the source tree.
 
 ### A working discipline

@@ -1,0 +1,4 @@
+% From The Art of Eyepl, Chapter 33 — Pattern 5: Bound absence.
+unregistered(Person) :-
+  person(Person),
+  not(registered(Person)).

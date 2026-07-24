@@ -1,0 +1,5 @@
+% From The Art of Eyepl, Chapter 23 — Accumulators and modes.
+sum_numbers([], 0).
+sum_numbers([X | Xs], Sum) :-
+  sum_numbers(Xs, Rest),
+  add(X, Rest, Sum).

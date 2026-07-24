@@ -6,6 +6,7 @@ import { TestReporter } from './test-style.mjs';
 import { runConformance } from './run-conformance.mjs';
 import { runRegression } from './run-regression.mjs';
 import { runExamples } from './run-examples.mjs';
+import { runBookExamples } from './run-book-examples.mjs';
 import { runRdfTools } from './run-rdf-tools.mjs';
 
 const reporter = new TestReporter();
@@ -15,6 +16,7 @@ try {
   runRegression(reporter);
   await runRdfTools(reporter);
   runExamples(reporter);
+  runBookExamples(reporter);
   reporter.totalLine();
   process.exit(0);
 } catch (_) {
