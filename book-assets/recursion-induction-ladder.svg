@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520" role="img" aria-labelledby="title desc">
+  <title id="title">Recursion and induction share a structural ladder</title>
+  <desc id="desc">A base clause aligns with an induction base case, the recursive call aligns with the induction hypothesis, and the rule head aligns with the conclusion, while termination is established independently by a decreasing measure.</desc>
+  <defs>
+    <style>
+      .paper{fill:#fffdf7;stroke:#243447;stroke-width:2}.green{fill:#dcefe8;stroke:#2f6f55;stroke-width:2}
+      .gold{fill:#fff0d9;stroke:#9a5b18;stroke-width:2}.blue{fill:#dcebf0;stroke:#526273;stroke-width:2}
+      .title{fill:#8b3a3a;font:bold 24px Georgia,serif}.label{fill:#243447;font:bold 18px Georgia,serif}
+      .prose{fill:#435166;font:16px Georgia,serif}.code{fill:#172334;font:15px ui-monospace,SFMono-Regular,Consolas,monospace}
+      .line{fill:none;stroke:#526273;stroke-width:2.5}.rung{stroke:#9a5b18;stroke-width:4}
+    </style>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#526273"/></marker>
+  </defs>
+  <rect width="900" height="520" fill="#f4efe3"/>
+  <text class="title" x="450" y="35" text-anchor="middle">RECURSION IS INDUCTION IN MOTION</text>
+  <text class="label" x="210" y="74" text-anchor="middle">PROGRAM</text>
+  <text class="label" x="690" y="74" text-anchor="middle">PROOF</text>
+  <rect class="green" x="45" y="95" width="330" height="75" rx="10"/>
+  <text class="label" x="210" y="122" text-anchor="middle">BASE CLAUSE</text>
+  <text class="code" x="210" y="150" text-anchor="middle">plus(z, Y, Y).</text>
+  <rect class="green" x="525" y="95" width="330" height="75" rx="10"/>
+  <text class="label" x="690" y="122" text-anchor="middle">BASE CASE</text>
+  <text class="prose" x="690" y="150" text-anchor="middle">the property holds at z</text>
+  <line class="rung" x1="375" y1="132" x2="525" y2="132"/>
+
+  <rect class="gold" x="45" y="205" width="330" height="85" rx="10"/>
+  <text class="label" x="210" y="232" text-anchor="middle">RECURSIVE CALL</text>
+  <text class="code" x="210" y="260" text-anchor="middle">plus(X, Y, Z)</text>
+  <rect class="gold" x="525" y="205" width="330" height="85" rx="10"/>
+  <text class="label" x="690" y="232" text-anchor="middle">INDUCTION HYPOTHESIS</text>
+  <text class="prose" x="690" y="260" text-anchor="middle">assume the property for X</text>
+  <line class="rung" x1="375" y1="247" x2="525" y2="247"/>
+
+  <rect class="blue" x="45" y="325" width="330" height="85" rx="10"/>
+  <text class="label" x="210" y="352" text-anchor="middle">RULE HEAD</text>
+  <text class="code" x="210" y="380" text-anchor="middle">plus(s(X), Y, s(Z))</text>
+  <rect class="blue" x="525" y="325" width="330" height="85" rx="10"/>
+  <text class="label" x="690" y="352" text-anchor="middle">PRESERVED CONCLUSION</text>
+  <text class="prose" x="690" y="380" text-anchor="middle">therefore it holds for s(X)</text>
+  <line class="rung" x1="375" y1="367" x2="525" y2="367"/>
+  <path class="line" marker-end="url(#arrow)" d="M210 170V198M210 290V318"/>
+  <path class="line" marker-end="url(#arrow)" d="M690 170V198M690 290V318"/>
+
+  <rect class="paper" x="140" y="442" width="620" height="55" rx="10"/>
+  <text class="label" x="450" y="466" text-anchor="middle">INDEPENDENT TERMINATION ARGUMENT</text>
+  <text class="code" x="450" y="487" text-anchor="middle">measure: size of first argument · s(X) → X · strictly decreases</text>
+</svg>

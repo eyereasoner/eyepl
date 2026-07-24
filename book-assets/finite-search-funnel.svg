@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="500" viewBox="0 0 900 500" role="img" aria-labelledby="title desc">
+  <title id="title">Finite search narrows candidates into ordered witnesses</title>
+  <desc id="desc">A finite generator creates candidates, ready constraints prune them, witness construction preserves useful evidence, and ordering chooses among survivors without reducing the original candidate space.</desc>
+  <defs>
+    <style>
+      .paper{fill:#fffdf7;stroke:#243447;stroke-width:2}.green{fill:#dcefe8;stroke:#2f6f55;stroke-width:2}
+      .gold{fill:#fff0d9;stroke:#9a5b18;stroke-width:2}.rose{fill:#f1dfdf;stroke:#8b3a3a;stroke-width:2}
+      .title{fill:#8b3a3a;font:bold 24px Georgia,serif}.label{fill:#243447;font:bold 17px Georgia,serif}
+      .prose{fill:#435166;font:16px Georgia,serif}.code{fill:#172334;font:15px ui-monospace,SFMono-Regular,Consolas,monospace}
+      .line{fill:none;stroke:#526273;stroke-width:2.5}.cut{fill:none;stroke:#8b3a3a;stroke-width:2}
+    </style>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#526273"/></marker>
+  </defs>
+  <rect width="900" height="500" fill="#f4efe3"/>
+  <text class="title" x="450" y="35" text-anchor="middle">DESIGN THE SEARCH BEFORE RUNNING IT</text>
+  <path d="M80 85H820L690 360H210Z" fill="#fffdf7" stroke="#243447" stroke-width="2"/>
+  <path d="M80 85H820L780 170H120Z" fill="#dcebf0"/>
+  <path d="M120 170H780L740 255H160Z" fill="#f1dfdf"/>
+  <path d="M160 255H740L700 340H200Z" fill="#dcefe8"/>
+  <text class="label" x="450" y="113" text-anchor="middle">1 · GENERATE A FINITE DOMAIN</text>
+  <text class="code" x="450" y="142" text-anchor="middle">workers × tasks = 3 × 2 = 6 candidates</text>
+  <text class="label" x="450" y="199" text-anchor="middle">2 · APPLY THE EARLIEST READY CONSTRAINTS</text>
+  <text class="code" x="450" y="228" text-anchor="middle">qualified(Worker, Task) → 4 survivors</text>
+  <text class="label" x="450" y="285" text-anchor="middle">3 · CONSTRUCT THE WITNESS</text>
+  <text class="code" x="450" y="314" text-anchor="middle">assignment(Worker, Task)</text>
+  <path class="line" marker-end="url(#arrow)" d="M450 340V385"/>
+  <rect class="gold" x="285" y="385" width="330" height="65" rx="10"/>
+  <text class="label" x="450" y="412" text-anchor="middle">4 · ORDER SURVIVORS</text>
+  <text class="code" x="450" y="437" text-anchor="middle">once · findall · aggregate_min</text>
+  <path class="cut" d="M742 192L770 220M770 192L742 220M705 272L733 300M733 272L705 300"/>
+  <rect class="paper" x="35" y="375" width="210" height="85" rx="9"/>
+  <text class="label" x="140" y="404" text-anchor="middle">BOUND FIRST</text>
+  <text class="prose" x="140" y="430" text-anchor="middle">An unbounded generator</text>
+  <text class="prose" x="140" y="451" text-anchor="middle">defeats safe aggregation.</text>
+  <rect class="paper" x="655" y="375" width="210" height="85" rx="9"/>
+  <text class="label" x="760" y="404" text-anchor="middle">ASK FOR ENOUGH</text>
+  <text class="prose" x="760" y="430" text-anchor="middle">Existence, one witness,</text>
+  <text class="prose" x="760" y="451" text-anchor="middle">and all witnesses differ.</text>
+  <text class="prose" x="450" y="485" text-anchor="middle">Ordering chooses among survivors; it does not prune the generator.</text>
+</svg>

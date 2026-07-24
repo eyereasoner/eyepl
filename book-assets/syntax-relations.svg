@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="500" viewBox="0 0 900 500" role="img" aria-labelledby="title desc">
+  <title id="title">One syntax tree seen through several relations</title>
+  <desc id="desc">A central expression tree can be inspected as data, evaluated to a value, or rewritten to another syntax tree while an explicit environment supplies variable values.</desc>
+  <defs>
+    <style>
+      .paper{fill:#fffdf7;stroke:#243447;stroke-width:2}.tree{fill:#dcefe8;stroke:#2f6f55;stroke-width:2}
+      .gold{fill:#fff0d9;stroke:#9a5b18;stroke-width:2}.blue{fill:#dcebf0;stroke:#526273;stroke-width:2}
+      .title{fill:#8b3a3a;font:bold 24px Georgia,serif}.label{fill:#243447;font:bold 17px Georgia,serif}
+      .prose{fill:#435166;font:16px Georgia,serif}.code{fill:#172334;font:15px ui-monospace,SFMono-Regular,Consolas,monospace}
+      .line{fill:none;stroke:#526273;stroke-width:2.5}
+    </style>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#526273"/></marker>
+  </defs>
+  <rect width="900" height="500" fill="#f4efe3"/>
+  <text class="title" x="450" y="35" text-anchor="middle">ONE TERM, SEVERAL RELATIONS</text>
+  <rect class="paper" x="300" y="65" width="300" height="320" rx="12"/>
+  <text class="label" x="450" y="95" text-anchor="middle">SYNTAX AS DATA</text>
+  <line class="line" x1="450" y1="145" x2="370" y2="215"/><line class="line" x1="450" y1="145" x2="530" y2="215"/>
+  <line class="line" x1="530" y1="215" x2="490" y2="285"/><line class="line" x1="530" y1="215" x2="570" y2="285"/>
+  <rect class="tree" x="410" y="115" width="80" height="42" rx="20"/><text class="code" x="450" y="141" text-anchor="middle">add</text>
+  <rect class="tree" x="325" y="205" width="90" height="42" rx="20"/><text class="code" x="370" y="231" text-anchor="middle">number(2)</text>
+  <rect class="tree" x="485" y="205" width="90" height="42" rx="20"/><text class="code" x="530" y="231" text-anchor="middle">multiply</text>
+  <rect class="tree" x="445" y="275" width="90" height="42" rx="20"/><text class="code" x="490" y="301" text-anchor="middle">number(3)</text>
+  <rect class="tree" x="535" y="275" width="90" height="42" rx="20"/><text class="code" x="580" y="301" text-anchor="middle">number(4)</text>
+  <text class="code" x="450" y="350" text-anchor="middle">add(number(2), multiply(...))</text>
+
+  <rect class="blue" x="25" y="125" width="220" height="145" rx="10"/>
+  <text class="label" x="135" y="157" text-anchor="middle">INSPECT</text>
+  <text class="code" x="135" y="190" text-anchor="middle">tree_member/2</text>
+  <text class="prose" x="135" y="222" text-anchor="middle">follow constructors</text>
+  <text class="prose" x="135" y="245" text-anchor="middle">without mutation</text>
+  <path class="line" marker-end="url(#arrow)" d="M300 185H252"/>
+
+  <rect class="gold" x="655" y="85" width="220" height="145" rx="10"/>
+  <text class="label" x="765" y="117" text-anchor="middle">EVALUATE</text>
+  <text class="code" x="765" y="150" text-anchor="middle">evaluate/2</text>
+  <text class="prose" x="765" y="183" text-anchor="middle">collapse syntax</text>
+  <text class="code" x="765" y="207" text-anchor="middle">Value = 14</text>
+  <path class="line" marker-end="url(#arrow)" d="M600 150H648"/>
+
+  <rect class="tree" x="655" y="285" width="220" height="145" rx="10"/>
+  <text class="label" x="765" y="317" text-anchor="middle">REWRITE</text>
+  <text class="code" x="765" y="350" text-anchor="middle">simplify/2</text>
+  <text class="prose" x="765" y="382" text-anchor="middle">preserve syntax;</text>
+  <text class="prose" x="765" y="405" text-anchor="middle">change its form</text>
+  <path class="line" marker-end="url(#arrow)" d="M600 315H648"/>
+
+  <rect class="paper" x="55" y="330" width="210" height="100" rx="10"/>
+  <text class="label" x="160" y="360" text-anchor="middle">ENVIRONMENT</text>
+  <text class="code" x="160" y="392" text-anchor="middle">[binding(x, 3)]</text>
+  <text class="prose" x="160" y="416" text-anchor="middle">explicit lookup state</text>
+  <path class="line" marker-end="url(#arrow)" d="M265 380L294 352"/>
+  <text class="prose" x="450" y="475" text-anchor="middle">The relation determines the question asked of the same persistent term.</text>
+</svg>

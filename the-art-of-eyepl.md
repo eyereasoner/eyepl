@@ -2169,6 +2169,11 @@ Drawing even a partial tree exposes errors that are hard to see in source
 alone: a variable that should have been shared, a recursive call that did not
 consume input, or a generator placed after the test that needs its output.
 
+<figure>
+  <img src="book-assets/and-or-binding-trace.svg" alt="An ancestor query branches between clauses while a binding ledger shows Y becoming byron and flowing into the remaining recursive goal.">
+  <figcaption>Search alternates between choices and conjunctions; substitutions flow forward, while failure returns to the latest unfinished choice.</figcaption>
+</figure>
+
 ### Substitutions accumulate
 
 A substitution is a set of bindings carried through the remaining goals.
@@ -2286,6 +2291,11 @@ The clauses say where a member may occur. They also define a search order:
 root, then left subtree, then right subtree. If only membership matters, that
 order is an implementation choice. If a caller uses `once/1`, it becomes
 observable.
+
+<figure>
+  <img src="book-assets/syntax-relations.svg" alt="One expression tree is inspected as data, evaluated to a value, and rewritten to another syntax tree with an explicit environment.">
+  <figcaption>A compound term remains persistent data; different relations inspect, evaluate, or rewrite it according to the question being asked.</figcaption>
+</figure>
 
 ### Transforming a tree
 
@@ -2443,6 +2453,11 @@ Four transformations recur in logic programs:
 Each can improve control or reveal structure. Each can also change modes,
 duplicate work, or alter proof shape.
 
+<figure>
+  <img src="book-assets/program-transformation-workbench.svg" alt="An original relation branches into unfolding, folding, specialization, and accumulation, then all four return to a shared contract comparison.">
+  <figcaption>Transformation is a controlled experiment: change the clauses, then compare meaning, supported modes, termination, proof shape, and cost.</figcaption>
+</figure>
+
 ### Unfolding and folding
 
 Start with:
@@ -2587,6 +2602,11 @@ Nondeterminism is not randomness. A nondeterministic relation defines several
 legitimate continuations, and search systematically explores them. The design
 problem is to make useful alternatives complete while keeping their number
 finite and their order productive.
+
+<figure>
+  <img src="book-assets/finite-search-funnel.svg" alt="A funnel narrows six generated worker-task candidates through ready constraints into four witnesses before ordering the survivors.">
+  <figcaption>Finite search is designed from the top down: bound generation, prune with ready constraints, preserve the witness, then order only the survivors.</figcaption>
+</figure>
 
 ### Generate, constrain, describe
 
@@ -3134,6 +3154,11 @@ Operationally, the first argument decreases by one constructor until it reaches
 `z`. Mathematically, the clauses mirror a recursive definition. To prove a
 property of `plus/3` for all Peano naturals, induction on that first argument is
 the obvious proof shape.
+
+<figure>
+  <img src="book-assets/recursion-induction-ladder.svg" alt="Parallel ladders align a base clause with an induction base case, a recursive call with the induction hypothesis, and the rule head with the preserved conclusion; a separate box states the decreasing termination measure.">
+  <figcaption>Recursion and induction can share a structural skeleton, but termination still requires its own well-founded decreasing measure.</figcaption>
+</figure>
 
 ### Three obligations, not one
 
@@ -3951,6 +3976,11 @@ Use four views in a fixed order:
 2. **bindings:** what is known before each goal?
 3. **search:** which alternatives are explored, repeated, or pruned?
 4. **proof:** which successful premises support the observed answer?
+
+<figure>
+  <img src="book-assets/debugging-four-lenses.svg" alt="A disputed ground query passes through four diagnostic lenses—meaning, bindings, search, and proof—before the repaired invariant is preserved as a regression.">
+  <figcaption>Each debugging lens answers a different question; begin with meaning, move outward only as needed, and preserve the lesson as an executable check.</figcaption>
+</figure>
 
 ### Reduce to the smallest disputed ground question
 

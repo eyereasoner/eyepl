@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="510" viewBox="0 0 900 510" role="img" aria-labelledby="title desc">
+  <title id="title">An and-or search tree with an accumulating binding ledger</title>
+  <desc id="desc">An ancestor query chooses between clauses, completes every goal in a recursive clause, carries bindings from left to right, and rewinds to the latest choice after failure.</desc>
+  <defs>
+    <style>
+      .paper{fill:#fffdf7;stroke:#243447;stroke-width:2}.goal{fill:#e7f3ee;stroke:#2f6f55;stroke-width:2}
+      .choice{fill:#fff0d9;stroke:#9a5b18;stroke-width:2}.fail{fill:#f8e3e3;stroke:#8b3a3a;stroke-width:2}
+      .title{fill:#8b3a3a;font:bold 24px Georgia,serif}.label{fill:#243447;font:bold 17px Georgia,serif}
+      .prose{fill:#435166;font:16px Georgia,serif}.code{fill:#172334;font:15px ui-monospace,SFMono-Regular,Consolas,monospace}
+      .line{fill:none;stroke:#526273;stroke-width:2}.dash{fill:none;stroke:#8b3a3a;stroke-width:2;stroke-dasharray:6 5}
+    </style>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#526273"/></marker>
+    <marker id="redarrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#8b3a3a"/></marker>
+  </defs>
+  <rect width="900" height="510" fill="#f4efe3"/>
+  <text class="title" x="450" y="34" text-anchor="middle">READING ONE COMPUTATION</text>
+  <rect class="paper" x="25" y="55" width="540" height="420" rx="10"/>
+  <text class="label" x="295" y="84" text-anchor="middle">AND-OR SEARCH</text>
+  <rect class="goal" x="180" y="105" width="230" height="45" rx="8"/>
+  <text class="code" x="295" y="133" text-anchor="middle">ancestor(ada, Who)</text>
+  <path class="line" d="M295 150L150 205M295 150L425 205"/>
+  <text class="prose" x="295" y="179" text-anchor="middle">OR: either clause may establish the goal</text>
+  <rect class="choice" x="65" y="205" width="170" height="55" rx="8"/>
+  <text class="code" x="150" y="228" text-anchor="middle">direct clause</text>
+  <text class="prose" x="150" y="250" text-anchor="middle">one supporting goal</text>
+  <rect class="choice" x="335" y="205" width="180" height="55" rx="8"/>
+  <text class="code" x="425" y="228" text-anchor="middle">recursive clause</text>
+  <text class="prose" x="425" y="250" text-anchor="middle">two supporting goals</text>
+  <path class="line" d="M150 260V310M425 260L350 310M425 260L490 310"/>
+  <text class="prose" x="420" y="290" text-anchor="middle">AND: both goals must succeed</text>
+  <rect class="goal" x="67" y="310" width="166" height="48" rx="8"/>
+  <text class="code" x="150" y="339" text-anchor="middle">parent(ada,Who)</text>
+  <rect class="goal" x="270" y="310" width="160" height="48" rx="8"/>
+  <text class="code" x="350" y="339" text-anchor="middle">parent(ada,Y)</text>
+  <rect class="goal" x="440" y="310" width="100" height="48" rx="8"/>
+  <text class="code" x="490" y="330" text-anchor="middle">ancestor</text>
+  <text class="code" x="490" y="349" text-anchor="middle">(Y,Who)</text>
+  <rect class="fail" x="330" y="395" width="190" height="48" rx="8"/>
+  <text class="code" x="425" y="424" text-anchor="middle">later goal fails</text>
+  <path class="line" marker-end="url(#arrow)" d="M350 358L395 390"/>
+  <path class="dash" marker-end="url(#redarrow)" d="M425 395C570 385 570 235 520 235"/>
+  <text class="prose" x="294" y="462" text-anchor="middle">failure rewinds choices; it does not retract facts</text>
+
+  <rect class="paper" x="590" y="55" width="285" height="420" rx="10"/>
+  <text class="label" x="732" y="84" text-anchor="middle">BINDING LEDGER</text>
+  <text class="prose" x="615" y="116">selected goal</text>
+  <text class="code" x="615" y="142">parent(ada, Y)</text>
+  <path class="line" marker-end="url(#arrow)" d="M615 160H845"/>
+  <text class="prose" x="615" y="191">unifier produced</text>
+  <rect class="goal" x="615" y="207" width="230" height="43" rx="7"/>
+  <text class="code" x="730" y="234" text-anchor="middle">{ Y = byron }</text>
+  <path class="line" marker-end="url(#arrow)" d="M730 250V284"/>
+  <text class="prose" x="615" y="308">remaining goal resolves to</text>
+  <rect class="choice" x="615" y="325" width="230" height="43" rx="7"/>
+  <text class="code" x="730" y="352" text-anchor="middle">ancestor(byron, Who)</text>
+  <text class="prose" x="730" y="404" text-anchor="middle">Bindings travel forward</text>
+  <text class="prose" x="730" y="426" text-anchor="middle">through every later goal.</text>
+  <text class="code" x="730" y="454" text-anchor="middle">choose → bind → continue</text>
+</svg>
