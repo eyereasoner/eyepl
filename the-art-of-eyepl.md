@@ -73,6 +73,22 @@ the answer; after it, change one fact or query and explain the difference.
 Use `npm run generate` after editing the book to refresh the extracted
 `examples/book/` files.
 
+### Reading conventions
+
+Code displays serve three different purposes:
+
+- an `eyepl` block is source code; complete blocks are extracted under
+  `examples/book/`, although a short block may rely on facts introduced in the
+  surrounding chapter;
+- a `text` block shows output, a trace, a data shape, or pseudocode and is not
+  necessarily accepted as Eyepl input;
+- a `sh` or `js` block is a host command or embedding example.
+
+Top-level programs under [`examples/`](examples/) are the complete runnable
+cases. Their exact outputs live under `examples/output/`; selected proof
+outputs live under `examples/proof/`. Use the chapter extractions for copying a
+particular display and the top-level corpus for end-to-end experiments.
+
 ### The promise of this book
 
 This book treats logic programming as a craft, not a collection of clever
@@ -115,6 +131,23 @@ program construction. Readers new to logic programming can follow Parts I–III
 in order. Experienced Prolog programmers can begin with Chapters 3, 13, and
 17 to see where Eyepl's hybrid execution and proof-oriented design differ.
 Appendix D gives further routes through the material.
+
+### When a run surprises you
+
+Do not change several clauses at once. Use this recovery loop:
+
+1. reduce the issue to the smallest ground question whose answer you dispute;
+2. confirm that every predicate in that question has one clear sentence;
+3. write the bindings available before each body goal from left to right;
+4. run with `--proof` if an unexpected answer succeeds;
+5. run with `--stats` or hand-trace the first branch if an expected answer is
+   missing or slow;
+6. preserve the discovery as a test before repairing the program.
+
+No output can mean a legitimate absence, suppression of a queried source fact,
+an unready built-in, or an unfinished search. Chapter 1 introduces source-fact
+suppression, Chapters 7 and 11 distinguish failure from printed output, and
+Chapter 32 develops the full debugging method.
 
 ### Choose a route
 
@@ -201,6 +234,7 @@ the next program.
 - [G. Notes and references](#appendix-g-notes-and-references)
 - [H. Glossary](#appendix-h-glossary)
 - [I. Twelve laboratories](#appendix-i-twelve-laboratories)
+- [J. Checkpoint notes and selected answers](#appendix-j-checkpoint-notes-and-selected-answers)
 
 ---
 
@@ -2221,6 +2255,10 @@ trace, but together they usually locate the modeling issue.
 4. Construct a recursive rule whose call grows a list on every step. Explain
    why variant tabling does not make its call space finite.
 
+**Checkpoint.** Hand-trace one successful answer and one failed branch using
+the six-item tracing discipline. Compare the successful trace with `--proof`
+and the total work with `--stats`; state one fact that each view omits.
+
 ## 22. Trees, languages, and symbolic evaluation
 
 Compound terms are finite trees. A functor labels an internal node and its
@@ -2383,6 +2421,11 @@ simplification and permits unbounded rewriting.
 5. Explain why individually sensible rewrite rules may fail to terminate when
    repeatedly combined.
 
+**Checkpoint.** For one compound term, label the object-language syntax, the
+Eyepl relation that inspects it, and the environment or state used to interpret
+it. Then identify a rewrite pair that would create a cycle if both directions
+were enabled.
+
 ## 23. Transforming programs
 
 Program transformation changes clauses while attempting to preserve an
@@ -2534,6 +2577,10 @@ silently drops a mode is a different program.
 5. Find a transformation that preserves answers but changes the first proof
    selected by `once/1`.
 
+**Checkpoint.** Choose one original and transformed relation. Compare their
+answer sets in both directions over a finite domain, then separately compare
+termination, answer order, duplicates, proof shape, and solver statistics.
+
 ## 24. Designing finite search
 
 Nondeterminism is not randomness. A nondeterministic relation defines several
@@ -2655,6 +2702,11 @@ part of the specification.
    an impractically large search.
 5. Construct a recursive first clause that starves a valid later base clause,
    then repair its control.
+
+**Checkpoint.** Write down the size of a candidate space before running its
+search. Name the generator, the earliest ready constraint, the witness, and
+the ordering used for optimization. If the size cannot be bounded, the design
+is not yet ready for aggregation.
 
 ## 25. Case study: an auditable decision service
 
@@ -2805,6 +2857,11 @@ decision can be reconstructed under the rules that actually governed it.
 5. Design a source socket for badge facts and state what the host must validate.
 6. Run the case with `--proof` and decide which helpers improve the explanation.
 
+**Checkpoint.** Reconstruct one permit decision from a preserved source
+snapshot, theory version, answer, and proof. Mark which step authenticates the
+source, which checks integrity, which derives the decision, and which merely
+stores evidence for later audit.
+
 ## Part V summary
 
 Part V followed whole computations rather than isolated features:
@@ -2851,6 +2908,11 @@ syntax is data, state is an argument, and audit evidence remains visible.
   <img src="book-assets/part-6-mathematics.svg" alt="A bridge carries mathematical definitions and proof into executable clauses, witnesses, counterexamples, and derivations.">
   <figcaption>Formal clauses form a bridge: definitions and invariants become computations that return witnesses, counterexamples, and inspectable proofs.</figcaption>
 </figure>
+
+This Part is a route, not a prerequisite for the reasoning laboratory. For a
+short practical path, read Chapters 26, 27, and 29, then continue at Chapter
+31. Read Chapters 28 and 30 as well when representation, formal scope, and the
+limits of computation are central to your purpose.
 
 Mathematics appears throughout this book as subject matter: arithmetic,
 combinatorics, graphs, geometry, algebra, statistics, and physical models. But
@@ -3041,6 +3103,10 @@ calculation.
 5. Find a proof whose machine form is correct but whose helper names make it a
    poor human explanation.
 
+**Checkpoint.** For one printed mathematical answer, state the existential
+claim witnessed by its bindings, the finite domain that made search effective,
+and the separate argument—if any—that justifies a universal theorem.
+
 ## 27. Recursion is induction in motion
 
 Recursion and mathematical induction are not identical, but they are natural
@@ -3171,6 +3237,10 @@ longer supplies a finite bound.
    reachability.
 5. Study `examples/peano-calculus.pl` and identify where the data constructors
    determine the available induction.
+
+**Checkpoint.** Align one recursive program with an inductive argument: base
+clause with base case, recursive call with induction hypothesis, and rule head
+with the preserved conclusion. Then give the independent termination measure.
 
 ## 28. Algebra, symmetry, and representation
 
@@ -3325,6 +3395,11 @@ That checklist joins abstract algebra, data modeling, and program design.
 5. Find a matrix counterexample showing that multiplication is not
    commutative. Explain why one witness refutes a universal law.
 
+**Checkpoint.** Pick a domain value with two possible representations. State
+whether Eyepl regards them as structurally equal, whether the domain regards
+them as equivalent, and which normalization or explicit relation connects the
+two notions.
+
 ## 29. Search as experimental mathematics
 
 Mathematicians do not prove only by moving forward from axioms. They calculate
@@ -3457,6 +3532,11 @@ than conceal them.
    identity.
 5. Choose one scientific example and list every premise outside pure logic:
    measurements, units, empirical law, approximation, and numeric behavior.
+
+**Checkpoint.** Label a computation as one of: witness construction,
+counterexample, exhaustive finite-model check, bounded evidence, or numerical
+model evaluation. Write one sentence stating exactly what its success proves
+and what its failure leaves open.
 
 ## 30. What mathematics promises
 
@@ -3605,6 +3685,11 @@ Preserve the proof.
 5. Write a one-page “trust contract” for an embedded Eyepl service: accepted
    sources, model scope, numeric assumptions, resource bounds, proof retention,
    and known limits.
+
+**Checkpoint.** Take one strong conclusion and prefix it with every condition
+on which it depends: source authenticity, model scope, built-in semantics,
+finite search, theory version, and derivation validity. If the qualified claim
+still matters, the model has earned its confidence honestly.
 
 ## Part VI summary
 
@@ -3848,6 +3933,10 @@ Before releasing a theory or embedded service, cover:
    changes that should block a release.
 5. Design a test that distinguishes “no answer” from “invalid input theory.”
 
+**Checkpoint.** Assemble a minimum release matrix for one public relation:
+positive, absent, boundary, alternate mode, recursive or cyclic, fuse, proof,
+and scale cases. State which expected outputs should be exact goldens.
+
 ## 32. Debugging by meaning, search, and proof
 
 Debugging a logic program is difficult when every symptom is described as
@@ -4033,6 +4122,10 @@ Otherwise the repository remembers the repair but forgets the reason.
 4. Compare statistics before and after moving an invariant calculation out of
    recursion.
 5. Write a bidirectional bounded equivalence check for two list relations.
+
+**Checkpoint.** Preserve one defect as a regression. Record the smallest
+disputed ground question, expected answer, first incorrect binding or search
+choice, repaired invariant, and test that would fail if the defect returned.
 
 ## 33. A pattern language for Eyepl
 
@@ -4269,6 +4362,10 @@ is present, and keep the smallest theory that makes meaning and control clear.
    duplicate-answer behavior.
 4. Replace a silent closed-world decision with a named bounded-absence helper.
 5. Write a versioned evidence envelope for the Chapter 25 decision service.
+
+**Checkpoint.** Select the smallest set of patterns that solves a real problem
+in one theory. For every selected pattern, name the pressure that justifies
+it; remove any layer that exists only because the catalog made it available.
 
 ## Part VII summary
 
@@ -4692,6 +4789,34 @@ For a first week, run `socrates.pl` and `ancestor.pl`, rewrite them from memory,
 inspect their proofs, learn `member/2`, `append/3`, and `select/3`, solve one
 finite puzzle, and add one inference fuse.
 
+## D.1 Course-length schedules
+
+These schedules name a spine rather than a reading quota. Every meeting should
+include prediction, execution, one changed input, and a short explanation.
+
+| Meeting | Six-meeting introduction | Ten-meeting course | Fourteen-meeting course |
+| --- | --- | --- | --- |
+| 1 | Chapters 1–2; Socrates and family facts | Chapters 1–2; Laboratory I.1 begins | Chapters 1–2; predicates, terms, and unification |
+| 2 | Chapters 3–5; recursion and lists | Chapters 3–5; Laboratories I.1–I.2 | Chapters 3–4; rules, semantics, and recursion |
+| 3 | Chapters 6–10; one finite puzzle | Chapters 6–8; finite generation and absence | Chapters 5–6; lists and arithmetic |
+| 4 | Chapters 11–14 and 17–20; proof, integrity, construction | Chapters 9–12; contexts, models, proofs, and fuses | Chapters 7–8; negation and aggregation |
+| 5 | Choose Chapters 21–25 or 26–30 | Chapters 13–16; performance and boundaries | Chapters 9–10; structured data and finite models |
+| 6 | Chapters 31–33; release matrix and reflection | Chapters 17–20; construction and improvement | Chapters 11–12; answers, proofs, and integrity |
+| 7 | — | Chapters 21–25; one advanced case | Chapters 13–14; termination and knowledge engineering |
+| 8 | — | Choose Chapters 26–30 | Choose Chapters 15–16 or an alternate domain route |
+| 9 | — | Chapters 31–32; test and debug | Chapters 17–20; construction, correctness, improvement |
+| 10 | — | Chapter 33; project review | Chapters 21–25; advanced relational design |
+| 11 | — | — | Chapters 26–27; witnesses and induction |
+| 12 | — | — | Chapters 28–30; representation, experiment, limits |
+| 13 | — | — | Chapters 31–33; test, debug, patterns |
+| 14 | — | — | Laboratory demonstrations and rubric review |
+
+For a classroom, use checkpoints as exit questions and laboratories as
+multi-meeting projects. A six-meeting introduction should prefer one small,
+finished theory over hurried coverage of every feature.
+
+## D.2 Domain routes
+
 Modelers should study `access-control-policy.pl`,
 `clinical-trial-screening.pl`, `gdpr-compliance.pl`, and
 `trust-flow-provenance-threshold.pl`. Identify facts, derived concepts,
@@ -4708,6 +4833,8 @@ Mathematics students should read Chapters 3, 19, and 26–30 together, then stud
 `matrix-noncommutativity.pl`. For each program, distinguish definition from
 theorem, computation from justification, finite evidence from universal proof,
 and syntactic equality from the domain's mathematical equality.
+
+## D.3 Review questions
 
 Review questions:
 
@@ -4739,6 +4866,14 @@ source program has an exact answer file under
 [examples/output](examples/output/), and selected programs have a checked
 explanation under [examples/proof](examples/proof/). The pointers below open
 the program itself rather than merely naming it.
+
+The generated [`examples/book/`](examples/book/) tree serves a different
+purpose: it mirrors the complete inline Eyepl displays chapter by chapter.
+Those files are checked for syntax, and displays containing queries are
+executed, but some teaching fragments deliberately depend on neighboring
+facts or helpers. Use the top-level catalog below when you want a self-contained
+program with a golden answer; use `examples/book/` when you want the exact
+display being discussed on a page.
 
 For any named example, the three useful views are:
 
@@ -5457,6 +5592,19 @@ These laboratories turn the book into a course. Each has a deliverable, an
 acceptance test, and a reflection question. Complete them in order or choose a
 route suited to a study group.
 
+The estimates below assume familiarity with the listed chapters and include
+design, implementation, tests, and reflection. They are planning ranges, not
+deadlines.
+
+| Laboratories | Preparation | Typical scope |
+| --- | --- | --- |
+| I.1–I.2 | Chapters 1–5 | 2–4 hours each |
+| I.3–I.4 | Chapters 6–10 and 13 | 4–8 hours each |
+| I.5–I.7 | Chapters 19 and 26–29 | 4–8 hours each |
+| I.8–I.10 | Chapters 14, 25, and 31–33 | 6–12 hours each |
+| I.11 | Chapter 15 and `tools/README.md` | 4–8 hours |
+| I.12 | Chapters 16, 25, and 31–33 | multi-session capstone |
+
 ## I.1 A family theory
 
 **Build:** facts for at least six people and relations for parent, sibling,
@@ -5696,3 +5844,122 @@ Evaluate each project on five independent axes:
 A beautiful program is not merely short. It makes the reason for its
 correctness, the shape of its search, and the boundary of its trust available
 to the next reader.
+
+# Appendix J. Checkpoint notes and selected answers
+
+Checkpoints are for retrieval and diagnosis, not grading by hidden wording.
+Attempt one before reading these notes. When a checkpoint asks about a program
+of your own, compare the structure of your argument rather than expecting one
+canonical implementation.
+
+## J.1 Foundations: Chapters 1–10
+
+**Chapter 1.** `parent(ada, byron)` says that Ada is a parent of Byron.
+`query(child(X, Y))` asks for every ground child–parent pair derivable by the
+program. Adding `parent(diego, elena).` adds `child(elena, diego).`; it does not
+change the earlier three child answers.
+
+**Chapter 2.** `point(X, X)` unifies with `point(red, red)` by binding `X` to
+`red`. It does not unify with `point(red, blue)` because one variable cannot
+be both distinct atoms. `[Head | Tail]` unifies with `[a, b, c]` using
+`Head = a` and `Tail = [b, c]`.
+
+**Chapter 3.** In
+`adult(Person) :- age(Person, Years), ge(Years, 18).`, a ground reading is:
+every person with a recorded age of at least 18 is an adult. Operationally,
+`age/2` supplies `Person` and `Years` before `ge/2` checks the numeric bound.
+Reversing those goals asks `ge/2` to inspect unbound terms.
+
+**Chapter 4.** With `ada → byron → clara → diego`, direct ancestor answers are
+the three edges. Recursive answers additionally include
+`ancestor(ada, clara)`, `ancestor(byron, diego)`, and
+`ancestor(ada, diego)`. A successful derivation advances along a known parent
+edge until a direct parent clause closes the proof.
+
+**Chapter 5.** `joins([a], [b, c], Whole)` yields `[a, b, c]`. With the whole
+list bound, the prefix/suffix splits are:
+
+```text
+[]          and [a, b, c]
+[a]         and [b, c]
+[a, b]      and [c]
+[a, b, c]   and []
+```
+
+`[a | Tail]` is not yet known to be proper because `Tail` might never resolve
+to a finite chain ending in `[]`.
+
+**Chapter 6.** `add/3`, `mul/3`, `sqrt/2`, comparisons, and the recursive
+arithmetic steps require their documented numeric inputs. In
+`between(1, 10, N)`, an unbound `N` is generated from a finite interval; a
+bound `N` is checked for membership in that interval.
+
+**Chapter 7.** `user(User), not(blocked(User))` first selects each known user,
+then asks a ground absence question for that user.
+`not(blocked(User)), user(User)` first asks whether the database contains no
+blocked user at all. Calling either result “allowed” requires a justified,
+complete user and blocked-status boundary.
+
+**Chapter 8.** Over an empty nested search, `findall/3` produces `[]`,
+`countall/2` produces `0`, and `sumall/3` produces numeric zero.
+`aggregate_min/5` and `aggregate_max/5` fail because no candidate can supply a
+best key. The goal passed into the aggregate, not the aggregate's punctuation,
+must establish finiteness.
+
+**Chapter 9.** `message/2` is asserted as an atomic formula. Its context
+argument is structured data. `holds/2` examines members inside that term; it
+does not add those members as globally callable source facts.
+
+**Chapter 10.** The complete coloring has six answers. Removing `neq(A, C)`
+leaves the requirements `A ≠ B` and `B ≠ C`, producing twelve answers. The six
+new answers are those with equal first and third colors:
+`red–green–red`, `red–blue–red`, `green–red–green`,
+`green–blue–green`, `blue–red–blue`, and `blue–green–blue`.
+
+## J.2 Trust and construction: Chapters 11–20
+
+Use this table to check that the checkpoint response separates concepts that
+are often collapsed:
+
+| Chapter | A sound response distinguishes |
+| --- | --- |
+| 11 | ground answer, successful proof, failed search branches, and source trust |
+| 12 | ordinary absence, invalid theory, process exit, and resource failure |
+| 13 | structural descent, finite table growth, and unbounded term construction |
+| 14 | source evidence, derived concepts, policy decisions, and integrity |
+| 15 | RDF term preservation, graph membership, and application-specific inference |
+| 16 | host validation, solver derivation, proof retention, and operational ceilings |
+| 17 | ground meaning, intended mode, answer set, first answer, and proof shape |
+| 18 | examples, near misses, finite generators, invariants, and presentation |
+| 19 | partial correctness, completeness in a mode, and termination in that mode |
+| 20 | semantic regression, observable control change, and measured improvement |
+
+A response that says only “the program works” is incomplete. It should name
+the claim, the mode, the evidence inspected, and the boundary that remains
+outside that evidence.
+
+## J.3 Advanced work: Chapters 21–33
+
+Later checkpoints often admit several good programs. Evaluate them with five
+questions:
+
+1. **Meaning:** is the disputed or transformed ground relation stated clearly?
+2. **Scope:** are modes, finite domains, equivalence notions, and trust
+   assumptions explicit?
+3. **Observation:** were answers, failures, proofs, and statistics used for
+   the different questions they can actually answer?
+4. **Preservation:** if a program changed, which semantic and observable
+   properties were expected to remain invariant?
+5. **Evidence:** is the result reproducible as a query, test, golden output,
+   counterexample, proof, or preserved source snapshot?
+
+For mathematical checkpoints, add a sixth question: does the conclusion claim
+only what the computation warrants? One witness proves existence; one
+counterexample refutes a universal claim; an exhausted finite carrier proves a
+property only for that model; repeated bounded confirmations do not become an
+unbounded theorem.
+
+For laboratory checkpoints, leave an artifact. A useful completion is not
+merely a paragraph: it is a small source file, predicted output, actual output,
+and one sentence explaining any difference. The extracted chapter examples,
+top-level goldens, and `npm test` demonstrate that rhythm at repository scale.
