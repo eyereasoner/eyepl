@@ -676,6 +676,39 @@ No mutation occurs; every call receives a new term. Eyepl also includes
 `[a | Tail]` are valid terms, but operations requiring a proper finite list
 fail unless the tail is `[]`.
 
+## Part I summary
+
+Part I established the relational eye:
+
+- a program is a theory of ground sentences, not a sequence of assignments;
+- variables acquire meaning through consistent substitution;
+- unification connects a question to facts and rule heads by structure;
+- every rule has both a declarative and an operational reading;
+- recursion describes an unbounded family of finite proofs;
+- lists are inductive terms whose relations can support several modes.
+
+You should now be able to read a program aloud, predict a unifier, write base
+and recursive clauses, and explain why a list relation may construct as well
+as inspect its arguments. Carry forward one habit: begin with a meaningful
+ground instance, then ask which variables may safely replace which parts.
+
+### Historical note: clauses become a programming medium
+
+The ingredients of Part I were assembled across several traditions.
+First-order logic supplied variables, substitution, and quantified formulas.
+Herbrand made ground terms and ground instances central to proof theory.
+Robinson's 1965 resolution principle gave automated deduction a uniform,
+machine-oriented inference rule whose practical force depended on unification.
+
+Prolog emerged when these ideas met a natural-language project in Marseille in
+the early 1970s. Colmerauer and Roussel stress that the project did not begin
+as an abstract attempt to invent a programming language: the need to analyze
+French drove the development of executable clauses and their control. Lists
+then became more than containers. They naturally represented sentences,
+syntax, proof states, and sequences of goals. The familiar two-clause list
+program condenses a much older mathematical pattern—definition by constructors
+and structural induction—into executable form.
+
 ---
 
 # Part II — Search
@@ -912,6 +945,43 @@ The visited list makes a finite state space explicit. Eyepl is strongest when
 the result is a logical consequence with a compact witness: a path, matching,
 classification, schedule, proof, or bounded model. Mutable arrays and large
 numerical kernels generally belong in a host, with Eyepl as the decision layer.
+
+## Part II summary
+
+Part II turned relations into finite computations:
+
+- arithmetic relations need their operational inputs bound;
+- generators state where finite candidates come from;
+- failure prunes a branch, while `not/1` makes finite failure a closed-world
+  test;
+- `once/1` makes search order observable;
+- aggregates turn a finite solution space into a list, count, sum, or optimum;
+- structured terms and contexts belong at explicit modeling boundaries;
+- puzzles become programs by separating generation, constraint, and witness.
+
+You should now be able to justify a query's finiteness, order goals by binding
+dependency, distinguish negation as failure from classical negation, and
+explain why optimization is search plus an ordering.
+
+### Historical note: control, databases, and finite failure
+
+Early Prolog made a decisive engineering choice: clauses would be tried in an
+order and subgoals would normally be selected left to right. That choice made
+logic executable, but also made control visible. A logically symmetric
+conjunction could behave asymmetrically when one order supplied a value and
+another asked arithmetic to run too soon.
+
+The meeting of logic programming and database research in the 1970s sharpened
+questions about finite relations, closed-world reasoning, and query
+evaluation. Keith Clark's 1978 account did not identify failure with
+unrestricted logical negation; it related negation as failure to a completed
+database reading. Later work on stratification disciplined negative
+dependencies. Aggregation continued the database lineage: a set of solutions
+could itself become data, provided the nested search was finite.
+
+This history explains Eyepl's conservatism. Negation and aggregation are
+powerful because they expose a bounded subcomputation. Their safety comes not
+from punctuation but from a mathematical argument about scope and termination.
 
 ---
 
@@ -1317,6 +1387,44 @@ Sockets are particularly valuable at an AI boundary. A model can propose
 claims, but the claims should enter the theory as visible facts or rules. The
 socket states what kind of knowledge may enter; Eyepl checks and combines the
 result; `why/2` records which supplied clauses actually supported an answer.
+
+## Part III summary
+
+Part III moved from obtaining answers to trusting them:
+
+- a query selects a question; a proof records one successful justification;
+- an inference fuse rejects a theory that is unfit to answer;
+- automatic tabling computes fixed points for eligible positive recursion;
+- indexing and ready filters improve control without changing intended meaning;
+- knowledge engineering separates sources, concepts, decisions, and reasons;
+- RDF adapters preserve external distinctions at an explicit boundary;
+- embedding and sockets divide logical derivation from host authority.
+
+You should now be able to distinguish proof trees from search trees, state what
+a fuse guarantees, explain the finite-answer argument behind tabling, and name
+which trust duties remain outside the solver.
+
+### Historical note: from answers to accountable inference
+
+The least-model semantics developed by van Emden and Kowalski in 1976 connected
+definite programs to a mathematical fixed point: repeatedly add supported
+ground consequences until nothing new appears. Tabled logic programming later
+turned fixed-point ideas into a goal-directed technique that shares recursive
+calls and accumulates answers. Eyepl's automatic positive tabling is smaller
+than the general systems in that literature, but inherits their central
+insight: remembering a recursive question can change termination without
+changing what the relation says.
+
+In parallel, deductive databases and Semantic Web systems asked where facts
+come from, how vocabularies align, and how derived claims retain provenance.
+EYE belongs to that proof-producing Semantic Web tradition. Eyepl adopts the
+expectation that conclusions should be inspectable while retaining its own
+compact Horn-clause language and explicit RDF adapters.
+
+The historical lesson is architectural. A proof procedure can attest that a
+conclusion follows from supplied clauses. It cannot authenticate a database,
+calibrate a sensor, or authorize a request. Systems became more trustworthy
+when those boundaries became named rather than implicit.
 
 ---
 
@@ -1738,6 +1846,42 @@ Not every relation should be made maximally general. A three-mode predicate can
 be harder to terminate, explain, and index than two simple predicates with
 clear contracts. Generalize when a real second use appears. The art lies in
 keeping the logical idea visible while giving it enough control to run well.
+
+## Part IV summary
+
+Part IV treated logic programming as a discipline of construction:
+
+- write the relation's sentence before choosing its control;
+- record intended modes and finite uses;
+- begin with ground examples and invent recursion from one proof;
+- choose representations by the operations and invariants they expose;
+- argue correctness, completeness, and termination separately;
+- improve programs by strengthening calls and naming invariants;
+- preserve answers while reviewing observable proof or ordering changes.
+
+You should now be able to construct a theory from examples, state a termination
+measure, refactor a helper without losing meaning, and recognize when greater
+relational generality has no practical use.
+
+### Historical note: logic plus control
+
+Kowalski's 1979 formulation “algorithm = logic + control” gave a durable name
+to the dual reading developed here. The logic component specifies knowledge;
+control determines how it is used. The slogan did not claim that control was
+unimportant. It argued that control can often be improved while meaning stays
+steady, and that programs become easier to reason about when the two are
+distinguished.
+
+The craft tradition of Prolog grew around this tension. Goal ordering,
+accumulators, generate-and-test, and representation change were never merely
+interpreter tricks. At their best they were transformations justified by
+invariants and modes. Sterling and Shapiro made construction and improvement
+central to *The Art of Prolog*, showing that declarative clarity and
+procedural competence mature together.
+
+Eyepl removes several classic Prolog control devices, especially cut. The
+smaller surface changes the techniques but not the problem: authors must still
+turn a true relation into a productive computation and say what was preserved.
 
 # Part V — Advanced relational design
 
@@ -2481,6 +2625,44 @@ decision can be reconstructed under the rules that actually governed it.
 4. Write fuses for badges assigned to multiple people.
 5. Design a source socket for badge facts and state what the host must validate.
 6. Run the case with `--proof` and decide which helpers improve the explanation.
+
+## Part V summary
+
+Part V followed whole computations rather than isolated features:
+
+- and–or trees expose conjunction, alternatives, failure, and repeated calls;
+- explicit syntax trees support grammars, evaluators, and symbolic rewriting;
+- unfolding, folding, specialization, and accumulators transform control under
+  stated invariants;
+- finite search needs a declared space, pruning argument, witness, and fairness
+  expectation;
+- an auditable service layers sources, concepts, integrity, decisions, reasons,
+  embedding, and proof retention.
+
+You should now be able to trace substitutions through several goals, represent
+an object language without confusing it with Eyepl syntax, justify a bounded
+program transformation, and design a reconstructable decision theory.
+
+### Historical note: interpreters, transformation, and the art tradition
+
+Logic programming became a laboratory for symbolic programming because its
+principal data—terms, clauses, substitutions, and proof trees—could be
+represented with the same structures used for ordinary domains.
+Meta-interpreters made resolution itself a program topic; grammar rules made
+language recognition relational; partial evaluation showed how a general
+relation could be specialized when part of its input was known.
+
+Futamura's work in the 1970s gave partial evaluation a striking interpretation:
+specializing an interpreter with respect to a source program can produce a
+compiled form. Logic-program transformation developed related practices of
+unfolding, folding, and specialization. The inheritance for Eyepl is not a
+promise that every classic transformation is built in. It is the demand that a
+transformation name its invariant and preserve a stated answer contract.
+
+*The Art of Prolog* joined computation, construction, nondeterminism, grammars,
+interpreters, transformation, and applications into a sustained account of
+craft. Part V pays tribute to that breadth through Eyepl's explicit subset:
+syntax is data, state is an argument, and audit evidence remains visible.
 
 ---
 
@@ -3245,6 +3427,45 @@ Preserve the proof.
    sources, model scope, numeric assumptions, resource bounds, proof retention,
    and known limits.
 
+## Part VI summary
+
+Part VI placed logic programming inside the longer history of mathematics:
+
+- a ground answer can carry the witness of an existential claim;
+- definite-program closure connects proof search with least-model semantics;
+- recursive definitions and inductive proofs often share a constructor
+  skeleton;
+- correctness, completeness, and termination are independent obligations;
+- unification solves equations in a free term algebra, not every domain;
+- symmetry and canonical form remove representational duplicates;
+- finite search is experimental mathematics whose scope must be stated;
+- formal certainty is conditional on sources, models, engines, and rules.
+
+You should now be able to distinguish computation from proof, bounded evidence
+from a universal theorem, syntactic equality from mathematical equivalence, and
+valid derivation from trustworthy premises.
+
+### Historical note: mathematics examines its own methods
+
+This arc begins before electronic computing. Hilbert's program made formal
+proof and consistency mathematical objects. Gödel established limits for
+sufficiently expressive effective axiomatic systems. Church and Turing made
+effective calculability precise enough to prove that some general decision
+problems have no algorithm. Herbrand and Robinson supplied ideas that became
+central to automated first-order deduction.
+
+Logic programming belongs to this history because it operationalizes a
+restricted proof discipline. It does not erase the limit results or turn every
+existence proof into an efficient witness generator. It gives a small region
+where propositions, substitutions, proof steps, and computations can be
+inspected together.
+
+The deeper inheritance is a style of honesty. Mathematics advanced by proving
+not only more statements but also where methods fail, separating truth,
+provability, decidability, and computation. Eyepl's finite bounds, mode
+restrictions, search risks, and trust boundaries belong inside its account for
+the same reason: limits are part of the result, not fine print.
+
 ---
 
 # Part VII — The reasoning laboratory
@@ -3869,6 +4090,44 @@ is present, and keep the smallest theory that makes meaning and control clear.
    duplicate-answer behavior.
 4. Replace a silent closed-world decision with a named bounded-absence helper.
 5. Write a versioned evidence envelope for the Chapter 25 decision service.
+
+## Part VII summary
+
+Part VII made theory development repeatable:
+
+- semantic test tables settle meanings before test mechanics;
+- positive, absent, boundary, cycle, and scale cases cover different risks;
+- bounded properties and metamorphic relations test more than selected points;
+- answer and proof goldens protect different contracts;
+- binding ledgers diagnose readiness and accidental joins;
+- debugging moves from meaning to bindings, search, and proof;
+- named patterns connect recurring problems to reusable relational forms;
+- every repaired defect should leave a case, invariant, fuse, or explanation.
+
+You should now be able to design a release-quality test matrix, reduce a
+surprising result to one ground question, compare a reference relation with an
+optimized relation, and recognize productive patterns and anti-patterns.
+
+### Historical note: executable specifications learn to remember
+
+Logic programs have long stood between specification and implementation. That
+made testing both easier and subtler: a ground clause could serve as an
+example, yet a relation might have several modes and an answer set rather than
+one returned value. Testing practice absorbed ideas from theorem proving,
+database validation, software regression, and property-oriented testing.
+
+The repository form of this practice is historically significant in its quiet
+way. A theory, exact answer file, proof file, conformance corpus, and version
+tag preserve not only a program but expectations about its meaning. Regression
+tests make old decisions reviewable; property tests seek counterexamples;
+metamorphic tests state what remains invariant across controlled change.
+
+Patterns complete the cycle by naming recurring design knowledge. Sterling and
+Shapiro's craft-oriented presentation helped establish that expertise lives in
+constructions and transformations, not syntax alone. The reasoning laboratory
+extends that attitude into maintenance: prediction, execution, evidence, and
+revision form one method, and the failure that taught a lesson becomes
+executable memory.
 
 # Appendix A. Language summary
 
@@ -4736,6 +4995,23 @@ specifications.
   [“Algorithm = Logic + Control”](https://doi.org/10.1145/359131.359136),
   *Communications of the ACM* 22(7), 1979, pp. 424–436. The source of the
   distinction developed throughout Chapters 3 and 17–20.
+
+- Keith L. Clark,
+  [“Negation as
+  Failure”](https://www.doc.ic.ac.uk/~klc/neg.html), in *Logic and Data
+  Bases*, 1978, pp. 293–322. Clark relates finite failure in a logic database
+  to a completed-database reading. The historical note after Part II uses this
+  work to distinguish operational negation from unrestricted classical
+  negation.
+
+- Yoshihiko Futamura,
+  [“Partial Evaluation of Computation Process—An Approach to a
+  Compiler-Compiler”](https://www.jstage.jst.go.jp/article/jssst/21/5/21_5_343/_article/-char/en),
+  originally published in 1971 and republished in English translation.
+  Futamura showed how specializing an interpreter with respect to a source
+  program connects partial evaluation with compilation. Part V invokes this
+  as historical context for specialization, not as an Eyepl implementation
+  claim.
 
 - Krzysztof R. Apt, Howard A. Blair, and Adrian Walker,
   [“Towards a Theory of Declarative
