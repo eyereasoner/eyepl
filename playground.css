@@ -1,5 +1,6 @@
 :root {
   color-scheme:light;
+  scrollbar-gutter:stable;
   --ink:#18272b;
   --muted:#526367;
   --paper:#fbfaf4;
@@ -205,6 +206,7 @@ select {
 }
 .editors {
   display:grid;
+  align-items:start;
   grid-template-columns:minmax(0,1fr) minmax(0,1fr)
 }
 .panel {
@@ -264,9 +266,10 @@ textarea,pre {
 textarea {
   width:100%;
   min-height:340px;
-  resize:vertical;
-  overflow:auto;
-  scrollbar-width:none;
+  field-sizing:content;
+  resize:none;
+  overflow:hidden;
+  flex:none;
   background:transparent;
   color:var(--ink);
   border:0;
@@ -280,13 +283,8 @@ pre {
   margin:0;
   padding:0 20px 20px;
   min-height:340px;
-  max-height:600px;
-  overflow:auto;
-  scrollbar-width:none;
+  overflow:visible;
   flex:1
-}
-textarea::-webkit-scrollbar,pre::-webkit-scrollbar {
-  display:none
 }
 .panel-hint {
   border-top:1px solid #edf0e9;

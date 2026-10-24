@@ -1,6 +1,6 @@
 # Wheye guide
 
-Version **0.1.17**. Run a Prolog subset in the native CLI or browser, get
+Version **0.1.18**. Run a Prolog subset in the native CLI or browser, get
 answers, and inspect their independently checkable proofs. The
 [specification](https://eyereasoner.github.io/wheye/SPEC/) defines the language
 and the [C1–C9 contract](https://eyereasoner.github.io/wheye/SPEC/#8-verification).
@@ -46,8 +46,8 @@ a share link. Enter a GitHub token with [Gist write permission](https://docs.git
 when prompted; it stays in the current tab's session. Anyone with the link can
 read the Gist. Opening a Gist share restores the source without running it.
 The top status shows `Done · exit 0 · … s` or `Failed · exit 1 · … s`.
-The input and output hide their vertical scrollbars while retaining wheel,
-touch, and keyboard scrolling, including for the largest examples.
+The input and output display their complete contents. Use the page's vertical
+scrollbar to move through both panes; neither pane scrolls independently.
 
 ## Explore the examples
 
@@ -274,6 +274,9 @@ python3 -m http.server 8766 --bind 127.0.0.1
 google-chrome --headless --remote-debugging-port=9226 --user-data-dir=/tmp/wheye-browser about:blank
 node tests/browser.mjs
 ```
+
+For layout-only checks, add `--layout-only`. This uses a 200-line input and
+240-line output at desktop and phone widths, with reasoning disabled.
 
 The browser engine runs in a worker. Programs remain local unless shared in a
 URL. The committed `pkg/` must be rebuilt after Rust changes. Use the same

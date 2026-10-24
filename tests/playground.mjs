@@ -79,6 +79,7 @@ async function playground({ source, hash = '', stateUrl, request, token = '', pr
   };
   const context = vm.createContext({
     URL, URLSearchParams, TextEncoder, AbortController, performance, crypto: webcrypto, location,
+    CSS: { supports: () => true },
     prompt: () => promptToken,
     sessionStorage: { getItem: key => session.get(key), setItem: (key, value) => session.set(key, value), removeItem: key => session.delete(key) },
     document: { getElementById: element },

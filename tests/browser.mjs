@@ -3,10 +3,12 @@
 import assert from 'node:assert/strict';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 
-const base = process.argv[2] || 'http://127.0.0.1:8766/playground.html';
-const debug = process.argv[3] || 'http://127.0.0.1:9226';
-const screenshots = process.argv[4];
-const pagesRoot = process.argv[5];
+const layoutOnly = process.argv.includes('--layout-only');
+const args = process.argv.slice(2).filter(arg => arg !== '--layout-only');
+const base = args[0] || 'http://127.0.0.1:8766/playground.html';
+const debug = args[1] || 'http://127.0.0.1:9226';
+const screenshots = args[2];
+const pagesRoot = args[3];
 const expectedVersion = /^version\s*=\s*"([^"]+)"/m.exec(await readFile(new URL('../Cargo.toml', import.meta.url), 'utf8'))[1];
 const tabs = await (await fetch(`${debug}/json`)).json();
 const tab = tabs.find(tab => tab.type === 'page');
@@ -87,6 +89,62 @@ async function screenshot(name) {
   await writeFile(`${screenshots}/${name}.png`, Buffer.from(image.data, 'base64'));
 }
 
+async function checkPageScrolling() {
+  const original = await evaluate('({source:document.getElementById("source").value,output:document.getElementById("output").textContent,example:document.getElementById("example").value})');
+  const source = Array.from({length:200}, (_, i) => `% Input line ${i}`).join('\n');
+  const output = Array.from({length:240}, (_, i) => `Output line ${i}`).join('\n');
+  await set('source', source);
+  await evaluate(`document.getElementById("output").textContent = ${JSON.stringify(output)}`);
+  await delay(50);
+  for (const id of ['source', 'output']) {
+    assert.ok(await evaluate(`(() => {
+      const pane = document.getElementById(${JSON.stringify(id)});
+      return pane.scrollHeight <= pane.clientHeight + 2;
+    })()`), `${id} must display its complete contents`);
+    assert.ok(await evaluate(`(() => {
+      const pane = document.getElementById(${JSON.stringify(id)});
+      pane.scrollTop = 80;
+      return pane.scrollTop <= 2;
+    })()`), `${id} must not scroll independently`);
+    await evaluate(`(() => {
+      const pane = document.getElementById(${JSON.stringify(id)});
+      window.scrollTo(0, window.scrollY + pane.getBoundingClientRect().bottom - innerHeight + 30);
+    })()`);
+    assert.ok(await evaluate(`window.scrollY > 0 && document.getElementById(${JSON.stringify(id)}).getBoundingClientRect().bottom <= innerHeight`), `the page scrollbar must reach the end of ${id}`);
+  }
+  await set('source', original.source);
+  await evaluate(`document.getElementById("example").value = ${JSON.stringify(original.example)}; document.getElementById("output").textContent = ${JSON.stringify(original.output)}; window.scrollTo(0, 0)`);
+}
+
+if (layoutOnly) {
+  try {
+    await command('Page.enable');
+    await command('Runtime.enable');
+    for (const fallback of [false, true]) {
+      const injected = await command('Page.addScriptToEvaluateOnNewDocument', {source:`
+        window.Worker = class { constructor() { throw new Error('Reasoning is disabled during layout checks.'); } };
+        const supports = CSS.supports.bind(CSS);
+        if (${fallback}) CSS.supports = (...args) => args[0] === 'field-sizing' ? false : supports(...args);
+      `});
+      for (const width of [1280, 390]) {
+        await command('Page.navigate', {url:'about:blank'});
+        await wait('location.href === "about:blank" && document.readyState === "complete"', 'fresh layout page');
+        await command('Emulation.setDeviceMetricsOverride', {width,height:844,deviceScaleFactor:1,mobile:width===390});
+        await navigate(`${base}#example=socrates`);
+        const expectedSource = await readFile(new URL('../examples/socrates.pl', import.meta.url), 'utf8');
+        await wait(`document.getElementById("source").value === ${JSON.stringify(expectedSource)}`, 'layout example ready');
+        await checkPageScrolling();
+        if (fallback) assert.match(await evaluate('document.getElementById("source").style.height'), /^\d+px$/, 'the fallback must size the editor');
+        assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'), 'page must not overflow horizontally');
+        await screenshot(`layout-${width}-${fallback ? 'fallback' : 'native'}`);
+      }
+      await command('Page.removeScriptToEvaluateOnNewDocument', {identifier:injected.identifier});
+    }
+    assert.deepEqual(exceptions, []);
+    console.log('Page scrolling passed at desktop and phone widths, with native sizing and the fallback; only a 200-line input and 240-line output were used, without running the reasoner.');
+  } finally { socket.close(); }
+} else {
+
 try {
   await command('Page.enable');
   await command('Runtime.enable');
@@ -133,7 +191,7 @@ try {
   const widths = await evaluate('[...document.querySelectorAll(".editors > .panel")].map(e => e.getBoundingClientRect().width)');
   assert.ok(Math.abs(widths[0] - widths[1]) < 1);
   assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'));
-  assert.ok(await evaluate('["source", "output"].every(id => getComputedStyle(document.getElementById(id)).scrollbarWidth === "none")'), 'desktop pane scrollbars should be hidden');
+  await checkPageScrolling();
   await screenshot('desktop');
 
   await set('source', 'p(a). ?- p(X). ?- check(p(b)). ?- why. ?- check.');
@@ -167,8 +225,7 @@ try {
   await set('source', deep + '\n?- check.');
   assert.match(await run(), /^checked: 102 steps, 1 claim/m);
   await set('source', deep);
-  assert.ok(await evaluate('getComputedStyle(document.getElementById("source")).scrollbarWidth === "none"'), 'large input should hide its scrollbar');
-  assert.ok(await evaluate('(() => { const pane = document.getElementById("source"); pane.scrollTop = 80; const moved = pane.scrollTop > 0; pane.scrollTop = 0; return moved; })()'), 'large input must remain scrollable');
+  assert.ok(await evaluate('document.getElementById("source").scrollHeight <= document.getElementById("source").clientHeight + 2'), 'the full small taxonomy must fit in the page');
   assert.equal(new URL(await share()).hash, '#example=deep-taxonomy-100');
 
   await example('paths');
@@ -239,7 +296,7 @@ try {
   await navigate(`${base}#example=socrates`);
   assert.match(await run(), /checked: 2 steps, 1 claim/);
   assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'), 'phone layout overflows');
-  assert.ok(await evaluate('["source", "output"].every(id => getComputedStyle(document.getElementById(id)).scrollbarWidth === "none")'), 'phone pane scrollbars should be hidden');
+  await checkPageScrolling();
   assert.ok(await evaluate('document.querySelector(".output-panel").getBoundingClientRect().top > document.querySelector(".editors .panel").getBoundingClientRect().top'), 'phone panels should stack');
   await screenshot('mobile');
   for (const name of ['orders', 'deep-taxonomy-100']) {
@@ -280,5 +337,7 @@ try {
     }
   }
   assert.deepEqual(exceptions, []);
-  console.log('Browser checks passed: source-selected answers, proofs and C1–C9 checks, echoed queries, small taxonomy, desktop/mobile layouts, rendered docs, short example links, restored old examples, Gist sharing, hidden pane scrollbars, custom snapshots, Unicode, autosave, cancellation and restart.');
+  console.log('Browser checks passed: source-selected answers, proofs and C1–C9 checks, echoed queries, small taxonomy, desktop/mobile layouts, rendered docs, short example links, restored old examples, Gist sharing, one page scrollbar, custom snapshots, Unicode, autosave, cancellation and restart.');
 } finally { socket.close(); }
+
+}

@@ -3,6 +3,7 @@ const examples = new Set(['abstract-interpretation', 'access-control-policy', 'a
 const storageKey = 'wheye.playground.v1';
 const gistTokenKey = 'wheye.playground.github.gistToken.v1';
 const gistFile = 'wheye-playground-state.json';
+const contentSizedInput = globalThis.CSS?.supports('field-sizing', 'content') ?? false;
 let worker = null;
 let ready = null;
 let sequence = 0;
@@ -82,7 +83,14 @@ function restore(state) {
   if (typeof state?.source !== 'string') return false;
   $('source').value = state.source;
   $('example').value = '';
+  sizeSource();
   return true;
+}
+function sizeSource() {
+  if (contentSizedInput) return;
+  const source = $('source');
+  source.style.height = 'auto';
+  source.style.height = `${source.scrollHeight}px`;
 }
 function clearShare() {
   $('share-box').hidden = true;
@@ -150,7 +158,8 @@ $('run').addEventListener('click', async () => {
   }
 });
 $('stop').addEventListener('click', stop);
-$('source').addEventListener('input', () => { $('example').value = ''; clearShare(); save(); });
+$('source').addEventListener('input', () => { $('example').value = ''; sizeSource(); clearShare(); save(); });
+if (!contentSizedInput) window.addEventListener('resize', sizeSource);
 $('source').addEventListener('keydown', event => {
   if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') { event.preventDefault(); if (!busy) $('run').click(); }
 });

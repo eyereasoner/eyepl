@@ -77,6 +77,8 @@ automates it through Chrome's debugging interface (see the guide).
 Keep browser and Wasm smoke tests small (taxonomy depth 100 or less). Run the
 100,000-level taxonomy and full airport graph only in native tests; do not run
 them in Chrome or retain their Wasm heaps across browser tests.
+For layout changes, use `tests/browser.mjs --layout-only` with the usual URL
+arguments. It uses a small synthetic sample and disables reasoning workers.
 
 Rebuild `pkg/` after Rust changes, and run Wasm clippy. The build requires
 `wasm-pack` and the `wasm32-unknown-unknown` Rust target. Documentation-only changes
