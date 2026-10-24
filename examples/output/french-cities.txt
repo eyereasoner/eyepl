@@ -1,4 +1,3 @@
-% Answer
 ?- reaches(Who, nantes).
 Who = angers.
 Who = lemans.
@@ -8,82 +7,55 @@ Who = paris.
 ?- reaches(paris, nantes).
 true.
 
+?- why.
+wheye-proof 1
+% Rule 1: reaches(From, To) :- connects(From, To).
+% Rule 2: reaches(From, To) :- connects(From, Via), reaches(Via, To).
+step 1 source 2 : connects(paris, chartres).
+step 2 source 7 : connects(chartres, lemans).
+step 3 source 8 : connects(lemans, angers).
+step 4 source 10 : connects(angers, nantes).
+step 5 rule 1 [4] : reaches(angers, nantes).
+step 6 rule 2 [3,5] : reaches(lemans, nantes).
+step 7 rule 2 [2,6] : reaches(chartres, nantes).
+step 8 rule 2 [1,7] : reaches(paris, nantes).
+answer 2 [8]
+
 ?- reaches(paris, tours).
 true.
+
+?- why.
+wheye-proof 1
+% Rule 1: reaches(From, To) :- connects(From, To).
+% Rule 2: reaches(From, To) :- connects(From, Via), reaches(Via, To).
+step 1 source 1 : connects(paris, orleans).
+step 2 source 4 : connects(orleans, blois).
+step 3 source 6 : connects(blois, tours).
+step 4 rule 1 [3] : reaches(blois, tours).
+step 5 rule 2 [2,4] : reaches(orleans, tours).
+step 6 rule 2 [1,5] : reaches(paris, tours).
+answer 3 [6]
 
 ?- reaches(nantes, paris).
 false.
 
-% Reason
-certificate(eyeon, 1).
+?- check(reaches(paris, nantes)).
+true.
 
-claim(query(2), [reaches(paris, nantes)]).
-claim(query(4), [reaches(paris, tours)]).
+?- check(reaches(chartres, nantes)).
+true.
 
-clause(1, connects(paris, orleans), []).
-clause(2, connects(paris, chartres), []).
-clause(4, connects(orleans, blois), []).
-clause(6, connects(blois, tours), []).
-clause(7, connects(chartres, lemans), []).
-clause(8, connects(lemans, angers), []).
-clause(10, connects(angers, nantes), []).
-clause(11, reaches(var('From'), var('To')), [connects(var('From'), var('To'))]).
-clause(12, reaches(var('From'), var('To')), [connects(var('From'), var('Via')), reaches(var('Via'), var('To'))]).
+?- check(reaches(lemans, nantes)).
+true.
 
-% step 1
-step(connects(paris, chartres), fact(2), [], []).
-% step 2
-step(connects(chartres, lemans), fact(7), [], []).
-% step 3
-step(connects(lemans, angers), fact(8), [], []).
-% step 4
-step(connects(angers, nantes), fact(10), [], []).
-% step 5
-step(reaches(angers, nantes), rule(11), ['='('From', angers), '='('To', nantes)], [connects(angers, nantes)]).
-% step 6
-step(reaches(lemans, nantes), rule(12), ['='('From', lemans), '='('To', nantes), '='('Via', angers)], [connects(lemans, angers), reaches(angers, nantes)]).
-% step 7
-step(reaches(chartres, nantes), rule(12), ['='('From', chartres), '='('To', nantes), '='('Via', lemans)], [connects(chartres, lemans), reaches(lemans, nantes)]).
-% step 8
-step(reaches(paris, nantes), rule(12), ['='('From', paris), '='('To', nantes), '='('Via', chartres)], [connects(paris, chartres), reaches(chartres, nantes)]).
-% step 9
-step(connects(paris, orleans), fact(1), [], []).
-% step 10
-step(connects(orleans, blois), fact(4), [], []).
-% step 11
-step(connects(blois, tours), fact(6), [], []).
-% step 12
-step(reaches(blois, tours), rule(11), ['='('From', blois), '='('To', tours)], [connects(blois, tours)]).
-% step 13
-step(reaches(orleans, tours), rule(12), ['='('From', orleans), '='('To', tours), '='('Via', blois)], [connects(orleans, blois), reaches(blois, tours)]).
-% step 14
-step(reaches(paris, tours), rule(12), ['='('From', paris), '='('To', tours), '='('Via', orleans)], [connects(paris, orleans), reaches(orleans, tours)]).
+?- check(reaches(angers, nantes)).
+true.
 
-% Check
-check passed: reaches(paris, nantes).
+?- check(reaches(paris, tours)).
+true.
 
-check passed: reaches(chartres, nantes).
+?- check(\+ (reaches(nantes, paris))).
+true.
 
-check passed: reaches(lemans, nantes).
-
-check passed: reaches(angers, nantes).
-
-check passed: reaches(paris, tours).
-
-check passed: \+ (reaches(nantes, paris)).
-
-check passed: \+ (reaches(tours, nantes)).
-
-condition('C1', resolution, ok, 14).
-condition('C2', well_founded, ok, 14).
-condition('C3', justification, ok, 14).
-condition('C4', coverage, ok, 14).
-condition('C5', re_decision, ok, 0).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 16).
-steps(14).
-verified(14).
-recomputed(0).
-trusted(0).
-claims(2).
-verdict(checked).
+?- check(\+ (reaches(tours, nantes))).
+true.

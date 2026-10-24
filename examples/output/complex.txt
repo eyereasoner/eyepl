@@ -1,4 +1,3 @@
-% Answer
 ?- real('sqrt-minus-one', What).
 What = 6.123233995736766e-17.
 
@@ -35,71 +34,40 @@ What = 0.0.
 ?- imaginary('acos-result', What).
 What = -2.3363408269090766.
 
-% Reason
-certificate(eyeon, 1).
+?- why.
+wheye-proof 1
+% Rule 12: 'left-distance'(Function, _Calc1) :- input(Function, Input), real(Input, Real), imaginary(Input, Imaginary), _Calc1 is sqrt('+'('^'('+'(1, Real), 2), '^'(Imaginary, 2))).
+% Rule 13: 'right-distance'(Function, _Calc1) :- input(Function, Input), real(Input, Real), imaginary(Input, Imaginary), _Calc1 is sqrt('+'('^'('-'(1, Real), 2), '^'(Imaginary, 2))).
+% Rule 15: average(Function, _Calc1) :- 'left-distance'(Function, Left), 'right-distance'(Function, Right), _Calc1 is '/'('+'(Left, Right), 2).
+% Rule 16: 'imaginary-size'(Function, _Calc1) :- average(Function, Average), _Calc1 is log('+'(Average, sqrt('-'('^'(Average, 2), 1)))).
+% Rule 20: imaginary(Function, _Calc1) :- is_a(Function, 'inverse-cosine'), 'imaginary-size'(Function, Size), _Calc1 is '-'(0, Size).
+step 1 source 2 : real(input, 5.22).
+step 2 source 3 : imaginary(input, 0).
+step 3 source 36 : is_a('acos-result', 'inverse-cosine').
+step 4 source 37 : input('acos-result', input).
+step 5 builtin : is(6.22, sqrt('+'('^'('+'(1, 5.22), 2), '^'(0, 2)))).
+step 6 builtin : is(4.22, sqrt('+'('^'('-'(1, 5.22), 2), '^'(0, 2)))).
+step 7 builtin : is(5.22, '/'('+'(6.22, 4.22), 2)).
+step 8 builtin : is(2.3363408269090766, log('+'(5.22, sqrt('-'('^'(5.22, 2), 1))))).
+step 9 builtin : is(-2.3363408269090766, '-'(0, 2.3363408269090766)).
+step 10 rule 12 [4,1,2,5] : 'left-distance'('acos-result', 6.22).
+step 11 rule 13 [4,1,2,6] : 'right-distance'('acos-result', 4.22).
+step 12 rule 15 [10,11,7] : average('acos-result', 5.22).
+step 13 rule 16 [12,8] : 'imaginary-size'('acos-result', 2.3363408269090766).
+step 14 rule 20 [3,13,9] : imaginary('acos-result', -2.3363408269090766).
+answer 12 [14]
 
-claim(query(12), [imaginary('acos-result', -2.3363408269090766)]).
+?- check(is_a('sqrt-minus-one', 'checked-square-root')).
+true.
 
-clause(2, real(input, 5.22), []).
-clause(3, imaginary(input, 0), []).
-clause(36, is_a('acos-result', 'inverse-cosine'), []).
-clause(37, input('acos-result', input), []).
-clause(49, 'left-distance'(var('Function'), var('_Calc1')), [input(var('Function'), var('Input')), real(var('Input'), var('Real')), imaginary(var('Input'), var('Imaginary')), is(var('_Calc1'), sqrt('+'('^'('+'(1, var('Real')), 2), '^'(var('Imaginary'), 2))))]).
-clause(50, 'right-distance'(var('Function'), var('_Calc1')), [input(var('Function'), var('Input')), real(var('Input'), var('Real')), imaginary(var('Input'), var('Imaginary')), is(var('_Calc1'), sqrt('+'('^'('-'(1, var('Real')), 2), '^'(var('Imaginary'), 2))))]).
-clause(52, average(var('Function'), var('_Calc1')), ['left-distance'(var('Function'), var('Left')), 'right-distance'(var('Function'), var('Right')), is(var('_Calc1'), '/'('+'(var('Left'), var('Right')), 2))]).
-clause(53, 'imaginary-size'(var('Function'), var('_Calc1')), [average(var('Function'), var('Average')), is(var('_Calc1'), log('+'(var('Average'), sqrt('-'('^'(var('Average'), 2), 1)))))]).
-clause(57, imaginary(var('Function'), var('_Calc1')), [is_a(var('Function'), 'inverse-cosine'), 'imaginary-size'(var('Function'), var('Size')), is(var('_Calc1'), '-'(0, var('Size')))]).
+?- check(is_a('e-to-i-pi', 'checked-identity')).
+true.
 
-% step 1
-step(is_a('acos-result', 'inverse-cosine'), fact(36), [], []).
-% step 2
-step(input('acos-result', input), fact(37), [], []).
-% step 3
-step(real(input, 5.22), fact(2), [], []).
-% step 4
-step(imaginary(input, 0), fact(3), [], []).
-% step 5
-step(is(6.22, sqrt('+'('^'('+'(1, 5.22), 2), '^'(0, 2)))), builtin, [], []).
-% step 6
-step('left-distance'('acos-result', 6.22), rule(49), ['='('Function', 'acos-result'), '='('_Calc1', 6.22), '='('Input', input), '='('Real', 5.22), '='('Imaginary', 0)], [input('acos-result', input), real(input, 5.22), imaginary(input, 0), is(6.22, sqrt('+'('^'('+'(1, 5.22), 2), '^'(0, 2))))]).
-% step 7
-step(is(4.22, sqrt('+'('^'('-'(1, 5.22), 2), '^'(0, 2)))), builtin, [], []).
-% step 8
-step('right-distance'('acos-result', 4.22), rule(50), ['='('Function', 'acos-result'), '='('_Calc1', 4.22), '='('Input', input), '='('Real', 5.22), '='('Imaginary', 0)], [input('acos-result', input), real(input, 5.22), imaginary(input, 0), is(4.22, sqrt('+'('^'('-'(1, 5.22), 2), '^'(0, 2))))]).
-% step 9
-step(is(5.22, '/'('+'(6.22, 4.22), 2)), builtin, [], []).
-% step 10
-step(average('acos-result', 5.22), rule(52), ['='('Function', 'acos-result'), '='('_Calc1', 5.22), '='('Left', 6.22), '='('Right', 4.22)], ['left-distance'('acos-result', 6.22), 'right-distance'('acos-result', 4.22), is(5.22, '/'('+'(6.22, 4.22), 2))]).
-% step 11
-step(is(2.3363408269090766, log('+'(5.22, sqrt('-'('^'(5.22, 2), 1))))), builtin, [], []).
-% step 12
-step('imaginary-size'('acos-result', 2.3363408269090766), rule(53), ['='('Function', 'acos-result'), '='('_Calc1', 2.3363408269090766), '='('Average', 5.22)], [average('acos-result', 5.22), is(2.3363408269090766, log('+'(5.22, sqrt('-'('^'(5.22, 2), 1)))))]).
-% step 13
-step(is(-2.3363408269090766, '-'(0, 2.3363408269090766)), builtin, [], []).
-% step 14
-step(imaginary('acos-result', -2.3363408269090766), rule(57), ['='('Function', 'acos-result'), '='('Size', 2.3363408269090766), '='('_Calc1', -2.3363408269090766)], [is_a('acos-result', 'inverse-cosine'), 'imaginary-size'('acos-result', 2.3363408269090766), is(-2.3363408269090766, '-'(0, 2.3363408269090766))]).
+?- check(is_a('i-to-i', 'checked-identity')).
+true.
 
-% Check
-check passed: is_a('sqrt-minus-one', 'checked-square-root').
+?- check(is_a('asin-result', 'checked-inverse')).
+true.
 
-check passed: is_a('e-to-i-pi', 'checked-identity').
-
-check passed: is_a('i-to-i', 'checked-identity').
-
-check passed: is_a('asin-result', 'checked-inverse').
-
-check passed: is_a('acos-result', 'checked-inverse').
-
-condition('C1', resolution, ok, 9).
-condition('C2', well_founded, ok, 14).
-condition('C3', justification, ok, 14).
-condition('C4', coverage, ok, 17).
-condition('C5', re_decision, ok, 5).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 15).
-steps(14).
-verified(9).
-recomputed(5).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check(is_a('acos-result', 'checked-inverse')).
+true.

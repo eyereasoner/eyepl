@@ -1,4 +1,3 @@
-% Answer
 ?- padovan(1, Value).
 Value = 1.
 
@@ -13,6 +12,26 @@ Value = 2.
 
 ?- padovan(5, Value).
 Value = 2.
+
+?- why.
+wheye-proof 1
+% Rule 1: padovan(A, B) :- padovan(A, 0, 1, 1, B).
+% Rule 4: padovan(2, _, _, A, A) :- .
+% Rule 5: padovan(A, B, C, D, E) :- A > 2, F is '-'(A, 1), G is '+'(B, C), padovan(F, C, D, G, E).
+step 1 builtin : '>'(3, 2).
+step 2 builtin : is(2, '-'(3, 1)).
+step 3 builtin : is(1, '+'(0, 1)).
+step 4 builtin : is(2, '+'(1, 1)).
+step 5 builtin : '>'(4, 2).
+step 6 builtin : is(3, '-'(4, 1)).
+step 7 rule 4 [] : padovan(2, 1, 2, 2, 2).
+step 8 builtin : '>'(5, 2).
+step 9 builtin : is(4, '-'(5, 1)).
+step 10 rule 5 [1,2,4,7] : padovan(3, 1, 1, 2, 2).
+step 11 rule 5 [5,6,4,10] : padovan(4, 1, 1, 1, 2).
+step 12 rule 5 [8,9,3,11] : padovan(5, 0, 1, 1, 2).
+step 13 rule 1 [12] : padovan(5, 2).
+answer 5 [13]
 
 ?- padovan(91, Value).
 Value = 70748973084.
@@ -35,65 +54,20 @@ Ratio = 1.324717957244746.
 ?- plastic_ratio(1000, Ratio).
 Ratio = 1.3247179572447458.
 
-% Reason
-certificate(eyeon, 1).
+?- check(padovan(0, 0)).
+true.
 
-claim(query(5), [padovan(5, 2)]).
+?- check(padovan(5, 2)).
+true.
 
-clause(1, padovan(var('A'), var('B')), [padovan(var('A'), 0, 1, 1, var('B'))]).
-clause(4, padovan(2, var('$anonymous5'), var('$anonymous6'), var('A'), var('A')), []).
-clause(5, padovan(var('A'), var('B'), var('C'), var('D'), var('E')), ['>'(var('A'), 2), is(var('F'), '-'(var('A'), 1)), is(var('G'), '+'(var('B'), var('C'))), padovan(var('F'), var('C'), var('D'), var('G'), var('E'))]).
+?- check(padovan(91, 70748973084)).
+true.
 
-% step 1
-step('>'(5, 2), builtin, [], []).
-% step 2
-step(is(4, '-'(5, 1)), builtin, [], []).
-% step 3
-step(is(1, '+'(0, 1)), builtin, [], []).
-% step 4
-step('>'(4, 2), builtin, [], []).
-% step 5
-step(is(3, '-'(4, 1)), builtin, [], []).
-% step 6
-step(is(2, '+'(1, 1)), builtin, [], []).
-% step 7
-step('>'(3, 2), builtin, [], []).
-% step 8
-step(is(2, '-'(3, 1)), builtin, [], []).
-% step 9
-step(padovan(2, 1, 2, 2, 2), fact(4), ['='('$anonymous5', 1), '='('$anonymous6', 2), '='('A', 2)], []).
-% step 10
-step(padovan(3, 1, 1, 2, 2), rule(5), ['='('A', 3), '='('B', 1), '='('C', 1), '='('D', 2), '='('E', 2), '='('F', 2), '='('G', 2)], ['>'(3, 2), is(2, '-'(3, 1)), is(2, '+'(1, 1)), padovan(2, 1, 2, 2, 2)]).
-% step 11
-step(padovan(4, 1, 1, 1, 2), rule(5), ['='('A', 4), '='('B', 1), '='('C', 1), '='('D', 1), '='('E', 2), '='('F', 3), '='('G', 2)], ['>'(4, 2), is(3, '-'(4, 1)), is(2, '+'(1, 1)), padovan(3, 1, 1, 2, 2)]).
-% step 12
-step(padovan(5, 0, 1, 1, 2), rule(5), ['='('A', 5), '='('B', 0), '='('C', 1), '='('D', 1), '='('E', 2), '='('F', 4), '='('G', 1)], ['>'(5, 2), is(4, '-'(5, 1)), is(1, '+'(0, 1)), padovan(4, 1, 1, 1, 2)]).
-% step 13
-step(padovan(5, 2), rule(1), ['='('A', 5), '='('B', 2)], [padovan(5, 0, 1, 1, 2)]).
+?- check(padovan(283, 19834325738278984504790864536272129)).
+true.
 
-% Check
-check passed: padovan(0, 0).
+?- check((padovan(3674, Value), padovan(3672, A), padovan(3671, B), Value =:= '+'(A, B))).
+true.
 
-check passed: padovan(5, 2).
-
-check passed: padovan(91, 70748973084).
-
-check passed: padovan(283, 19834325738278984504790864536272129).
-
-check passed: padovan(3674, Value), padovan(3672, A), padovan(3671, B), Value =:= (A + B).
-
-check passed: plastic_ratio(1000, Ratio), abs((Ratio - 1.324717957244746)) < 1e-14.
-
-condition('C1', resolution, ok, 5).
-condition('C2', well_founded, ok, 13).
-condition('C3', justification, ok, 13).
-condition('C4', coverage, ok, 14).
-condition('C5', re_decision, ok, 8).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 14).
-steps(13).
-verified(5).
-recomputed(8).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check((plastic_ratio(1000, Ratio), abs('-'(Ratio, 1.324717957244746)) < 1e-14)).
+true.

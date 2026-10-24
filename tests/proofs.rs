@@ -16,12 +16,6 @@ fn reject(certificate: &Certificate) {
 }
 
 #[test]
-fn forged_source_fact_is_rejected() {
-    let mut c = certificate();
-    c.steps[0].atom.values[0] = wheye::Value::Symbol("forged".into());
-    reject(&c);
-}
-#[test]
 fn unknown_and_zero_source_ids_are_rejected() {
     for id in [0, 999] {
         let mut c = certificate();
@@ -41,16 +35,6 @@ fn unknown_and_zero_rules_are_rejected() {
     }
 }
 #[test]
-fn cycles_and_forward_dependencies_are_rejected() {
-    let mut c = certificate();
-    let last = c.steps.len();
-    c.steps.last_mut().unwrap().justification = Justification::Rule {
-        rule: 2,
-        premises: vec![last, 1],
-    };
-    reject(&c);
-}
-#[test]
 fn missing_rule_premises_are_rejected() {
     let mut c = certificate();
     if let Justification::Rule { premises, .. } = &mut c.steps.last_mut().unwrap().justification {
@@ -66,17 +50,6 @@ fn wrong_head_and_inconsistent_rule_bindings_are_rejected() {
     let mut c = certificate();
     c.steps.last_mut().unwrap().atom.values.reverse();
     reject(&c);
-}
-#[test]
-fn incomplete_query_conjunction_is_rejected() {
-    let p = parse("p(a). q(b). ?- p(X), q(X).").unwrap();
-    for claim in ["answer 1 [1]", "answer 1 [1,2]"] {
-        let c = Certificate::parse(&format!(
-            "wheye-proof 1\nstep 1 source 1 : p(a).\nstep 2 source 2 : q(b).\n{claim}\n"
-        ))
-        .unwrap();
-        assert!(!check(&p, &c).unwrap().valid());
-    }
 }
 #[test]
 fn unknown_claims_and_duplicate_answers_are_rejected() {

@@ -1,95 +1,78 @@
-% Answer
 ?- type(Who, Class).
 Who = koko, Class = cat.
 Who = koko, Class = mammal.
+Who = koko, Class = animal.
 Who = alice, Class = person.
 Who = bob, Class = person.
-Who = koko, Class = animal.
+
+?- type(koko, animal).
+true.
+
+?- why.
+wheye-proof 1
+% Rule 3: type(X, B) :- type(X, A), subclass(A, B).
+step 1 source 1 : subclass(cat, mammal).
+step 2 source 2 : subclass(mammal, animal).
+step 3 source 7 : type(koko, cat).
+step 4 rule 3 [3,1] : type(koko, mammal).
+step 5 rule 3 [4,2] : type(koko, animal).
+answer 2 [5]
 
 ?- triple(Subject, Property, Object).
 Subject = alice, Property = parent_of, Object = bob.
 Subject = alice, Property = related_to, Object = bob.
 Subject = alice, Property = connected_to, Object = bob.
 
+?- triple(alice, connected_to, bob).
+true.
+
+?- why.
+wheye-proof 1
+% Rule 4: triple(S, Q, O) :- triple(S, P, O), subproperty(P, Q).
+step 1 source 3 : subproperty(parent_of, related_to).
+step 2 source 4 : subproperty(related_to, connected_to).
+step 3 source 8 : triple(alice, parent_of, bob).
+step 4 rule 4 [3,1] : triple(alice, related_to, bob).
+step 5 rule 4 [4,2] : triple(alice, connected_to, bob).
+answer 4 [5]
+
 ?- type(alice, person).
 true.
 
-% Reason
-certificate(eyeon, 1).
+?- why.
+wheye-proof 1
+% Rule 5: type(S, Class) :- triple(S, P, _), domain(P, Class).
+step 1 source 5 : domain(parent_of, person).
+step 2 source 8 : triple(alice, parent_of, bob).
+step 3 rule 5 [2,1] : type(alice, person).
+answer 5 [3]
 
-claim(query(2), [type(koko, animal)]).
-claim(query(4), [triple(alice, connected_to, bob)]).
-claim(query(5), [type(alice, person)]).
+?- check(subclass(cat, animal)).
+true.
 
-clause(1, subclass(cat, mammal), []).
-clause(2, subclass(mammal, animal), []).
-clause(3, subproperty(parent_of, related_to), []).
-clause(4, subproperty(related_to, connected_to), []).
-clause(5, domain(parent_of, person), []).
-clause(7, type(koko, cat), []).
-clause(8, triple(alice, parent_of, bob), []).
-clause(9, subclass(var('A'), var('C')), [subclass(var('A'), var('B')), subclass(var('B'), var('C'))]).
-clause(10, subproperty(var('P'), var('R')), [subproperty(var('P'), var('Q')), subproperty(var('Q'), var('R'))]).
-clause(11, type(var('X'), var('B')), [type(var('X'), var('A')), subclass(var('A'), var('B'))]).
-clause(12, triple(var('S'), var('Q'), var('O')), [triple(var('S'), var('P'), var('O')), subproperty(var('P'), var('Q'))]).
-clause(13, type(var('S'), var('Class')), [triple(var('S'), var('P'), var('$anonymous1')), domain(var('P'), var('Class'))]).
+?- check(subproperty(parent_of, connected_to)).
+true.
 
-% step 1
-step(type(koko, cat), fact(7), [], []).
-% step 2
-step(subclass(cat, mammal), fact(1), [], []).
-% step 3
-step(subclass(mammal, animal), fact(2), [], []).
-% step 4
-step(subclass(cat, animal), rule(9), ['='('A', cat), '='('B', mammal), '='('C', animal)], [subclass(cat, mammal), subclass(mammal, animal)]).
-% step 5
-step(type(koko, animal), rule(11), ['='('X', koko), '='('A', cat), '='('B', animal)], [type(koko, cat), subclass(cat, animal)]).
-% step 6
-step(triple(alice, parent_of, bob), fact(8), [], []).
-% step 7
-step(subproperty(parent_of, related_to), fact(3), [], []).
-% step 8
-step(subproperty(related_to, connected_to), fact(4), [], []).
-% step 9
-step(subproperty(parent_of, connected_to), rule(10), ['='('P', parent_of), '='('Q', related_to), '='('R', connected_to)], [subproperty(parent_of, related_to), subproperty(related_to, connected_to)]).
-% step 10
-step(triple(alice, connected_to, bob), rule(12), ['='('S', alice), '='('P', parent_of), '='('O', bob), '='('Q', connected_to)], [triple(alice, parent_of, bob), subproperty(parent_of, connected_to)]).
-% step 11
-step(domain(parent_of, person), fact(5), [], []).
-% step 12
-step(type(alice, person), rule(13), ['='('S', alice), '='('P', parent_of), '='('$anonymous1', bob), '='('Class', person)], [triple(alice, parent_of, bob), domain(parent_of, person)]).
+?- check(type(koko, mammal)).
+true.
 
-% Check
-check passed: subclass(cat, animal).
+?- check(type(koko, animal)).
+true.
 
-check passed: subproperty(parent_of, connected_to).
+?- check(type(alice, person)).
+true.
 
-check passed: type(koko, mammal).
+?- check(type(bob, person)).
+true.
 
-check passed: type(koko, animal).
+?- check(triple(alice, related_to, bob)).
+true.
 
-check passed: type(alice, person).
+?- check(triple(alice, connected_to, bob)).
+true.
 
-check passed: type(bob, person).
+?- check(aggregate_all(count, (triple(Subject, Property, Object)), 3)).
+true.
 
-check passed: triple(alice, related_to, bob).
-
-check passed: triple(alice, connected_to, bob).
-
-check passed: aggregate_all(count, (triple(Subject, Property, Object)), 3).
-
-check passed: aggregate_all(count, (type(Who, Class)), 5).
-
-condition('C1', resolution, ok, 12).
-condition('C2', well_founded, ok, 12).
-condition('C3', justification, ok, 12).
-condition('C4', coverage, ok, 13).
-condition('C5', re_decision, ok, 0).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 15).
-steps(12).
-verified(12).
-recomputed(0).
-trusted(0).
-claims(3).
-verdict(checked).
+?- check(aggregate_all(count, (type(Who, Class)), 5)).
+true.

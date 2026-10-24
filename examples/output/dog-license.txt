@@ -1,124 +1,93 @@
-% Answer
 ?- dog_count(Owner, Count).
 Owner = alice, Count = 5.
 Owner = bob, Count = 2.
 Owner = carol, Count = 4.
 Owner = dana, Count = 0.
 
+?- why.
+wheye-proof 1
+% Rule 1: dog_count(Owner, N) :- owner(Owner), aggregate_all(count, (owns(Owner, Dog)), N).
+step 1 source 1 : owns(alice, dog1).
+step 2 source 2 : owns(alice, dog2).
+step 3 source 3 : owns(alice, dog3).
+step 4 source 4 : owns(alice, dog4).
+step 5 source 5 : owns(alice, dog5).
+step 6 source 6 : owns(bob, dog6).
+step 7 source 7 : owns(bob, dog7).
+step 8 source 8 : owns(carol, dog8).
+step 9 source 9 : owns(carol, dog9).
+step 10 source 10 : owns(carol, dog10).
+step 11 source 11 : owns(carol, dog11).
+step 12 source 12 : owner(alice).
+step 13 source 13 : owner(bob).
+step 14 source 14 : owner(carol).
+step 15 source 15 : owner(dana).
+step 16 aggregate r1 2 1 : '$aggregate:r1:2'([binding('Owner', alice)], 5).
+step 17 aggregate r1 2 1 : '$aggregate:r1:2'([binding('Owner', bob)], 2).
+step 18 aggregate r1 2 1 : '$aggregate:r1:2'([binding('Owner', carol)], 4).
+step 19 aggregate r1 2 1 : '$aggregate:r1:2'([binding('Owner', dana)], 0).
+step 20 rule 1 [12,16] : dog_count(alice, 5).
+step 21 rule 1 [13,17] : dog_count(bob, 2).
+step 22 rule 1 [14,18] : dog_count(carol, 4).
+step 23 rule 1 [15,19] : dog_count(dana, 0).
+boundary 1 level 0 [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+answer 1 [20]
+answer 1 [21]
+answer 1 [22]
+answer 1 [23]
+
 ?- requires(Owner, dog_license).
 Owner = alice.
 
-% Reason
-certificate(eyeon, 1).
+?- why.
+wheye-proof 1
+% Rule 1: dog_count(Owner, N) :- owner(Owner), aggregate_all(count, (owns(Owner, Dog)), N).
+% Rule 2: requires(Owner, dog_license) :- dog_count(Owner, N), N > 4.
+step 1 source 1 : owns(alice, dog1).
+step 2 source 2 : owns(alice, dog2).
+step 3 source 3 : owns(alice, dog3).
+step 4 source 4 : owns(alice, dog4).
+step 5 source 5 : owns(alice, dog5).
+step 6 source 6 : owns(bob, dog6).
+step 7 source 7 : owns(bob, dog7).
+step 8 source 8 : owns(carol, dog8).
+step 9 source 9 : owns(carol, dog9).
+step 10 source 10 : owns(carol, dog10).
+step 11 source 11 : owns(carol, dog11).
+step 12 source 12 : owner(alice).
+step 13 source 13 : owner(bob).
+step 14 source 14 : owner(carol).
+step 15 source 15 : owner(dana).
+step 16 builtin : '>'(5, 4).
+step 17 aggregate r1 2 1 : '$aggregate:r1:2'([binding('Owner', alice)], 5).
+step 18 rule 1 [12,17] : dog_count(alice, 5).
+step 19 rule 2 [18,16] : requires(alice, dog_license).
+boundary 1 level 0 [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+answer 2 [19]
 
-claim(query(1), [dog_count(alice, 5)]).
-claim(query(1), [dog_count(bob, 2)]).
-claim(query(1), [dog_count(carol, 4)]).
-claim(query(1), [dog_count(dana, 0)]).
-claim(query(3), [requires(alice, dog_license)]).
+?- check(dog_count(alice, 5)).
+true.
 
-clause(1, owns(alice, dog1), []).
-clause(2, owns(alice, dog2), []).
-clause(3, owns(alice, dog3), []).
-clause(4, owns(alice, dog4), []).
-clause(5, owns(alice, dog5), []).
-clause(6, owns(bob, dog6), []).
-clause(7, owns(bob, dog7), []).
-clause(8, owns(carol, dog8), []).
-clause(9, owns(carol, dog9), []).
-clause(10, owns(carol, dog10), []).
-clause(11, owns(carol, dog11), []).
-clause(12, owner(alice), []).
-clause(13, owner(bob), []).
-clause(14, owner(carol), []).
-clause(15, owner(dana), []).
-clause(16, dog_count(var('Owner'), var('N')), [owner(var('Owner')), aggregate_all(count, [owns(var('Owner'), var('Dog'))], var('N'))]).
-clause(17, requires(var('Owner'), dog_license), [dog_count(var('Owner'), var('N')), '>'(var('N'), 4)]).
+?- check(dog_count(bob, 2)).
+true.
 
-% step 1
-step(owner(alice), fact(12), [], []).
-% step 2
-step(owns(alice, dog1), fact(1), [], []).
-% step 3
-step(owns(alice, dog2), fact(2), [], []).
-% step 4
-step(owns(alice, dog3), fact(3), [], []).
-% step 5
-step(owns(alice, dog4), fact(4), [], []).
-% step 6
-step(owns(alice, dog5), fact(5), [], []).
-% step 7
-step(aggregate_all(count, [owns(alice, V0)], 5), collected, [], [[owns(alice, dog1)], [owns(alice, dog2)], [owns(alice, dog3)], [owns(alice, dog4)], [owns(alice, dog5)]]).
-% step 8
-step(dog_count(alice, 5), rule(16), ['='('Owner', alice), '='('N', 5)], [owner(alice), aggregate_all(count, [owns(alice, V0)], 5)]).
-% step 9
-step(owner(bob), fact(13), [], []).
-% step 10
-step(owns(bob, dog6), fact(6), [], []).
-% step 11
-step(owns(bob, dog7), fact(7), [], []).
-% step 12
-step(aggregate_all(count, [owns(bob, V0)], 2), collected, [], [[owns(bob, dog6)], [owns(bob, dog7)]]).
-% step 13
-step(dog_count(bob, 2), rule(16), ['='('Owner', bob), '='('N', 2)], [owner(bob), aggregate_all(count, [owns(bob, V0)], 2)]).
-% step 14
-step(owner(carol), fact(14), [], []).
-% step 15
-step(owns(carol, dog8), fact(8), [], []).
-% step 16
-step(owns(carol, dog9), fact(9), [], []).
-% step 17
-step(owns(carol, dog10), fact(10), [], []).
-% step 18
-step(owns(carol, dog11), fact(11), [], []).
-% step 19
-step(aggregate_all(count, [owns(carol, V0)], 4), collected, [], [[owns(carol, dog8)], [owns(carol, dog9)], [owns(carol, dog10)], [owns(carol, dog11)]]).
-% step 20
-step(dog_count(carol, 4), rule(16), ['='('Owner', carol), '='('N', 4)], [owner(carol), aggregate_all(count, [owns(carol, V0)], 4)]).
-% step 21
-step(owner(dana), fact(15), [], []).
-% step 22
-step(aggregate_all(count, [owns(dana, V0)], 0), collected, [], []).
-% step 23
-step(dog_count(dana, 0), rule(16), ['='('Owner', dana), '='('N', 0)], [owner(dana), aggregate_all(count, [owns(dana, V0)], 0)]).
-% step 24
-step('>'(5, 4), builtin, [], []).
-% step 25
-step(requires(alice, dog_license), rule(17), ['='('Owner', alice), '='('N', 5)], [dog_count(alice, 5), '>'(5, 4)]).
+?- check(dog_count(carol, 4)).
+true.
 
-% Check
-check passed: dog_count(alice, 5).
+?- check(dog_count(dana, 0)).
+true.
 
-check passed: dog_count(bob, 2).
+?- check(requires(alice, dog_license)).
+true.
 
-check passed: dog_count(carol, 4).
+?- check(\+ (requires(bob, dog_license))).
+true.
 
-check passed: dog_count(dana, 0).
+?- check(\+ (requires(carol, dog_license))).
+true.
 
-check passed: requires(alice, dog_license).
+?- check(\+ (requires(dana, dog_license))).
+true.
 
-check passed: \+ (requires(bob, dog_license)).
-
-check passed: \+ (requires(carol, dog_license)).
-
-check passed: \+ (requires(dana, dog_license)).
-
-check passed: aggregate_all(count, (requires(Owner, dog_license)), 1).
-
-condition('C1', resolution, ok, 20).
-condition('C2', well_founded, ok, 25).
-condition('C3', justification, ok, 25).
-condition('C4', coverage, ok, 26).
-condition('C5', re_decision, ok, 5).
-condition('C6', boundary_consistency, ok, 4).
-condition('C7', relevance, ok, 30).
-obligation(collected, collection_completeness, aggregate_all(count, [owns(alice, var('V0'))], 5)).
-obligation(collected, collection_completeness, aggregate_all(count, [owns(bob, var('V0'))], 2)).
-obligation(collected, collection_completeness, aggregate_all(count, [owns(carol, var('V0'))], 4)).
-obligation(collected, collection_completeness, aggregate_all(count, [owns(dana, var('V0'))], 0)).
-steps(25).
-verified(20).
-recomputed(5).
-trusted(4).
-claims(5).
-verdict(checked_with_obligations).
+?- check(aggregate_all(count, (requires(Owner, dog_license)), 1)).
+true.

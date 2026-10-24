@@ -1,0 +1,3 @@
+?- admitted(Visitor, Ticket).
+Visitor = ada, Ticket = ~"r1:g2:{\"Visitor\": Symbol(\"ada\")}".
+Visitor = bea, Ticket = ~"r1:g2:{\"Visitor\": Symbol(\"bea\")}".

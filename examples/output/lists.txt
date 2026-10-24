@@ -1,93 +1,63 @@
-% Answer
 ?- append([a, b], [c, d], Joined).
 Joined = [a, b, c, d].
+
+?- why.
+wheye-proof 1
+% Rule 1: append([], Ys, Ys) :- .
+% Rule 2: append([X | Xs], Ys, [X | Zs]) :- append(Xs, Ys, Zs).
+step 1 rule 1 [] : append([], [c, d], [c, d]).
+step 2 rule 2 [1] : append([b], [c, d], [b, c, d]).
+step 3 rule 2 [2] : append([a, b], [c, d], [a, b, c, d]).
+answer 1 [3]
 
 ?- squares([1, 2, 3, 4], Squared).
 Squared = [1, 4, 9, 16].
 
+?- why.
+wheye-proof 1
+% Rule 3: squares([X | Xs], [Y | Ys]) :- Y is '*'(X, X), squares(Xs, Ys).
+step 1 source 1 : squares([], []).
+step 2 builtin : is(16, '*'(4, 4)).
+step 3 builtin : is(9, '*'(3, 3)).
+step 4 builtin : is(4, '*'(2, 2)).
+step 5 builtin : is(1, '*'(1, 1)).
+step 6 rule 3 [2,1] : squares([4], [16]).
+step 7 rule 3 [3,6] : squares([3, 4], [9, 16]).
+step 8 rule 3 [4,7] : squares([2, 3, 4], [4, 9, 16]).
+step 9 rule 3 [5,8] : squares([1, 2, 3, 4], [1, 4, 9, 16]).
+answer 2 [9]
+
 ?- sum([1, 2, 3, 4], Total).
 Total = 10.
 
-% Reason
-certificate(eyeon, 1).
+?- why.
+wheye-proof 1
+% Rule 4: sum([X | Xs], Total) :- sum(Xs, Rest), Total is '+'(X, Rest).
+step 1 source 2 : sum([], 0).
+step 2 builtin : is(4, '+'(4, 0)).
+step 3 builtin : is(7, '+'(3, 4)).
+step 4 builtin : is(9, '+'(2, 7)).
+step 5 builtin : is(10, '+'(1, 9)).
+step 6 rule 4 [1,2] : sum([4], 4).
+step 7 rule 4 [6,3] : sum([3, 4], 7).
+step 8 rule 4 [7,4] : sum([2, 3, 4], 9).
+step 9 rule 4 [8,5] : sum([1, 2, 3, 4], 10).
+answer 3 [9]
 
-claim(query(1), [append([a, b], [c, d], [a, b, c, d])]).
-claim(query(3), [squares([1, 2, 3, 4], [1, 4, 9, 16])]).
-claim(query(5), [sum([1, 2, 3, 4], 10)]).
+?- check(append([a, b], [c, d], [a, b, c, d])).
+true.
 
-clause(1, append([], var('Ys'), var('Ys')), []).
-clause(2, append(list([var('X')], var('Xs')), var('Ys'), list([var('X')], var('Zs'))), [append(var('Xs'), var('Ys'), var('Zs'))]).
-clause(3, squares([], []), []).
-clause(4, squares(list([var('X')], var('Xs')), list([var('Y')], var('Ys'))), [is(var('Y'), '*'(var('X'), var('X'))), squares(var('Xs'), var('Ys'))]).
-clause(5, sum([], 0), []).
-clause(6, sum(list([var('X')], var('Xs')), var('Total')), [sum(var('Xs'), var('Rest')), is(var('Total'), '+'(var('X'), var('Rest')))]).
+?- check(squares([1, 2, 3, 4], [1, 4, 9, 16])).
+true.
 
-% step 1
-step(append([], [c, d], [c, d]), fact(1), ['='('Ys', [c, d])], []).
-% step 2
-step(append([b], [c, d], [b, c, d]), rule(2), ['='('X', b), '='('Xs', []), '='('Ys', [c, d]), '='('Zs', [c, d])], [append([], [c, d], [c, d])]).
-% step 3
-step(append([a, b], [c, d], [a, b, c, d]), rule(2), ['='('X', a), '='('Xs', [b]), '='('Ys', [c, d]), '='('Zs', [b, c, d])], [append([b], [c, d], [b, c, d])]).
-% step 4
-step(is(1, '*'(1, 1)), builtin, [], []).
-% step 5
-step(is(4, '*'(2, 2)), builtin, [], []).
-% step 6
-step(is(9, '*'(3, 3)), builtin, [], []).
-% step 7
-step(is(16, '*'(4, 4)), builtin, [], []).
-% step 8
-step(squares([], []), fact(3), [], []).
-% step 9
-step(squares([4], [16]), rule(4), ['='('X', 4), '='('Xs', []), '='('Y', 16), '='('Ys', [])], [is(16, '*'(4, 4)), squares([], [])]).
-% step 10
-step(squares([3, 4], [9, 16]), rule(4), ['='('X', 3), '='('Xs', [4]), '='('Y', 9), '='('Ys', [16])], [is(9, '*'(3, 3)), squares([4], [16])]).
-% step 11
-step(squares([2, 3, 4], [4, 9, 16]), rule(4), ['='('X', 2), '='('Xs', [3, 4]), '='('Y', 4), '='('Ys', [9, 16])], [is(4, '*'(2, 2)), squares([3, 4], [9, 16])]).
-% step 12
-step(squares([1, 2, 3, 4], [1, 4, 9, 16]), rule(4), ['='('X', 1), '='('Xs', [2, 3, 4]), '='('Y', 1), '='('Ys', [4, 9, 16])], [is(1, '*'(1, 1)), squares([2, 3, 4], [4, 9, 16])]).
-% step 13
-step(sum([], 0), fact(5), [], []).
-% step 14
-step(is(4, '+'(4, 0)), builtin, [], []).
-% step 15
-step(sum([4], 4), rule(6), ['='('X', 4), '='('Xs', []), '='('Total', 4), '='('Rest', 0)], [sum([], 0), is(4, '+'(4, 0))]).
-% step 16
-step(is(7, '+'(3, 4)), builtin, [], []).
-% step 17
-step(sum([3, 4], 7), rule(6), ['='('X', 3), '='('Xs', [4]), '='('Total', 7), '='('Rest', 4)], [sum([4], 4), is(7, '+'(3, 4))]).
-% step 18
-step(is(9, '+'(2, 7)), builtin, [], []).
-% step 19
-step(sum([2, 3, 4], 9), rule(6), ['='('X', 2), '='('Xs', [3, 4]), '='('Total', 9), '='('Rest', 7)], [sum([3, 4], 7), is(9, '+'(2, 7))]).
-% step 20
-step(is(10, '+'(1, 9)), builtin, [], []).
-% step 21
-step(sum([1, 2, 3, 4], 10), rule(6), ['='('X', 1), '='('Xs', [2, 3, 4]), '='('Total', 10), '='('Rest', 9)], [sum([2, 3, 4], 9), is(10, '+'(1, 9))]).
+?- check(sum([1, 2, 3, 4], 10)).
+true.
 
-% Check
-check passed: append([a, b], [c, d], [a, b, c, d]).
+?- check(append([], [a], [a])).
+true.
 
-check passed: squares([1, 2, 3, 4], [1, 4, 9, 16]).
+?- check(squares([], [])).
+true.
 
-check passed: sum([1, 2, 3, 4], 10).
-
-check passed: append([], [a], [a]).
-
-check passed: squares([], []).
-
-check passed: sum([], 0).
-
-condition('C1', resolution, ok, 13).
-condition('C2', well_founded, ok, 21).
-condition('C3', justification, ok, 21).
-condition('C4', coverage, ok, 21).
-condition('C5', re_decision, ok, 8).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 24).
-steps(21).
-verified(13).
-recomputed(8).
-trusted(0).
-claims(3).
-verdict(checked).
+?- check(sum([], 0)).
+true.

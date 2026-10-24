@@ -1,71 +1,37 @@
-% Answer
 ?- moves(3, left, right, center, Moves).
 Moves = [move(left, right), move(left, center), move(right, center), move(left, right), move(center, left), move(center, right), move(left, right)].
 
-% Reason
-certificate(eyeon, 1).
+?- why.
+wheye-proof 1
+% Rule 1: append([], Ys, Ys) :- .
+% Rule 2: append([X | Xs], Ys, [X | Zs]) :- append(Xs, Ys, Zs).
+% Rule 3: moves(1, From, To, _, [move(From, To)]) :- .
+% Rule 4: moves(N, From, To, Spare, Moves) :- N > 1, Smaller is '-'(N, 1), moves(Smaller, From, Spare, To, First), moves(Smaller, Spare, To, From, Last), append(First, [move(From, To) | Last], Moves).
+step 1 rule 3 [] : moves(1, left, right, center, [move(left, right)]).
+step 2 rule 3 [] : moves(1, right, center, left, [move(right, center)]).
+step 3 rule 1 [] : append([], [move(left, center), move(right, center)], [move(left, center), move(right, center)]).
+step 4 builtin : '>'(2, 1).
+step 5 builtin : is(1, '-'(2, 1)).
+step 6 rule 3 [] : moves(1, center, left, right, [move(center, left)]).
+step 7 rule 1 [] : append([], [move(center, right), move(left, right)], [move(center, right), move(left, right)]).
+step 8 rule 1 [] : append([], [move(left, right), move(center, left), move(center, right), move(left, right)], [move(left, right), move(center, left), move(center, right), move(left, right)]).
+step 9 builtin : '>'(3, 1).
+step 10 builtin : is(2, '-'(3, 1)).
+step 11 rule 2 [3] : append([move(left, right)], [move(left, center), move(right, center)], [move(left, right), move(left, center), move(right, center)]).
+step 12 rule 2 [7] : append([move(center, left)], [move(center, right), move(left, right)], [move(center, left), move(center, right), move(left, right)]).
+step 13 rule 2 [8] : append([move(right, center)], [move(left, right), move(center, left), move(center, right), move(left, right)], [move(right, center), move(left, right), move(center, left), move(center, right), move(left, right)]).
+step 14 rule 4 [4,5,1,2,11] : moves(2, left, center, right, [move(left, right), move(left, center), move(right, center)]).
+step 15 rule 4 [4,5,6,1,12] : moves(2, center, right, left, [move(center, left), move(center, right), move(left, right)]).
+step 16 rule 2 [13] : append([move(left, center), move(right, center)], [move(left, right), move(center, left), move(center, right), move(left, right)], [move(left, center), move(right, center), move(left, right), move(center, left), move(center, right), move(left, right)]).
+step 17 rule 2 [16] : append([move(left, right), move(left, center), move(right, center)], [move(left, right), move(center, left), move(center, right), move(left, right)], [move(left, right), move(left, center), move(right, center), move(left, right), move(center, left), move(center, right), move(left, right)]).
+step 18 rule 4 [9,10,14,15,17] : moves(3, left, right, center, [move(left, right), move(left, center), move(right, center), move(left, right), move(center, left), move(center, right), move(left, right)]).
+answer 1 [18]
 
-claim(query(1), [moves(3, left, right, center, [move(left, right), move(left, center), move(right, center), move(left, right), move(center, left), move(center, right), move(left, right)])]).
+?- check(moves(1, left, right, center, [move(left, right)])).
+true.
 
-clause(1, append([], var('Ys'), var('Ys')), []).
-clause(2, append(list([var('X')], var('Xs')), var('Ys'), list([var('X')], var('Zs'))), [append(var('Xs'), var('Ys'), var('Zs'))]).
-clause(3, moves(1, var('From'), var('To'), var('$anonymous1'), [move(var('From'), var('To'))]), []).
-clause(4, moves(var('N'), var('From'), var('To'), var('Spare'), var('Moves')), ['>'(var('N'), 1), is(var('Smaller'), '-'(var('N'), 1)), moves(var('Smaller'), var('From'), var('Spare'), var('To'), var('First')), moves(var('Smaller'), var('Spare'), var('To'), var('From'), var('Last')), append(var('First'), list([move(var('From'), var('To'))], var('Last')), var('Moves'))]).
+?- check(moves(2, left, right, center, [move(left, center), move(left, right), move(center, right)])).
+true.
 
-% step 1
-step('>'(3, 1), builtin, [], []).
-% step 2
-step(is(2, '-'(3, 1)), builtin, [], []).
-% step 3
-step('>'(2, 1), builtin, [], []).
-% step 4
-step(is(1, '-'(2, 1)), builtin, [], []).
-% step 5
-step(moves(1, left, right, center, [move(left, right)]), fact(3), ['='('From', left), '='('To', right), '='('$anonymous1', center)], []).
-% step 6
-step(moves(1, right, center, left, [move(right, center)]), fact(3), ['='('From', right), '='('To', center), '='('$anonymous1', left)], []).
-% step 7
-step(append([], [move(left, center), move(right, center)], [move(left, center), move(right, center)]), fact(1), ['='('Ys', [move(left, center), move(right, center)])], []).
-% step 8
-step(append([move(left, right)], [move(left, center), move(right, center)], [move(left, right), move(left, center), move(right, center)]), rule(2), ['='('X', move(left, right)), '='('Xs', []), '='('Ys', [move(left, center), move(right, center)]), '='('Zs', [move(left, center), move(right, center)])], [append([], [move(left, center), move(right, center)], [move(left, center), move(right, center)])]).
-% step 9
-step(moves(2, left, center, right, [move(left, right), move(left, center), move(right, center)]), rule(4), ['='('N', 2), '='('From', left), '='('To', center), '='('Spare', right), '='('Moves', [move(left, right), move(left, center), move(right, center)]), '='('Smaller', 1), '='('First', [move(left, right)]), '='('Last', [move(right, center)])], ['>'(2, 1), is(1, '-'(2, 1)), moves(1, left, right, center, [move(left, right)]), moves(1, right, center, left, [move(right, center)]), append([move(left, right)], [move(left, center), move(right, center)], [move(left, right), move(left, center), move(right, center)])]).
-% step 10
-step(moves(1, center, left, right, [move(center, left)]), fact(3), ['='('From', center), '='('To', left), '='('$anonymous1', right)], []).
-% step 11
-step(append([], [move(center, right), move(left, right)], [move(center, right), move(left, right)]), fact(1), ['='('Ys', [move(center, right), move(left, right)])], []).
-% step 12
-step(append([move(center, left)], [move(center, right), move(left, right)], [move(center, left), move(center, right), move(left, right)]), rule(2), ['='('X', move(center, left)), '='('Xs', []), '='('Ys', [move(center, right), move(left, right)]), '='('Zs', [move(center, right), move(left, right)])], [append([], [move(center, right), move(left, right)], [move(center, right), move(left, right)])]).
-% step 13
-step(moves(2, center, right, left, [move(center, left), move(center, right), move(left, right)]), rule(4), ['='('N', 2), '='('From', center), '='('To', right), '='('Spare', left), '='('Moves', [move(center, left), move(center, right), move(left, right)]), '='('Smaller', 1), '='('First', [move(center, left)]), '='('Last', [move(left, right)])], ['>'(2, 1), is(1, '-'(2, 1)), moves(1, center, left, right, [move(center, left)]), moves(1, left, right, center, [move(left, right)]), append([move(center, left)], [move(center, right), move(left, right)], [move(center, left), move(center, right), move(left, right)])]).
-% step 14
-step(append([], [move(left, right), move(center, left), move(center, right), move(left, right)], [move(left, right), move(center, left), move(center, right), move(left, right)]), fact(1), ['='('Ys', [move(left, right), move(center, left), move(center, right), move(left, right)])], []).
-% step 15
-step(append([move(right, center)], [move(left, right), move(center, left), move(center, right), move(left, right)], [move(right, center), move(left, right), move(center, left), move(center, right), move(left, right)]), rule(2), ['='('X', move(right, center)), '='('Xs', []), '='('Ys', [move(left, right), move(center, left), move(center, right), move(left, right)]), '='('Zs', [move(left, right), move(center, left), move(center, right), move(left, right)])], [append([], [move(left, right), move(center, left), move(center, right), move(left, right)], [move(left, right), move(center, left), move(center, right), move(left, right)])]).
-% step 16
-step(append([move(left, center), move(right, center)], [move(left, right), move(center, left), move(center, right), move(left, right)], [move(left, center), move(right, center), move(left, right), move(center, left), move(center, right), move(left, right)]), rule(2), ['='('X', move(left, center)), '='('Xs', [move(right, center)]), '='('Ys', [move(left, right), move(center, left), move(center, right), move(left, right)]), '='('Zs', [move(right, center), move(left, right), move(center, left), move(center, right), move(left, right)])], [append([move(right, center)], [move(left, right), move(center, left), move(center, right), move(left, right)], [move(right, center), move(left, right), move(center, left), move(center, right), move(left, right)])]).
-% step 17
-step(append([move(left, right), move(left, center), move(right, center)], [move(left, right), move(center, left), move(center, right), move(left, right)], [move(left, right), move(left, center), move(right, center), move(left, right), move(center, left), move(center, right), move(left, right)]), rule(2), ['='('X', move(left, right)), '='('Xs', [move(left, center), move(right, center)]), '='('Ys', [move(left, right), move(center, left), move(center, right), move(left, right)]), '='('Zs', [move(left, center), move(right, center), move(left, right), move(center, left), move(center, right), move(left, right)])], [append([move(left, center), move(right, center)], [move(left, right), move(center, left), move(center, right), move(left, right)], [move(left, center), move(right, center), move(left, right), move(center, left), move(center, right), move(left, right)])]).
-% step 18
-step(moves(3, left, right, center, [move(left, right), move(left, center), move(right, center), move(left, right), move(center, left), move(center, right), move(left, right)]), rule(4), ['='('N', 3), '='('From', left), '='('To', right), '='('Spare', center), '='('Moves', [move(left, right), move(left, center), move(right, center), move(left, right), move(center, left), move(center, right), move(left, right)]), '='('Smaller', 2), '='('First', [move(left, right), move(left, center), move(right, center)]), '='('Last', [move(center, left), move(center, right), move(left, right)])], ['>'(3, 1), is(2, '-'(3, 1)), moves(2, left, center, right, [move(left, right), move(left, center), move(right, center)]), moves(2, center, right, left, [move(center, left), move(center, right), move(left, right)]), append([move(left, right), move(left, center), move(right, center)], [move(left, right), move(center, left), move(center, right), move(left, right)], [move(left, right), move(left, center), move(right, center), move(left, right), move(center, left), move(center, right), move(left, right)])]).
-
-% Check
-check passed: moves(1, left, right, center, [move(left, right)]).
-
-check passed: moves(2, left, right, center, [move(left, center), move(left, right), move(center, right)]).
-
-check passed: moves(3, left, right, center, [move(left, right), move(left, center), move(right, center), move(left, right), move(center, left), move(center, right), move(left, right)]).
-
-condition('C1', resolution, ok, 14).
-condition('C2', well_founded, ok, 18).
-condition('C3', justification, ok, 18).
-condition('C4', coverage, ok, 21).
-condition('C5', re_decision, ok, 4).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 19).
-steps(18).
-verified(14).
-recomputed(4).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check(moves(3, left, right, center, [move(left, right), move(left, center), move(right, center), move(left, right), move(center, left), move(center, right), move(left, right)])).
+true.

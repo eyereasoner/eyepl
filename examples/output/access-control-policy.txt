@@ -1,77 +1,55 @@
-% Answer
 ?- accepted(Policy).
 Policy = 'PolicyX'.
 
+?- why.
+wheye-proof 1
+% Rule 2: matched_any(Policy) :- policy(Request, Policy), policy(Policy), anyOf(Policy, Attribute), has(Request, Attribute).
+% Rule 4: pass(Policy, allOfTest) :- policy(Policy), \+ (missing_all(Policy)).
+% Rule 5: pass(Policy, anyOfTest) :- policy(Policy), matched_any(Policy).
+% Rule 6: pass(Policy, noneOfTest) :- policy(Policy), \+ (matched_none(Policy)).
+% Rule 7: accepted(Policy) :- policy(Policy), pass(Policy, allOfTest), pass(Policy, anyOfTest), pass(Policy, noneOfTest).
+step 1 source 1 : policy(test1, 'PolicyX').
+step 2 source 2 : has(test1, 'A').
+step 3 source 3 : has(test1, 'B').
+step 4 source 4 : has(test1, 'C').
+step 5 source 5 : policy('PolicyX').
+step 6 source 6 : allOf('PolicyX', 'A').
+step 7 source 7 : allOf('PolicyX', 'B').
+step 8 source 8 : anyOf('PolicyX', 'C').
+step 9 source 9 : noneOf('PolicyX', 'D').
+step 10 rule 2 [1,5,8,4] : matched_any('PolicyX').
+step 11 rule 5 [5,10] : pass('PolicyX', anyOfTest).
+step 12 absent 1 : matched_none('PolicyX').
+step 13 rule 6 [5,12] : pass('PolicyX', noneOfTest).
+step 14 absent 2 : missing_all('PolicyX').
+step 15 rule 4 [5,14] : pass('PolicyX', allOfTest).
+step 16 rule 7 [5,15,11,13] : accepted('PolicyX').
+boundary 1 level 0 [1,2,3,4,5,6,7,8,9,10,11]
+boundary 2 level 1 [1,2,3,4,5,6,7,8,9,10,11,13]
+answer 1 [16]
+
 ?- pass('PolicyX', Test).
 Test = anyOfTest.
-Test = allOfTest.
 Test = noneOfTest.
+Test = allOfTest.
 
-% Reason
-certificate(eyeon, 1).
+?- check(accepted('PolicyX')).
+true.
 
-claim(query(1), [accepted('PolicyX')]).
+?- check(pass('PolicyX', allOfTest)).
+true.
 
-clause(1, policy(test1, 'PolicyX'), []).
-clause(4, has(test1, 'C'), []).
-clause(5, policy('PolicyX'), []).
-clause(8, anyOf('PolicyX', 'C'), []).
-clause(11, matched_any(var('Policy')), [policy(var('Request'), var('Policy')), policy(var('Policy')), anyOf(var('Policy'), var('Attribute')), has(var('Request'), var('Attribute'))]).
-clause(13, pass(var('Policy'), allOfTest), [policy(var('Policy')), '\\+'(missing_all(var('Policy')))]).
-clause(14, pass(var('Policy'), anyOfTest), [policy(var('Policy')), matched_any(var('Policy'))]).
-clause(15, pass(var('Policy'), noneOfTest), [policy(var('Policy')), '\\+'(matched_none(var('Policy')))]).
-clause(16, accepted(var('Policy')), [policy(var('Policy')), pass(var('Policy'), allOfTest), pass(var('Policy'), anyOfTest), pass(var('Policy'), noneOfTest)]).
+?- check(pass('PolicyX', anyOfTest)).
+true.
 
-% step 1
-step(policy('PolicyX'), fact(5), [], []).
-% step 2
-step('\\+'(missing_all('PolicyX')), absent, [], []).
-% step 3
-step(pass('PolicyX', allOfTest), rule(13), ['='('Policy', 'PolicyX')], [policy('PolicyX'), '\\+'(missing_all('PolicyX'))]).
-% step 4
-step(policy(test1, 'PolicyX'), fact(1), [], []).
-% step 5
-step(anyOf('PolicyX', 'C'), fact(8), [], []).
-% step 6
-step(has(test1, 'C'), fact(4), [], []).
-% step 7
-step(matched_any('PolicyX'), rule(11), ['='('Request', test1), '='('Policy', 'PolicyX'), '='('Attribute', 'C')], [policy(test1, 'PolicyX'), policy('PolicyX'), anyOf('PolicyX', 'C'), has(test1, 'C')]).
-% step 8
-step(pass('PolicyX', anyOfTest), rule(14), ['='('Policy', 'PolicyX')], [policy('PolicyX'), matched_any('PolicyX')]).
-% step 9
-step('\\+'(matched_none('PolicyX')), absent, [], []).
-% step 10
-step(pass('PolicyX', noneOfTest), rule(15), ['='('Policy', 'PolicyX')], [policy('PolicyX'), '\\+'(matched_none('PolicyX'))]).
-% step 11
-step(accepted('PolicyX'), rule(16), ['='('Policy', 'PolicyX')], [policy('PolicyX'), pass('PolicyX', allOfTest), pass('PolicyX', anyOfTest), pass('PolicyX', noneOfTest)]).
+?- check(pass('PolicyX', noneOfTest)).
+true.
 
-% Check
-check passed: accepted('PolicyX').
+?- check(aggregate_all(count, (pass('PolicyX', Test)), 3)).
+true.
 
-check passed: pass('PolicyX', allOfTest).
+?- check(\+ (missing_all('PolicyX'))).
+true.
 
-check passed: pass('PolicyX', anyOfTest).
-
-check passed: pass('PolicyX', noneOfTest).
-
-check passed: aggregate_all(count, (pass('PolicyX', Test)), 3).
-
-check passed: \+ (missing_all('PolicyX')).
-
-check passed: \+ (matched_none('PolicyX')).
-
-condition('C1', resolution, ok, 9).
-condition('C2', well_founded, ok, 11).
-condition('C3', justification, ok, 11).
-condition('C4', coverage, ok, 15).
-condition('C5', re_decision, ok, 0).
-condition('C6', boundary_consistency, ok, 2).
-condition('C7', relevance, ok, 12).
-obligation(absent, theory_scoped, '\\+'(missing_all('PolicyX'))).
-obligation(absent, theory_scoped, '\\+'(matched_none('PolicyX'))).
-steps(11).
-verified(9).
-recomputed(0).
-trusted(2).
-claims(1).
-verdict(checked_with_obligations).
+?- check(\+ (matched_none('PolicyX'))).
+true.

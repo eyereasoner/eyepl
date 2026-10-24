@@ -1,60 +1,34 @@
-% Answer
 ?- 'is-older-than'(Who, 80).
 Who = 'pat-h'.
 
 ?- is_a(test, 'passed-check').
 true.
 
-% Reason
-certificate(eyeon, 1).
+?- why.
+wheye-proof 1
+% Rule 1: 'is-older-than'(Person, Years) :- birthday(Person, [BirthYear, BirthMonth, BirthDay]), date(today, [Year, Month, Day]), _Calc1 is '-'(Year, BirthYear), _Calc1 > Years.
+% Rule 4: is_a(test, 'passed-check') :- person(test, Person), 'age-limit'(test, Years), 'is-older-than'(Person, Years).
+step 1 source 1 : birthday('pat-h', [1944, 8, 21]).
+step 2 source 2 : date(today, [2026, 10, 12]).
+step 3 source 3 : person(test, 'pat-h').
+step 4 source 4 : 'age-limit'(test, 80).
+step 5 builtin : is(82, '-'(2026, 1944)).
+step 6 builtin : '>'(82, 80).
+step 7 rule 1 [1,2,5,6] : 'is-older-than'('pat-h', 80).
+step 8 rule 4 [3,4,7] : is_a(test, 'passed-check').
+answer 2 [8]
 
-claim(query(2), [is_a(test, 'passed-check')]).
+?- check('is-older-than'('pat-h', 80)).
+true.
 
-clause(1, birthday('pat-h', [1944, 8, 21]), []).
-clause(2, date(today, [2026, 10, 12]), []).
-clause(3, person(test, 'pat-h'), []).
-clause(4, 'age-limit'(test, 80), []).
-clause(5, 'is-older-than'(var('Person'), var('Years')), [birthday(var('Person'), [var('BirthYear'), var('BirthMonth'), var('BirthDay')]), date(today, [var('Year'), var('Month'), var('Day')]), is(var('_Calc1'), '-'(var('Year'), var('BirthYear'))), '>'(var('_Calc1'), var('Years'))]).
-clause(8, is_a(test, 'passed-check'), [person(test, var('Person')), 'age-limit'(test, var('Years')), 'is-older-than'(var('Person'), var('Years'))]).
+?- check('is-older-than'('pat-h', 82)).
+true.
 
-% step 1
-step(person(test, 'pat-h'), fact(3), [], []).
-% step 2
-step('age-limit'(test, 80), fact(4), [], []).
-% step 3
-step(birthday('pat-h', [1944, 8, 21]), fact(1), [], []).
-% step 4
-step(date(today, [2026, 10, 12]), fact(2), [], []).
-% step 5
-step(is(82, '-'(2026, 1944)), builtin, [], []).
-% step 6
-step('>'(82, 80), builtin, [], []).
-% step 7
-step('is-older-than'('pat-h', 80), rule(5), ['='('Person', 'pat-h'), '='('Years', 80), '='('BirthYear', 1944), '='('BirthMonth', 8), '='('BirthDay', 21), '='('Year', 2026), '='('Month', 10), '='('Day', 12), '='('_Calc1', 82)], [birthday('pat-h', [1944, 8, 21]), date(today, [2026, 10, 12]), is(82, '-'(2026, 1944)), '>'(82, 80)]).
-% step 8
-step(is_a(test, 'passed-check'), rule(8), ['='('Person', 'pat-h'), '='('Years', 80)], [person(test, 'pat-h'), 'age-limit'(test, 80), 'is-older-than'('pat-h', 80)]).
+?- check(\+ ('is-older-than'('pat-h', 83))).
+true.
 
-% Check
-check passed: 'is-older-than'('pat-h', 80).
+?- check(is_a(test, 'passed-check')).
+true.
 
-check passed: 'is-older-than'('pat-h', 82).
-
-check passed: \+ ('is-older-than'('pat-h', 83)).
-
-check passed: is_a(test, 'passed-check').
-
-check passed: aggregate_all(count, (is_a(Subject, 'passed-check')), 1).
-
-condition('C1', resolution, ok, 6).
-condition('C2', well_founded, ok, 8).
-condition('C3', justification, ok, 8).
-condition('C4', coverage, ok, 8).
-condition('C5', re_decision, ok, 2).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 9).
-steps(8).
-verified(6).
-recomputed(2).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check(aggregate_all(count, (is_a(Subject, 'passed-check')), 1)).
+true.

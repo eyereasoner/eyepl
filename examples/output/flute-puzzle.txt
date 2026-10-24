@@ -1,68 +1,37 @@
-% Answer
 ?- solution(Flute).
 Flute = sandy.
 
-% Reason
-certificate(eyeon, 1).
+?- why.
+wheye-proof 1
+% Rule 1: solution(Flute) :- uniq_people(Doctor, Lawyer, Engineer), uniq_people(Piano, Violin, Flute), chris \= Doctor, Lawyer = Piano, Engineer \= chris, Violin = Doctor, sandy \= Violin.
+% Rule 2: uniq_people(A, B, C) :- person(A), person(B), person(C), A \= B, A \= C, B \= C.
+step 1 source 1 : person(chris).
+step 2 source 2 : person(sandy).
+step 3 source 3 : person(pat).
+step 4 builtin : '\\='(chris, sandy).
+step 5 builtin : '\\='(chris, pat).
+step 6 builtin : '\\='(sandy, pat).
+step 7 builtin : '\\='(pat, sandy).
+step 8 rule 2 [1,3,2,5,4,7] : uniq_people(chris, pat, sandy).
+step 9 builtin : '\\='(sandy, chris).
+step 10 builtin : '\\='(pat, chris).
+step 11 rule 2 [3,1,2,10,7,4] : uniq_people(pat, chris, sandy).
+step 12 builtin : '='(chris, chris).
+step 13 builtin : '='(pat, pat).
+step 14 rule 1 [11,8,5,12,9,13,6] : solution(sandy).
+answer 1 [14]
 
-claim(query(1), [solution(sandy)]).
+?- check(solution(sandy)).
+true.
 
-clause(1, person(chris), []).
-clause(2, person(sandy), []).
-clause(3, person(pat), []).
-clause(4, solution(var('Flute')), [uniq_people(var('Doctor'), var('Lawyer'), var('Engineer')), uniq_people(var('Piano'), var('Violin'), var('Flute')), '\\='(chris, var('Doctor')), '='(var('Lawyer'), var('Piano')), '\\='(var('Engineer'), chris), '='(var('Violin'), var('Doctor')), '\\='(sandy, var('Violin'))]).
-clause(5, uniq_people(var('A'), var('B'), var('C')), [person(var('A')), person(var('B')), person(var('C')), '\\='(var('A'), var('B')), '\\='(var('A'), var('C')), '\\='(var('B'), var('C'))]).
+?- check(\+ (solution(chris))).
+true.
 
-% step 1
-step(person(pat), fact(3), [], []).
-% step 2
-step(person(chris), fact(1), [], []).
-% step 3
-step(person(sandy), fact(2), [], []).
-% step 4
-step('\\='(pat, chris), builtin, [], []).
-% step 5
-step('\\='(pat, sandy), builtin, [], []).
-% step 6
-step('\\='(chris, sandy), builtin, [], []).
-% step 7
-step(uniq_people(pat, chris, sandy), rule(5), ['='('A', pat), '='('B', chris), '='('C', sandy)], [person(pat), person(chris), person(sandy), '\\='(pat, chris), '\\='(pat, sandy), '\\='(chris, sandy)]).
-% step 8
-step('\\='(chris, pat), builtin, [], []).
-% step 9
-step(uniq_people(chris, pat, sandy), rule(5), ['='('A', chris), '='('B', pat), '='('C', sandy)], [person(chris), person(pat), person(sandy), '\\='(chris, pat), '\\='(chris, sandy), '\\='(pat, sandy)]).
-% step 10
-step('='(chris, chris), builtin, [], []).
-% step 11
-step('\\='(sandy, chris), builtin, [], []).
-% step 12
-step('='(pat, pat), builtin, [], []).
-% step 13
-step('\\='(sandy, pat), builtin, [], []).
-% step 14
-step(solution(sandy), rule(4), ['='('Doctor', pat), '='('Lawyer', chris), '='('Engineer', sandy), '='('Piano', chris), '='('Violin', pat), '='('Flute', sandy)], [uniq_people(pat, chris, sandy), uniq_people(chris, pat, sandy), '\\='(chris, pat), '='(chris, chris), '\\='(sandy, chris), '='(pat, pat), '\\='(sandy, pat)]).
+?- check(\+ (solution(pat))).
+true.
 
-% Check
-check passed: solution(sandy).
+?- check(aggregate_all(count, (solution(Flute)), 1)).
+true.
 
-check passed: \+ (solution(chris)).
-
-check passed: \+ (solution(pat)).
-
-check passed: aggregate_all(count, (solution(Flute)), 1).
-
-check passed: aggregate_all(count, (uniq_people(A, B, C)), 6).
-
-condition('C1', resolution, ok, 6).
-condition('C2', well_founded, ok, 14).
-condition('C3', justification, ok, 14).
-condition('C4', coverage, ok, 20).
-condition('C5', re_decision, ok, 8).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 15).
-steps(14).
-verified(6).
-recomputed(8).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check(aggregate_all(count, (uniq_people(A, B, C)), 6)).
+true.

@@ -1,83 +1,82 @@
-% Answer
 ?- queens(8, Columns).
-Columns = [1, 7, 4, 6, 8, 2, 5, 3].
-Columns = [1, 7, 5, 8, 2, 4, 6, 3].
-Columns = [2, 7, 5, 8, 1, 4, 6, 3].
-Columns = [2, 5, 7, 4, 1, 8, 6, 3].
-Columns = [1, 5, 8, 6, 3, 7, 2, 4].
-Columns = [2, 5, 7, 1, 3, 8, 6, 4].
-Columns = [2, 8, 6, 1, 3, 5, 7, 4].
-Columns = [2, 7, 3, 6, 8, 5, 1, 4].
-Columns = [3, 6, 8, 1, 5, 7, 2, 4].
-Columns = [3, 6, 2, 5, 8, 1, 7, 4].
-Columns = [3, 6, 2, 7, 5, 1, 8, 4].
-Columns = [1, 6, 8, 3, 7, 4, 2, 5].
+Columns = [4, 1, 5, 8, 6, 3, 7, 2].
+Columns = [4, 6, 8, 3, 1, 7, 5, 2].
+Columns = [4, 7, 5, 3, 1, 6, 8, 2].
+Columns = [3, 6, 4, 1, 8, 5, 7, 2].
+Columns = [3, 6, 8, 1, 4, 7, 5, 2].
+Columns = [4, 8, 1, 3, 6, 2, 7, 5].
+Columns = [4, 6, 8, 2, 7, 1, 3, 5].
+Columns = [4, 2, 7, 3, 6, 8, 1, 5].
 Columns = [2, 6, 1, 7, 4, 8, 3, 5].
 Columns = [2, 6, 8, 3, 1, 4, 7, 5].
 Columns = [2, 4, 6, 8, 3, 1, 7, 5].
-Columns = [3, 8, 4, 7, 1, 6, 2, 5].
 Columns = [3, 6, 8, 2, 4, 1, 7, 5].
 Columns = [3, 6, 2, 7, 1, 4, 8, 5].
+Columns = [3, 8, 4, 7, 1, 6, 2, 5].
 Columns = [3, 7, 2, 8, 6, 4, 1, 5].
+Columns = [1, 6, 8, 3, 7, 4, 2, 5].
+Columns = [4, 2, 7, 5, 1, 8, 6, 3].
+Columns = [4, 7, 1, 8, 5, 2, 6, 3].
+Columns = [4, 8, 1, 5, 7, 2, 6, 3].
+Columns = [2, 7, 5, 8, 1, 4, 6, 3].
+Columns = [2, 5, 7, 4, 1, 8, 6, 3].
+Columns = [1, 7, 5, 8, 2, 4, 6, 3].
+Columns = [1, 7, 4, 6, 8, 2, 5, 3].
+Columns = [4, 2, 8, 6, 1, 3, 5, 7].
+Columns = [4, 2, 5, 8, 6, 1, 3, 7].
+Columns = [4, 6, 1, 5, 2, 8, 3, 7].
+Columns = [4, 8, 5, 3, 1, 7, 2, 6].
+Columns = [4, 1, 5, 8, 2, 7, 3, 6].
+Columns = [4, 2, 8, 5, 7, 1, 3, 6].
+Columns = [4, 7, 3, 8, 2, 5, 1, 6].
 Columns = [3, 1, 7, 5, 8, 2, 4, 6].
 Columns = [3, 5, 2, 8, 1, 7, 4, 6].
 Columns = [3, 5, 8, 4, 1, 7, 2, 6].
 Columns = [3, 5, 7, 1, 4, 2, 8, 6].
 Columns = [3, 7, 2, 8, 5, 1, 4, 6].
-Columns = [3, 6, 8, 1, 4, 7, 5, 2].
-Columns = [3, 6, 4, 1, 8, 5, 7, 2].
-Columns = [4, 1, 5, 8, 6, 3, 7, 2].
-Columns = [4, 6, 8, 3, 1, 7, 5, 2].
-Columns = [4, 7, 5, 3, 1, 6, 8, 2].
-Columns = [4, 8, 1, 3, 6, 2, 7, 5].
-Columns = [4, 6, 8, 2, 7, 1, 3, 5].
-Columns = [4, 2, 7, 3, 6, 8, 1, 5].
-Columns = [4, 2, 7, 5, 1, 8, 6, 3].
-Columns = [4, 7, 1, 8, 5, 2, 6, 3].
-Columns = [4, 8, 1, 5, 7, 2, 6, 3].
-Columns = [4, 8, 5, 3, 1, 7, 2, 6].
-Columns = [4, 1, 5, 8, 2, 7, 3, 6].
-Columns = [4, 2, 8, 5, 7, 1, 3, 6].
-Columns = [4, 7, 3, 8, 2, 5, 1, 6].
-Columns = [3, 5, 2, 8, 6, 4, 7, 1].
-Columns = [3, 6, 4, 2, 8, 5, 7, 1].
-Columns = [4, 2, 7, 3, 6, 8, 5, 1].
-Columns = [4, 2, 8, 6, 1, 3, 5, 7].
-Columns = [4, 2, 5, 8, 6, 1, 3, 7].
-Columns = [4, 6, 1, 5, 2, 8, 3, 7].
 Columns = [4, 7, 5, 2, 6, 1, 3, 8].
-Columns = [5, 2, 4, 7, 3, 8, 6, 1].
-Columns = [5, 7, 4, 1, 3, 8, 6, 2].
-Columns = [5, 7, 1, 3, 8, 6, 4, 2].
-Columns = [5, 3, 8, 4, 7, 1, 6, 2].
-Columns = [5, 7, 1, 4, 2, 8, 6, 3].
-Columns = [5, 8, 4, 1, 7, 2, 6, 3].
-Columns = [5, 2, 6, 1, 7, 4, 8, 3].
+Columns = [2, 8, 6, 1, 3, 5, 7, 4].
+Columns = [2, 5, 7, 1, 3, 8, 6, 4].
+Columns = [2, 7, 3, 6, 8, 5, 1, 4].
+Columns = [3, 6, 2, 5, 8, 1, 7, 4].
+Columns = [3, 6, 2, 7, 5, 1, 8, 4].
+Columns = [3, 6, 8, 1, 5, 7, 2, 4].
+Columns = [1, 5, 8, 6, 3, 7, 2, 4].
 Columns = [5, 1, 4, 6, 8, 2, 7, 3].
+Columns = [5, 8, 4, 1, 7, 2, 6, 3].
+Columns = [5, 7, 1, 4, 2, 8, 6, 3].
+Columns = [5, 2, 6, 1, 7, 4, 8, 3].
+Columns = [5, 7, 1, 3, 8, 6, 4, 2].
+Columns = [5, 7, 4, 1, 3, 8, 6, 2].
+Columns = [5, 3, 8, 4, 7, 1, 6, 2].
+Columns = [5, 7, 2, 6, 3, 1, 4, 8].
+Columns = [5, 3, 1, 6, 8, 2, 4, 7].
+Columns = [5, 2, 4, 6, 8, 3, 1, 7].
+Columns = [5, 8, 4, 1, 3, 6, 2, 7].
 Columns = [5, 3, 1, 7, 2, 8, 6, 4].
 Columns = [5, 1, 8, 6, 3, 7, 2, 4].
 Columns = [5, 7, 2, 6, 3, 1, 8, 4].
-Columns = [5, 8, 4, 1, 3, 6, 2, 7].
-Columns = [5, 2, 4, 6, 8, 3, 1, 7].
-Columns = [5, 3, 1, 6, 8, 2, 4, 7].
 Columns = [5, 1, 8, 4, 2, 7, 3, 6].
 Columns = [5, 7, 2, 4, 8, 1, 3, 6].
 Columns = [5, 2, 8, 1, 4, 7, 3, 6].
-Columns = [5, 7, 2, 6, 3, 1, 4, 8].
-Columns = [6, 3, 1, 8, 5, 2, 4, 7].
-Columns = [6, 3, 5, 8, 1, 4, 2, 7].
-Columns = [6, 8, 2, 4, 1, 7, 5, 3].
-Columns = [6, 4, 7, 1, 8, 2, 5, 3].
-Columns = [6, 4, 1, 5, 8, 2, 7, 3].
-Columns = [6, 4, 2, 8, 5, 7, 1, 3].
-Columns = [6, 2, 7, 1, 4, 8, 5, 3].
-Columns = [6, 3, 1, 8, 4, 2, 7, 5].
-Columns = [6, 3, 7, 4, 1, 8, 2, 5].
-Columns = [6, 3, 7, 2, 4, 8, 1, 5].
-Columns = [6, 1, 5, 2, 8, 3, 7, 4].
+Columns = [4, 2, 7, 3, 6, 8, 5, 1].
+Columns = [3, 5, 2, 8, 6, 4, 7, 1].
+Columns = [3, 6, 4, 2, 8, 5, 7, 1].
+Columns = [5, 2, 4, 7, 3, 8, 6, 1].
 Columns = [6, 2, 7, 1, 3, 5, 8, 4].
-Columns = [6, 3, 1, 7, 5, 8, 2, 4].
 Columns = [6, 3, 7, 2, 8, 5, 1, 4].
+Columns = [6, 3, 1, 7, 5, 8, 2, 4].
+Columns = [6, 1, 5, 2, 8, 3, 7, 4].
+Columns = [6, 8, 2, 4, 1, 7, 5, 3].
+Columns = [6, 2, 7, 1, 4, 8, 5, 3].
+Columns = [6, 4, 7, 1, 8, 2, 5, 3].
+Columns = [6, 4, 2, 8, 5, 7, 1, 3].
+Columns = [6, 4, 1, 5, 8, 2, 7, 3].
+Columns = [6, 3, 7, 2, 4, 8, 1, 5].
+Columns = [6, 3, 7, 4, 1, 8, 2, 5].
+Columns = [6, 3, 1, 8, 4, 2, 7, 5].
+Columns = [6, 3, 5, 8, 1, 4, 2, 7].
+Columns = [6, 3, 1, 8, 5, 2, 4, 7].
 Columns = [6, 3, 5, 7, 1, 4, 2, 8].
 Columns = [6, 4, 7, 1, 3, 5, 2, 8].
 Columns = [7, 1, 3, 8, 6, 4, 2, 5].
@@ -93,358 +92,202 @@ Columns = [8, 2, 4, 1, 7, 5, 3, 6].
 Columns = [8, 3, 1, 6, 2, 5, 7, 4].
 Columns = [8, 4, 1, 3, 6, 2, 7, 5].
 
+?- queens(8, [1, 5, 8, 6, 3, 7, 2, 4]).
+true.
+
+?- why.
+wheye-proof 1
+% Rule 1: queens(N, Columns) :- N >= 0, columns(1, N, Available), place(Available, [], Columns).
+% Rule 2: columns(I, N, []) :- I > N.
+% Rule 3: columns(I, N, [I | Rest]) :- I =< N, Next is '+'(I, 1), columns(Next, N, Rest).
+% Rule 4: select(X, [X | Rest], Rest) :- .
+% Rule 5: select(X, [Y | Rest], [Y | Remaining]) :- select(X, Rest, Remaining).
+% Rule 6: place([], _, []) :- .
+% Rule 7: place(Available, Placed, [Column | Rest]) :- select(Column, Available, Remaining), safe(Column, Placed, 1), place(Remaining, [Column | Placed], Rest).
+% Rule 8: safe(_, [], _) :- .
+% Rule 9: safe(Column, [Other | Rest], Distance) :- Column =\= '+'(Other, Distance), Column =\= '-'(Other, Distance), Next is '+'(Distance, 1), safe(Column, Rest, Next).
+step 1 builtin : '>'(9, 8).
+step 2 builtin : '=<'(8, 8).
+step 3 builtin : is(9, '+'(8, 1)).
+step 4 builtin : '=<'(7, 8).
+step 5 builtin : is(8, '+'(7, 1)).
+step 6 builtin : '=<'(6, 8).
+step 7 builtin : is(7, '+'(6, 1)).
+step 8 builtin : '=<'(5, 8).
+step 9 builtin : is(6, '+'(5, 1)).
+step 10 builtin : '=<'(4, 8).
+step 11 builtin : is(5, '+'(4, 1)).
+step 12 builtin : '=<'(3, 8).
+step 13 builtin : is(4, '+'(3, 1)).
+step 14 builtin : '=<'(2, 8).
+step 15 builtin : is(3, '+'(2, 1)).
+step 16 builtin : '=<'(1, 8).
+step 17 builtin : is(2, '+'(1, 1)).
+step 18 rule 4 [] : select(1, [1, 2, 3, 4, 5, 6, 7, 8], [2, 3, 4, 5, 6, 7, 8]).
+step 19 rule 8 [] : safe(1, [], 1).
+step 20 rule 4 [] : select(5, [5, 6, 7, 8], [6, 7, 8]).
+step 21 rule 4 [] : select(8, [8], []).
+step 22 rule 8 [] : safe(5, [], 2).
+step 23 builtin : '=\\='(4, '+'(2, 1)).
+step 24 builtin : '=\\='(4, '-'(2, 1)).
+step 25 builtin : '=\\='(5, '+'(1, 1)).
+step 26 builtin : '=\\='(5, '-'(1, 1)).
+step 27 builtin : '=\\='(7, '+'(3, 1)).
+step 28 builtin : '=\\='(7, '-'(3, 1)).
+step 29 rule 8 [] : safe(8, [], 3).
+step 30 builtin : '=\\='(8, '+'(1, 2)).
+step 31 builtin : '=\\='(8, '-'(1, 2)).
+step 32 rule 4 [] : select(6, [6, 7], [7]).
+step 33 builtin : '=\\='(8, '+'(5, 1)).
+step 34 builtin : '=\\='(8, '-'(5, 1)).
+step 35 builtin : '=\\='(2, '+'(7, 1)).
+step 36 builtin : '=\\='(2, '-'(7, 1)).
+step 37 rule 4 [] : select(7, [7], []).
+step 38 builtin : '=\\='(3, '+'(6, 1)).
+step 39 builtin : '=\\='(3, '-'(6, 1)).
+step 40 builtin : '=\\='(6, '+'(5, 2)).
+step 41 builtin : '=\\='(6, '-'(5, 2)).
+step 42 builtin : '=\\='(2, '+'(3, 2)).
+step 43 builtin : '=\\='(2, '-'(3, 2)).
+step 44 builtin : '=\\='(7, '+'(6, 2)).
+step 45 builtin : '=\\='(7, '-'(6, 2)).
+step 46 builtin : '=\\='(4, '+'(7, 2)).
+step 47 builtin : '=\\='(4, '-'(7, 2)).
+step 48 builtin : '=\\='(3, '+'(8, 2)).
+step 49 builtin : '=\\='(3, '-'(8, 2)).
+step 50 builtin : '=\\='(6, '+'(8, 1)).
+step 51 builtin : '=\\='(6, '-'(8, 1)).
+step 52 rule 8 [] : safe(6, [], 4).
+step 53 builtin : '=\\='(6, '+'(1, 3)).
+step 54 builtin : '=\\='(6, '-'(1, 3)).
+step 55 builtin : '=\\='(4, '+'(3, 3)).
+step 56 builtin : '=\\='(4, '-'(3, 3)).
+step 57 builtin : '=\\='(3, '+'(5, 3)).
+step 58 builtin : '=\\='(3, '-'(5, 3)).
+step 59 rule 4 [] : select(3, [3, 4, 7], [4, 7]).
+step 60 builtin : '=\\='(2, '+'(6, 3)).
+step 61 builtin : '=\\='(2, '-'(6, 3)).
+step 62 builtin : '=\\='(7, '+'(8, 3)).
+step 63 builtin : '=\\='(7, '-'(8, 3)).
+step 64 rule 8 [] : safe(3, [], 5).
+step 65 builtin : '=\\='(3, '+'(1, 4)).
+step 66 builtin : '=\\='(3, '-'(1, 4)).
+step 67 rule 4 [] : select(4, [4], []).
+step 68 builtin : '=\\='(7, '+'(5, 4)).
+step 69 builtin : '=\\='(7, '-'(5, 4)).
+step 70 builtin : '=\\='(4, '+'(6, 4)).
+step 71 builtin : '=\\='(4, '-'(6, 4)).
+step 72 builtin : '=\\='(2, '+'(8, 4)).
+step 73 builtin : '=\\='(2, '-'(8, 4)).
+step 74 rule 4 [] : select(2, [2, 4], [4]).
+step 75 rule 8 [] : safe(7, [], 6).
+step 76 builtin : '=\\='(7, '+'(1, 5)).
+step 77 builtin : '=\\='(7, '-'(1, 5)).
+step 78 builtin : '=\\='(2, '+'(5, 5)).
+step 79 builtin : '=\\='(2, '-'(5, 5)).
+step 80 builtin : '=\\='(4, '+'(8, 5)).
+step 81 builtin : '=\\='(4, '-'(8, 5)).
+step 82 rule 8 [] : safe(2, [], 7).
+step 83 builtin : '=\\='(2, '+'(1, 6)).
+step 84 builtin : '=\\='(2, '-'(1, 6)).
+step 85 builtin : '=\\='(4, '+'(5, 6)).
+step 86 builtin : '=\\='(4, '-'(5, 6)).
+step 87 rule 8 [] : safe(4, [], 8).
+step 88 builtin : '=\\='(4, '+'(1, 7)).
+step 89 builtin : '=\\='(4, '-'(1, 7)).
+step 90 rule 6 [] : place([], [4, 2, 7, 3, 6, 8, 5, 1], []).
+step 91 builtin : '>='(8, 0).
+step 92 rule 2 [1] : columns(9, 8, []).
+step 93 rule 5 [20] : select(5, [4, 5, 6, 7, 8], [4, 6, 7, 8]).
+step 94 rule 5 [21] : select(8, [7, 8], [7]).
+step 95 rule 9 [25,26,17,22] : safe(5, [1], 1).
+step 96 rule 9 [30,31,15,29] : safe(8, [1], 2).
+step 97 rule 5 [32] : select(6, [4, 6, 7], [4, 7]).
+step 98 rule 5 [37] : select(7, [4, 7], [4]).
+step 99 rule 9 [53,54,13,52] : safe(6, [1], 3).
+step 100 rule 5 [59] : select(3, [2, 3, 4, 7], [2, 4, 7]).
+step 101 rule 9 [65,66,11,64] : safe(3, [1], 4).
+step 102 rule 9 [76,77,9,75] : safe(7, [1], 5).
+step 103 rule 9 [83,84,7,82] : safe(2, [1], 6).
+step 104 rule 9 [88,89,5,87] : safe(4, [1], 7).
+step 105 rule 3 [2,3,92] : columns(8, 8, [8]).
+step 106 rule 5 [93] : select(5, [3, 4, 5, 6, 7, 8], [3, 4, 6, 7, 8]).
+step 107 rule 5 [94] : select(8, [6, 7, 8], [6, 7]).
+step 108 rule 9 [33,34,17,96] : safe(8, [5, 1], 1).
+step 109 rule 5 [97] : select(6, [3, 4, 6, 7], [3, 4, 7]).
+step 110 rule 5 [98] : select(7, [2, 4, 7], [2, 4]).
+step 111 rule 9 [40,41,15,99] : safe(6, [5, 1], 2).
+step 112 rule 9 [57,58,13,101] : safe(3, [5, 1], 3).
+step 113 rule 9 [68,69,11,102] : safe(7, [5, 1], 4).
+step 114 rule 9 [78,79,9,103] : safe(2, [5, 1], 5).
+step 115 rule 9 [85,86,7,104] : safe(4, [5, 1], 6).
+step 116 rule 3 [4,5,105] : columns(7, 8, [7, 8]).
+step 117 rule 5 [106] : select(5, [2, 3, 4, 5, 6, 7, 8], [2, 3, 4, 6, 7, 8]).
+step 118 rule 5 [107] : select(8, [4, 6, 7, 8], [4, 6, 7]).
+step 119 rule 5 [109] : select(6, [2, 3, 4, 6, 7], [2, 3, 4, 7]).
+step 120 rule 9 [50,51,17,111] : safe(6, [8, 5, 1], 1).
+step 121 rule 9 [48,49,15,112] : safe(3, [8, 5, 1], 2).
+step 122 rule 9 [62,63,13,113] : safe(7, [8, 5, 1], 3).
+step 123 rule 9 [72,73,11,114] : safe(2, [8, 5, 1], 4).
+step 124 rule 9 [80,81,9,115] : safe(4, [8, 5, 1], 5).
+step 125 rule 3 [6,7,116] : columns(6, 8, [6, 7, 8]).
+step 126 rule 5 [118] : select(8, [3, 4, 6, 7, 8], [3, 4, 6, 7]).
+step 127 rule 9 [38,39,17,121] : safe(3, [6, 8, 5, 1], 1).
+step 128 rule 9 [44,45,15,122] : safe(7, [6, 8, 5, 1], 2).
+step 129 rule 9 [60,61,13,123] : safe(2, [6, 8, 5, 1], 3).
+step 130 rule 9 [70,71,11,124] : safe(4, [6, 8, 5, 1], 4).
+step 131 rule 3 [8,9,125] : columns(5, 8, [5, 6, 7, 8]).
+step 132 rule 5 [126] : select(8, [2, 3, 4, 6, 7, 8], [2, 3, 4, 6, 7]).
+step 133 rule 9 [27,28,17,128] : safe(7, [3, 6, 8, 5, 1], 1).
+step 134 rule 9 [42,43,15,129] : safe(2, [3, 6, 8, 5, 1], 2).
+step 135 rule 9 [55,56,13,130] : safe(4, [3, 6, 8, 5, 1], 3).
+step 136 rule 3 [10,11,131] : columns(4, 8, [4, 5, 6, 7, 8]).
+step 137 rule 9 [35,36,17,134] : safe(2, [7, 3, 6, 8, 5, 1], 1).
+step 138 rule 9 [46,47,15,135] : safe(4, [7, 3, 6, 8, 5, 1], 2).
+step 139 rule 3 [12,13,136] : columns(3, 8, [3, 4, 5, 6, 7, 8]).
+step 140 rule 9 [23,24,17,138] : safe(4, [2, 7, 3, 6, 8, 5, 1], 1).
+step 141 rule 3 [14,15,139] : columns(2, 8, [2, 3, 4, 5, 6, 7, 8]).
+step 142 rule 7 [67,140,90] : place([4], [2, 7, 3, 6, 8, 5, 1], [4]).
+step 143 rule 3 [16,17,141] : columns(1, 8, [1, 2, 3, 4, 5, 6, 7, 8]).
+step 144 rule 7 [74,137,142] : place([2, 4], [7, 3, 6, 8, 5, 1], [2, 4]).
+step 145 rule 7 [110,133,144] : place([2, 4, 7], [3, 6, 8, 5, 1], [7, 2, 4]).
+step 146 rule 7 [100,127,145] : place([2, 3, 4, 7], [6, 8, 5, 1], [3, 7, 2, 4]).
+step 147 rule 7 [119,120,146] : place([2, 3, 4, 6, 7], [8, 5, 1], [6, 3, 7, 2, 4]).
+step 148 rule 7 [132,108,147] : place([2, 3, 4, 6, 7, 8], [5, 1], [8, 6, 3, 7, 2, 4]).
+step 149 rule 7 [117,95,148] : place([2, 3, 4, 5, 6, 7, 8], [1], [5, 8, 6, 3, 7, 2, 4]).
+step 150 rule 7 [18,19,149] : place([1, 2, 3, 4, 5, 6, 7, 8], [], [1, 5, 8, 6, 3, 7, 2, 4]).
+step 151 rule 1 [91,143,150] : queens(8, [1, 5, 8, 6, 3, 7, 2, 4]).
+answer 2 [151]
+
 ?- aggregate_all(count, (queens(8, Columns)), Count).
 Count = 92.
 
-% Reason
-certificate(eyeon, 1).
+?- check(queens(0, [])).
+true.
 
-claim(query(2), [queens(8, [1, 5, 8, 6, 3, 7, 2, 4])]).
+?- check(queens(1, [1])).
+true.
 
-clause(1, queens(var('N'), var('Columns')), ['>='(var('N'), 0), columns(1, var('N'), var('Available')), place(var('Available'), [], var('Columns'))]).
-clause(2, columns(var('I'), var('N'), []), ['>'(var('I'), var('N'))]).
-clause(3, columns(var('I'), var('N'), list([var('I')], var('Rest'))), ['=<'(var('I'), var('N')), is(var('Next'), '+'(var('I'), 1)), columns(var('Next'), var('N'), var('Rest'))]).
-clause(4, select(var('X'), list([var('X')], var('Rest')), var('Rest')), []).
-clause(5, select(var('X'), list([var('Y')], var('Rest')), list([var('Y')], var('Remaining'))), [select(var('X'), var('Rest'), var('Remaining'))]).
-clause(6, place([], var('$anonymous1'), []), []).
-clause(7, place(var('Available'), var('Placed'), list([var('Column')], var('Rest'))), [select(var('Column'), var('Available'), var('Remaining')), safe(var('Column'), var('Placed'), 1), place(var('Remaining'), list([var('Column')], var('Placed')), var('Rest'))]).
-clause(8, safe(var('$anonymous2'), [], var('$anonymous3')), []).
-clause(9, safe(var('Column'), list([var('Other')], var('Rest')), var('Distance')), ['=\\='(var('Column'), '+'(var('Other'), var('Distance'))), '=\\='(var('Column'), '-'(var('Other'), var('Distance'))), is(var('Next'), '+'(var('Distance'), 1)), safe(var('Column'), var('Rest'), var('Next'))]).
+?- check(queens(4, [2, 4, 1, 3])).
+true.
 
-% step 1
-step('>='(8, 0), builtin, [], []).
-% step 2
-step('=<'(1, 8), builtin, [], []).
-% step 3
-step(is(2, '+'(1, 1)), builtin, [], []).
-% step 4
-step('=<'(2, 8), builtin, [], []).
-% step 5
-step(is(3, '+'(2, 1)), builtin, [], []).
-% step 6
-step('=<'(3, 8), builtin, [], []).
-% step 7
-step(is(4, '+'(3, 1)), builtin, [], []).
-% step 8
-step('=<'(4, 8), builtin, [], []).
-% step 9
-step(is(5, '+'(4, 1)), builtin, [], []).
-% step 10
-step('=<'(5, 8), builtin, [], []).
-% step 11
-step(is(6, '+'(5, 1)), builtin, [], []).
-% step 12
-step('=<'(6, 8), builtin, [], []).
-% step 13
-step(is(7, '+'(6, 1)), builtin, [], []).
-% step 14
-step('=<'(7, 8), builtin, [], []).
-% step 15
-step(is(8, '+'(7, 1)), builtin, [], []).
-% step 16
-step('=<'(8, 8), builtin, [], []).
-% step 17
-step(is(9, '+'(8, 1)), builtin, [], []).
-% step 18
-step('>'(9, 8), builtin, [], []).
-% step 19
-step(columns(9, 8, []), rule(2), ['='('I', 9), '='('N', 8)], ['>'(9, 8)]).
-% step 20
-step(columns(8, 8, [8]), rule(3), ['='('I', 8), '='('N', 8), '='('Next', 9), '='('Rest', [])], ['=<'(8, 8), is(9, '+'(8, 1)), columns(9, 8, [])]).
-% step 21
-step(columns(7, 8, [7, 8]), rule(3), ['='('I', 7), '='('N', 8), '='('Next', 8), '='('Rest', [8])], ['=<'(7, 8), is(8, '+'(7, 1)), columns(8, 8, [8])]).
-% step 22
-step(columns(6, 8, [6, 7, 8]), rule(3), ['='('I', 6), '='('N', 8), '='('Next', 7), '='('Rest', [7, 8])], ['=<'(6, 8), is(7, '+'(6, 1)), columns(7, 8, [7, 8])]).
-% step 23
-step(columns(5, 8, [5, 6, 7, 8]), rule(3), ['='('I', 5), '='('N', 8), '='('Next', 6), '='('Rest', [6, 7, 8])], ['=<'(5, 8), is(6, '+'(5, 1)), columns(6, 8, [6, 7, 8])]).
-% step 24
-step(columns(4, 8, [4, 5, 6, 7, 8]), rule(3), ['='('I', 4), '='('N', 8), '='('Next', 5), '='('Rest', [5, 6, 7, 8])], ['=<'(4, 8), is(5, '+'(4, 1)), columns(5, 8, [5, 6, 7, 8])]).
-% step 25
-step(columns(3, 8, [3, 4, 5, 6, 7, 8]), rule(3), ['='('I', 3), '='('N', 8), '='('Next', 4), '='('Rest', [4, 5, 6, 7, 8])], ['=<'(3, 8), is(4, '+'(3, 1)), columns(4, 8, [4, 5, 6, 7, 8])]).
-% step 26
-step(columns(2, 8, [2, 3, 4, 5, 6, 7, 8]), rule(3), ['='('I', 2), '='('N', 8), '='('Next', 3), '='('Rest', [3, 4, 5, 6, 7, 8])], ['=<'(2, 8), is(3, '+'(2, 1)), columns(3, 8, [3, 4, 5, 6, 7, 8])]).
-% step 27
-step(columns(1, 8, [1, 2, 3, 4, 5, 6, 7, 8]), rule(3), ['='('I', 1), '='('N', 8), '='('Next', 2), '='('Rest', [2, 3, 4, 5, 6, 7, 8])], ['=<'(1, 8), is(2, '+'(1, 1)), columns(2, 8, [2, 3, 4, 5, 6, 7, 8])]).
-% step 28
-step(select(1, [1, 2, 3, 4, 5, 6, 7, 8], [2, 3, 4, 5, 6, 7, 8]), fact(4), ['='('X', 1), '='('Rest', [2, 3, 4, 5, 6, 7, 8])], []).
-% step 29
-step(safe(1, [], 1), fact(8), ['='('$anonymous2', 1), '='('$anonymous3', 1)], []).
-% step 30
-step(select(5, [5, 6, 7, 8], [6, 7, 8]), fact(4), ['='('X', 5), '='('Rest', [6, 7, 8])], []).
-% step 31
-step(select(5, [4, 5, 6, 7, 8], [4, 6, 7, 8]), rule(5), ['='('X', 5), '='('Y', 4), '='('Rest', [5, 6, 7, 8]), '='('Remaining', [6, 7, 8])], [select(5, [5, 6, 7, 8], [6, 7, 8])]).
-% step 32
-step(select(5, [3, 4, 5, 6, 7, 8], [3, 4, 6, 7, 8]), rule(5), ['='('X', 5), '='('Y', 3), '='('Rest', [4, 5, 6, 7, 8]), '='('Remaining', [4, 6, 7, 8])], [select(5, [4, 5, 6, 7, 8], [4, 6, 7, 8])]).
-% step 33
-step(select(5, [2, 3, 4, 5, 6, 7, 8], [2, 3, 4, 6, 7, 8]), rule(5), ['='('X', 5), '='('Y', 2), '='('Rest', [3, 4, 5, 6, 7, 8]), '='('Remaining', [3, 4, 6, 7, 8])], [select(5, [3, 4, 5, 6, 7, 8], [3, 4, 6, 7, 8])]).
-% step 34
-step('=\\='(5, '+'(1, 1)), builtin, [], []).
-% step 35
-step('=\\='(5, '-'(1, 1)), builtin, [], []).
-% step 36
-step(safe(5, [], 2), fact(8), ['='('$anonymous2', 5), '='('$anonymous3', 2)], []).
-% step 37
-step(safe(5, [1], 1), rule(9), ['='('Column', 5), '='('Other', 1), '='('Rest', []), '='('Distance', 1), '='('Next', 2)], ['=\\='(5, '+'(1, 1)), '=\\='(5, '-'(1, 1)), is(2, '+'(1, 1)), safe(5, [], 2)]).
-% step 38
-step(select(8, [8], []), fact(4), ['='('X', 8), '='('Rest', [])], []).
-% step 39
-step(select(8, [7, 8], [7]), rule(5), ['='('X', 8), '='('Y', 7), '='('Rest', [8]), '='('Remaining', [])], [select(8, [8], [])]).
-% step 40
-step(select(8, [6, 7, 8], [6, 7]), rule(5), ['='('X', 8), '='('Y', 6), '='('Rest', [7, 8]), '='('Remaining', [7])], [select(8, [7, 8], [7])]).
-% step 41
-step(select(8, [4, 6, 7, 8], [4, 6, 7]), rule(5), ['='('X', 8), '='('Y', 4), '='('Rest', [6, 7, 8]), '='('Remaining', [6, 7])], [select(8, [6, 7, 8], [6, 7])]).
-% step 42
-step(select(8, [3, 4, 6, 7, 8], [3, 4, 6, 7]), rule(5), ['='('X', 8), '='('Y', 3), '='('Rest', [4, 6, 7, 8]), '='('Remaining', [4, 6, 7])], [select(8, [4, 6, 7, 8], [4, 6, 7])]).
-% step 43
-step(select(8, [2, 3, 4, 6, 7, 8], [2, 3, 4, 6, 7]), rule(5), ['='('X', 8), '='('Y', 2), '='('Rest', [3, 4, 6, 7, 8]), '='('Remaining', [3, 4, 6, 7])], [select(8, [3, 4, 6, 7, 8], [3, 4, 6, 7])]).
-% step 44
-step('=\\='(8, '+'(5, 1)), builtin, [], []).
-% step 45
-step('=\\='(8, '-'(5, 1)), builtin, [], []).
-% step 46
-step('=\\='(8, '+'(1, 2)), builtin, [], []).
-% step 47
-step('=\\='(8, '-'(1, 2)), builtin, [], []).
-% step 48
-step(safe(8, [], 3), fact(8), ['='('$anonymous2', 8), '='('$anonymous3', 3)], []).
-% step 49
-step(safe(8, [1], 2), rule(9), ['='('Column', 8), '='('Other', 1), '='('Rest', []), '='('Distance', 2), '='('Next', 3)], ['=\\='(8, '+'(1, 2)), '=\\='(8, '-'(1, 2)), is(3, '+'(2, 1)), safe(8, [], 3)]).
-% step 50
-step(safe(8, [5, 1], 1), rule(9), ['='('Column', 8), '='('Other', 5), '='('Rest', [1]), '='('Distance', 1), '='('Next', 2)], ['=\\='(8, '+'(5, 1)), '=\\='(8, '-'(5, 1)), is(2, '+'(1, 1)), safe(8, [1], 2)]).
-% step 51
-step(select(6, [6, 7], [7]), fact(4), ['='('X', 6), '='('Rest', [7])], []).
-% step 52
-step(select(6, [4, 6, 7], [4, 7]), rule(5), ['='('X', 6), '='('Y', 4), '='('Rest', [6, 7]), '='('Remaining', [7])], [select(6, [6, 7], [7])]).
-% step 53
-step(select(6, [3, 4, 6, 7], [3, 4, 7]), rule(5), ['='('X', 6), '='('Y', 3), '='('Rest', [4, 6, 7]), '='('Remaining', [4, 7])], [select(6, [4, 6, 7], [4, 7])]).
-% step 54
-step(select(6, [2, 3, 4, 6, 7], [2, 3, 4, 7]), rule(5), ['='('X', 6), '='('Y', 2), '='('Rest', [3, 4, 6, 7]), '='('Remaining', [3, 4, 7])], [select(6, [3, 4, 6, 7], [3, 4, 7])]).
-% step 55
-step('=\\='(6, '+'(8, 1)), builtin, [], []).
-% step 56
-step('=\\='(6, '-'(8, 1)), builtin, [], []).
-% step 57
-step('=\\='(6, '+'(5, 2)), builtin, [], []).
-% step 58
-step('=\\='(6, '-'(5, 2)), builtin, [], []).
-% step 59
-step('=\\='(6, '+'(1, 3)), builtin, [], []).
-% step 60
-step('=\\='(6, '-'(1, 3)), builtin, [], []).
-% step 61
-step(safe(6, [], 4), fact(8), ['='('$anonymous2', 6), '='('$anonymous3', 4)], []).
-% step 62
-step(safe(6, [1], 3), rule(9), ['='('Column', 6), '='('Other', 1), '='('Rest', []), '='('Distance', 3), '='('Next', 4)], ['=\\='(6, '+'(1, 3)), '=\\='(6, '-'(1, 3)), is(4, '+'(3, 1)), safe(6, [], 4)]).
-% step 63
-step(safe(6, [5, 1], 2), rule(9), ['='('Column', 6), '='('Other', 5), '='('Rest', [1]), '='('Distance', 2), '='('Next', 3)], ['=\\='(6, '+'(5, 2)), '=\\='(6, '-'(5, 2)), is(3, '+'(2, 1)), safe(6, [1], 3)]).
-% step 64
-step(safe(6, [8, 5, 1], 1), rule(9), ['='('Column', 6), '='('Other', 8), '='('Rest', [5, 1]), '='('Distance', 1), '='('Next', 2)], ['=\\='(6, '+'(8, 1)), '=\\='(6, '-'(8, 1)), is(2, '+'(1, 1)), safe(6, [5, 1], 2)]).
-% step 65
-step(select(3, [3, 4, 7], [4, 7]), fact(4), ['='('X', 3), '='('Rest', [4, 7])], []).
-% step 66
-step(select(3, [2, 3, 4, 7], [2, 4, 7]), rule(5), ['='('X', 3), '='('Y', 2), '='('Rest', [3, 4, 7]), '='('Remaining', [4, 7])], [select(3, [3, 4, 7], [4, 7])]).
-% step 67
-step('=\\='(3, '+'(6, 1)), builtin, [], []).
-% step 68
-step('=\\='(3, '-'(6, 1)), builtin, [], []).
-% step 69
-step('=\\='(3, '+'(8, 2)), builtin, [], []).
-% step 70
-step('=\\='(3, '-'(8, 2)), builtin, [], []).
-% step 71
-step('=\\='(3, '+'(5, 3)), builtin, [], []).
-% step 72
-step('=\\='(3, '-'(5, 3)), builtin, [], []).
-% step 73
-step('=\\='(3, '+'(1, 4)), builtin, [], []).
-% step 74
-step('=\\='(3, '-'(1, 4)), builtin, [], []).
-% step 75
-step(safe(3, [], 5), fact(8), ['='('$anonymous2', 3), '='('$anonymous3', 5)], []).
-% step 76
-step(safe(3, [1], 4), rule(9), ['='('Column', 3), '='('Other', 1), '='('Rest', []), '='('Distance', 4), '='('Next', 5)], ['=\\='(3, '+'(1, 4)), '=\\='(3, '-'(1, 4)), is(5, '+'(4, 1)), safe(3, [], 5)]).
-% step 77
-step(safe(3, [5, 1], 3), rule(9), ['='('Column', 3), '='('Other', 5), '='('Rest', [1]), '='('Distance', 3), '='('Next', 4)], ['=\\='(3, '+'(5, 3)), '=\\='(3, '-'(5, 3)), is(4, '+'(3, 1)), safe(3, [1], 4)]).
-% step 78
-step(safe(3, [8, 5, 1], 2), rule(9), ['='('Column', 3), '='('Other', 8), '='('Rest', [5, 1]), '='('Distance', 2), '='('Next', 3)], ['=\\='(3, '+'(8, 2)), '=\\='(3, '-'(8, 2)), is(3, '+'(2, 1)), safe(3, [5, 1], 3)]).
-% step 79
-step(safe(3, [6, 8, 5, 1], 1), rule(9), ['='('Column', 3), '='('Other', 6), '='('Rest', [8, 5, 1]), '='('Distance', 1), '='('Next', 2)], ['=\\='(3, '+'(6, 1)), '=\\='(3, '-'(6, 1)), is(2, '+'(1, 1)), safe(3, [8, 5, 1], 2)]).
-% step 80
-step(select(7, [7], []), fact(4), ['='('X', 7), '='('Rest', [])], []).
-% step 81
-step(select(7, [4, 7], [4]), rule(5), ['='('X', 7), '='('Y', 4), '='('Rest', [7]), '='('Remaining', [])], [select(7, [7], [])]).
-% step 82
-step(select(7, [2, 4, 7], [2, 4]), rule(5), ['='('X', 7), '='('Y', 2), '='('Rest', [4, 7]), '='('Remaining', [4])], [select(7, [4, 7], [4])]).
-% step 83
-step('=\\='(7, '+'(3, 1)), builtin, [], []).
-% step 84
-step('=\\='(7, '-'(3, 1)), builtin, [], []).
-% step 85
-step('=\\='(7, '+'(6, 2)), builtin, [], []).
-% step 86
-step('=\\='(7, '-'(6, 2)), builtin, [], []).
-% step 87
-step('=\\='(7, '+'(8, 3)), builtin, [], []).
-% step 88
-step('=\\='(7, '-'(8, 3)), builtin, [], []).
-% step 89
-step('=\\='(7, '+'(5, 4)), builtin, [], []).
-% step 90
-step('=\\='(7, '-'(5, 4)), builtin, [], []).
-% step 91
-step('=\\='(7, '+'(1, 5)), builtin, [], []).
-% step 92
-step('=\\='(7, '-'(1, 5)), builtin, [], []).
-% step 93
-step(safe(7, [], 6), fact(8), ['='('$anonymous2', 7), '='('$anonymous3', 6)], []).
-% step 94
-step(safe(7, [1], 5), rule(9), ['='('Column', 7), '='('Other', 1), '='('Rest', []), '='('Distance', 5), '='('Next', 6)], ['=\\='(7, '+'(1, 5)), '=\\='(7, '-'(1, 5)), is(6, '+'(5, 1)), safe(7, [], 6)]).
-% step 95
-step(safe(7, [5, 1], 4), rule(9), ['='('Column', 7), '='('Other', 5), '='('Rest', [1]), '='('Distance', 4), '='('Next', 5)], ['=\\='(7, '+'(5, 4)), '=\\='(7, '-'(5, 4)), is(5, '+'(4, 1)), safe(7, [1], 5)]).
-% step 96
-step(safe(7, [8, 5, 1], 3), rule(9), ['='('Column', 7), '='('Other', 8), '='('Rest', [5, 1]), '='('Distance', 3), '='('Next', 4)], ['=\\='(7, '+'(8, 3)), '=\\='(7, '-'(8, 3)), is(4, '+'(3, 1)), safe(7, [5, 1], 4)]).
-% step 97
-step(safe(7, [6, 8, 5, 1], 2), rule(9), ['='('Column', 7), '='('Other', 6), '='('Rest', [8, 5, 1]), '='('Distance', 2), '='('Next', 3)], ['=\\='(7, '+'(6, 2)), '=\\='(7, '-'(6, 2)), is(3, '+'(2, 1)), safe(7, [8, 5, 1], 3)]).
-% step 98
-step(safe(7, [3, 6, 8, 5, 1], 1), rule(9), ['='('Column', 7), '='('Other', 3), '='('Rest', [6, 8, 5, 1]), '='('Distance', 1), '='('Next', 2)], ['=\\='(7, '+'(3, 1)), '=\\='(7, '-'(3, 1)), is(2, '+'(1, 1)), safe(7, [6, 8, 5, 1], 2)]).
-% step 99
-step(select(2, [2, 4], [4]), fact(4), ['='('X', 2), '='('Rest', [4])], []).
-% step 100
-step('=\\='(2, '+'(7, 1)), builtin, [], []).
-% step 101
-step('=\\='(2, '-'(7, 1)), builtin, [], []).
-% step 102
-step('=\\='(2, '+'(3, 2)), builtin, [], []).
-% step 103
-step('=\\='(2, '-'(3, 2)), builtin, [], []).
-% step 104
-step('=\\='(2, '+'(6, 3)), builtin, [], []).
-% step 105
-step('=\\='(2, '-'(6, 3)), builtin, [], []).
-% step 106
-step('=\\='(2, '+'(8, 4)), builtin, [], []).
-% step 107
-step('=\\='(2, '-'(8, 4)), builtin, [], []).
-% step 108
-step('=\\='(2, '+'(5, 5)), builtin, [], []).
-% step 109
-step('=\\='(2, '-'(5, 5)), builtin, [], []).
-% step 110
-step('=\\='(2, '+'(1, 6)), builtin, [], []).
-% step 111
-step('=\\='(2, '-'(1, 6)), builtin, [], []).
-% step 112
-step(safe(2, [], 7), fact(8), ['='('$anonymous2', 2), '='('$anonymous3', 7)], []).
-% step 113
-step(safe(2, [1], 6), rule(9), ['='('Column', 2), '='('Other', 1), '='('Rest', []), '='('Distance', 6), '='('Next', 7)], ['=\\='(2, '+'(1, 6)), '=\\='(2, '-'(1, 6)), is(7, '+'(6, 1)), safe(2, [], 7)]).
-% step 114
-step(safe(2, [5, 1], 5), rule(9), ['='('Column', 2), '='('Other', 5), '='('Rest', [1]), '='('Distance', 5), '='('Next', 6)], ['=\\='(2, '+'(5, 5)), '=\\='(2, '-'(5, 5)), is(6, '+'(5, 1)), safe(2, [1], 6)]).
-% step 115
-step(safe(2, [8, 5, 1], 4), rule(9), ['='('Column', 2), '='('Other', 8), '='('Rest', [5, 1]), '='('Distance', 4), '='('Next', 5)], ['=\\='(2, '+'(8, 4)), '=\\='(2, '-'(8, 4)), is(5, '+'(4, 1)), safe(2, [5, 1], 5)]).
-% step 116
-step(safe(2, [6, 8, 5, 1], 3), rule(9), ['='('Column', 2), '='('Other', 6), '='('Rest', [8, 5, 1]), '='('Distance', 3), '='('Next', 4)], ['=\\='(2, '+'(6, 3)), '=\\='(2, '-'(6, 3)), is(4, '+'(3, 1)), safe(2, [8, 5, 1], 4)]).
-% step 117
-step(safe(2, [3, 6, 8, 5, 1], 2), rule(9), ['='('Column', 2), '='('Other', 3), '='('Rest', [6, 8, 5, 1]), '='('Distance', 2), '='('Next', 3)], ['=\\='(2, '+'(3, 2)), '=\\='(2, '-'(3, 2)), is(3, '+'(2, 1)), safe(2, [6, 8, 5, 1], 3)]).
-% step 118
-step(safe(2, [7, 3, 6, 8, 5, 1], 1), rule(9), ['='('Column', 2), '='('Other', 7), '='('Rest', [3, 6, 8, 5, 1]), '='('Distance', 1), '='('Next', 2)], ['=\\='(2, '+'(7, 1)), '=\\='(2, '-'(7, 1)), is(2, '+'(1, 1)), safe(2, [3, 6, 8, 5, 1], 2)]).
-% step 119
-step(select(4, [4], []), fact(4), ['='('X', 4), '='('Rest', [])], []).
-% step 120
-step('=\\='(4, '+'(2, 1)), builtin, [], []).
-% step 121
-step('=\\='(4, '-'(2, 1)), builtin, [], []).
-% step 122
-step('=\\='(4, '+'(7, 2)), builtin, [], []).
-% step 123
-step('=\\='(4, '-'(7, 2)), builtin, [], []).
-% step 124
-step('=\\='(4, '+'(3, 3)), builtin, [], []).
-% step 125
-step('=\\='(4, '-'(3, 3)), builtin, [], []).
-% step 126
-step('=\\='(4, '+'(6, 4)), builtin, [], []).
-% step 127
-step('=\\='(4, '-'(6, 4)), builtin, [], []).
-% step 128
-step('=\\='(4, '+'(8, 5)), builtin, [], []).
-% step 129
-step('=\\='(4, '-'(8, 5)), builtin, [], []).
-% step 130
-step('=\\='(4, '+'(5, 6)), builtin, [], []).
-% step 131
-step('=\\='(4, '-'(5, 6)), builtin, [], []).
-% step 132
-step('=\\='(4, '+'(1, 7)), builtin, [], []).
-% step 133
-step('=\\='(4, '-'(1, 7)), builtin, [], []).
-% step 134
-step(safe(4, [], 8), fact(8), ['='('$anonymous2', 4), '='('$anonymous3', 8)], []).
-% step 135
-step(safe(4, [1], 7), rule(9), ['='('Column', 4), '='('Other', 1), '='('Rest', []), '='('Distance', 7), '='('Next', 8)], ['=\\='(4, '+'(1, 7)), '=\\='(4, '-'(1, 7)), is(8, '+'(7, 1)), safe(4, [], 8)]).
-% step 136
-step(safe(4, [5, 1], 6), rule(9), ['='('Column', 4), '='('Other', 5), '='('Rest', [1]), '='('Distance', 6), '='('Next', 7)], ['=\\='(4, '+'(5, 6)), '=\\='(4, '-'(5, 6)), is(7, '+'(6, 1)), safe(4, [1], 7)]).
-% step 137
-step(safe(4, [8, 5, 1], 5), rule(9), ['='('Column', 4), '='('Other', 8), '='('Rest', [5, 1]), '='('Distance', 5), '='('Next', 6)], ['=\\='(4, '+'(8, 5)), '=\\='(4, '-'(8, 5)), is(6, '+'(5, 1)), safe(4, [5, 1], 6)]).
-% step 138
-step(safe(4, [6, 8, 5, 1], 4), rule(9), ['='('Column', 4), '='('Other', 6), '='('Rest', [8, 5, 1]), '='('Distance', 4), '='('Next', 5)], ['=\\='(4, '+'(6, 4)), '=\\='(4, '-'(6, 4)), is(5, '+'(4, 1)), safe(4, [8, 5, 1], 5)]).
-% step 139
-step(safe(4, [3, 6, 8, 5, 1], 3), rule(9), ['='('Column', 4), '='('Other', 3), '='('Rest', [6, 8, 5, 1]), '='('Distance', 3), '='('Next', 4)], ['=\\='(4, '+'(3, 3)), '=\\='(4, '-'(3, 3)), is(4, '+'(3, 1)), safe(4, [6, 8, 5, 1], 4)]).
-% step 140
-step(safe(4, [7, 3, 6, 8, 5, 1], 2), rule(9), ['='('Column', 4), '='('Other', 7), '='('Rest', [3, 6, 8, 5, 1]), '='('Distance', 2), '='('Next', 3)], ['=\\='(4, '+'(7, 2)), '=\\='(4, '-'(7, 2)), is(3, '+'(2, 1)), safe(4, [3, 6, 8, 5, 1], 3)]).
-% step 141
-step(safe(4, [2, 7, 3, 6, 8, 5, 1], 1), rule(9), ['='('Column', 4), '='('Other', 2), '='('Rest', [7, 3, 6, 8, 5, 1]), '='('Distance', 1), '='('Next', 2)], ['=\\='(4, '+'(2, 1)), '=\\='(4, '-'(2, 1)), is(2, '+'(1, 1)), safe(4, [7, 3, 6, 8, 5, 1], 2)]).
-% step 142
-step(place([], [4, 2, 7, 3, 6, 8, 5, 1], []), fact(6), ['='('$anonymous1', [4, 2, 7, 3, 6, 8, 5, 1])], []).
-% step 143
-step(place([4], [2, 7, 3, 6, 8, 5, 1], [4]), rule(7), ['='('Available', [4]), '='('Placed', [2, 7, 3, 6, 8, 5, 1]), '='('Column', 4), '='('Rest', []), '='('Remaining', [])], [select(4, [4], []), safe(4, [2, 7, 3, 6, 8, 5, 1], 1), place([], [4, 2, 7, 3, 6, 8, 5, 1], [])]).
-% step 144
-step(place([2, 4], [7, 3, 6, 8, 5, 1], [2, 4]), rule(7), ['='('Available', [2, 4]), '='('Placed', [7, 3, 6, 8, 5, 1]), '='('Column', 2), '='('Rest', [4]), '='('Remaining', [4])], [select(2, [2, 4], [4]), safe(2, [7, 3, 6, 8, 5, 1], 1), place([4], [2, 7, 3, 6, 8, 5, 1], [4])]).
-% step 145
-step(place([2, 4, 7], [3, 6, 8, 5, 1], [7, 2, 4]), rule(7), ['='('Available', [2, 4, 7]), '='('Placed', [3, 6, 8, 5, 1]), '='('Column', 7), '='('Rest', [2, 4]), '='('Remaining', [2, 4])], [select(7, [2, 4, 7], [2, 4]), safe(7, [3, 6, 8, 5, 1], 1), place([2, 4], [7, 3, 6, 8, 5, 1], [2, 4])]).
-% step 146
-step(place([2, 3, 4, 7], [6, 8, 5, 1], [3, 7, 2, 4]), rule(7), ['='('Available', [2, 3, 4, 7]), '='('Placed', [6, 8, 5, 1]), '='('Column', 3), '='('Rest', [7, 2, 4]), '='('Remaining', [2, 4, 7])], [select(3, [2, 3, 4, 7], [2, 4, 7]), safe(3, [6, 8, 5, 1], 1), place([2, 4, 7], [3, 6, 8, 5, 1], [7, 2, 4])]).
-% step 147
-step(place([2, 3, 4, 6, 7], [8, 5, 1], [6, 3, 7, 2, 4]), rule(7), ['='('Available', [2, 3, 4, 6, 7]), '='('Placed', [8, 5, 1]), '='('Column', 6), '='('Rest', [3, 7, 2, 4]), '='('Remaining', [2, 3, 4, 7])], [select(6, [2, 3, 4, 6, 7], [2, 3, 4, 7]), safe(6, [8, 5, 1], 1), place([2, 3, 4, 7], [6, 8, 5, 1], [3, 7, 2, 4])]).
-% step 148
-step(place([2, 3, 4, 6, 7, 8], [5, 1], [8, 6, 3, 7, 2, 4]), rule(7), ['='('Available', [2, 3, 4, 6, 7, 8]), '='('Placed', [5, 1]), '='('Column', 8), '='('Rest', [6, 3, 7, 2, 4]), '='('Remaining', [2, 3, 4, 6, 7])], [select(8, [2, 3, 4, 6, 7, 8], [2, 3, 4, 6, 7]), safe(8, [5, 1], 1), place([2, 3, 4, 6, 7], [8, 5, 1], [6, 3, 7, 2, 4])]).
-% step 149
-step(place([2, 3, 4, 5, 6, 7, 8], [1], [5, 8, 6, 3, 7, 2, 4]), rule(7), ['='('Available', [2, 3, 4, 5, 6, 7, 8]), '='('Placed', [1]), '='('Column', 5), '='('Rest', [8, 6, 3, 7, 2, 4]), '='('Remaining', [2, 3, 4, 6, 7, 8])], [select(5, [2, 3, 4, 5, 6, 7, 8], [2, 3, 4, 6, 7, 8]), safe(5, [1], 1), place([2, 3, 4, 6, 7, 8], [5, 1], [8, 6, 3, 7, 2, 4])]).
-% step 150
-step(place([1, 2, 3, 4, 5, 6, 7, 8], [], [1, 5, 8, 6, 3, 7, 2, 4]), rule(7), ['='('Available', [1, 2, 3, 4, 5, 6, 7, 8]), '='('Placed', []), '='('Column', 1), '='('Rest', [5, 8, 6, 3, 7, 2, 4]), '='('Remaining', [2, 3, 4, 5, 6, 7, 8])], [select(1, [1, 2, 3, 4, 5, 6, 7, 8], [2, 3, 4, 5, 6, 7, 8]), safe(1, [], 1), place([2, 3, 4, 5, 6, 7, 8], [1], [5, 8, 6, 3, 7, 2, 4])]).
-% step 151
-step(queens(8, [1, 5, 8, 6, 3, 7, 2, 4]), rule(1), ['='('N', 8), '='('Columns', [1, 5, 8, 6, 3, 7, 2, 4]), '='('Available', [1, 2, 3, 4, 5, 6, 7, 8])], ['>='(8, 0), columns(1, 8, [1, 2, 3, 4, 5, 6, 7, 8]), place([1, 2, 3, 4, 5, 6, 7, 8], [], [1, 5, 8, 6, 3, 7, 2, 4])]).
+?- check(queens(4, [3, 1, 4, 2])).
+true.
 
-% Check
-check passed: queens(0, []).
+?- check(aggregate_all(count, (queens(2, Columns)), 0)).
+true.
 
-check passed: queens(1, [1]).
+?- check(aggregate_all(count, (queens(3, Columns)), 0)).
+true.
 
-check passed: queens(4, [2, 4, 1, 3]).
+?- check(aggregate_all(count, (queens(4, Columns)), 2)).
+true.
 
-check passed: queens(4, [3, 1, 4, 2]).
+?- check(aggregate_all(count, (queens(8, Columns)), 92)).
+true.
 
-check passed: aggregate_all(count, (queens(2, Columns)), 0).
+?- check(\+ (queens(-1, []))).
+true.
 
-check passed: aggregate_all(count, (queens(3, Columns)), 0).
-
-check passed: aggregate_all(count, (queens(4, Columns)), 2).
-
-check passed: aggregate_all(count, (queens(8, Columns)), 92).
-
-check passed: \+ (queens(-1, [])).
-
-check passed: \+ (queens(4, [1, 2, 3, 4])).
-
-condition('C1', resolution, ok, 77).
-condition('C2', well_founded, ok, 151).
-condition('C3', justification, ok, 151).
-condition('C4', coverage, ok, 179).
-condition('C5', re_decision, ok, 74).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 152).
-steps(151).
-verified(77).
-recomputed(74).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check(\+ (queens(4, [1, 2, 3, 4]))).
+true.

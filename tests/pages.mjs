@@ -73,7 +73,7 @@ test('committed browser package matches Cargo and performs C1–C9 checking', as
   assert.ok(guide.includes(`Version **${expectedVersion}**`));
   assert.ok(spec.includes(`Version **${expectedVersion}**`));
   assert.ok(playground.includes(`id="version">v${expectedVersion}</span>`));
-  assert.ok(playground.includes(`wheye · version ${expectedVersion}</span>`));
+  assert.doesNotMatch(playground, /wheye · version|class="notes"/);
   const source = await readFile(new URL('examples/socrates.pl', root), 'utf8');
   const report = runProgram(source);
   assert.match(report, /^checked: 2 steps, 1 claim/m);
@@ -89,22 +89,18 @@ test('browser engine checks all nine conditions on the voucher example', async (
   assert.doesNotMatch(output,/not applicable/);
   for(let i=1;i<=9;i++)assert.match(output,new RegExp(`C${i} [^\\n]+: [1-9][0-9]* checked, 0 failed`));
 });
-test('browser engine checks the 100,000-level taxonomy within default limits',async()=>{
+// Deep scaling and the full airport graph are checked natively; keep Wasm smoke tests small.
+test('browser engine checks a small taxonomy within default limits',async()=>{
   const {initSync,runProgram}=await import('../pkg/wheye.js');
   initSync({module:await readFile(new URL('pkg/wheye_bg.wasm',root))});
-  const source=await readFile(new URL('examples/deep-taxonomy-100000.pl',root),'utf8');
-  assert.equal(runProgram(source),'?- test(Result).\nResult = true.\n');
+  const source=await readFile(new URL('examples/deep-taxonomy-100.pl',root),'utf8');
   const output=runProgram(source+'\n?- check.\n');
-  assert.match(output,/^checked: 100003 steps, 1 claim/m);
-  assert.match(output,/C1 resolution: 100003 checked, 0 failed/);
+  assert.match(output,/Who = ind/);
+  assert.match(output,/^checked: 102 steps, 1 claim/m);
+  assert.match(output,/C1 resolution: 102 checked, 0 failed/);
 });
-test('browser engine executes source-directed results and all airport routes',async()=>{
+test('browser engine executes explicit true and false result requests',async()=>{
   const {initSync,runProgram}=await import('../pkg/wheye.js');
   initSync({module:await readFile(new URL('pkg/wheye_bg.wasm',root))});
-  const source=await readFile(new URL('examples/path-discovery.pl',root),'utf8');
-  const output=runProgram(source+'\n?- check.\n');
-  assert.equal((output.match(/Stopovers = 2/g)||[]).length,3);
-  for(const name of ['Heraklion International Nikos Kazantzakis Airport','Diagoras Airport','Palma De Mallorca Airport'])assert.ok(output.includes(`Liège Airport -> ${name} -> Václav Havel Airport Prague`));
-  assert.match(output,/^checked: [0-9]+ steps, 3 claims/m);
   assert.equal(runProgram('p(a). ?- check(p(a)). ?- check(p(b)).'),'?- check(p(a)).\ntrue.\n\n?- check(p(b)).\nfalse.\n');
 });

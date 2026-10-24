@@ -1,377 +1,320 @@
-% Answer
 ?- job_shop_answer(Kind, Value).
-Kind = feasible_schedule_count, Value = 35.
 Kind = best_makespan, Value = 9.
 Kind = best_schedule, Value = [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 5, 8)].
-Kind = best_schedule, Value = [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 1, 3), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 5, 8)].
-Kind = best_schedule, Value = [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)].
 Kind = best_schedule, Value = [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)].
-Kind = best_schedule, Value = [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 1, 3), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)].
+Kind = best_schedule, Value = [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)].
+Kind = best_schedule, Value = [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 1, 3), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 5, 8)].
 Kind = best_schedule, Value = [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 1, 3), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)].
+Kind = best_schedule, Value = [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 1, 3), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)].
 Kind = best_schedule, Value = [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 2, 4), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)].
-Kind = best_schedule, Value = [op(j1_mill, 2, 5), op(j1_lathe, 5, 7), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 0, 2), op(j3_lathe, 2, 5)].
 Kind = best_schedule, Value = [op(j1_mill, 2, 5), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 0, 2), op(j3_lathe, 2, 5)].
+Kind = best_schedule, Value = [op(j1_mill, 2, 5), op(j1_lathe, 5, 7), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 0, 2), op(j3_lathe, 2, 5)].
 Kind = best_schedule, Value = [op(j1_mill, 2, 5), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 0, 2), op(j3_lathe, 3, 6)].
 Kind = best_schedule, Value = [op(j1_mill, 2, 5), op(j1_lathe, 6, 8), op(j2_lathe, 1, 3), op(j2_mill, 5, 9), op(j3_mill, 0, 2), op(j3_lathe, 3, 6)].
+Kind = feasible_schedule_count, Value = 35.
 
-% Reason
-certificate(eyeon, 1).
+?- job_shop_answer(best_makespan, Makespan).
+Makespan = 9.
 
-claim(query(2), [job_shop_answer(best_makespan, 9)]).
+?- why.
+wheye-proof 1
+% Rule 1: between(Low, High, Low) :- Low =< High.
+% Rule 2: between(Low, High, Value) :- Low < High, Next is '+'(Low, 1), between(Next, High, Value).
+% Rule 3: nonoverlap(_starta, Enda, Startb, _endb) :- Enda =< Startb.
+% Rule 4: nonoverlap(Starta, _enda, _startb, Endb) :- Endb =< Starta.
+% Rule 5: feasible_schedule(Makespan, [op(j1_mill, J1millstart, J1millend), op(j1_lathe, J1lathestart, J1latheend), op(j2_lathe, J2lathestart, J2latheend), op(j2_mill, J2millstart, J2millend), op(j3_mill, J3millstart, J3millend), op(j3_lathe, J3lathestart, J3latheend)]) :- between(0, 6, J1millstart), J1millend is '+'(J1millstart, 3), between(0, 6, J1lathestart), J1latheend is '+'(J1lathestart, 2), J1millend =< J1lathestart, between(0, 6, J2lathestart), J2latheend is '+'(J2lathestart, 2), between(0, 6, J2millstart), J2millend is '+'(J2millstart, 4), J2latheend =< J2millstart, between(0, 6, J3millstart), J3millend is '+'(J3millstart, 2), between(0, 6, J3lathestart), J3latheend is '+'(J3lathestart, 3), J3millend =< J3lathestart, nonoverlap(J1millstart, J1millend, J2millstart, J2millend), nonoverlap(J1millstart, J1millend, J3millstart, J3millend), nonoverlap(J2millstart, J2millend, J3millstart, J3millend), nonoverlap(J1lathestart, J1latheend, J2lathestart, J2latheend), nonoverlap(J1lathestart, J1latheend, J3lathestart, J3latheend), nonoverlap(J2lathestart, J2latheend, J3lathestart, J3latheend), Makespan is max(J1latheend, max(J2millend, J3latheend)).
+% Rule 6: best_schedule(Makespan, Schedule) :- aggregate_all(min(Time), (feasible_schedule(Time, Candidate)), Makespan), feasible_schedule(Makespan, Schedule).
+% Rule 7: job_shop_answer(best_makespan, Makespan) :- best_schedule(Makespan, _).
+step 1 builtin : '=<'(0, 6).
+step 2 builtin : '=<'(1, 6).
+step 3 builtin : '<'(0, 6).
+step 4 builtin : is(1, '+'(0, 1)).
+step 5 builtin : '=<'(2, 6).
+step 6 builtin : '<'(1, 6).
+step 7 builtin : is(2, '+'(1, 1)).
+step 8 builtin : '=<'(3, 6).
+step 9 builtin : '<'(2, 6).
+step 10 builtin : is(3, '+'(2, 1)).
+step 11 builtin : '=<'(4, 6).
+step 12 builtin : '<'(3, 6).
+step 13 builtin : is(4, '+'(3, 1)).
+step 14 builtin : '=<'(5, 6).
+step 15 builtin : '<'(4, 6).
+step 16 builtin : is(5, '+'(4, 1)).
+step 17 builtin : '=<'(6, 6).
+step 18 builtin : '<'(5, 6).
+step 19 builtin : is(6, '+'(5, 1)).
+step 20 builtin : '=<'(3, 3).
+step 21 builtin : '=<'(3, 4).
+step 22 builtin : '=<'(3, 5).
+step 23 builtin : '=<'(4, 4).
+step 24 builtin : '=<'(4, 5).
+step 25 builtin : '=<'(5, 5).
+step 26 builtin : '=<'(2, 5).
+step 27 builtin : '=<'(2, 4).
+step 28 builtin : '=<'(2, 3).
+step 29 builtin : '=<'(2, 2).
+step 30 builtin : is(3, '+'(0, 3)).
+step 31 builtin : is(5, '+'(3, 2)).
+step 32 builtin : is(2, '+'(0, 2)).
+step 33 builtin : is(10, '+'(6, 4)).
+step 34 builtin : is(8, '+'(5, 3)).
+step 35 builtin : is(10, max(5, max(10, 8))).
+step 36 builtin : is(9, '+'(5, 4)).
+step 37 builtin : is(9, max(5, max(9, 8))).
+step 38 builtin : is(9, '+'(6, 3)).
+step 39 builtin : is(10, max(5, max(10, 9))).
+step 40 builtin : is(6, '+'(4, 2)).
+step 41 builtin : is(10, max(6, max(10, 9))).
+step 42 builtin : is(4, '+'(1, 3)).
+step 43 builtin : is(9, max(6, max(9, 9))).
+step 44 builtin : is(9, max(5, max(9, 9))).
+step 45 builtin : is(3, '+'(1, 2)).
+step 46 builtin : is(4, '+'(2, 2)).
+step 47 builtin : is(5, '+'(2, 3)).
+step 48 builtin : is(8, '+'(6, 2)).
+step 49 builtin : is(9, max(8, max(9, 5))).
+step 50 builtin : is(10, max(8, max(10, 5))).
+step 51 builtin : is(7, '+'(5, 2)).
+step 52 builtin : is(9, max(7, max(9, 5))).
+step 53 builtin : is(10, max(7, max(10, 5))).
+step 54 builtin : is(6, '+'(3, 3)).
+step 55 builtin : is(9, max(8, max(9, 6))).
+step 56 builtin : is(10, max(8, max(10, 6))).
+step 57 rule 1 [1] : between(0, 6, 0).
+step 58 rule 1 [2] : between(1, 6, 1).
+step 59 rule 1 [5] : between(2, 6, 2).
+step 60 rule 4 [5] : nonoverlap(6, 10, 0, 2).
+step 61 rule 4 [5] : nonoverlap(6, 8, 0, 2).
+step 62 rule 3 [5] : nonoverlap(0, 2, 6, 9).
+step 63 rule 1 [8] : between(3, 6, 3).
+step 64 rule 3 [8] : nonoverlap(0, 3, 6, 10).
+step 65 rule 4 [8] : nonoverlap(6, 8, 1, 3).
+step 66 rule 3 [8] : nonoverlap(1, 3, 6, 9).
+step 67 rule 4 [8] : nonoverlap(6, 10, 1, 3).
+step 68 rule 1 [11] : between(4, 6, 4).
+step 69 rule 3 [11] : nonoverlap(1, 4, 6, 10).
+step 70 rule 4 [11] : nonoverlap(6, 8, 2, 4).
+step 71 rule 3 [11] : nonoverlap(2, 4, 6, 9).
+step 72 rule 1 [14] : between(5, 6, 5).
+step 73 rule 3 [14] : nonoverlap(2, 5, 6, 10).
+step 74 rule 4 [14] : nonoverlap(6, 10, 3, 5).
+step 75 rule 3 [14] : nonoverlap(3, 5, 6, 9).
+step 76 rule 4 [14] : nonoverlap(6, 8, 3, 5).
+step 77 rule 4 [14] : nonoverlap(6, 8, 2, 5).
+step 78 rule 1 [17] : between(6, 6, 6).
+step 79 rule 4 [17] : nonoverlap(6, 10, 4, 6).
+step 80 rule 3 [17] : nonoverlap(3, 6, 6, 10).
+step 81 rule 3 [17] : nonoverlap(4, 6, 6, 9).
+step 82 rule 4 [17] : nonoverlap(6, 8, 4, 6).
+step 83 rule 4 [17] : nonoverlap(6, 8, 3, 6).
+step 84 rule 3 [20] : nonoverlap(0, 3, 3, 7).
+step 85 rule 3 [20] : nonoverlap(0, 3, 3, 5).
+step 86 rule 4 [20] : nonoverlap(3, 5, 1, 3).
+step 87 rule 4 [20] : nonoverlap(3, 6, 1, 3).
+step 88 rule 3 [20] : nonoverlap(1, 3, 3, 6).
+step 89 rule 3 [21] : nonoverlap(0, 3, 4, 8).
+step 90 rule 3 [21] : nonoverlap(0, 3, 4, 6).
+step 91 rule 4 [21] : nonoverlap(4, 6, 1, 3).
+step 92 rule 3 [22] : nonoverlap(0, 3, 5, 9).
+step 93 rule 4 [22] : nonoverlap(5, 7, 1, 3).
+step 94 rule 3 [22] : nonoverlap(1, 3, 5, 8).
+step 95 rule 3 [23] : nonoverlap(1, 4, 4, 8).
+step 96 rule 3 [23] : nonoverlap(1, 4, 4, 6).
+step 97 rule 4 [23] : nonoverlap(4, 6, 2, 4).
+step 98 rule 3 [24] : nonoverlap(1, 4, 5, 9).
+step 99 rule 4 [24] : nonoverlap(5, 7, 2, 4).
+step 100 rule 4 [25] : nonoverlap(5, 9, 3, 5).
+step 101 rule 3 [25] : nonoverlap(2, 5, 5, 9).
+step 102 rule 4 [25] : nonoverlap(5, 7, 3, 5).
+step 103 rule 3 [25] : nonoverlap(3, 5, 5, 8).
+step 104 rule 4 [25] : nonoverlap(5, 7, 2, 5).
+step 105 rule 4 [26] : nonoverlap(5, 7, 0, 2).
+step 106 rule 4 [26] : nonoverlap(5, 9, 0, 2).
+step 107 rule 3 [26] : nonoverlap(0, 2, 5, 8).
+step 108 rule 4 [27] : nonoverlap(4, 6, 0, 2).
+step 109 rule 4 [28] : nonoverlap(3, 5, 0, 2).
+step 110 rule 4 [28] : nonoverlap(3, 6, 0, 2).
+step 111 rule 3 [28] : nonoverlap(0, 2, 3, 6).
+step 112 rule 4 [29] : nonoverlap(2, 5, 0, 2).
+step 113 rule 3 [29] : nonoverlap(0, 2, 2, 5).
+step 114 rule 2 [3,4,58] : between(0, 6, 1).
+step 115 rule 2 [6,7,59] : between(1, 6, 2).
+step 116 rule 2 [9,10,63] : between(2, 6, 3).
+step 117 rule 2 [12,13,68] : between(3, 6, 4).
+step 118 rule 2 [15,16,72] : between(4, 6, 5).
+step 119 rule 2 [18,19,78] : between(5, 6, 6).
+step 120 rule 2 [3,4,115] : between(0, 6, 2).
+step 121 rule 2 [6,7,116] : between(1, 6, 3).
+step 122 rule 2 [9,10,117] : between(2, 6, 4).
+step 123 rule 2 [12,13,118] : between(3, 6, 5).
+step 124 rule 2 [15,16,119] : between(4, 6, 6).
+step 125 rule 2 [3,4,121] : between(0, 6, 3).
+step 126 rule 2 [6,7,122] : between(1, 6, 4).
+step 127 rule 2 [9,10,123] : between(2, 6, 5).
+step 128 rule 2 [12,13,124] : between(3, 6, 6).
+step 129 rule 2 [3,4,126] : between(0, 6, 4).
+step 130 rule 2 [6,7,127] : between(1, 6, 5).
+step 131 rule 2 [9,10,128] : between(2, 6, 6).
+step 132 rule 2 [3,4,130] : between(0, 6, 5).
+step 133 rule 2 [6,7,131] : between(1, 6, 6).
+step 134 rule 5 [57,30,125,31,20,57,32,132,36,26,125,31,132,34,25,92,85,100,109,103,107,37] : feasible_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 5, 8)]).
+step 135 rule 5 [57,30,125,31,20,114,45,132,36,22,125,31,132,34,25,92,85,100,86,103,94,37] : feasible_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 1, 3), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 5, 8)]).
+step 136 rule 5 [120,47,132,51,25,57,32,132,36,26,57,32,120,47,29,101,112,106,105,104,113,52] : feasible_schedule(9, [op(j1_mill, 2, 5), op(j1_lathe, 5, 7), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 0, 2), op(j3_lathe, 2, 5)]).
+step 137 rule 2 [3,4,133] : between(0, 6, 6).
+step 138 rule 5 [57,30,125,31,20,57,32,137,33,5,125,31,132,34,25,64,85,74,109,103,107,35] : feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 3, 5), op(j3_lathe, 5, 8)]).
+step 139 rule 5 [57,30,125,31,20,57,32,137,33,5,125,31,137,38,14,64,85,74,109,75,62,39] : feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)]).
+step 140 rule 5 [57,30,129,40,21,57,32,137,33,5,125,31,137,38,14,64,85,74,108,81,62,41] : feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)]).
+step 141 rule 5 [57,30,125,31,20,57,32,137,33,5,129,40,137,38,17,64,90,79,109,75,62,39] : feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)]).
+step 142 rule 5 [57,30,129,40,21,57,32,137,33,5,129,40,137,38,17,64,90,79,108,81,62,41] : feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)]).
+step 143 rule 5 [114,42,129,40,23,57,32,137,33,5,129,40,137,38,17,69,96,79,108,81,62,41] : feasible_schedule(10, [op(j1_mill, 1, 4), op(j1_lathe, 4, 6), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)]).
+step 144 rule 5 [57,30,129,40,21,57,32,132,36,26,125,31,137,38,14,92,85,100,108,81,62,43] : feasible_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)]).
+step 145 rule 5 [57,30,125,31,20,57,32,132,36,26,125,31,137,38,14,92,85,100,109,75,62,44] : feasible_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)]).
+step 146 rule 5 [57,30,125,31,20,114,45,137,33,8,125,31,132,34,25,64,85,74,86,103,94,35] : feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 3, 5), op(j3_lathe, 5, 8)]).
+step 147 rule 5 [57,30,125,31,20,114,45,137,33,8,125,31,137,38,14,64,85,74,86,75,66,39] : feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)]).
+step 148 rule 5 [57,30,129,40,21,114,45,137,33,8,125,31,137,38,14,64,85,74,91,81,66,41] : feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)]).
+step 149 rule 5 [57,30,125,31,20,114,45,137,33,8,129,40,137,38,17,64,90,79,86,75,66,39] : feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)]).
+step 150 rule 5 [57,30,129,40,21,114,45,137,33,8,129,40,137,38,17,64,90,79,91,81,66,41] : feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)]).
+step 151 rule 5 [114,42,129,40,23,114,45,137,33,8,129,40,137,38,17,69,96,79,91,81,66,41] : feasible_schedule(10, [op(j1_mill, 1, 4), op(j1_lathe, 4, 6), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)]).
+step 152 rule 5 [57,30,129,40,21,114,45,132,36,22,125,31,137,38,14,92,85,100,91,81,66,43] : feasible_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 1, 3), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)]).
+step 153 rule 5 [57,30,125,31,20,114,45,132,36,22,125,31,137,38,14,92,85,100,86,75,66,44] : feasible_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 1, 3), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)]).
+step 154 rule 5 [57,30,129,40,21,120,46,137,33,11,125,31,137,38,14,64,85,74,97,81,71,41] : feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 2, 4), op(j2_mill, 6, 10), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)]).
+step 155 rule 5 [57,30,129,40,21,120,46,137,33,11,129,40,137,38,17,64,90,79,97,81,71,41] : feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 2, 4), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)]).
+step 156 rule 5 [114,42,129,40,23,120,46,137,33,11,129,40,137,38,17,69,96,79,97,81,71,41] : feasible_schedule(10, [op(j1_mill, 1, 4), op(j1_lathe, 4, 6), op(j2_lathe, 2, 4), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)]).
+step 157 rule 5 [57,30,129,40,21,120,46,132,36,24,125,31,137,38,14,92,85,100,97,81,71,43] : feasible_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 2, 4), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)]).
+step 158 rule 5 [120,47,137,48,14,57,32,132,36,26,57,32,120,47,29,101,112,106,61,77,113,49] : feasible_schedule(9, [op(j1_mill, 2, 5), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 0, 2), op(j3_lathe, 2, 5)]).
+step 159 rule 5 [120,47,137,48,14,57,32,137,33,5,57,32,120,47,29,73,112,60,61,77,113,50] : feasible_schedule(10, [op(j1_mill, 2, 5), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 0, 2), op(j3_lathe, 2, 5)]).
+step 160 rule 5 [120,47,132,51,25,57,32,137,33,5,57,32,120,47,29,73,112,60,105,104,113,53] : feasible_schedule(10, [op(j1_mill, 2, 5), op(j1_lathe, 5, 7), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 0, 2), op(j3_lathe, 2, 5)]).
+step 161 rule 5 [125,54,137,48,17,57,32,137,33,5,57,32,120,47,29,80,110,60,61,77,113,50] : feasible_schedule(10, [op(j1_mill, 3, 6), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 0, 2), op(j3_lathe, 2, 5)]).
+step 162 rule 5 [120,47,137,48,14,57,32,132,36,26,57,32,125,54,28,101,112,106,61,83,111,55] : feasible_schedule(9, [op(j1_mill, 2, 5), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 0, 2), op(j3_lathe, 3, 6)]).
+step 163 rule 5 [120,47,137,48,14,57,32,137,33,5,57,32,125,54,28,73,112,60,61,83,111,56] : feasible_schedule(10, [op(j1_mill, 2, 5), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 0, 2), op(j3_lathe, 3, 6)]).
+step 164 rule 5 [125,54,137,48,17,57,32,137,33,5,57,32,125,54,28,80,110,60,61,83,111,56] : feasible_schedule(10, [op(j1_mill, 3, 6), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 0, 2), op(j3_lathe, 3, 6)]).
+step 165 rule 5 [120,47,137,48,14,114,45,132,36,22,57,32,125,54,28,101,112,106,65,83,88,55] : feasible_schedule(9, [op(j1_mill, 2, 5), op(j1_lathe, 6, 8), op(j2_lathe, 1, 3), op(j2_mill, 5, 9), op(j3_mill, 0, 2), op(j3_lathe, 3, 6)]).
+step 166 rule 5 [120,47,137,48,14,114,45,137,33,8,57,32,125,54,28,73,112,60,65,83,88,56] : feasible_schedule(10, [op(j1_mill, 2, 5), op(j1_lathe, 6, 8), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 0, 2), op(j3_lathe, 3, 6)]).
+step 167 rule 5 [125,54,137,48,17,114,45,137,33,8,57,32,125,54,28,80,110,60,65,83,88,56] : feasible_schedule(10, [op(j1_mill, 3, 6), op(j1_lathe, 6, 8), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 0, 2), op(j3_lathe, 3, 6)]).
+step 168 rule 5 [125,54,137,48,17,57,32,137,33,5,114,45,125,54,20,80,87,67,61,83,111,56] : feasible_schedule(10, [op(j1_mill, 3, 6), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 1, 3), op(j3_lathe, 3, 6)]).
+step 169 rule 5 [125,54,137,48,17,114,45,137,33,8,114,45,125,54,20,80,87,67,65,83,88,56] : feasible_schedule(10, [op(j1_mill, 3, 6), op(j1_lathe, 6, 8), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 1, 3), op(j3_lathe, 3, 6)]).
+step 170 aggregate r6 1 1 : '$aggregate:r6:1'([], 9).
+step 171 rule 6 [170,134] : best_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 5, 8)]).
+step 172 rule 7 [171] : job_shop_answer(best_makespan, 9).
+boundary 1 level 0 [57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169]
+demand 1 : between(0, 6, _WheyeCall0).
+demand 1 : between(1, 6, _WheyeCall0).
+demand 1 : between(2, 6, _WheyeCall0).
+demand 1 : between(3, 6, _WheyeCall0).
+demand 1 : between(4, 6, _WheyeCall0).
+demand 1 : between(5, 6, _WheyeCall0).
+demand 1 : between(6, 6, _WheyeCall0).
+demand 1 : nonoverlap(0, 2, 2, 5).
+demand 1 : nonoverlap(0, 2, 3, 6).
+demand 1 : nonoverlap(0, 2, 5, 8).
+demand 1 : nonoverlap(0, 2, 6, 9).
+demand 1 : nonoverlap(0, 3, 0, 2).
+demand 1 : nonoverlap(0, 3, 1, 3).
+demand 1 : nonoverlap(0, 3, 2, 4).
+demand 1 : nonoverlap(0, 3, 2, 6).
+demand 1 : nonoverlap(0, 3, 3, 5).
+demand 1 : nonoverlap(0, 3, 3, 7).
+demand 1 : nonoverlap(0, 3, 4, 6).
+demand 1 : nonoverlap(0, 3, 4, 8).
+demand 1 : nonoverlap(0, 3, 5, 9).
+demand 1 : nonoverlap(0, 3, 6, 10).
+demand 1 : nonoverlap(1, 3, 2, 5).
+demand 1 : nonoverlap(1, 3, 3, 6).
+demand 1 : nonoverlap(1, 3, 5, 8).
+demand 1 : nonoverlap(1, 3, 6, 9).
+demand 1 : nonoverlap(1, 4, 0, 2).
+demand 1 : nonoverlap(1, 4, 1, 3).
+demand 1 : nonoverlap(1, 4, 2, 4).
+demand 1 : nonoverlap(1, 4, 2, 6).
+demand 1 : nonoverlap(1, 4, 3, 5).
+demand 1 : nonoverlap(1, 4, 3, 7).
+demand 1 : nonoverlap(1, 4, 4, 6).
+demand 1 : nonoverlap(1, 4, 4, 8).
+demand 1 : nonoverlap(1, 4, 5, 9).
+demand 1 : nonoverlap(1, 4, 6, 10).
+demand 1 : nonoverlap(2, 4, 2, 5).
+demand 1 : nonoverlap(2, 4, 3, 6).
+demand 1 : nonoverlap(2, 4, 6, 9).
+demand 1 : nonoverlap(2, 5, 0, 2).
+demand 1 : nonoverlap(2, 5, 1, 3).
+demand 1 : nonoverlap(2, 5, 2, 4).
+demand 1 : nonoverlap(2, 5, 2, 6).
+demand 1 : nonoverlap(2, 5, 3, 5).
+demand 1 : nonoverlap(2, 5, 3, 7).
+demand 1 : nonoverlap(2, 5, 4, 6).
+demand 1 : nonoverlap(2, 5, 4, 8).
+demand 1 : nonoverlap(2, 5, 5, 9).
+demand 1 : nonoverlap(2, 5, 6, 10).
+demand 1 : nonoverlap(3, 5, 0, 2).
+demand 1 : nonoverlap(3, 5, 1, 3).
+demand 1 : nonoverlap(3, 5, 2, 4).
+demand 1 : nonoverlap(3, 5, 2, 5).
+demand 1 : nonoverlap(3, 5, 3, 5).
+demand 1 : nonoverlap(3, 5, 3, 6).
+demand 1 : nonoverlap(3, 5, 4, 6).
+demand 1 : nonoverlap(3, 5, 5, 8).
+demand 1 : nonoverlap(3, 5, 6, 9).
+demand 1 : nonoverlap(3, 6, 0, 2).
+demand 1 : nonoverlap(3, 6, 1, 3).
+demand 1 : nonoverlap(3, 6, 2, 4).
+demand 1 : nonoverlap(3, 6, 2, 6).
+demand 1 : nonoverlap(3, 6, 3, 5).
+demand 1 : nonoverlap(3, 6, 3, 7).
+demand 1 : nonoverlap(3, 6, 4, 6).
+demand 1 : nonoverlap(3, 6, 4, 8).
+demand 1 : nonoverlap(3, 6, 5, 9).
+demand 1 : nonoverlap(3, 6, 6, 10).
+demand 1 : nonoverlap(3, 7, 3, 5).
+demand 1 : nonoverlap(3, 7, 4, 6).
+demand 1 : nonoverlap(4, 6, 0, 2).
+demand 1 : nonoverlap(4, 6, 1, 3).
+demand 1 : nonoverlap(4, 6, 2, 4).
+demand 1 : nonoverlap(4, 6, 2, 5).
+demand 1 : nonoverlap(4, 6, 3, 5).
+demand 1 : nonoverlap(4, 6, 3, 6).
+demand 1 : nonoverlap(4, 6, 4, 6).
+demand 1 : nonoverlap(4, 6, 5, 8).
+demand 1 : nonoverlap(4, 6, 6, 9).
+demand 1 : nonoverlap(4, 8, 3, 5).
+demand 1 : nonoverlap(4, 8, 4, 6).
+demand 1 : nonoverlap(5, 7, 0, 2).
+demand 1 : nonoverlap(5, 7, 1, 3).
+demand 1 : nonoverlap(5, 7, 2, 4).
+demand 1 : nonoverlap(5, 7, 2, 5).
+demand 1 : nonoverlap(5, 7, 3, 5).
+demand 1 : nonoverlap(5, 7, 3, 6).
+demand 1 : nonoverlap(5, 7, 4, 6).
+demand 1 : nonoverlap(5, 7, 4, 7).
+demand 1 : nonoverlap(5, 7, 5, 8).
+demand 1 : nonoverlap(5, 7, 6, 9).
+demand 1 : nonoverlap(5, 9, 0, 2).
+demand 1 : nonoverlap(5, 9, 3, 5).
+demand 1 : nonoverlap(5, 9, 4, 6).
+demand 1 : nonoverlap(6, 10, 0, 2).
+demand 1 : nonoverlap(6, 10, 1, 3).
+demand 1 : nonoverlap(6, 10, 3, 5).
+demand 1 : nonoverlap(6, 10, 4, 6).
+demand 1 : nonoverlap(6, 8, 0, 2).
+demand 1 : nonoverlap(6, 8, 1, 3).
+demand 1 : nonoverlap(6, 8, 2, 4).
+demand 1 : nonoverlap(6, 8, 2, 5).
+demand 1 : nonoverlap(6, 8, 3, 5).
+demand 1 : nonoverlap(6, 8, 3, 6).
+demand 1 : nonoverlap(6, 8, 4, 6).
+demand 1 : nonoverlap(6, 8, 4, 7).
+demand 1 : nonoverlap(6, 8, 5, 8).
+demand 1 : nonoverlap(6, 8, 6, 9).
+answer 2 [172]
 
-clause(1, between(var('Low'), var('High'), var('Low')), ['=<'(var('Low'), var('High'))]).
-clause(2, between(var('Low'), var('High'), var('Value')), ['<'(var('Low'), var('High')), is(var('Next'), '+'(var('Low'), 1)), between(var('Next'), var('High'), var('Value'))]).
-clause(3, nonoverlap(var('_starta'), var('Enda'), var('Startb'), var('_endb')), ['=<'(var('Enda'), var('Startb'))]).
-clause(4, nonoverlap(var('Starta'), var('_enda'), var('_startb'), var('Endb')), ['=<'(var('Endb'), var('Starta'))]).
-clause(5, feasible_schedule(var('Makespan'), [op(j1_mill, var('J1millstart'), var('J1millend')), op(j1_lathe, var('J1lathestart'), var('J1latheend')), op(j2_lathe, var('J2lathestart'), var('J2latheend')), op(j2_mill, var('J2millstart'), var('J2millend')), op(j3_mill, var('J3millstart'), var('J3millend')), op(j3_lathe, var('J3lathestart'), var('J3latheend'))]), [between(0, 6, var('J1millstart')), is(var('J1millend'), '+'(var('J1millstart'), 3)), between(0, 6, var('J1lathestart')), is(var('J1latheend'), '+'(var('J1lathestart'), 2)), '=<'(var('J1millend'), var('J1lathestart')), between(0, 6, var('J2lathestart')), is(var('J2latheend'), '+'(var('J2lathestart'), 2)), between(0, 6, var('J2millstart')), is(var('J2millend'), '+'(var('J2millstart'), 4)), '=<'(var('J2latheend'), var('J2millstart')), between(0, 6, var('J3millstart')), is(var('J3millend'), '+'(var('J3millstart'), 2)), between(0, 6, var('J3lathestart')), is(var('J3latheend'), '+'(var('J3lathestart'), 3)), '=<'(var('J3millend'), var('J3lathestart')), nonoverlap(var('J1millstart'), var('J1millend'), var('J2millstart'), var('J2millend')), nonoverlap(var('J1millstart'), var('J1millend'), var('J3millstart'), var('J3millend')), nonoverlap(var('J2millstart'), var('J2millend'), var('J3millstart'), var('J3millend')), nonoverlap(var('J1lathestart'), var('J1latheend'), var('J2lathestart'), var('J2latheend')), nonoverlap(var('J1lathestart'), var('J1latheend'), var('J3lathestart'), var('J3latheend')), nonoverlap(var('J2lathestart'), var('J2latheend'), var('J3lathestart'), var('J3latheend')), is(var('Makespan'), max(var('J1latheend'), max(var('J2millend'), var('J3latheend'))))]).
-clause(6, best_schedule(var('Makespan'), var('Schedule')), [aggregate_all(min(var('Time')), [feasible_schedule(var('Time'), var('Candidate'))], var('Makespan')), feasible_schedule(var('Makespan'), var('Schedule'))]).
-clause(7, job_shop_answer(best_makespan, var('Makespan')), [best_schedule(var('Makespan'), var('$anonymous1'))]).
+?- check(job_shop_answer(best_makespan, 9)).
+true.
 
-% step 1
-step('=<'(0, 6), builtin, [], []).
-% step 2
-step(between(0, 6, 0), rule(1), ['='('Low', 0), '='('High', 6)], ['=<'(0, 6)]).
-% step 3
-step(is(3, '+'(0, 3)), builtin, [], []).
-% step 4
-step('<'(0, 6), builtin, [], []).
-% step 5
-step(is(1, '+'(0, 1)), builtin, [], []).
-% step 6
-step('<'(1, 6), builtin, [], []).
-% step 7
-step(is(2, '+'(1, 1)), builtin, [], []).
-% step 8
-step('<'(2, 6), builtin, [], []).
-% step 9
-step(is(3, '+'(2, 1)), builtin, [], []).
-% step 10
-step('=<'(3, 6), builtin, [], []).
-% step 11
-step(between(3, 6, 3), rule(1), ['='('Low', 3), '='('High', 6)], ['=<'(3, 6)]).
-% step 12
-step(between(2, 6, 3), rule(2), ['='('Low', 2), '='('High', 6), '='('Value', 3), '='('Next', 3)], ['<'(2, 6), is(3, '+'(2, 1)), between(3, 6, 3)]).
-% step 13
-step(between(1, 6, 3), rule(2), ['='('Low', 1), '='('High', 6), '='('Value', 3), '='('Next', 2)], ['<'(1, 6), is(2, '+'(1, 1)), between(2, 6, 3)]).
-% step 14
-step(between(0, 6, 3), rule(2), ['='('Low', 0), '='('High', 6), '='('Value', 3), '='('Next', 1)], ['<'(0, 6), is(1, '+'(0, 1)), between(1, 6, 3)]).
-% step 15
-step(is(5, '+'(3, 2)), builtin, [], []).
-% step 16
-step('=<'(3, 3), builtin, [], []).
-% step 17
-step(is(2, '+'(0, 2)), builtin, [], []).
-% step 18
-step('<'(3, 6), builtin, [], []).
-% step 19
-step(is(4, '+'(3, 1)), builtin, [], []).
-% step 20
-step('<'(4, 6), builtin, [], []).
-% step 21
-step(is(5, '+'(4, 1)), builtin, [], []).
-% step 22
-step('=<'(5, 6), builtin, [], []).
-% step 23
-step(between(5, 6, 5), rule(1), ['='('Low', 5), '='('High', 6)], ['=<'(5, 6)]).
-% step 24
-step(between(4, 6, 5), rule(2), ['='('Low', 4), '='('High', 6), '='('Value', 5), '='('Next', 5)], ['<'(4, 6), is(5, '+'(4, 1)), between(5, 6, 5)]).
-% step 25
-step(between(3, 6, 5), rule(2), ['='('Low', 3), '='('High', 6), '='('Value', 5), '='('Next', 4)], ['<'(3, 6), is(4, '+'(3, 1)), between(4, 6, 5)]).
-% step 26
-step(between(2, 6, 5), rule(2), ['='('Low', 2), '='('High', 6), '='('Value', 5), '='('Next', 3)], ['<'(2, 6), is(3, '+'(2, 1)), between(3, 6, 5)]).
-% step 27
-step(between(1, 6, 5), rule(2), ['='('Low', 1), '='('High', 6), '='('Value', 5), '='('Next', 2)], ['<'(1, 6), is(2, '+'(1, 1)), between(2, 6, 5)]).
-% step 28
-step(between(0, 6, 5), rule(2), ['='('Low', 0), '='('High', 6), '='('Value', 5), '='('Next', 1)], ['<'(0, 6), is(1, '+'(0, 1)), between(1, 6, 5)]).
-% step 29
-step(is(9, '+'(5, 4)), builtin, [], []).
-% step 30
-step('=<'(2, 5), builtin, [], []).
-% step 31
-step(is(8, '+'(5, 3)), builtin, [], []).
-% step 32
-step('=<'(5, 5), builtin, [], []).
-% step 33
-step('=<'(3, 5), builtin, [], []).
-% step 34
-step(nonoverlap(0, 3, 5, 9), rule(3), ['='('_starta', 0), '='('Enda', 3), '='('Startb', 5), '='('_endb', 9)], ['=<'(3, 5)]).
-% step 35
-step(nonoverlap(0, 3, 3, 5), rule(3), ['='('_starta', 0), '='('Enda', 3), '='('Startb', 3), '='('_endb', 5)], ['=<'(3, 3)]).
-% step 36
-step(nonoverlap(5, 9, 3, 5), rule(4), ['='('Starta', 5), '='('_enda', 9), '='('_startb', 3), '='('Endb', 5)], ['=<'(5, 5)]).
-% step 37
-step('=<'(2, 3), builtin, [], []).
-% step 38
-step(nonoverlap(3, 5, 0, 2), rule(4), ['='('Starta', 3), '='('_enda', 5), '='('_startb', 0), '='('Endb', 2)], ['=<'(2, 3)]).
-% step 39
-step(nonoverlap(3, 5, 5, 8), rule(3), ['='('_starta', 3), '='('Enda', 5), '='('Startb', 5), '='('_endb', 8)], ['=<'(5, 5)]).
-% step 40
-step(nonoverlap(0, 2, 5, 8), rule(3), ['='('_starta', 0), '='('Enda', 2), '='('Startb', 5), '='('_endb', 8)], ['=<'(2, 5)]).
-% step 41
-step(is(9, max(5, max(9, 8))), builtin, [], []).
-% step 42
-step(feasible_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 5, 8)]), rule(5), ['='('J1millstart', 0), '='('J1millend', 3), '='('J1lathestart', 3), '='('J1latheend', 5), '='('J2lathestart', 0), '='('J2latheend', 2), '='('J2millstart', 5), '='('J2millend', 9), '='('J3millstart', 3), '='('J3millend', 5), '='('J3lathestart', 5), '='('J3latheend', 8), '='('Makespan', 9)], [between(0, 6, 0), is(3, '+'(0, 3)), between(0, 6, 3), is(5, '+'(3, 2)), '=<'(3, 3), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 5), is(9, '+'(5, 4)), '=<'(2, 5), between(0, 6, 3), is(5, '+'(3, 2)), between(0, 6, 5), is(8, '+'(5, 3)), '=<'(5, 5), nonoverlap(0, 3, 5, 9), nonoverlap(0, 3, 3, 5), nonoverlap(5, 9, 3, 5), nonoverlap(3, 5, 0, 2), nonoverlap(3, 5, 5, 8), nonoverlap(0, 2, 5, 8), is(9, max(5, max(9, 8)))]).
-% step 43
-step('<'(5, 6), builtin, [], []).
-% step 44
-step(is(6, '+'(5, 1)), builtin, [], []).
-% step 45
-step('=<'(6, 6), builtin, [], []).
-% step 46
-step(between(6, 6, 6), rule(1), ['='('Low', 6), '='('High', 6)], ['=<'(6, 6)]).
-% step 47
-step(between(5, 6, 6), rule(2), ['='('Low', 5), '='('High', 6), '='('Value', 6), '='('Next', 6)], ['<'(5, 6), is(6, '+'(5, 1)), between(6, 6, 6)]).
-% step 48
-step(between(4, 6, 6), rule(2), ['='('Low', 4), '='('High', 6), '='('Value', 6), '='('Next', 5)], ['<'(4, 6), is(5, '+'(4, 1)), between(5, 6, 6)]).
-% step 49
-step(between(3, 6, 6), rule(2), ['='('Low', 3), '='('High', 6), '='('Value', 6), '='('Next', 4)], ['<'(3, 6), is(4, '+'(3, 1)), between(4, 6, 6)]).
-% step 50
-step(between(2, 6, 6), rule(2), ['='('Low', 2), '='('High', 6), '='('Value', 6), '='('Next', 3)], ['<'(2, 6), is(3, '+'(2, 1)), between(3, 6, 6)]).
-% step 51
-step(between(1, 6, 6), rule(2), ['='('Low', 1), '='('High', 6), '='('Value', 6), '='('Next', 2)], ['<'(1, 6), is(2, '+'(1, 1)), between(2, 6, 6)]).
-% step 52
-step(between(0, 6, 6), rule(2), ['='('Low', 0), '='('High', 6), '='('Value', 6), '='('Next', 1)], ['<'(0, 6), is(1, '+'(0, 1)), between(1, 6, 6)]).
-% step 53
-step(is(10, '+'(6, 4)), builtin, [], []).
-% step 54
-step('=<'(2, 6), builtin, [], []).
-% step 55
-step(nonoverlap(0, 3, 6, 10), rule(3), ['='('_starta', 0), '='('Enda', 3), '='('Startb', 6), '='('_endb', 10)], ['=<'(3, 6)]).
-% step 56
-step(nonoverlap(6, 10, 3, 5), rule(4), ['='('Starta', 6), '='('_enda', 10), '='('_startb', 3), '='('Endb', 5)], ['=<'(5, 6)]).
-% step 57
-step(is(10, max(5, max(10, 8))), builtin, [], []).
-% step 58
-step(feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 3, 5), op(j3_lathe, 5, 8)]), rule(5), ['='('J1millstart', 0), '='('J1millend', 3), '='('J1lathestart', 3), '='('J1latheend', 5), '='('J2lathestart', 0), '='('J2latheend', 2), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 3), '='('J3millend', 5), '='('J3lathestart', 5), '='('J3latheend', 8), '='('Makespan', 10)], [between(0, 6, 0), is(3, '+'(0, 3)), between(0, 6, 3), is(5, '+'(3, 2)), '=<'(3, 3), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(2, 6), between(0, 6, 3), is(5, '+'(3, 2)), between(0, 6, 5), is(8, '+'(5, 3)), '=<'(5, 5), nonoverlap(0, 3, 6, 10), nonoverlap(0, 3, 3, 5), nonoverlap(6, 10, 3, 5), nonoverlap(3, 5, 0, 2), nonoverlap(3, 5, 5, 8), nonoverlap(0, 2, 5, 8), is(10, max(5, max(10, 8)))]).
-% step 59
-step('=<'(1, 6), builtin, [], []).
-% step 60
-step(between(1, 6, 1), rule(1), ['='('Low', 1), '='('High', 6)], ['=<'(1, 6)]).
-% step 61
-step(between(0, 6, 1), rule(2), ['='('Low', 0), '='('High', 6), '='('Value', 1), '='('Next', 1)], ['<'(0, 6), is(1, '+'(0, 1)), between(1, 6, 1)]).
-% step 62
-step(is(3, '+'(1, 2)), builtin, [], []).
-% step 63
-step(nonoverlap(3, 5, 1, 3), rule(4), ['='('Starta', 3), '='('_enda', 5), '='('_startb', 1), '='('Endb', 3)], ['=<'(3, 3)]).
-% step 64
-step(nonoverlap(1, 3, 5, 8), rule(3), ['='('_starta', 1), '='('Enda', 3), '='('Startb', 5), '='('_endb', 8)], ['=<'(3, 5)]).
-% step 65
-step(feasible_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 1, 3), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 5, 8)]), rule(5), ['='('J1millstart', 0), '='('J1millend', 3), '='('J1lathestart', 3), '='('J1latheend', 5), '='('J2lathestart', 1), '='('J2latheend', 3), '='('J2millstart', 5), '='('J2millend', 9), '='('J3millstart', 3), '='('J3millend', 5), '='('J3lathestart', 5), '='('J3latheend', 8), '='('Makespan', 9)], [between(0, 6, 0), is(3, '+'(0, 3)), between(0, 6, 3), is(5, '+'(3, 2)), '=<'(3, 3), between(0, 6, 1), is(3, '+'(1, 2)), between(0, 6, 5), is(9, '+'(5, 4)), '=<'(3, 5), between(0, 6, 3), is(5, '+'(3, 2)), between(0, 6, 5), is(8, '+'(5, 3)), '=<'(5, 5), nonoverlap(0, 3, 5, 9), nonoverlap(0, 3, 3, 5), nonoverlap(5, 9, 3, 5), nonoverlap(3, 5, 1, 3), nonoverlap(3, 5, 5, 8), nonoverlap(1, 3, 5, 8), is(9, max(5, max(9, 8)))]).
-% step 66
-step(feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 3, 5), op(j3_lathe, 5, 8)]), rule(5), ['='('J1millstart', 0), '='('J1millend', 3), '='('J1lathestart', 3), '='('J1latheend', 5), '='('J2lathestart', 1), '='('J2latheend', 3), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 3), '='('J3millend', 5), '='('J3lathestart', 5), '='('J3latheend', 8), '='('Makespan', 10)], [between(0, 6, 0), is(3, '+'(0, 3)), between(0, 6, 3), is(5, '+'(3, 2)), '=<'(3, 3), between(0, 6, 1), is(3, '+'(1, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(3, 6), between(0, 6, 3), is(5, '+'(3, 2)), between(0, 6, 5), is(8, '+'(5, 3)), '=<'(5, 5), nonoverlap(0, 3, 6, 10), nonoverlap(0, 3, 3, 5), nonoverlap(6, 10, 3, 5), nonoverlap(3, 5, 1, 3), nonoverlap(3, 5, 5, 8), nonoverlap(1, 3, 5, 8), is(10, max(5, max(10, 8)))]).
-% step 67
-step(is(9, '+'(6, 3)), builtin, [], []).
-% step 68
-step(nonoverlap(3, 5, 6, 9), rule(3), ['='('_starta', 3), '='('Enda', 5), '='('Startb', 6), '='('_endb', 9)], ['=<'(5, 6)]).
-% step 69
-step(nonoverlap(0, 2, 6, 9), rule(3), ['='('_starta', 0), '='('Enda', 2), '='('Startb', 6), '='('_endb', 9)], ['=<'(2, 6)]).
-% step 70
-step(is(9, max(5, max(9, 9))), builtin, [], []).
-% step 71
-step(feasible_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)]), rule(5), ['='('J1millstart', 0), '='('J1millend', 3), '='('J1lathestart', 3), '='('J1latheend', 5), '='('J2lathestart', 0), '='('J2latheend', 2), '='('J2millstart', 5), '='('J2millend', 9), '='('J3millstart', 3), '='('J3millend', 5), '='('J3lathestart', 6), '='('J3latheend', 9), '='('Makespan', 9)], [between(0, 6, 0), is(3, '+'(0, 3)), between(0, 6, 3), is(5, '+'(3, 2)), '=<'(3, 3), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 5), is(9, '+'(5, 4)), '=<'(2, 5), between(0, 6, 3), is(5, '+'(3, 2)), between(0, 6, 6), is(9, '+'(6, 3)), '=<'(5, 6), nonoverlap(0, 3, 5, 9), nonoverlap(0, 3, 3, 5), nonoverlap(5, 9, 3, 5), nonoverlap(3, 5, 0, 2), nonoverlap(3, 5, 6, 9), nonoverlap(0, 2, 6, 9), is(9, max(5, max(9, 9)))]).
-% step 72
-step('=<'(4, 6), builtin, [], []).
-% step 73
-step(between(4, 6, 4), rule(1), ['='('Low', 4), '='('High', 6)], ['=<'(4, 6)]).
-% step 74
-step(between(3, 6, 4), rule(2), ['='('Low', 3), '='('High', 6), '='('Value', 4), '='('Next', 4)], ['<'(3, 6), is(4, '+'(3, 1)), between(4, 6, 4)]).
-% step 75
-step(between(2, 6, 4), rule(2), ['='('Low', 2), '='('High', 6), '='('Value', 4), '='('Next', 3)], ['<'(2, 6), is(3, '+'(2, 1)), between(3, 6, 4)]).
-% step 76
-step(between(1, 6, 4), rule(2), ['='('Low', 1), '='('High', 6), '='('Value', 4), '='('Next', 2)], ['<'(1, 6), is(2, '+'(1, 1)), between(2, 6, 4)]).
-% step 77
-step(between(0, 6, 4), rule(2), ['='('Low', 0), '='('High', 6), '='('Value', 4), '='('Next', 1)], ['<'(0, 6), is(1, '+'(0, 1)), between(1, 6, 4)]).
-% step 78
-step(is(6, '+'(4, 2)), builtin, [], []).
-% step 79
-step('=<'(3, 4), builtin, [], []).
-% step 80
-step('=<'(2, 4), builtin, [], []).
-% step 81
-step(nonoverlap(4, 6, 0, 2), rule(4), ['='('Starta', 4), '='('_enda', 6), '='('_startb', 0), '='('Endb', 2)], ['=<'(2, 4)]).
-% step 82
-step(nonoverlap(4, 6, 6, 9), rule(3), ['='('_starta', 4), '='('Enda', 6), '='('Startb', 6), '='('_endb', 9)], ['=<'(6, 6)]).
-% step 83
-step(is(9, max(6, max(9, 9))), builtin, [], []).
-% step 84
-step(feasible_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)]), rule(5), ['='('J1millstart', 0), '='('J1millend', 3), '='('J1lathestart', 4), '='('J1latheend', 6), '='('J2lathestart', 0), '='('J2latheend', 2), '='('J2millstart', 5), '='('J2millend', 9), '='('J3millstart', 3), '='('J3millend', 5), '='('J3lathestart', 6), '='('J3latheend', 9), '='('Makespan', 9)], [between(0, 6, 0), is(3, '+'(0, 3)), between(0, 6, 4), is(6, '+'(4, 2)), '=<'(3, 4), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 5), is(9, '+'(5, 4)), '=<'(2, 5), between(0, 6, 3), is(5, '+'(3, 2)), between(0, 6, 6), is(9, '+'(6, 3)), '=<'(5, 6), nonoverlap(0, 3, 5, 9), nonoverlap(0, 3, 3, 5), nonoverlap(5, 9, 3, 5), nonoverlap(4, 6, 0, 2), nonoverlap(4, 6, 6, 9), nonoverlap(0, 2, 6, 9), is(9, max(6, max(9, 9)))]).
-% step 85
-step(is(10, max(5, max(10, 9))), builtin, [], []).
-% step 86
-step(feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)]), rule(5), ['='('J1millstart', 0), '='('J1millend', 3), '='('J1lathestart', 3), '='('J1latheend', 5), '='('J2lathestart', 0), '='('J2latheend', 2), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 3), '='('J3millend', 5), '='('J3lathestart', 6), '='('J3latheend', 9), '='('Makespan', 10)], [between(0, 6, 0), is(3, '+'(0, 3)), between(0, 6, 3), is(5, '+'(3, 2)), '=<'(3, 3), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(2, 6), between(0, 6, 3), is(5, '+'(3, 2)), between(0, 6, 6), is(9, '+'(6, 3)), '=<'(5, 6), nonoverlap(0, 3, 6, 10), nonoverlap(0, 3, 3, 5), nonoverlap(6, 10, 3, 5), nonoverlap(3, 5, 0, 2), nonoverlap(3, 5, 6, 9), nonoverlap(0, 2, 6, 9), is(10, max(5, max(10, 9)))]).
-% step 87
-step(is(10, max(6, max(10, 9))), builtin, [], []).
-% step 88
-step(feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)]), rule(5), ['='('J1millstart', 0), '='('J1millend', 3), '='('J1lathestart', 4), '='('J1latheend', 6), '='('J2lathestart', 0), '='('J2latheend', 2), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 3), '='('J3millend', 5), '='('J3lathestart', 6), '='('J3latheend', 9), '='('Makespan', 10)], [between(0, 6, 0), is(3, '+'(0, 3)), between(0, 6, 4), is(6, '+'(4, 2)), '=<'(3, 4), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(2, 6), between(0, 6, 3), is(5, '+'(3, 2)), between(0, 6, 6), is(9, '+'(6, 3)), '=<'(5, 6), nonoverlap(0, 3, 6, 10), nonoverlap(0, 3, 3, 5), nonoverlap(6, 10, 3, 5), nonoverlap(4, 6, 0, 2), nonoverlap(4, 6, 6, 9), nonoverlap(0, 2, 6, 9), is(10, max(6, max(10, 9)))]).
-% step 89
-step(nonoverlap(0, 3, 4, 6), rule(3), ['='('_starta', 0), '='('Enda', 3), '='('Startb', 4), '='('_endb', 6)], ['=<'(3, 4)]).
-% step 90
-step(nonoverlap(6, 10, 4, 6), rule(4), ['='('Starta', 6), '='('_enda', 10), '='('_startb', 4), '='('Endb', 6)], ['=<'(6, 6)]).
-% step 91
-step(feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)]), rule(5), ['='('J1millstart', 0), '='('J1millend', 3), '='('J1lathestart', 3), '='('J1latheend', 5), '='('J2lathestart', 0), '='('J2latheend', 2), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 4), '='('J3millend', 6), '='('J3lathestart', 6), '='('J3latheend', 9), '='('Makespan', 10)], [between(0, 6, 0), is(3, '+'(0, 3)), between(0, 6, 3), is(5, '+'(3, 2)), '=<'(3, 3), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(2, 6), between(0, 6, 4), is(6, '+'(4, 2)), between(0, 6, 6), is(9, '+'(6, 3)), '=<'(6, 6), nonoverlap(0, 3, 6, 10), nonoverlap(0, 3, 4, 6), nonoverlap(6, 10, 4, 6), nonoverlap(3, 5, 0, 2), nonoverlap(3, 5, 6, 9), nonoverlap(0, 2, 6, 9), is(10, max(5, max(10, 9)))]).
-% step 92
-step(feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)]), rule(5), ['='('J1millstart', 0), '='('J1millend', 3), '='('J1lathestart', 4), '='('J1latheend', 6), '='('J2lathestart', 0), '='('J2latheend', 2), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 4), '='('J3millend', 6), '='('J3lathestart', 6), '='('J3latheend', 9), '='('Makespan', 10)], [between(0, 6, 0), is(3, '+'(0, 3)), between(0, 6, 4), is(6, '+'(4, 2)), '=<'(3, 4), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(2, 6), between(0, 6, 4), is(6, '+'(4, 2)), between(0, 6, 6), is(9, '+'(6, 3)), '=<'(6, 6), nonoverlap(0, 3, 6, 10), nonoverlap(0, 3, 4, 6), nonoverlap(6, 10, 4, 6), nonoverlap(4, 6, 0, 2), nonoverlap(4, 6, 6, 9), nonoverlap(0, 2, 6, 9), is(10, max(6, max(10, 9)))]).
-% step 93
-step(is(4, '+'(1, 3)), builtin, [], []).
-% step 94
-step('=<'(4, 4), builtin, [], []).
-% step 95
-step(nonoverlap(1, 4, 6, 10), rule(3), ['='('_starta', 1), '='('Enda', 4), '='('Startb', 6), '='('_endb', 10)], ['=<'(4, 6)]).
-% step 96
-step(nonoverlap(1, 4, 4, 6), rule(3), ['='('_starta', 1), '='('Enda', 4), '='('Startb', 4), '='('_endb', 6)], ['=<'(4, 4)]).
-% step 97
-step(feasible_schedule(10, [op(j1_mill, 1, 4), op(j1_lathe, 4, 6), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)]), rule(5), ['='('J1millstart', 1), '='('J1millend', 4), '='('J1lathestart', 4), '='('J1latheend', 6), '='('J2lathestart', 0), '='('J2latheend', 2), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 4), '='('J3millend', 6), '='('J3lathestart', 6), '='('J3latheend', 9), '='('Makespan', 10)], [between(0, 6, 1), is(4, '+'(1, 3)), between(0, 6, 4), is(6, '+'(4, 2)), '=<'(4, 4), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(2, 6), between(0, 6, 4), is(6, '+'(4, 2)), between(0, 6, 6), is(9, '+'(6, 3)), '=<'(6, 6), nonoverlap(1, 4, 6, 10), nonoverlap(1, 4, 4, 6), nonoverlap(6, 10, 4, 6), nonoverlap(4, 6, 0, 2), nonoverlap(4, 6, 6, 9), nonoverlap(0, 2, 6, 9), is(10, max(6, max(10, 9)))]).
-% step 98
-step(nonoverlap(1, 3, 6, 9), rule(3), ['='('_starta', 1), '='('Enda', 3), '='('Startb', 6), '='('_endb', 9)], ['=<'(3, 6)]).
-% step 99
-step(feasible_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 1, 3), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)]), rule(5), ['='('J1millstart', 0), '='('J1millend', 3), '='('J1lathestart', 3), '='('J1latheend', 5), '='('J2lathestart', 1), '='('J2latheend', 3), '='('J2millstart', 5), '='('J2millend', 9), '='('J3millstart', 3), '='('J3millend', 5), '='('J3lathestart', 6), '='('J3latheend', 9), '='('Makespan', 9)], [between(0, 6, 0), is(3, '+'(0, 3)), between(0, 6, 3), is(5, '+'(3, 2)), '=<'(3, 3), between(0, 6, 1), is(3, '+'(1, 2)), between(0, 6, 5), is(9, '+'(5, 4)), '=<'(3, 5), between(0, 6, 3), is(5, '+'(3, 2)), between(0, 6, 6), is(9, '+'(6, 3)), '=<'(5, 6), nonoverlap(0, 3, 5, 9), nonoverlap(0, 3, 3, 5), nonoverlap(5, 9, 3, 5), nonoverlap(3, 5, 1, 3), nonoverlap(3, 5, 6, 9), nonoverlap(1, 3, 6, 9), is(9, max(5, max(9, 9)))]).
-% step 100
-step(nonoverlap(4, 6, 1, 3), rule(4), ['='('Starta', 4), '='('_enda', 6), '='('_startb', 1), '='('Endb', 3)], ['=<'(3, 4)]).
-% step 101
-step(feasible_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 1, 3), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)]), rule(5), ['='('J1millstart', 0), '='('J1millend', 3), '='('J1lathestart', 4), '='('J1latheend', 6), '='('J2lathestart', 1), '='('J2latheend', 3), '='('J2millstart', 5), '='('J2millend', 9), '='('J3millstart', 3), '='('J3millend', 5), '='('J3lathestart', 6), '='('J3latheend', 9), '='('Makespan', 9)], [between(0, 6, 0), is(3, '+'(0, 3)), between(0, 6, 4), is(6, '+'(4, 2)), '=<'(3, 4), between(0, 6, 1), is(3, '+'(1, 2)), between(0, 6, 5), is(9, '+'(5, 4)), '=<'(3, 5), between(0, 6, 3), is(5, '+'(3, 2)), between(0, 6, 6), is(9, '+'(6, 3)), '=<'(5, 6), nonoverlap(0, 3, 5, 9), nonoverlap(0, 3, 3, 5), nonoverlap(5, 9, 3, 5), nonoverlap(4, 6, 1, 3), nonoverlap(4, 6, 6, 9), nonoverlap(1, 3, 6, 9), is(9, max(6, max(9, 9)))]).
-% step 102
-step(feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)]), rule(5), ['='('J1millstart', 0), '='('J1millend', 3), '='('J1lathestart', 4), '='('J1latheend', 6), '='('J2lathestart', 1), '='('J2latheend', 3), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 3), '='('J3millend', 5), '='('J3lathestart', 6), '='('J3latheend', 9), '='('Makespan', 10)], [between(0, 6, 0), is(3, '+'(0, 3)), between(0, 6, 4), is(6, '+'(4, 2)), '=<'(3, 4), between(0, 6, 1), is(3, '+'(1, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(3, 6), between(0, 6, 3), is(5, '+'(3, 2)), between(0, 6, 6), is(9, '+'(6, 3)), '=<'(5, 6), nonoverlap(0, 3, 6, 10), nonoverlap(0, 3, 3, 5), nonoverlap(6, 10, 3, 5), nonoverlap(4, 6, 1, 3), nonoverlap(4, 6, 6, 9), nonoverlap(1, 3, 6, 9), is(10, max(6, max(10, 9)))]).
-% step 103
-step(feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)]), rule(5), ['='('J1millstart', 0), '='('J1millend', 3), '='('J1lathestart', 3), '='('J1latheend', 5), '='('J2lathestart', 1), '='('J2latheend', 3), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 3), '='('J3millend', 5), '='('J3lathestart', 6), '='('J3latheend', 9), '='('Makespan', 10)], [between(0, 6, 0), is(3, '+'(0, 3)), between(0, 6, 3), is(5, '+'(3, 2)), '=<'(3, 3), between(0, 6, 1), is(3, '+'(1, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(3, 6), between(0, 6, 3), is(5, '+'(3, 2)), between(0, 6, 6), is(9, '+'(6, 3)), '=<'(5, 6), nonoverlap(0, 3, 6, 10), nonoverlap(0, 3, 3, 5), nonoverlap(6, 10, 3, 5), nonoverlap(3, 5, 1, 3), nonoverlap(3, 5, 6, 9), nonoverlap(1, 3, 6, 9), is(10, max(5, max(10, 9)))]).
-% step 104
-step(feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)]), rule(5), ['='('J1millstart', 0), '='('J1millend', 3), '='('J1lathestart', 4), '='('J1latheend', 6), '='('J2lathestart', 1), '='('J2latheend', 3), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 4), '='('J3millend', 6), '='('J3lathestart', 6), '='('J3latheend', 9), '='('Makespan', 10)], [between(0, 6, 0), is(3, '+'(0, 3)), between(0, 6, 4), is(6, '+'(4, 2)), '=<'(3, 4), between(0, 6, 1), is(3, '+'(1, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(3, 6), between(0, 6, 4), is(6, '+'(4, 2)), between(0, 6, 6), is(9, '+'(6, 3)), '=<'(6, 6), nonoverlap(0, 3, 6, 10), nonoverlap(0, 3, 4, 6), nonoverlap(6, 10, 4, 6), nonoverlap(4, 6, 1, 3), nonoverlap(4, 6, 6, 9), nonoverlap(1, 3, 6, 9), is(10, max(6, max(10, 9)))]).
-% step 105
-step(feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)]), rule(5), ['='('J1millstart', 0), '='('J1millend', 3), '='('J1lathestart', 3), '='('J1latheend', 5), '='('J2lathestart', 1), '='('J2latheend', 3), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 4), '='('J3millend', 6), '='('J3lathestart', 6), '='('J3latheend', 9), '='('Makespan', 10)], [between(0, 6, 0), is(3, '+'(0, 3)), between(0, 6, 3), is(5, '+'(3, 2)), '=<'(3, 3), between(0, 6, 1), is(3, '+'(1, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(3, 6), between(0, 6, 4), is(6, '+'(4, 2)), between(0, 6, 6), is(9, '+'(6, 3)), '=<'(6, 6), nonoverlap(0, 3, 6, 10), nonoverlap(0, 3, 4, 6), nonoverlap(6, 10, 4, 6), nonoverlap(3, 5, 1, 3), nonoverlap(3, 5, 6, 9), nonoverlap(1, 3, 6, 9), is(10, max(5, max(10, 9)))]).
-% step 106
-step(feasible_schedule(10, [op(j1_mill, 1, 4), op(j1_lathe, 4, 6), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)]), rule(5), ['='('J1millstart', 1), '='('J1millend', 4), '='('J1lathestart', 4), '='('J1latheend', 6), '='('J2lathestart', 1), '='('J2latheend', 3), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 4), '='('J3millend', 6), '='('J3lathestart', 6), '='('J3latheend', 9), '='('Makespan', 10)], [between(0, 6, 1), is(4, '+'(1, 3)), between(0, 6, 4), is(6, '+'(4, 2)), '=<'(4, 4), between(0, 6, 1), is(3, '+'(1, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(3, 6), between(0, 6, 4), is(6, '+'(4, 2)), between(0, 6, 6), is(9, '+'(6, 3)), '=<'(6, 6), nonoverlap(1, 4, 6, 10), nonoverlap(1, 4, 4, 6), nonoverlap(6, 10, 4, 6), nonoverlap(4, 6, 1, 3), nonoverlap(4, 6, 6, 9), nonoverlap(1, 3, 6, 9), is(10, max(6, max(10, 9)))]).
-% step 107
-step(between(2, 6, 2), rule(1), ['='('Low', 2), '='('High', 6)], ['=<'(2, 6)]).
-% step 108
-step(between(1, 6, 2), rule(2), ['='('Low', 1), '='('High', 6), '='('Value', 2), '='('Next', 2)], ['<'(1, 6), is(2, '+'(1, 1)), between(2, 6, 2)]).
-% step 109
-step(between(0, 6, 2), rule(2), ['='('Low', 0), '='('High', 6), '='('Value', 2), '='('Next', 1)], ['<'(0, 6), is(1, '+'(0, 1)), between(1, 6, 2)]).
-% step 110
-step(is(4, '+'(2, 2)), builtin, [], []).
-% step 111
-step('=<'(4, 5), builtin, [], []).
-% step 112
-step(nonoverlap(4, 6, 2, 4), rule(4), ['='('Starta', 4), '='('_enda', 6), '='('_startb', 2), '='('Endb', 4)], ['=<'(4, 4)]).
-% step 113
-step(nonoverlap(2, 4, 6, 9), rule(3), ['='('_starta', 2), '='('Enda', 4), '='('Startb', 6), '='('_endb', 9)], ['=<'(4, 6)]).
-% step 114
-step(feasible_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 2, 4), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)]), rule(5), ['='('J1millstart', 0), '='('J1millend', 3), '='('J1lathestart', 4), '='('J1latheend', 6), '='('J2lathestart', 2), '='('J2latheend', 4), '='('J2millstart', 5), '='('J2millend', 9), '='('J3millstart', 3), '='('J3millend', 5), '='('J3lathestart', 6), '='('J3latheend', 9), '='('Makespan', 9)], [between(0, 6, 0), is(3, '+'(0, 3)), between(0, 6, 4), is(6, '+'(4, 2)), '=<'(3, 4), between(0, 6, 2), is(4, '+'(2, 2)), between(0, 6, 5), is(9, '+'(5, 4)), '=<'(4, 5), between(0, 6, 3), is(5, '+'(3, 2)), between(0, 6, 6), is(9, '+'(6, 3)), '=<'(5, 6), nonoverlap(0, 3, 5, 9), nonoverlap(0, 3, 3, 5), nonoverlap(5, 9, 3, 5), nonoverlap(4, 6, 2, 4), nonoverlap(4, 6, 6, 9), nonoverlap(2, 4, 6, 9), is(9, max(6, max(9, 9)))]).
-% step 115
-step(feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 2, 4), op(j2_mill, 6, 10), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)]), rule(5), ['='('J1millstart', 0), '='('J1millend', 3), '='('J1lathestart', 4), '='('J1latheend', 6), '='('J2lathestart', 2), '='('J2latheend', 4), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 3), '='('J3millend', 5), '='('J3lathestart', 6), '='('J3latheend', 9), '='('Makespan', 10)], [between(0, 6, 0), is(3, '+'(0, 3)), between(0, 6, 4), is(6, '+'(4, 2)), '=<'(3, 4), between(0, 6, 2), is(4, '+'(2, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(4, 6), between(0, 6, 3), is(5, '+'(3, 2)), between(0, 6, 6), is(9, '+'(6, 3)), '=<'(5, 6), nonoverlap(0, 3, 6, 10), nonoverlap(0, 3, 3, 5), nonoverlap(6, 10, 3, 5), nonoverlap(4, 6, 2, 4), nonoverlap(4, 6, 6, 9), nonoverlap(2, 4, 6, 9), is(10, max(6, max(10, 9)))]).
-% step 116
-step(feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 2, 4), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)]), rule(5), ['='('J1millstart', 0), '='('J1millend', 3), '='('J1lathestart', 4), '='('J1latheend', 6), '='('J2lathestart', 2), '='('J2latheend', 4), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 4), '='('J3millend', 6), '='('J3lathestart', 6), '='('J3latheend', 9), '='('Makespan', 10)], [between(0, 6, 0), is(3, '+'(0, 3)), between(0, 6, 4), is(6, '+'(4, 2)), '=<'(3, 4), between(0, 6, 2), is(4, '+'(2, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(4, 6), between(0, 6, 4), is(6, '+'(4, 2)), between(0, 6, 6), is(9, '+'(6, 3)), '=<'(6, 6), nonoverlap(0, 3, 6, 10), nonoverlap(0, 3, 4, 6), nonoverlap(6, 10, 4, 6), nonoverlap(4, 6, 2, 4), nonoverlap(4, 6, 6, 9), nonoverlap(2, 4, 6, 9), is(10, max(6, max(10, 9)))]).
-% step 117
-step(feasible_schedule(10, [op(j1_mill, 1, 4), op(j1_lathe, 4, 6), op(j2_lathe, 2, 4), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)]), rule(5), ['='('J1millstart', 1), '='('J1millend', 4), '='('J1lathestart', 4), '='('J1latheend', 6), '='('J2lathestart', 2), '='('J2latheend', 4), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 4), '='('J3millend', 6), '='('J3lathestart', 6), '='('J3latheend', 9), '='('Makespan', 10)], [between(0, 6, 1), is(4, '+'(1, 3)), between(0, 6, 4), is(6, '+'(4, 2)), '=<'(4, 4), between(0, 6, 2), is(4, '+'(2, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(4, 6), between(0, 6, 4), is(6, '+'(4, 2)), between(0, 6, 6), is(9, '+'(6, 3)), '=<'(6, 6), nonoverlap(1, 4, 6, 10), nonoverlap(1, 4, 4, 6), nonoverlap(6, 10, 4, 6), nonoverlap(4, 6, 2, 4), nonoverlap(4, 6, 6, 9), nonoverlap(2, 4, 6, 9), is(10, max(6, max(10, 9)))]).
-% step 118
-step(is(5, '+'(2, 3)), builtin, [], []).
-% step 119
-step(is(7, '+'(5, 2)), builtin, [], []).
-% step 120
-step('=<'(2, 2), builtin, [], []).
-% step 121
-step(nonoverlap(2, 5, 5, 9), rule(3), ['='('_starta', 2), '='('Enda', 5), '='('Startb', 5), '='('_endb', 9)], ['=<'(5, 5)]).
-% step 122
-step(nonoverlap(2, 5, 0, 2), rule(4), ['='('Starta', 2), '='('_enda', 5), '='('_startb', 0), '='('Endb', 2)], ['=<'(2, 2)]).
-% step 123
-step(nonoverlap(5, 9, 0, 2), rule(4), ['='('Starta', 5), '='('_enda', 9), '='('_startb', 0), '='('Endb', 2)], ['=<'(2, 5)]).
-% step 124
-step(nonoverlap(5, 7, 0, 2), rule(4), ['='('Starta', 5), '='('_enda', 7), '='('_startb', 0), '='('Endb', 2)], ['=<'(2, 5)]).
-% step 125
-step(nonoverlap(5, 7, 2, 5), rule(4), ['='('Starta', 5), '='('_enda', 7), '='('_startb', 2), '='('Endb', 5)], ['=<'(5, 5)]).
-% step 126
-step(nonoverlap(0, 2, 2, 5), rule(3), ['='('_starta', 0), '='('Enda', 2), '='('Startb', 2), '='('_endb', 5)], ['=<'(2, 2)]).
-% step 127
-step(is(9, max(7, max(9, 5))), builtin, [], []).
-% step 128
-step(feasible_schedule(9, [op(j1_mill, 2, 5), op(j1_lathe, 5, 7), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 0, 2), op(j3_lathe, 2, 5)]), rule(5), ['='('J1millstart', 2), '='('J1millend', 5), '='('J1lathestart', 5), '='('J1latheend', 7), '='('J2lathestart', 0), '='('J2latheend', 2), '='('J2millstart', 5), '='('J2millend', 9), '='('J3millstart', 0), '='('J3millend', 2), '='('J3lathestart', 2), '='('J3latheend', 5), '='('Makespan', 9)], [between(0, 6, 2), is(5, '+'(2, 3)), between(0, 6, 5), is(7, '+'(5, 2)), '=<'(5, 5), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 5), is(9, '+'(5, 4)), '=<'(2, 5), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 2), is(5, '+'(2, 3)), '=<'(2, 2), nonoverlap(2, 5, 5, 9), nonoverlap(2, 5, 0, 2), nonoverlap(5, 9, 0, 2), nonoverlap(5, 7, 0, 2), nonoverlap(5, 7, 2, 5), nonoverlap(0, 2, 2, 5), is(9, max(7, max(9, 5)))]).
-% step 129
-step(nonoverlap(2, 5, 6, 10), rule(3), ['='('_starta', 2), '='('Enda', 5), '='('Startb', 6), '='('_endb', 10)], ['=<'(5, 6)]).
-% step 130
-step(nonoverlap(6, 10, 0, 2), rule(4), ['='('Starta', 6), '='('_enda', 10), '='('_startb', 0), '='('Endb', 2)], ['=<'(2, 6)]).
-% step 131
-step(is(10, max(7, max(10, 5))), builtin, [], []).
-% step 132
-step(feasible_schedule(10, [op(j1_mill, 2, 5), op(j1_lathe, 5, 7), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 0, 2), op(j3_lathe, 2, 5)]), rule(5), ['='('J1millstart', 2), '='('J1millend', 5), '='('J1lathestart', 5), '='('J1latheend', 7), '='('J2lathestart', 0), '='('J2latheend', 2), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 0), '='('J3millend', 2), '='('J3lathestart', 2), '='('J3latheend', 5), '='('Makespan', 10)], [between(0, 6, 2), is(5, '+'(2, 3)), between(0, 6, 5), is(7, '+'(5, 2)), '=<'(5, 5), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(2, 6), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 2), is(5, '+'(2, 3)), '=<'(2, 2), nonoverlap(2, 5, 6, 10), nonoverlap(2, 5, 0, 2), nonoverlap(6, 10, 0, 2), nonoverlap(5, 7, 0, 2), nonoverlap(5, 7, 2, 5), nonoverlap(0, 2, 2, 5), is(10, max(7, max(10, 5)))]).
-% step 133
-step(is(8, '+'(6, 2)), builtin, [], []).
-% step 134
-step(nonoverlap(6, 8, 0, 2), rule(4), ['='('Starta', 6), '='('_enda', 8), '='('_startb', 0), '='('Endb', 2)], ['=<'(2, 6)]).
-% step 135
-step(nonoverlap(6, 8, 2, 5), rule(4), ['='('Starta', 6), '='('_enda', 8), '='('_startb', 2), '='('Endb', 5)], ['=<'(5, 6)]).
-% step 136
-step(is(9, max(8, max(9, 5))), builtin, [], []).
-% step 137
-step(feasible_schedule(9, [op(j1_mill, 2, 5), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 0, 2), op(j3_lathe, 2, 5)]), rule(5), ['='('J1millstart', 2), '='('J1millend', 5), '='('J1lathestart', 6), '='('J1latheend', 8), '='('J2lathestart', 0), '='('J2latheend', 2), '='('J2millstart', 5), '='('J2millend', 9), '='('J3millstart', 0), '='('J3millend', 2), '='('J3lathestart', 2), '='('J3latheend', 5), '='('Makespan', 9)], [between(0, 6, 2), is(5, '+'(2, 3)), between(0, 6, 6), is(8, '+'(6, 2)), '=<'(5, 6), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 5), is(9, '+'(5, 4)), '=<'(2, 5), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 2), is(5, '+'(2, 3)), '=<'(2, 2), nonoverlap(2, 5, 5, 9), nonoverlap(2, 5, 0, 2), nonoverlap(5, 9, 0, 2), nonoverlap(6, 8, 0, 2), nonoverlap(6, 8, 2, 5), nonoverlap(0, 2, 2, 5), is(9, max(8, max(9, 5)))]).
-% step 138
-step(is(10, max(8, max(10, 5))), builtin, [], []).
-% step 139
-step(feasible_schedule(10, [op(j1_mill, 2, 5), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 0, 2), op(j3_lathe, 2, 5)]), rule(5), ['='('J1millstart', 2), '='('J1millend', 5), '='('J1lathestart', 6), '='('J1latheend', 8), '='('J2lathestart', 0), '='('J2latheend', 2), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 0), '='('J3millend', 2), '='('J3lathestart', 2), '='('J3latheend', 5), '='('Makespan', 10)], [between(0, 6, 2), is(5, '+'(2, 3)), between(0, 6, 6), is(8, '+'(6, 2)), '=<'(5, 6), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(2, 6), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 2), is(5, '+'(2, 3)), '=<'(2, 2), nonoverlap(2, 5, 6, 10), nonoverlap(2, 5, 0, 2), nonoverlap(6, 10, 0, 2), nonoverlap(6, 8, 0, 2), nonoverlap(6, 8, 2, 5), nonoverlap(0, 2, 2, 5), is(10, max(8, max(10, 5)))]).
-% step 140
-step(is(6, '+'(3, 3)), builtin, [], []).
-% step 141
-step(nonoverlap(3, 6, 6, 10), rule(3), ['='('_starta', 3), '='('Enda', 6), '='('Startb', 6), '='('_endb', 10)], ['=<'(6, 6)]).
-% step 142
-step(nonoverlap(3, 6, 0, 2), rule(4), ['='('Starta', 3), '='('_enda', 6), '='('_startb', 0), '='('Endb', 2)], ['=<'(2, 3)]).
-% step 143
-step(feasible_schedule(10, [op(j1_mill, 3, 6), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 0, 2), op(j3_lathe, 2, 5)]), rule(5), ['='('J1millstart', 3), '='('J1millend', 6), '='('J1lathestart', 6), '='('J1latheend', 8), '='('J2lathestart', 0), '='('J2latheend', 2), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 0), '='('J3millend', 2), '='('J3lathestart', 2), '='('J3latheend', 5), '='('Makespan', 10)], [between(0, 6, 3), is(6, '+'(3, 3)), between(0, 6, 6), is(8, '+'(6, 2)), '=<'(6, 6), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(2, 6), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 2), is(5, '+'(2, 3)), '=<'(2, 2), nonoverlap(3, 6, 6, 10), nonoverlap(3, 6, 0, 2), nonoverlap(6, 10, 0, 2), nonoverlap(6, 8, 0, 2), nonoverlap(6, 8, 2, 5), nonoverlap(0, 2, 2, 5), is(10, max(8, max(10, 5)))]).
-% step 144
-step(nonoverlap(6, 8, 3, 6), rule(4), ['='('Starta', 6), '='('_enda', 8), '='('_startb', 3), '='('Endb', 6)], ['=<'(6, 6)]).
-% step 145
-step(nonoverlap(0, 2, 3, 6), rule(3), ['='('_starta', 0), '='('Enda', 2), '='('Startb', 3), '='('_endb', 6)], ['=<'(2, 3)]).
-% step 146
-step(is(9, max(8, max(9, 6))), builtin, [], []).
-% step 147
-step(feasible_schedule(9, [op(j1_mill, 2, 5), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 0, 2), op(j3_lathe, 3, 6)]), rule(5), ['='('J1millstart', 2), '='('J1millend', 5), '='('J1lathestart', 6), '='('J1latheend', 8), '='('J2lathestart', 0), '='('J2latheend', 2), '='('J2millstart', 5), '='('J2millend', 9), '='('J3millstart', 0), '='('J3millend', 2), '='('J3lathestart', 3), '='('J3latheend', 6), '='('Makespan', 9)], [between(0, 6, 2), is(5, '+'(2, 3)), between(0, 6, 6), is(8, '+'(6, 2)), '=<'(5, 6), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 5), is(9, '+'(5, 4)), '=<'(2, 5), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 3), is(6, '+'(3, 3)), '=<'(2, 3), nonoverlap(2, 5, 5, 9), nonoverlap(2, 5, 0, 2), nonoverlap(5, 9, 0, 2), nonoverlap(6, 8, 0, 2), nonoverlap(6, 8, 3, 6), nonoverlap(0, 2, 3, 6), is(9, max(8, max(9, 6)))]).
-% step 148
-step(is(10, max(8, max(10, 6))), builtin, [], []).
-% step 149
-step(feasible_schedule(10, [op(j1_mill, 2, 5), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 0, 2), op(j3_lathe, 3, 6)]), rule(5), ['='('J1millstart', 2), '='('J1millend', 5), '='('J1lathestart', 6), '='('J1latheend', 8), '='('J2lathestart', 0), '='('J2latheend', 2), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 0), '='('J3millend', 2), '='('J3lathestart', 3), '='('J3latheend', 6), '='('Makespan', 10)], [between(0, 6, 2), is(5, '+'(2, 3)), between(0, 6, 6), is(8, '+'(6, 2)), '=<'(5, 6), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(2, 6), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 3), is(6, '+'(3, 3)), '=<'(2, 3), nonoverlap(2, 5, 6, 10), nonoverlap(2, 5, 0, 2), nonoverlap(6, 10, 0, 2), nonoverlap(6, 8, 0, 2), nonoverlap(6, 8, 3, 6), nonoverlap(0, 2, 3, 6), is(10, max(8, max(10, 6)))]).
-% step 150
-step(feasible_schedule(10, [op(j1_mill, 3, 6), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 0, 2), op(j3_lathe, 3, 6)]), rule(5), ['='('J1millstart', 3), '='('J1millend', 6), '='('J1lathestart', 6), '='('J1latheend', 8), '='('J2lathestart', 0), '='('J2latheend', 2), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 0), '='('J3millend', 2), '='('J3lathestart', 3), '='('J3latheend', 6), '='('Makespan', 10)], [between(0, 6, 3), is(6, '+'(3, 3)), between(0, 6, 6), is(8, '+'(6, 2)), '=<'(6, 6), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(2, 6), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 3), is(6, '+'(3, 3)), '=<'(2, 3), nonoverlap(3, 6, 6, 10), nonoverlap(3, 6, 0, 2), nonoverlap(6, 10, 0, 2), nonoverlap(6, 8, 0, 2), nonoverlap(6, 8, 3, 6), nonoverlap(0, 2, 3, 6), is(10, max(8, max(10, 6)))]).
-% step 151
-step(nonoverlap(6, 8, 1, 3), rule(4), ['='('Starta', 6), '='('_enda', 8), '='('_startb', 1), '='('Endb', 3)], ['=<'(3, 6)]).
-% step 152
-step(nonoverlap(1, 3, 3, 6), rule(3), ['='('_starta', 1), '='('Enda', 3), '='('Startb', 3), '='('_endb', 6)], ['=<'(3, 3)]).
-% step 153
-step(feasible_schedule(9, [op(j1_mill, 2, 5), op(j1_lathe, 6, 8), op(j2_lathe, 1, 3), op(j2_mill, 5, 9), op(j3_mill, 0, 2), op(j3_lathe, 3, 6)]), rule(5), ['='('J1millstart', 2), '='('J1millend', 5), '='('J1lathestart', 6), '='('J1latheend', 8), '='('J2lathestart', 1), '='('J2latheend', 3), '='('J2millstart', 5), '='('J2millend', 9), '='('J3millstart', 0), '='('J3millend', 2), '='('J3lathestart', 3), '='('J3latheend', 6), '='('Makespan', 9)], [between(0, 6, 2), is(5, '+'(2, 3)), between(0, 6, 6), is(8, '+'(6, 2)), '=<'(5, 6), between(0, 6, 1), is(3, '+'(1, 2)), between(0, 6, 5), is(9, '+'(5, 4)), '=<'(3, 5), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 3), is(6, '+'(3, 3)), '=<'(2, 3), nonoverlap(2, 5, 5, 9), nonoverlap(2, 5, 0, 2), nonoverlap(5, 9, 0, 2), nonoverlap(6, 8, 1, 3), nonoverlap(6, 8, 3, 6), nonoverlap(1, 3, 3, 6), is(9, max(8, max(9, 6)))]).
-% step 154
-step(feasible_schedule(10, [op(j1_mill, 2, 5), op(j1_lathe, 6, 8), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 0, 2), op(j3_lathe, 3, 6)]), rule(5), ['='('J1millstart', 2), '='('J1millend', 5), '='('J1lathestart', 6), '='('J1latheend', 8), '='('J2lathestart', 1), '='('J2latheend', 3), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 0), '='('J3millend', 2), '='('J3lathestart', 3), '='('J3latheend', 6), '='('Makespan', 10)], [between(0, 6, 2), is(5, '+'(2, 3)), between(0, 6, 6), is(8, '+'(6, 2)), '=<'(5, 6), between(0, 6, 1), is(3, '+'(1, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(3, 6), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 3), is(6, '+'(3, 3)), '=<'(2, 3), nonoverlap(2, 5, 6, 10), nonoverlap(2, 5, 0, 2), nonoverlap(6, 10, 0, 2), nonoverlap(6, 8, 1, 3), nonoverlap(6, 8, 3, 6), nonoverlap(1, 3, 3, 6), is(10, max(8, max(10, 6)))]).
-% step 155
-step(feasible_schedule(10, [op(j1_mill, 3, 6), op(j1_lathe, 6, 8), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 0, 2), op(j3_lathe, 3, 6)]), rule(5), ['='('J1millstart', 3), '='('J1millend', 6), '='('J1lathestart', 6), '='('J1latheend', 8), '='('J2lathestart', 1), '='('J2latheend', 3), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 0), '='('J3millend', 2), '='('J3lathestart', 3), '='('J3latheend', 6), '='('Makespan', 10)], [between(0, 6, 3), is(6, '+'(3, 3)), between(0, 6, 6), is(8, '+'(6, 2)), '=<'(6, 6), between(0, 6, 1), is(3, '+'(1, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(3, 6), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 3), is(6, '+'(3, 3)), '=<'(2, 3), nonoverlap(3, 6, 6, 10), nonoverlap(3, 6, 0, 2), nonoverlap(6, 10, 0, 2), nonoverlap(6, 8, 1, 3), nonoverlap(6, 8, 3, 6), nonoverlap(1, 3, 3, 6), is(10, max(8, max(10, 6)))]).
-% step 156
-step(nonoverlap(3, 6, 1, 3), rule(4), ['='('Starta', 3), '='('_enda', 6), '='('_startb', 1), '='('Endb', 3)], ['=<'(3, 3)]).
-% step 157
-step(nonoverlap(6, 10, 1, 3), rule(4), ['='('Starta', 6), '='('_enda', 10), '='('_startb', 1), '='('Endb', 3)], ['=<'(3, 6)]).
-% step 158
-step(feasible_schedule(10, [op(j1_mill, 3, 6), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 1, 3), op(j3_lathe, 3, 6)]), rule(5), ['='('J1millstart', 3), '='('J1millend', 6), '='('J1lathestart', 6), '='('J1latheend', 8), '='('J2lathestart', 0), '='('J2latheend', 2), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 1), '='('J3millend', 3), '='('J3lathestart', 3), '='('J3latheend', 6), '='('Makespan', 10)], [between(0, 6, 3), is(6, '+'(3, 3)), between(0, 6, 6), is(8, '+'(6, 2)), '=<'(6, 6), between(0, 6, 0), is(2, '+'(0, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(2, 6), between(0, 6, 1), is(3, '+'(1, 2)), between(0, 6, 3), is(6, '+'(3, 3)), '=<'(3, 3), nonoverlap(3, 6, 6, 10), nonoverlap(3, 6, 1, 3), nonoverlap(6, 10, 1, 3), nonoverlap(6, 8, 0, 2), nonoverlap(6, 8, 3, 6), nonoverlap(0, 2, 3, 6), is(10, max(8, max(10, 6)))]).
-% step 159
-step(feasible_schedule(10, [op(j1_mill, 3, 6), op(j1_lathe, 6, 8), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 1, 3), op(j3_lathe, 3, 6)]), rule(5), ['='('J1millstart', 3), '='('J1millend', 6), '='('J1lathestart', 6), '='('J1latheend', 8), '='('J2lathestart', 1), '='('J2latheend', 3), '='('J2millstart', 6), '='('J2millend', 10), '='('J3millstart', 1), '='('J3millend', 3), '='('J3lathestart', 3), '='('J3latheend', 6), '='('Makespan', 10)], [between(0, 6, 3), is(6, '+'(3, 3)), between(0, 6, 6), is(8, '+'(6, 2)), '=<'(6, 6), between(0, 6, 1), is(3, '+'(1, 2)), between(0, 6, 6), is(10, '+'(6, 4)), '=<'(3, 6), between(0, 6, 1), is(3, '+'(1, 2)), between(0, 6, 3), is(6, '+'(3, 3)), '=<'(3, 3), nonoverlap(3, 6, 6, 10), nonoverlap(3, 6, 1, 3), nonoverlap(6, 10, 1, 3), nonoverlap(6, 8, 1, 3), nonoverlap(6, 8, 3, 6), nonoverlap(1, 3, 3, 6), is(10, max(8, max(10, 6)))]).
-% step 160
-step(aggregate_all(min(V0), [feasible_schedule(V0, V1)], 9), collected, [], [[feasible_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 5, 8)])], [feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 3, 5), op(j3_lathe, 5, 8)])], [feasible_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 1, 3), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 5, 8)])], [feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 3, 5), op(j3_lathe, 5, 8)])], [feasible_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)])], [feasible_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)])], [feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)])], [feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)])], [feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)])], [feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)])], [feasible_schedule(10, [op(j1_mill, 1, 4), op(j1_lathe, 4, 6), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)])], [feasible_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 1, 3), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)])], [feasible_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 1, 3), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)])], [feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)])], [feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)])], [feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)])], [feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)])], [feasible_schedule(10, [op(j1_mill, 1, 4), op(j1_lathe, 4, 6), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)])], [feasible_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 2, 4), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)])], [feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 2, 4), op(j2_mill, 6, 10), op(j3_mill, 3, 5), op(j3_lathe, 6, 9)])], [feasible_schedule(10, [op(j1_mill, 0, 3), op(j1_lathe, 4, 6), op(j2_lathe, 2, 4), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)])], [feasible_schedule(10, [op(j1_mill, 1, 4), op(j1_lathe, 4, 6), op(j2_lathe, 2, 4), op(j2_mill, 6, 10), op(j3_mill, 4, 6), op(j3_lathe, 6, 9)])], [feasible_schedule(9, [op(j1_mill, 2, 5), op(j1_lathe, 5, 7), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 0, 2), op(j3_lathe, 2, 5)])], [feasible_schedule(10, [op(j1_mill, 2, 5), op(j1_lathe, 5, 7), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 0, 2), op(j3_lathe, 2, 5)])], [feasible_schedule(9, [op(j1_mill, 2, 5), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 0, 2), op(j3_lathe, 2, 5)])], [feasible_schedule(10, [op(j1_mill, 2, 5), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 0, 2), op(j3_lathe, 2, 5)])], [feasible_schedule(10, [op(j1_mill, 3, 6), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 0, 2), op(j3_lathe, 2, 5)])], [feasible_schedule(9, [op(j1_mill, 2, 5), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 0, 2), op(j3_lathe, 3, 6)])], [feasible_schedule(10, [op(j1_mill, 2, 5), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 0, 2), op(j3_lathe, 3, 6)])], [feasible_schedule(10, [op(j1_mill, 3, 6), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 0, 2), op(j3_lathe, 3, 6)])], [feasible_schedule(9, [op(j1_mill, 2, 5), op(j1_lathe, 6, 8), op(j2_lathe, 1, 3), op(j2_mill, 5, 9), op(j3_mill, 0, 2), op(j3_lathe, 3, 6)])], [feasible_schedule(10, [op(j1_mill, 2, 5), op(j1_lathe, 6, 8), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 0, 2), op(j3_lathe, 3, 6)])], [feasible_schedule(10, [op(j1_mill, 3, 6), op(j1_lathe, 6, 8), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 0, 2), op(j3_lathe, 3, 6)])], [feasible_schedule(10, [op(j1_mill, 3, 6), op(j1_lathe, 6, 8), op(j2_lathe, 0, 2), op(j2_mill, 6, 10), op(j3_mill, 1, 3), op(j3_lathe, 3, 6)])], [feasible_schedule(10, [op(j1_mill, 3, 6), op(j1_lathe, 6, 8), op(j2_lathe, 1, 3), op(j2_mill, 6, 10), op(j3_mill, 1, 3), op(j3_lathe, 3, 6)])]]).
-% step 161
-step(best_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 5, 8)]), rule(6), ['='('Makespan', 9), '='('Schedule', [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 5, 8)])], [aggregate_all(min(V0), [feasible_schedule(V0, V1)], 9), feasible_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 5, 8)])]).
-% step 162
-step(job_shop_answer(best_makespan, 9), rule(7), ['='('Makespan', 9), '='('$anonymous1', [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 5, 8)])], [best_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 5, 8)])]).
+?- check(job_shop_answer(feasible_schedule_count, 35)).
+true.
 
-% Check
-check passed: job_shop_answer(best_makespan, 9).
+?- check(aggregate_all(count, (best_schedule(Time, Schedule)), 11)).
+true.
 
-check passed: job_shop_answer(feasible_schedule_count, 35).
-
-check passed: aggregate_all(count, (best_schedule(Time, Schedule)), 11).
-
-check passed: aggregate_all(count, (best_schedule(8, Schedule)), 0).
-
-condition('C1', resolution, ok, 105).
-condition('C2', well_founded, ok, 162).
-condition('C3', justification, ok, 162).
-condition('C4', coverage, ok, 919).
-condition('C5', re_decision, ok, 57).
-condition('C6', boundary_consistency, ok, 1).
-condition('C7', relevance, ok, 163).
-obligation(collected, collection_completeness, aggregate_all(min(var('V0')), [feasible_schedule(var('V0'), var('V1'))], 9)).
-steps(162).
-verified(105).
-recomputed(57).
-trusted(1).
-claims(1).
-verdict(checked_with_obligations).
+?- check(aggregate_all(count, (best_schedule(8, Schedule)), 0)).
+true.

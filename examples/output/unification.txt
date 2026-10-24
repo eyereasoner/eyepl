@@ -1,11 +1,30 @@
-% Answer
 ?- append(Prefix, Suffix, [a, b]).
 Prefix = [], Suffix = [a, b].
 Prefix = [a], Suffix = [b].
 Prefix = [a, b], Suffix = [].
 
+?- why.
+wheye-proof 1
+% Rule 1: append([], Ys, Ys) :- .
+% Rule 2: append([X | Xs], Ys, [X | Zs]) :- append(Xs, Ys, Zs).
+step 1 rule 1 [] : append([], [a, b], [a, b]).
+step 2 rule 1 [] : append([], [b], [b]).
+step 3 rule 1 [] : append([], [], []).
+step 4 rule 2 [2] : append([a], [b], [a, b]).
+step 5 rule 2 [3] : append([b], [], [b]).
+step 6 rule 2 [5] : append([a, b], [], [a, b]).
+answer 1 [1]
+answer 1 [4]
+answer 1 [6]
+
 ?- matching_pair(pair(same, same)).
 true.
+
+?- why.
+wheye-proof 1
+% Rule 3: matching_pair(pair(X, X)) :- .
+step 1 rule 3 [] : matching_pair(pair(same, same)).
+answer 2 [1]
 
 ?- matching_pair(pair(a, b)).
 false.
@@ -13,62 +32,29 @@ false.
 ?- head_tail([a, b, c], Head, Tail).
 Head = a, Tail = [b, c].
 
-% Reason
-certificate(eyeon, 1).
+?- why.
+wheye-proof 1
+% Rule 4: head_tail([Head | Tail], Head, Tail) :- .
+step 1 rule 4 [] : head_tail([a, b, c], a, [b, c]).
+answer 4 [1]
 
-claim(query(1), [append([], [a, b], [a, b])]).
-claim(query(1), [append([a], [b], [a, b])]).
-claim(query(1), [append([a, b], [], [a, b])]).
-claim(query(3), [matching_pair(pair(same, same))]).
-claim(query(6), [head_tail([a, b, c], a, [b, c])]).
+?- check(append([], [a, b], [a, b])).
+true.
 
-clause(1, append([], var('Ys'), var('Ys')), []).
-clause(2, append(list([var('X')], var('Xs')), var('Ys'), list([var('X')], var('Zs'))), [append(var('Xs'), var('Ys'), var('Zs'))]).
-clause(3, matching_pair(pair(var('X'), var('X'))), []).
-clause(4, head_tail(list([var('Head')], var('Tail')), var('Head'), var('Tail')), []).
+?- check(append([a], [b], [a, b])).
+true.
 
-% step 1
-step(append([], [a, b], [a, b]), fact(1), ['='('Ys', [a, b])], []).
-% step 2
-step(append([], [b], [b]), fact(1), ['='('Ys', [b])], []).
-% step 3
-step(append([a], [b], [a, b]), rule(2), ['='('Ys', [b]), '='('X', a), '='('Zs', [b]), '='('Xs', [])], [append([], [b], [b])]).
-% step 4
-step(append([], [], []), fact(1), ['='('Ys', [])], []).
-% step 5
-step(append([b], [], [b]), rule(2), ['='('Ys', []), '='('X', b), '='('Zs', []), '='('Xs', [])], [append([], [], [])]).
-% step 6
-step(append([a, b], [], [a, b]), rule(2), ['='('Ys', []), '='('X', a), '='('Zs', [b]), '='('Xs', [b])], [append([b], [], [b])]).
-% step 7
-step(matching_pair(pair(same, same)), fact(3), ['='('X', same)], []).
-% step 8
-step(head_tail([a, b, c], a, [b, c]), fact(4), ['='('Head', a), '='('Tail', [b, c])], []).
+?- check(append([a, b], [], [a, b])).
+true.
 
-% Check
-check passed: append([], [a, b], [a, b]).
+?- check(aggregate_all(count, (append(Prefix, Suffix, [a, b])), 3)).
+true.
 
-check passed: append([a], [b], [a, b]).
+?- check(matching_pair(pair(same, same))).
+true.
 
-check passed: append([a, b], [], [a, b]).
+?- check(\+ (matching_pair(pair(a, b)))).
+true.
 
-check passed: aggregate_all(count, (append(Prefix, Suffix, [a, b])), 3).
-
-check passed: matching_pair(pair(same, same)).
-
-check passed: \+ (matching_pair(pair(a, b))).
-
-check passed: head_tail([a, b, c], a, [b, c]).
-
-condition('C1', resolution, ok, 8).
-condition('C2', well_founded, ok, 8).
-condition('C3', justification, ok, 8).
-condition('C4', coverage, ok, 8).
-condition('C5', re_decision, ok, 0).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 13).
-steps(8).
-verified(8).
-recomputed(0).
-trusted(0).
-claims(5).
-verdict(checked).
+?- check(head_tail([a, b, c], a, [b, c])).
+true.

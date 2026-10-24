@@ -1,4 +1,3 @@
-% Answer
 ?- abs_state(Program, Point, Sign).
 Program = countdown, Point = input, Sign = neg.
 Program = countdown, Point = input, Sign = zero.
@@ -9,160 +8,162 @@ Program = guarded, Point = input, Sign = pos.
 Program = countdown, Point = negative_branch, Sign = pos.
 Program = countdown, Point = nonnegative_branch, Sign = zero.
 Program = countdown, Point = nonnegative_branch, Sign = pos.
-Program = guarded, Point = negative_branch, Sign = pos.
-Program = guarded, Point = nonnegative_branch, Sign = zero.
-Program = guarded, Point = nonnegative_branch, Sign = pos.
 Program = countdown, Point = loop_head, Sign = pos.
 Program = countdown, Point = loop_head, Sign = zero.
-Program = guarded, Point = check, Sign = pos.
-Program = guarded, Point = check, Sign = zero.
 Program = countdown, Point = loop_body, Sign = zero.
 Program = countdown, Point = loop_body, Sign = pos.
 Program = countdown, Point = divide, Sign = zero.
+Program = guarded, Point = negative_branch, Sign = pos.
+Program = guarded, Point = nonnegative_branch, Sign = zero.
+Program = guarded, Point = nonnegative_branch, Sign = pos.
+Program = guarded, Point = check, Sign = pos.
+Program = guarded, Point = check, Sign = zero.
 Program = guarded, Point = divide, Sign = pos.
 Program = guarded, Point = zero_result, Sign = zero.
 
 ?- abs_warning(Program, Warning).
 Program = countdown, Warning = possible_division_by_zero(divide).
 
+?- why.
+wheye-proof 1
+% Rule 1: abs_state(Program, Point, Sign) :- entry(Program, Point), input_sign(Sign).
+% Rule 2: abs_state(Program, To, Result) :- abs_state(Program, From, Sign), transition(Program, From, To, Guard, Operation), accepts(Guard, Sign), transfer(Operation, Sign, Result).
+% Rule 3: zero_possible(Program, Point) :- abs_state(Program, Point, zero).
+% Rule 5: abs_warning(Program, possible_division_by_zero(Point)) :- division(Program, Point), zero_possible(Program, Point).
+step 1 source 3 : entry(countdown, input).
+step 2 source 6 : input_sign(zero).
+step 3 source 9 : transition(countdown, input, nonnegative_branch, nonnegative, identity).
+step 4 source 11 : transition(countdown, nonnegative_branch, loop_head, any, identity).
+step 5 source 14 : transition(countdown, loop_head, divide, nonpositive, identity).
+step 6 source 21 : division(countdown, divide).
+step 7 source 24 : accepts(any, zero).
+step 8 source 27 : accepts(nonnegative, zero).
+step 9 source 31 : accepts(nonpositive, zero).
+step 10 source 33 : transfer(identity, zero, zero).
+step 11 rule 1 [1,2] : abs_state(countdown, input, zero).
+step 12 rule 2 [11,3,8,10] : abs_state(countdown, nonnegative_branch, zero).
+step 13 rule 2 [12,4,7,10] : abs_state(countdown, loop_head, zero).
+step 14 rule 2 [13,5,9,10] : abs_state(countdown, divide, zero).
+step 15 rule 3 [14] : zero_possible(countdown, divide).
+step 16 rule 5 [6,15] : abs_warning(countdown, possible_division_by_zero(divide)).
+answer 2 [16]
+
 ?- nonzero_divisor(Program, Point).
 Program = guarded, Point = divide.
 
-% Reason
-certificate(eyeon, 1).
+?- why.
+wheye-proof 1
+% Rule 1: abs_state(Program, Point, Sign) :- entry(Program, Point), input_sign(Sign).
+% Rule 2: abs_state(Program, To, Result) :- abs_state(Program, From, Sign), transition(Program, From, To, Guard, Operation), accepts(Guard, Sign), transfer(Operation, Sign, Result).
+% Rule 3: zero_possible(Program, Point) :- abs_state(Program, Point, zero).
+% Rule 4: reachable_division(Program, Point) :- division(Program, Point), abs_state(Program, Point, _).
+% Rule 5: abs_warning(Program, possible_division_by_zero(Point)) :- division(Program, Point), zero_possible(Program, Point).
+% Rule 6: nonzero_divisor(Program, Point) :- reachable_division(Program, Point), \+ (zero_possible(Program, Point)).
+step 1 source 1 : program(countdown).
+step 2 source 2 : program(guarded).
+step 3 source 3 : entry(countdown, input).
+step 4 source 4 : entry(guarded, input).
+step 5 source 5 : input_sign(neg).
+step 6 source 6 : input_sign(zero).
+step 7 source 7 : input_sign(pos).
+step 8 source 8 : transition(countdown, input, negative_branch, negative, negate).
+step 9 source 9 : transition(countdown, input, nonnegative_branch, nonnegative, identity).
+step 10 source 10 : transition(countdown, negative_branch, loop_head, any, identity).
+step 11 source 11 : transition(countdown, nonnegative_branch, loop_head, any, identity).
+step 12 source 12 : transition(countdown, loop_head, loop_body, positive, decrement).
+step 13 source 13 : transition(countdown, loop_body, loop_head, any, identity).
+step 14 source 14 : transition(countdown, loop_head, divide, nonpositive, identity).
+step 15 source 15 : transition(guarded, input, negative_branch, negative, negate).
+step 16 source 16 : transition(guarded, input, nonnegative_branch, nonnegative, identity).
+step 17 source 17 : transition(guarded, negative_branch, check, any, identity).
+step 18 source 18 : transition(guarded, nonnegative_branch, check, any, identity).
+step 19 source 19 : transition(guarded, check, divide, positive, identity).
+step 20 source 20 : transition(guarded, check, zero_result, nonpositive, identity).
+step 21 source 21 : division(countdown, divide).
+step 22 source 22 : division(guarded, divide).
+step 23 source 23 : accepts(any, neg).
+step 24 source 24 : accepts(any, zero).
+step 25 source 25 : accepts(any, pos).
+step 26 source 26 : accepts(negative, neg).
+step 27 source 27 : accepts(nonnegative, zero).
+step 28 source 28 : accepts(nonnegative, pos).
+step 29 source 29 : accepts(positive, pos).
+step 30 source 30 : accepts(nonpositive, neg).
+step 31 source 31 : accepts(nonpositive, zero).
+step 32 source 32 : transfer(identity, neg, neg).
+step 33 source 33 : transfer(identity, zero, zero).
+step 34 source 34 : transfer(identity, pos, pos).
+step 35 source 35 : transfer(negate, neg, pos).
+step 36 source 36 : transfer(negate, zero, zero).
+step 37 source 37 : transfer(negate, pos, neg).
+step 38 source 38 : transfer(decrement, neg, neg).
+step 39 source 39 : transfer(decrement, zero, neg).
+step 40 source 40 : transfer(decrement, pos, zero).
+step 41 source 41 : transfer(decrement, pos, pos).
+step 42 rule 1 [3,5] : abs_state(countdown, input, neg).
+step 43 rule 1 [3,6] : abs_state(countdown, input, zero).
+step 44 rule 1 [3,7] : abs_state(countdown, input, pos).
+step 45 rule 1 [4,5] : abs_state(guarded, input, neg).
+step 46 rule 1 [4,6] : abs_state(guarded, input, zero).
+step 47 rule 1 [4,7] : abs_state(guarded, input, pos).
+step 48 rule 2 [42,8,26,35] : abs_state(countdown, negative_branch, pos).
+step 49 rule 2 [43,9,27,33] : abs_state(countdown, nonnegative_branch, zero).
+step 50 rule 2 [44,9,28,34] : abs_state(countdown, nonnegative_branch, pos).
+step 51 rule 2 [48,10,25,34] : abs_state(countdown, loop_head, pos).
+step 52 rule 2 [49,11,24,33] : abs_state(countdown, loop_head, zero).
+step 53 rule 2 [51,12,29,40] : abs_state(countdown, loop_body, zero).
+step 54 rule 2 [51,12,29,41] : abs_state(countdown, loop_body, pos).
+step 55 rule 2 [52,14,31,33] : abs_state(countdown, divide, zero).
+step 56 rule 2 [45,15,26,35] : abs_state(guarded, negative_branch, pos).
+step 57 rule 2 [46,16,27,33] : abs_state(guarded, nonnegative_branch, zero).
+step 58 rule 2 [47,16,28,34] : abs_state(guarded, nonnegative_branch, pos).
+step 59 rule 2 [56,17,25,34] : abs_state(guarded, check, pos).
+step 60 rule 2 [57,18,24,33] : abs_state(guarded, check, zero).
+step 61 rule 2 [59,19,29,34] : abs_state(guarded, divide, pos).
+step 62 rule 2 [60,20,31,33] : abs_state(guarded, zero_result, zero).
+step 63 rule 4 [21,55] : reachable_division(countdown, divide).
+step 64 rule 4 [22,61] : reachable_division(guarded, divide).
+step 65 rule 3 [43] : zero_possible(countdown, input).
+step 66 rule 3 [46] : zero_possible(guarded, input).
+step 67 rule 3 [49] : zero_possible(countdown, nonnegative_branch).
+step 68 rule 3 [52] : zero_possible(countdown, loop_head).
+step 69 rule 3 [53] : zero_possible(countdown, loop_body).
+step 70 rule 3 [55] : zero_possible(countdown, divide).
+step 71 rule 3 [57] : zero_possible(guarded, nonnegative_branch).
+step 72 rule 3 [60] : zero_possible(guarded, check).
+step 73 rule 3 [62] : zero_possible(guarded, zero_result).
+step 74 rule 5 [21,70] : abs_warning(countdown, possible_division_by_zero(divide)).
+step 75 absent 1 : zero_possible(guarded, divide).
+step 76 rule 6 [64,75] : nonzero_divisor(guarded, divide).
+boundary 1 level 0 [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74]
+answer 3 [76]
 
-claim(query(2), [abs_warning(countdown, possible_division_by_zero(divide))]).
-claim(query(4), [nonzero_divisor(guarded, divide)]).
+?- check(abs_warning(countdown, possible_division_by_zero(divide))).
+true.
 
-clause(3, entry(countdown, input), []).
-clause(4, entry(guarded, input), []).
-clause(5, input_sign(neg), []).
-clause(6, input_sign(zero), []).
-clause(9, transition(countdown, input, nonnegative_branch, nonnegative, identity), []).
-clause(11, transition(countdown, nonnegative_branch, loop_head, any, identity), []).
-clause(14, transition(countdown, loop_head, divide, nonpositive, identity), []).
-clause(15, transition(guarded, input, negative_branch, negative, negate), []).
-clause(17, transition(guarded, negative_branch, check, any, identity), []).
-clause(19, transition(guarded, check, divide, positive, identity), []).
-clause(21, division(countdown, divide), []).
-clause(22, division(guarded, divide), []).
-clause(24, accepts(any, zero), []).
-clause(25, accepts(any, pos), []).
-clause(26, accepts(negative, neg), []).
-clause(27, accepts(nonnegative, zero), []).
-clause(29, accepts(positive, pos), []).
-clause(31, accepts(nonpositive, zero), []).
-clause(33, transfer(identity, zero, zero), []).
-clause(34, transfer(identity, pos, pos), []).
-clause(35, transfer(negate, neg, pos), []).
-clause(42, abs_state(var('Program'), var('Point'), var('Sign')), [entry(var('Program'), var('Point')), input_sign(var('Sign'))]).
-clause(43, abs_state(var('Program'), var('To'), var('Result')), [abs_state(var('Program'), var('From'), var('Sign')), transition(var('Program'), var('From'), var('To'), var('Guard'), var('Operation')), accepts(var('Guard'), var('Sign')), transfer(var('Operation'), var('Sign'), var('Result'))]).
-clause(44, zero_possible(var('Program'), var('Point')), [abs_state(var('Program'), var('Point'), zero)]).
-clause(45, reachable_division(var('Program'), var('Point')), [division(var('Program'), var('Point')), abs_state(var('Program'), var('Point'), var('$anonymous1'))]).
-clause(46, abs_warning(var('Program'), possible_division_by_zero(var('Point'))), [division(var('Program'), var('Point')), zero_possible(var('Program'), var('Point'))]).
-clause(47, nonzero_divisor(var('Program'), var('Point')), [reachable_division(var('Program'), var('Point')), '\\+'(zero_possible(var('Program'), var('Point')))]).
+?- check(abs_state(countdown, loop_head, zero)).
+true.
 
-% step 1
-step(division(countdown, divide), fact(21), [], []).
-% step 2
-step(entry(countdown, input), fact(3), [], []).
-% step 3
-step(input_sign(zero), fact(6), [], []).
-% step 4
-step(abs_state(countdown, input, zero), rule(42), ['='('Program', countdown), '='('Point', input), '='('Sign', zero)], [entry(countdown, input), input_sign(zero)]).
-% step 5
-step(transition(countdown, input, nonnegative_branch, nonnegative, identity), fact(9), [], []).
-% step 6
-step(accepts(nonnegative, zero), fact(27), [], []).
-% step 7
-step(transfer(identity, zero, zero), fact(33), [], []).
-% step 8
-step(abs_state(countdown, nonnegative_branch, zero), rule(43), ['='('Program', countdown), '='('From', input), '='('Sign', zero), '='('To', nonnegative_branch), '='('Guard', nonnegative), '='('Operation', identity), '='('Result', zero)], [abs_state(countdown, input, zero), transition(countdown, input, nonnegative_branch, nonnegative, identity), accepts(nonnegative, zero), transfer(identity, zero, zero)]).
-% step 9
-step(transition(countdown, nonnegative_branch, loop_head, any, identity), fact(11), [], []).
-% step 10
-step(accepts(any, zero), fact(24), [], []).
-% step 11
-step(abs_state(countdown, loop_head, zero), rule(43), ['='('Program', countdown), '='('From', nonnegative_branch), '='('Sign', zero), '='('To', loop_head), '='('Guard', any), '='('Operation', identity), '='('Result', zero)], [abs_state(countdown, nonnegative_branch, zero), transition(countdown, nonnegative_branch, loop_head, any, identity), accepts(any, zero), transfer(identity, zero, zero)]).
-% step 12
-step(transition(countdown, loop_head, divide, nonpositive, identity), fact(14), [], []).
-% step 13
-step(accepts(nonpositive, zero), fact(31), [], []).
-% step 14
-step(abs_state(countdown, divide, zero), rule(43), ['='('Program', countdown), '='('From', loop_head), '='('Sign', zero), '='('To', divide), '='('Guard', nonpositive), '='('Operation', identity), '='('Result', zero)], [abs_state(countdown, loop_head, zero), transition(countdown, loop_head, divide, nonpositive, identity), accepts(nonpositive, zero), transfer(identity, zero, zero)]).
-% step 15
-step(zero_possible(countdown, divide), rule(44), ['='('Program', countdown), '='('Point', divide)], [abs_state(countdown, divide, zero)]).
-% step 16
-step(abs_warning(countdown, possible_division_by_zero(divide)), rule(46), ['='('Program', countdown), '='('Point', divide)], [division(countdown, divide), zero_possible(countdown, divide)]).
-% step 17
-step(division(guarded, divide), fact(22), [], []).
-% step 18
-step(entry(guarded, input), fact(4), [], []).
-% step 19
-step(input_sign(neg), fact(5), [], []).
-% step 20
-step(abs_state(guarded, input, neg), rule(42), ['='('Program', guarded), '='('Point', input), '='('Sign', neg)], [entry(guarded, input), input_sign(neg)]).
-% step 21
-step(transition(guarded, input, negative_branch, negative, negate), fact(15), [], []).
-% step 22
-step(accepts(negative, neg), fact(26), [], []).
-% step 23
-step(transfer(negate, neg, pos), fact(35), [], []).
-% step 24
-step(abs_state(guarded, negative_branch, pos), rule(43), ['='('Program', guarded), '='('From', input), '='('Sign', neg), '='('To', negative_branch), '='('Guard', negative), '='('Operation', negate), '='('Result', pos)], [abs_state(guarded, input, neg), transition(guarded, input, negative_branch, negative, negate), accepts(negative, neg), transfer(negate, neg, pos)]).
-% step 25
-step(transition(guarded, negative_branch, check, any, identity), fact(17), [], []).
-% step 26
-step(accepts(any, pos), fact(25), [], []).
-% step 27
-step(transfer(identity, pos, pos), fact(34), [], []).
-% step 28
-step(abs_state(guarded, check, pos), rule(43), ['='('Program', guarded), '='('From', negative_branch), '='('Sign', pos), '='('To', check), '='('Guard', any), '='('Operation', identity), '='('Result', pos)], [abs_state(guarded, negative_branch, pos), transition(guarded, negative_branch, check, any, identity), accepts(any, pos), transfer(identity, pos, pos)]).
-% step 29
-step(transition(guarded, check, divide, positive, identity), fact(19), [], []).
-% step 30
-step(accepts(positive, pos), fact(29), [], []).
-% step 31
-step(abs_state(guarded, divide, pos), rule(43), ['='('Program', guarded), '='('From', check), '='('Sign', pos), '='('To', divide), '='('Guard', positive), '='('Operation', identity), '='('Result', pos)], [abs_state(guarded, check, pos), transition(guarded, check, divide, positive, identity), accepts(positive, pos), transfer(identity, pos, pos)]).
-% step 32
-step(reachable_division(guarded, divide), rule(45), ['='('Program', guarded), '='('Point', divide), '='('$anonymous1', pos)], [division(guarded, divide), abs_state(guarded, divide, pos)]).
-% step 33
-step('\\+'(zero_possible(guarded, divide)), absent, [], []).
-% step 34
-step(nonzero_divisor(guarded, divide), rule(47), ['='('Program', guarded), '='('Point', divide)], [reachable_division(guarded, divide), '\\+'(zero_possible(guarded, divide))]).
+?- check(abs_state(countdown, loop_head, pos)).
+true.
 
-% Check
-check passed: abs_warning(countdown, possible_division_by_zero(divide)).
+?- check(\+ (abs_state(countdown, loop_head, neg))).
+true.
 
-check passed: abs_state(countdown, loop_head, zero).
+?- check(abs_state(countdown, divide, zero)).
+true.
 
-check passed: abs_state(countdown, loop_head, pos).
+?- check(abs_state(guarded, divide, pos)).
+true.
 
-check passed: \+ (abs_state(countdown, loop_head, neg)).
+?- check(nonzero_divisor(guarded, divide)).
+true.
 
-check passed: abs_state(countdown, divide, zero).
+?- check(\+ (nonzero_divisor(countdown, divide))).
+true.
 
-check passed: abs_state(guarded, divide, pos).
+?- check(\+ (abs_warning(guarded, possible_division_by_zero(divide)))).
+true.
 
-check passed: nonzero_divisor(guarded, divide).
-
-check passed: \+ (nonzero_divisor(countdown, divide)).
-
-check passed: \+ (abs_warning(guarded, possible_division_by_zero(divide))).
-
-check passed: aggregate_all(count, (abs_warning(Program, Warning)), 1).
-
-condition('C1', resolution, ok, 33).
-condition('C2', well_founded, ok, 34).
-condition('C3', justification, ok, 34).
-condition('C4', coverage, ok, 37).
-condition('C5', re_decision, ok, 0).
-condition('C6', boundary_consistency, ok, 1).
-condition('C7', relevance, ok, 36).
-obligation(absent, theory_scoped, '\\+'(zero_possible(guarded, divide))).
-steps(34).
-verified(33).
-recomputed(0).
-trusted(1).
-claims(2).
-verdict(checked_with_obligations).
+?- check(aggregate_all(count, (abs_warning(Program, Warning)), 1)).
+true.

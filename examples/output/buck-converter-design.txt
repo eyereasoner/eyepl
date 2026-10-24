@@ -1,69 +1,34 @@
-% Answer
 ?- ripple_report(Name, Duty, CurrentPP, VoltagePP).
 Name = demo, Duty = 0.20833333, CurrentPP = 0.35984848, VoltagePP = 0.00191409.
+
+?- why.
+wheye-proof 1
+% Rule 1: ripple(Name, Duty, CurrentPP, Ratio, VoltagePP) :- converter(Name, Vin, Vout, Load, Frequency, L, C), Vin > Vout, Vout > 0, Load > 0, Frequency > 0, L > 0, C > 0, Duty is '/'(Vout, Vin), CurrentPP is '/'('*'('-'(Vin, Vout), Duty), '*'(L, Frequency)), CurrentPP < '*'(2, Load), Ratio is '/'(CurrentPP, Load), VoltagePP is '/'(CurrentPP, '*'('*'(8, Frequency), C)).
+% Rule 3: ripple_report(Name, Duty, CurrentPP, VoltagePP) :- ripple(Name, D, I, _, V), Duty is '/'(round('*'(D, 100000000)), 100000000), CurrentPP is '/'(round('*'(I, 100000000)), 100000000), VoltagePP is '/'(round('*'(V, 100000000)), 100000000).
+step 1 source 1 : converter(demo, 24.0, 5.0, 2.0, 500000.0, 2.2e-5, 4.7e-5).
+step 2 builtin : '>'(24.0, 5.0).
+step 3 builtin : '>'(5.0, 0).
+step 4 builtin : '>'(2.0, 0).
+step 5 builtin : '>'(500000.0, 0).
+step 6 builtin : '>'(2.2e-5, 0).
+step 7 builtin : '>'(4.7e-5, 0).
+step 8 builtin : is(0.20833333333333334, '/'(5.0, 24.0)).
+step 9 builtin : is(0.35984848484848486, '/'('*'('-'(24.0, 5.0), 0.20833333333333334), '*'(2.2e-5, 500000.0))).
+step 10 builtin : '<'(0.35984848484848486, '*'(2, 2.0)).
+step 11 builtin : is(0.17992424242424243, '/'(0.35984848484848486, 2.0)).
+step 12 builtin : is(0.0019140876853642812, '/'(0.35984848484848486, '*'('*'(8, 500000.0), 4.7e-5))).
+step 13 rule 1 [1,2,3,4,5,6,7,8,9,10,11,12] : ripple(demo, 0.20833333333333334, 0.35984848484848486, 0.17992424242424243, 0.0019140876853642812).
+step 14 builtin : is(0.20833333, '/'(round('*'(0.20833333333333334, 100000000)), 100000000)).
+step 15 builtin : is(0.35984848, '/'(round('*'(0.35984848484848486, 100000000)), 100000000)).
+step 16 builtin : is(0.00191409, '/'(round('*'(0.0019140876853642812, 100000000)), 100000000)).
+step 17 rule 3 [13,14,15,16] : ripple_report(demo, 0.20833333, 0.35984848, 0.00191409).
+answer 1 [17]
 
 ?- within_ripple_limits(Name).
 Name = demo.
 
-% Reason
-certificate(eyeon, 1).
+?- check(within_ripple_limits(demo)).
+true.
 
-claim(query(1), [ripple_report(demo, 0.20833333, 0.35984848, 0.00191409)]).
-
-clause(1, converter(demo, 24.0, 5.0, 2.0, 500000.0, 0.000022, 0.000047), []).
-clause(3, ripple(var('Name'), var('Duty'), var('CurrentPP'), var('Ratio'), var('VoltagePP')), [converter(var('Name'), var('Vin'), var('Vout'), var('Load'), var('Frequency'), var('L'), var('C')), '>'(var('Vin'), var('Vout')), '>'(var('Vout'), 0), '>'(var('Load'), 0), '>'(var('Frequency'), 0), '>'(var('L'), 0), '>'(var('C'), 0), is(var('Duty'), '/'(var('Vout'), var('Vin'))), is(var('CurrentPP'), '/'('*'('-'(var('Vin'), var('Vout')), var('Duty')), '*'(var('L'), var('Frequency')))), '<'(var('CurrentPP'), '*'(2, var('Load'))), is(var('Ratio'), '/'(var('CurrentPP'), var('Load'))), is(var('VoltagePP'), '/'(var('CurrentPP'), '*'('*'(8, var('Frequency')), var('C'))))]).
-clause(5, ripple_report(var('Name'), var('Duty'), var('CurrentPP'), var('VoltagePP')), [ripple(var('Name'), var('D'), var('I'), var('$anonymous3'), var('V')), is(var('Duty'), '/'(round('*'(var('D'), 100000000)), 100000000)), is(var('CurrentPP'), '/'(round('*'(var('I'), 100000000)), 100000000)), is(var('VoltagePP'), '/'(round('*'(var('V'), 100000000)), 100000000))]).
-
-% step 1
-step(converter(demo, 24.0, 5.0, 2.0, 500000.0, 0.000022, 0.000047), fact(1), [], []).
-% step 2
-step('>'(24.0, 5.0), builtin, [], []).
-% step 3
-step('>'(5.0, 0), builtin, [], []).
-% step 4
-step('>'(2.0, 0), builtin, [], []).
-% step 5
-step('>'(500000.0, 0), builtin, [], []).
-% step 6
-step('>'(0.000022, 0), builtin, [], []).
-% step 7
-step('>'(0.000047, 0), builtin, [], []).
-% step 8
-step(is(0.20833333333333334, '/'(5.0, 24.0)), builtin, [], []).
-% step 9
-step(is(0.35984848484848486, '/'('*'('-'(24.0, 5.0), 0.20833333333333334), '*'(0.000022, 500000.0))), builtin, [], []).
-% step 10
-step('<'(0.35984848484848486, '*'(2, 2.0)), builtin, [], []).
-% step 11
-step(is(0.17992424242424243, '/'(0.35984848484848486, 2.0)), builtin, [], []).
-% step 12
-step(is(0.0019140876853642812, '/'(0.35984848484848486, '*'('*'(8, 500000.0), 0.000047))), builtin, [], []).
-% step 13
-step(ripple(demo, 0.20833333333333334, 0.35984848484848486, 0.17992424242424243, 0.0019140876853642812), rule(3), ['='('Name', demo), '='('Vin', 24.0), '='('Vout', 5.0), '='('Load', 2.0), '='('Frequency', 500000.0), '='('L', 0.000022), '='('C', 0.000047), '='('Duty', 0.20833333333333334), '='('CurrentPP', 0.35984848484848486), '='('Ratio', 0.17992424242424243), '='('VoltagePP', 0.0019140876853642812)], [converter(demo, 24.0, 5.0, 2.0, 500000.0, 0.000022, 0.000047), '>'(24.0, 5.0), '>'(5.0, 0), '>'(2.0, 0), '>'(500000.0, 0), '>'(0.000022, 0), '>'(0.000047, 0), is(0.20833333333333334, '/'(5.0, 24.0)), is(0.35984848484848486, '/'('*'('-'(24.0, 5.0), 0.20833333333333334), '*'(0.000022, 500000.0))), '<'(0.35984848484848486, '*'(2, 2.0)), is(0.17992424242424243, '/'(0.35984848484848486, 2.0)), is(0.0019140876853642812, '/'(0.35984848484848486, '*'('*'(8, 500000.0), 0.000047)))]).
-% step 14
-step(is(0.20833333, '/'(round('*'(0.20833333333333334, 100000000)), 100000000)), builtin, [], []).
-% step 15
-step(is(0.35984848, '/'(round('*'(0.35984848484848486, 100000000)), 100000000)), builtin, [], []).
-% step 16
-step(is(0.00191409, '/'(round('*'(0.0019140876853642812, 100000000)), 100000000)), builtin, [], []).
-% step 17
-step(ripple_report(demo, 0.20833333, 0.35984848, 0.00191409), rule(5), ['='('Name', demo), '='('D', 0.20833333333333334), '='('I', 0.35984848484848486), '='('$anonymous3', 0.17992424242424243), '='('V', 0.0019140876853642812), '='('Duty', 0.20833333), '='('CurrentPP', 0.35984848), '='('VoltagePP', 0.00191409)], [ripple(demo, 0.20833333333333334, 0.35984848484848486, 0.17992424242424243, 0.0019140876853642812), is(0.20833333, '/'(round('*'(0.20833333333333334, 100000000)), 100000000)), is(0.35984848, '/'(round('*'(0.35984848484848486, 100000000)), 100000000)), is(0.00191409, '/'(round('*'(0.0019140876853642812, 100000000)), 100000000))]).
-
-% Check
-check passed: within_ripple_limits(demo).
-
-check passed: ripple(demo, D, I, Ratio, V), abs((D - (5 / 24))) < 1e-12, I > 0.35, I < 0.37, Ratio < 0.3, V < 0.002.
-
-condition('C1', resolution, ok, 3).
-condition('C2', well_founded, ok, 17).
-condition('C3', justification, ok, 17).
-condition('C4', coverage, ok, 17).
-condition('C5', re_decision, ok, 14).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 18).
-steps(17).
-verified(3).
-recomputed(14).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check((ripple(demo, D, I, Ratio, V), abs('-'(D, '/'(5, 24))) < 1e-12, I > 0.35, I < 0.37, Ratio < 0.3, V < 0.002)).
+true.

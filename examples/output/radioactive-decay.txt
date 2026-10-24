@@ -1,47 +1,21 @@
-% Answer
 ?- decay(Sample, HalfLives, Remaining, Decayed).
 Sample = demo, HalfLives = 2.0, Remaining = 20.0, Decayed = 60.0.
 
-% Reason
-certificate(eyeon, 1).
+?- why.
+wheye-proof 1
+% Rule 1: decay(Sample, HalfLives, Remaining, Decayed) :- sample(Sample, Initial, HalfLife, Elapsed), Initial >= 0, HalfLife > 0, Elapsed >= 0, HalfLives is '/'(Elapsed, HalfLife), Remaining is '*'(Initial, '**'(0.5, HalfLives)), Decayed is '-'(Initial, Remaining).
+step 1 source 1 : sample(demo, 80.0, 8.0, 16.0).
+step 2 builtin : '>='(80.0, 0).
+step 3 builtin : '>'(8.0, 0).
+step 4 builtin : '>='(16.0, 0).
+step 5 builtin : is(2.0, '/'(16.0, 8.0)).
+step 6 builtin : is(20.0, '*'(80.0, '**'(0.5, 2.0))).
+step 7 builtin : is(60.0, '-'(80.0, 20.0)).
+step 8 rule 1 [1,2,3,4,5,6,7] : decay(demo, 2.0, 20.0, 60.0).
+answer 1 [8]
 
-claim(query(1), [decay(demo, 2.0, 20.0, 60.0)]).
+?- check(decay(demo, 2.0, 20.0, 60.0)).
+true.
 
-clause(1, sample(demo, 80.0, 8.0, 16.0), []).
-clause(2, decay(var('Sample'), var('HalfLives'), var('Remaining'), var('Decayed')), [sample(var('Sample'), var('Initial'), var('HalfLife'), var('Elapsed')), '>='(var('Initial'), 0), '>'(var('HalfLife'), 0), '>='(var('Elapsed'), 0), is(var('HalfLives'), '/'(var('Elapsed'), var('HalfLife'))), is(var('Remaining'), '*'(var('Initial'), '**'(0.5, var('HalfLives')))), is(var('Decayed'), '-'(var('Initial'), var('Remaining')))]).
-
-% step 1
-step(sample(demo, 80.0, 8.0, 16.0), fact(1), [], []).
-% step 2
-step('>='(80.0, 0), builtin, [], []).
-% step 3
-step('>'(8.0, 0), builtin, [], []).
-% step 4
-step('>='(16.0, 0), builtin, [], []).
-% step 5
-step(is(2.0, '/'(16.0, 8.0)), builtin, [], []).
-% step 6
-step(is(20.0, '*'(80.0, '**'(0.5, 2.0))), builtin, [], []).
-% step 7
-step(is(60.0, '-'(80.0, 20.0)), builtin, [], []).
-% step 8
-step(decay(demo, 2.0, 20.0, 60.0), rule(2), ['='('Sample', demo), '='('Initial', 80.0), '='('HalfLife', 8.0), '='('Elapsed', 16.0), '='('HalfLives', 2.0), '='('Remaining', 20.0), '='('Decayed', 60.0)], [sample(demo, 80.0, 8.0, 16.0), '>='(80.0, 0), '>'(8.0, 0), '>='(16.0, 0), is(2.0, '/'(16.0, 8.0)), is(20.0, '*'(80.0, '**'(0.5, 2.0))), is(60.0, '-'(80.0, 20.0))]).
-
-% Check
-check passed: decay(demo, 2.0, 20.0, 60.0).
-
-check passed: sample(demo, Initial, _, _), decay(demo, _, Remaining, Decayed), (Remaining + Decayed) =:= Initial.
-
-condition('C1', resolution, ok, 2).
-condition('C2', well_founded, ok, 8).
-condition('C3', justification, ok, 8).
-condition('C4', coverage, ok, 8).
-condition('C5', re_decision, ok, 6).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 9).
-steps(8).
-verified(2).
-recomputed(6).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check((sample(demo, Initial, _, _), decay(demo, _, Remaining, Decayed), '+'(Remaining, Decayed) =:= Initial)).
+true.

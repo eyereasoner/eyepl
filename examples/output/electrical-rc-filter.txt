@@ -1,53 +1,28 @@
-% Answer
 ?- cutoff_hz(Filter, Cutoff).
 Filter = filter1, Cutoff = 15.91549431.
+
+?- why.
+wheye-proof 1
+% Rule 1: response(Filter, Tau, Cutoff) :- components(Filter, R, C), R > 0, C > 0, Tau is '*'(R, C), Cutoff is '/'(1, '*'('*'(2, pi), Tau)).
+% Rule 2: cutoff_hz(Filter, Rounded) :- response(Filter, _, Raw), Rounded is '/'(round('*'(Raw, 100000000)), 100000000).
+step 1 source 1 : components(filter1, 10000.0, 1e-6).
+step 2 builtin : '>'(10000.0, 0).
+step 3 builtin : '>'(1e-6, 0).
+step 4 builtin : is(0.01, '*'(10000.0, 1e-6)).
+step 5 builtin : is(15.915494309189533, '/'(1, '*'('*'(2, pi), 0.01))).
+step 6 rule 1 [1,2,3,4,5] : response(filter1, 0.01, 15.915494309189533).
+step 7 builtin : is(15.91549431, '/'(round('*'(15.915494309189533, 100000000)), 100000000)).
+step 8 rule 2 [6,7] : cutoff_hz(filter1, 15.91549431).
+answer 1 [8]
 
 ?- response(Filter, Tau, _).
 Filter = filter1, Tau = 0.01.
 
-% Reason
-certificate(eyeon, 1).
+?- check(response(filter1, 0.01, _)).
+true.
 
-claim(query(1), [cutoff_hz(filter1, 15.91549431)]).
+?- check((response(filter1, Tau, F), abs('-'('*'('*'('*'(2, pi), Tau), F), 1)) < 1e-12)).
+true.
 
-clause(1, components(filter1, 10000.0, 0.000001), []).
-clause(2, response(var('Filter'), var('Tau'), var('Cutoff')), [components(var('Filter'), var('R'), var('C')), '>'(var('R'), 0), '>'(var('C'), 0), is(var('Tau'), '*'(var('R'), var('C'))), is(var('Cutoff'), '/'(1, '*'('*'(2, pi), var('Tau'))))]).
-clause(3, cutoff_hz(var('Filter'), var('Rounded')), [response(var('Filter'), var('$anonymous1'), var('Raw')), is(var('Rounded'), '/'(round('*'(var('Raw'), 100000000)), 100000000))]).
-
-% step 1
-step(components(filter1, 10000.0, 0.000001), fact(1), [], []).
-% step 2
-step('>'(10000.0, 0), builtin, [], []).
-% step 3
-step('>'(0.000001, 0), builtin, [], []).
-% step 4
-step(is(0.01, '*'(10000.0, 0.000001)), builtin, [], []).
-% step 5
-step(is(15.915494309189533, '/'(1, '*'('*'(2, pi), 0.01))), builtin, [], []).
-% step 6
-step(response(filter1, 0.01, 15.915494309189533), rule(2), ['='('Filter', filter1), '='('R', 10000.0), '='('C', 0.000001), '='('Tau', 0.01), '='('Cutoff', 15.915494309189533)], [components(filter1, 10000.0, 0.000001), '>'(10000.0, 0), '>'(0.000001, 0), is(0.01, '*'(10000.0, 0.000001)), is(15.915494309189533, '/'(1, '*'('*'(2, pi), 0.01)))]).
-% step 7
-step(is(15.91549431, '/'(round('*'(15.915494309189533, 100000000)), 100000000)), builtin, [], []).
-% step 8
-step(cutoff_hz(filter1, 15.91549431), rule(3), ['='('Filter', filter1), '='('$anonymous1', 0.01), '='('Raw', 15.915494309189533), '='('Rounded', 15.91549431)], [response(filter1, 0.01, 15.915494309189533), is(15.91549431, '/'(round('*'(15.915494309189533, 100000000)), 100000000))]).
-
-% Check
-check passed: response(filter1, 0.01, _).
-
-check passed: response(filter1, Tau, F), abs(((((2 * pi) * Tau) * F) - 1)) < 1e-12.
-
-check passed: response(filter1, _, F), F > 15.91, F < 15.92.
-
-condition('C1', resolution, ok, 3).
-condition('C2', well_founded, ok, 8).
-condition('C3', justification, ok, 8).
-condition('C4', coverage, ok, 8).
-condition('C5', re_decision, ok, 5).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 9).
-steps(8).
-verified(3).
-recomputed(5).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check((response(filter1, _, F), F > 15.91, F < 15.92)).
+true.

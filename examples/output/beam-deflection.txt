@@ -1,50 +1,26 @@
-% Answer
 ?- deflection_mm(Beam, Delta).
 Beam = demo, Delta = 3.90625.
+
+?- why.
+wheye-proof 1
+% Rule 1: deflection_mm(Beam, Delta) :- beam(Beam, Force, Length, Modulus, Moment, _), Force >= 0, Length > 0, Modulus > 0, Moment > 0, Delta is '/'('*'('*'(1000, Force), '**'(Length, 3)), '*'('*'(3, Modulus), Moment)).
+step 1 source 1 : beam(demo, 1200.0, 2.5, 200000000000.0, 8e-6, 5.0).
+step 2 builtin : '>='(1200.0, 0).
+step 3 builtin : '>'(2.5, 0).
+step 4 builtin : '>'(200000000000.0, 0).
+step 5 builtin : '>'(8e-6, 0).
+step 6 builtin : is(3.90625, '/'('*'('*'(1000, 1200.0), '**'(2.5, 3)), '*'('*'(3, 200000000000.0), 8e-6))).
+step 7 rule 1 [1,2,3,4,5,6] : deflection_mm(demo, 3.90625).
+answer 1 [7]
 
 ?- within_limit(Beam).
 Beam = demo.
 
-% Reason
-certificate(eyeon, 1).
+?- check(deflection_mm(demo, 3.90625)).
+true.
 
-claim(query(1), [deflection_mm(demo, 3.90625)]).
+?- check(within_limit(demo)).
+true.
 
-clause(1, beam(demo, 1200.0, 2.5, 200000000000.0, 0.000008, 5.0), []).
-clause(2, deflection_mm(var('Beam'), var('Delta')), [beam(var('Beam'), var('Force'), var('Length'), var('Modulus'), var('Moment'), var('$anonymous1')), '>='(var('Force'), 0), '>'(var('Length'), 0), '>'(var('Modulus'), 0), '>'(var('Moment'), 0), is(var('Delta'), '/'('*'('*'(1000, var('Force')), '**'(var('Length'), 3)), '*'('*'(3, var('Modulus')), var('Moment'))))]).
-
-% step 1
-step(beam(demo, 1200.0, 2.5, 200000000000.0, 0.000008, 5.0), fact(1), [], []).
-% step 2
-step('>='(1200.0, 0), builtin, [], []).
-% step 3
-step('>'(2.5, 0), builtin, [], []).
-% step 4
-step('>'(200000000000.0, 0), builtin, [], []).
-% step 5
-step('>'(0.000008, 0), builtin, [], []).
-% step 6
-step(is(3.90625, '/'('*'('*'(1000, 1200.0), '**'(2.5, 3)), '*'('*'(3, 200000000000.0), 0.000008))), builtin, [], []).
-% step 7
-step(deflection_mm(demo, 3.90625), rule(2), ['='('Beam', demo), '='('Force', 1200.0), '='('Length', 2.5), '='('Modulus', 200000000000.0), '='('Moment', 0.000008), '='('$anonymous1', 5.0), '='('Delta', 3.90625)], [beam(demo, 1200.0, 2.5, 200000000000.0, 0.000008, 5.0), '>='(1200.0, 0), '>'(2.5, 0), '>'(200000000000.0, 0), '>'(0.000008, 0), is(3.90625, '/'('*'('*'(1000, 1200.0), '**'(2.5, 3)), '*'('*'(3, 200000000000.0), 0.000008)))]).
-
-% Check
-check passed: deflection_mm(demo, 3.90625).
-
-check passed: within_limit(demo).
-
-check passed: deflection_mm(demo, Delta), beam(demo, F, L, E, I, _), abs(((((Delta * 3) * E) * I) - ((1000 * F) * (L ** 3)))) < 0.000001.
-
-condition('C1', resolution, ok, 2).
-condition('C2', well_founded, ok, 7).
-condition('C3', justification, ok, 7).
-condition('C4', coverage, ok, 7).
-condition('C5', re_decision, ok, 5).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 8).
-steps(7).
-verified(2).
-recomputed(5).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check((deflection_mm(demo, Delta), beam(demo, F, L, E, I, _), abs('-'('*'('*'('*'(Delta, 3), E), I), '*'('*'(1000, F), '**'(L, 3)))) < 1e-6)).
+true.

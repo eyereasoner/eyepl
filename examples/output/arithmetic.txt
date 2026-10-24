@@ -1,4 +1,3 @@
-% Answer
 ?- absolute(magnitude, Value).
 Value = 9007199254740993.
 
@@ -9,7 +8,7 @@ What = [-2, -3, -1, 2].
 What = [-3, -2, -3, -2, -2.0, -0.5].
 
 ?- result(extrema, What).
-What = [1e+21, 1000000000000000000001].
+What = [1e21, 1000000000000000000001].
 
 ?- result(gcd, What).
 What = 6.
@@ -29,66 +28,55 @@ What = 0.9999999999999999.
 ?- result(division, What).
 What = [-2, -3, -1, 2].
 
-% Reason
-certificate(eyeon, 1).
+?- why.
+wheye-proof 1
+% Rule 2: result(division, [_Calc1, _Calc2, _Calc3, _Calc4]) :- inputs(division, [A, B]), _Calc1 is '//'(A, B), _Calc2 is div(A, B), _Calc3 is rem(A, B), _Calc4 is mod(A, B).
+step 1 source 3 : inputs(division, [-7, 3]).
+step 2 builtin : is(-2, '//'(-7, 3)).
+step 3 builtin : is(-3, div(-7, 3)).
+step 4 builtin : is(-1, rem(-7, 3)).
+step 5 builtin : is(2, mod(-7, 3)).
+step 6 rule 2 [1,2,3,4,5] : result(division, [-2, -3, -1, 2]).
+answer 10 [6]
 
-claim(query(10), [result(division, [-2, -3, -1, 2])]).
+?- check(absolute(magnitude, 9007199254740993)).
+true.
 
-clause(3, inputs(division, [-7, 3]), []).
-clause(11, result(division, [var('_Calc1'), var('_Calc2'), var('_Calc3'), var('_Calc4')]), [inputs(division, [var('A'), var('B')]), is(var('_Calc1'), '//'(var('A'), var('B'))), is(var('_Calc2'), div(var('A'), var('B'))), is(var('_Calc3'), rem(var('A'), var('B'))), is(var('_Calc4'), mod(var('A'), var('B')))]).
+?- check(result(division, [-2, -3, -1, 2])).
+true.
 
-% step 1
-step(inputs(division, [-7, 3]), fact(3), [], []).
-% step 2
-step(is(-2, '//'(-7, 3)), builtin, [], []).
-% step 3
-step(is(-3, div(-7, 3)), builtin, [], []).
-% step 4
-step(is(-1, rem(-7, 3)), builtin, [], []).
-% step 5
-step(is(2, mod(-7, 3)), builtin, [], []).
-% step 6
-step(result(division, [-2, -3, -1, 2]), rule(11), ['='('A', -7), '='('B', 3), '='('_Calc1', -2), '='('_Calc2', -3), '='('_Calc3', -1), '='('_Calc4', 2)], [inputs(division, [-7, 3]), is(-2, '//'(-7, 3)), is(-3, div(-7, 3)), is(-1, rem(-7, 3)), is(2, mod(-7, 3))]).
+?- check((_Calc1 is '+'('*'('//'(-7, 3), 3), rem(-7, 3)), _Calc1 =:= -7)).
+true.
 
-% Check
-check passed: absolute(magnitude, 9007199254740993).
+?- check((_Calc1 is '+'('*'(div(-7, 3), 3), mod(-7, 3)), _Calc1 =:= -7)).
+true.
 
-check passed: result(division, [-2, -3, -1, 2]).
+?- check(result(rounding, [-3, -2, -3, -2, -2.0, -0.5])).
+true.
 
-check passed: _Calc1 is (((-7 // 3) * 3) + (-7 rem 3)), _Calc1 =:= -7.
+?- check((_Calc1 is round(-1.5), _Calc1 =:= -2)).
+true.
 
-check passed: _Calc1 is (((-7 div 3) * 3) + (-7 mod 3)), _Calc1 =:= -7.
+?- check(result(extrema, [1e21, 1000000000000000000001])).
+true.
 
-check passed: result(rounding, [-3, -2, -3, -2, -2.0, -0.5]).
+?- check(result(gcd, 6)).
+true.
 
-check passed: _Calc1 is round(-1.5), _Calc1 =:= -2.
+?- check(result(bits, [4, 15, 11, -14, 104, 1])).
+true.
 
-check passed: result(extrema, [1e+21, 1000000000000000000001]).
+?- check((_Calc1 is '<<'(1, 100), _Calc1 =:= 1267650600228229401496703205376)).
+true.
 
-check passed: result(gcd, 6).
+?- check((_Calc1 is pi, _Calc1 > 3)).
+true.
 
-check passed: result(bits, [4, 15, 11, -14, 104, 1]).
+?- check((_Calc1 is e, _Calc1 < 3)).
+true.
 
-check passed: _Calc1 is (1 << 100), _Calc1 =:= 1267650600228229401496703205376.
+?- check(circumference(circle, 18.84955592153876)).
+true.
 
-check passed: _Calc1 is pi, _Calc1 > 3.
-
-check passed: _Calc1 is e, _Calc1 < 3.
-
-check passed: circumference(circle, 18.84955592153876).
-
-check passed: _Calc1 is abs((tan(atan(1)) - 1)), _Calc1 =< 1e-12.
-
-condition('C1', resolution, ok, 2).
-condition('C2', well_founded, ok, 6).
-condition('C3', justification, ok, 6).
-condition('C4', coverage, ok, 6).
-condition('C5', re_decision, ok, 4).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 7).
-steps(6).
-verified(2).
-recomputed(4).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check((_Calc1 is abs('-'(tan(atan(1)), 1)), _Calc1 =< 1e-12)).
+true.

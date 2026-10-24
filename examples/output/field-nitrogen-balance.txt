@@ -1,9 +1,74 @@
-% Answer
 ?- status(Field, Status).
 Field = low_input, Status = under.
+Field = balanced_loam, Status = balanced.
 Field = high_input, Status = over.
 Field = sandy_high_input, Status = over.
-Field = balanced_loam, Status = balanced.
+
+?- why.
+wheye-proof 1
+% Rule 1: balance(Field, Total, Lost, Available, Deficit, Surplus, Index) :- field(Field, Soil, Fertilizer, Loss, Demand), Soil >= 0, Fertilizer >= 0, Loss >= 0, Loss =< 1, Demand >= 0, Total is '+'(Soil, Fertilizer), Lost is '*'(Total, Loss), Available is '-'(Total, Lost), Deficit is max(0.0, '-'(Demand, Available)), Surplus is max(0.0, '-'(Available, Demand)), Index is '*'(Surplus, Loss).
+% Rule 2: status(Field, under) :- balance(Field, _, _, Available, _, _, _), field(Field, _, _, _, Demand), Available < '*'(0.9, Demand).
+% Rule 3: status(Field, balanced) :- balance(Field, _, _, Available, _, _, _), field(Field, _, _, _, Demand), Available >= '*'(0.9, Demand), Available =< '*'(1.1, Demand).
+% Rule 4: status(Field, over) :- balance(Field, _, _, Available, _, _, _), field(Field, _, _, _, Demand), Available > '*'(1.1, Demand).
+step 1 source 1 : field(low_input, 40.0, 60.0, 0.15, 130.0).
+step 2 source 2 : field(balanced_loam, 50.0, 90.0, 0.15, 130.0).
+step 3 source 3 : field(high_input, 60.0, 180.0, 0.25, 160.0).
+step 4 source 4 : field(sandy_high_input, 40.0, 240.0, 0.4, 150.0).
+step 5 builtin : '>='(40.0, 0).
+step 6 builtin : '>='(60.0, 0).
+step 7 builtin : '>='(0.15, 0).
+step 8 builtin : '=<'(0.15, 1).
+step 9 builtin : '>='(130.0, 0).
+step 10 builtin : is(100.0, '+'(40.0, 60.0)).
+step 11 builtin : is(15.0, '*'(100.0, 0.15)).
+step 12 builtin : is(85.0, '-'(100.0, 15.0)).
+step 13 builtin : is(45.0, max(0.0, '-'(130.0, 85.0))).
+step 14 builtin : is(0.0, max(0.0, '-'(85.0, 130.0))).
+step 15 builtin : is(0.0, '*'(0.0, 0.15)).
+step 16 rule 1 [1,5,6,7,8,9,10,11,12,13,14,15] : balance(low_input, 100.0, 15.0, 85.0, 45.0, 0.0, 0.0).
+step 17 builtin : '<'(85.0, '*'(0.9, 130.0)).
+step 18 rule 2 [16,1,17] : status(low_input, under).
+step 19 builtin : '>='(50.0, 0).
+step 20 builtin : '>='(90.0, 0).
+step 21 builtin : is(140.0, '+'(50.0, 90.0)).
+step 22 builtin : is(21.0, '*'(140.0, 0.15)).
+step 23 builtin : is(119.0, '-'(140.0, 21.0)).
+step 24 builtin : is(11.0, max(0.0, '-'(130.0, 119.0))).
+step 25 builtin : is(0.0, max(0.0, '-'(119.0, 130.0))).
+step 26 rule 1 [2,19,20,7,8,9,21,22,23,24,25,15] : balance(balanced_loam, 140.0, 21.0, 119.0, 11.0, 0.0, 0.0).
+step 27 builtin : '>='(119.0, '*'(0.9, 130.0)).
+step 28 builtin : '=<'(119.0, '*'(1.1, 130.0)).
+step 29 rule 3 [26,2,27,28] : status(balanced_loam, balanced).
+step 30 builtin : '>='(180.0, 0).
+step 31 builtin : '>='(0.25, 0).
+step 32 builtin : '=<'(0.25, 1).
+step 33 builtin : '>='(160.0, 0).
+step 34 builtin : is(240.0, '+'(60.0, 180.0)).
+step 35 builtin : is(60.0, '*'(240.0, 0.25)).
+step 36 builtin : is(180.0, '-'(240.0, 60.0)).
+step 37 builtin : is(0.0, max(0.0, '-'(160.0, 180.0))).
+step 38 builtin : is(20.0, max(0.0, '-'(180.0, 160.0))).
+step 39 builtin : is(5.0, '*'(20.0, 0.25)).
+step 40 rule 1 [3,6,30,31,32,33,34,35,36,37,38,39] : balance(high_input, 240.0, 60.0, 180.0, 0.0, 20.0, 5.0).
+step 41 builtin : '>'(180.0, '*'(1.1, 160.0)).
+step 42 rule 4 [40,3,41] : status(high_input, over).
+step 43 builtin : '>='(240.0, 0).
+step 44 builtin : '>='(0.4, 0).
+step 45 builtin : '=<'(0.4, 1).
+step 46 builtin : '>='(150.0, 0).
+step 47 builtin : is(280.0, '+'(40.0, 240.0)).
+step 48 builtin : is(112.0, '*'(280.0, 0.4)).
+step 49 builtin : is(168.0, '-'(280.0, 112.0)).
+step 50 builtin : is(0.0, max(0.0, '-'(150.0, 168.0))).
+step 51 builtin : is(18.0, max(0.0, '-'(168.0, 150.0))).
+step 52 builtin : is(7.2, '*'(18.0, 0.4)).
+step 53 rule 1 [4,5,43,44,45,46,47,48,49,50,51,52] : balance(sandy_high_input, 280.0, 112.0, 168.0, 0.0, 18.0, 7.2).
+step 54 builtin : '>'(168.0, '*'(1.1, 150.0)).
+step 55 rule 4 [53,4,54] : status(sandy_high_input, over).
+answer 1 [18]
+answer 1 [29]
+answer 1 [42]
+answer 1 [55]
 
 ?- balance(Field, Total, Lost, Available, Deficit, Surplus, Index).
 Field = low_input, Total = 100.0, Lost = 15.0, Available = 85.0, Deficit = 45.0, Surplus = 0.0, Index = 0.0.
@@ -11,157 +76,20 @@ Field = balanced_loam, Total = 140.0, Lost = 21.0, Available = 119.0, Deficit = 
 Field = high_input, Total = 240.0, Lost = 60.0, Available = 180.0, Deficit = 0.0, Surplus = 20.0, Index = 5.0.
 Field = sandy_high_input, Total = 280.0, Lost = 112.0, Available = 168.0, Deficit = 0.0, Surplus = 18.0, Index = 7.2.
 
-% Reason
-certificate(eyeon, 1).
+?- check(status(low_input, under)).
+true.
 
-claim(query(1), [status(low_input, under)]).
-claim(query(1), [status(high_input, over)]).
-claim(query(1), [status(sandy_high_input, over)]).
-claim(query(1), [status(balanced_loam, balanced)]).
+?- check(status(balanced_loam, balanced)).
+true.
 
-clause(1, field(low_input, 40.0, 60.0, 0.15, 130.0), []).
-clause(2, field(balanced_loam, 50.0, 90.0, 0.15, 130.0), []).
-clause(3, field(high_input, 60.0, 180.0, 0.25, 160.0), []).
-clause(4, field(sandy_high_input, 40.0, 240.0, 0.4, 150.0), []).
-clause(5, balance(var('Field'), var('Total'), var('Lost'), var('Available'), var('Deficit'), var('Surplus'), var('Index')), [field(var('Field'), var('Soil'), var('Fertilizer'), var('Loss'), var('Demand')), '>='(var('Soil'), 0), '>='(var('Fertilizer'), 0), '>='(var('Loss'), 0), '=<'(var('Loss'), 1), '>='(var('Demand'), 0), is(var('Total'), '+'(var('Soil'), var('Fertilizer'))), is(var('Lost'), '*'(var('Total'), var('Loss'))), is(var('Available'), '-'(var('Total'), var('Lost'))), is(var('Deficit'), max(0.0, '-'(var('Demand'), var('Available')))), is(var('Surplus'), max(0.0, '-'(var('Available'), var('Demand')))), is(var('Index'), '*'(var('Surplus'), var('Loss')))]).
-clause(6, status(var('Field'), under), [balance(var('Field'), var('$anonymous1'), var('$anonymous2'), var('Available'), var('$anonymous3'), var('$anonymous4'), var('$anonymous5')), field(var('Field'), var('$anonymous6'), var('$anonymous7'), var('$anonymous8'), var('Demand')), '<'(var('Available'), '*'(0.9, var('Demand')))]).
-clause(7, status(var('Field'), balanced), [balance(var('Field'), var('$anonymous9'), var('$anonymous10'), var('Available'), var('$anonymous11'), var('$anonymous12'), var('$anonymous13')), field(var('Field'), var('$anonymous14'), var('$anonymous15'), var('$anonymous16'), var('Demand')), '>='(var('Available'), '*'(0.9, var('Demand'))), '=<'(var('Available'), '*'(1.1, var('Demand')))]).
-clause(8, status(var('Field'), over), [balance(var('Field'), var('$anonymous17'), var('$anonymous18'), var('Available'), var('$anonymous19'), var('$anonymous20'), var('$anonymous21')), field(var('Field'), var('$anonymous22'), var('$anonymous23'), var('$anonymous24'), var('Demand')), '>'(var('Available'), '*'(1.1, var('Demand')))]).
+?- check(status(high_input, over)).
+true.
 
-% step 1
-step(field(low_input, 40.0, 60.0, 0.15, 130.0), fact(1), [], []).
-% step 2
-step('>='(40.0, 0), builtin, [], []).
-% step 3
-step('>='(60.0, 0), builtin, [], []).
-% step 4
-step('>='(0.15, 0), builtin, [], []).
-% step 5
-step('=<'(0.15, 1), builtin, [], []).
-% step 6
-step('>='(130.0, 0), builtin, [], []).
-% step 7
-step(is(100.0, '+'(40.0, 60.0)), builtin, [], []).
-% step 8
-step(is(15.0, '*'(100.0, 0.15)), builtin, [], []).
-% step 9
-step(is(85.0, '-'(100.0, 15.0)), builtin, [], []).
-% step 10
-step(is(45.0, max(0.0, '-'(130.0, 85.0))), builtin, [], []).
-% step 11
-step(is(0.0, max(0.0, '-'(85.0, 130.0))), builtin, [], []).
-% step 12
-step(is(0.0, '*'(0.0, 0.15)), builtin, [], []).
-% step 13
-step(balance(low_input, 100.0, 15.0, 85.0, 45.0, 0.0, 0.0), rule(5), ['='('Field', low_input), '='('Soil', 40.0), '='('Fertilizer', 60.0), '='('Loss', 0.15), '='('Demand', 130.0), '='('Total', 100.0), '='('Lost', 15.0), '='('Available', 85.0), '='('Deficit', 45.0), '='('Surplus', 0.0), '='('Index', 0.0)], [field(low_input, 40.0, 60.0, 0.15, 130.0), '>='(40.0, 0), '>='(60.0, 0), '>='(0.15, 0), '=<'(0.15, 1), '>='(130.0, 0), is(100.0, '+'(40.0, 60.0)), is(15.0, '*'(100.0, 0.15)), is(85.0, '-'(100.0, 15.0)), is(45.0, max(0.0, '-'(130.0, 85.0))), is(0.0, max(0.0, '-'(85.0, 130.0))), is(0.0, '*'(0.0, 0.15))]).
-% step 14
-step('<'(85.0, '*'(0.9, 130.0)), builtin, [], []).
-% step 15
-step(status(low_input, under), rule(6), ['='('Field', low_input), '='('$anonymous1', 100.0), '='('$anonymous2', 15.0), '='('Available', 85.0), '='('$anonymous3', 45.0), '='('$anonymous4', 0.0), '='('$anonymous5', 0.0), '='('$anonymous6', 40.0), '='('$anonymous7', 60.0), '='('$anonymous8', 0.15), '='('Demand', 130.0)], [balance(low_input, 100.0, 15.0, 85.0, 45.0, 0.0, 0.0), field(low_input, 40.0, 60.0, 0.15, 130.0), '<'(85.0, '*'(0.9, 130.0))]).
-% step 16
-step(field(high_input, 60.0, 180.0, 0.25, 160.0), fact(3), [], []).
-% step 17
-step('>='(180.0, 0), builtin, [], []).
-% step 18
-step('>='(0.25, 0), builtin, [], []).
-% step 19
-step('=<'(0.25, 1), builtin, [], []).
-% step 20
-step('>='(160.0, 0), builtin, [], []).
-% step 21
-step(is(240.0, '+'(60.0, 180.0)), builtin, [], []).
-% step 22
-step(is(60.0, '*'(240.0, 0.25)), builtin, [], []).
-% step 23
-step(is(180.0, '-'(240.0, 60.0)), builtin, [], []).
-% step 24
-step(is(0.0, max(0.0, '-'(160.0, 180.0))), builtin, [], []).
-% step 25
-step(is(20.0, max(0.0, '-'(180.0, 160.0))), builtin, [], []).
-% step 26
-step(is(5.0, '*'(20.0, 0.25)), builtin, [], []).
-% step 27
-step(balance(high_input, 240.0, 60.0, 180.0, 0.0, 20.0, 5.0), rule(5), ['='('Field', high_input), '='('Soil', 60.0), '='('Fertilizer', 180.0), '='('Loss', 0.25), '='('Demand', 160.0), '='('Total', 240.0), '='('Lost', 60.0), '='('Available', 180.0), '='('Deficit', 0.0), '='('Surplus', 20.0), '='('Index', 5.0)], [field(high_input, 60.0, 180.0, 0.25, 160.0), '>='(60.0, 0), '>='(180.0, 0), '>='(0.25, 0), '=<'(0.25, 1), '>='(160.0, 0), is(240.0, '+'(60.0, 180.0)), is(60.0, '*'(240.0, 0.25)), is(180.0, '-'(240.0, 60.0)), is(0.0, max(0.0, '-'(160.0, 180.0))), is(20.0, max(0.0, '-'(180.0, 160.0))), is(5.0, '*'(20.0, 0.25))]).
-% step 28
-step('>'(180.0, '*'(1.1, 160.0)), builtin, [], []).
-% step 29
-step(status(high_input, over), rule(8), ['='('Field', high_input), '='('$anonymous17', 240.0), '='('$anonymous18', 60.0), '='('Available', 180.0), '='('$anonymous19', 0.0), '='('$anonymous20', 20.0), '='('$anonymous21', 5.0), '='('$anonymous22', 60.0), '='('$anonymous23', 180.0), '='('$anonymous24', 0.25), '='('Demand', 160.0)], [balance(high_input, 240.0, 60.0, 180.0, 0.0, 20.0, 5.0), field(high_input, 60.0, 180.0, 0.25, 160.0), '>'(180.0, '*'(1.1, 160.0))]).
-% step 30
-step(field(sandy_high_input, 40.0, 240.0, 0.4, 150.0), fact(4), [], []).
-% step 31
-step('>='(240.0, 0), builtin, [], []).
-% step 32
-step('>='(0.4, 0), builtin, [], []).
-% step 33
-step('=<'(0.4, 1), builtin, [], []).
-% step 34
-step('>='(150.0, 0), builtin, [], []).
-% step 35
-step(is(280.0, '+'(40.0, 240.0)), builtin, [], []).
-% step 36
-step(is(112.0, '*'(280.0, 0.4)), builtin, [], []).
-% step 37
-step(is(168.0, '-'(280.0, 112.0)), builtin, [], []).
-% step 38
-step(is(0.0, max(0.0, '-'(150.0, 168.0))), builtin, [], []).
-% step 39
-step(is(18.0, max(0.0, '-'(168.0, 150.0))), builtin, [], []).
-% step 40
-step(is(7.2, '*'(18.0, 0.4)), builtin, [], []).
-% step 41
-step(balance(sandy_high_input, 280.0, 112.0, 168.0, 0.0, 18.0, 7.2), rule(5), ['='('Field', sandy_high_input), '='('Soil', 40.0), '='('Fertilizer', 240.0), '='('Loss', 0.4), '='('Demand', 150.0), '='('Total', 280.0), '='('Lost', 112.0), '='('Available', 168.0), '='('Deficit', 0.0), '='('Surplus', 18.0), '='('Index', 7.2)], [field(sandy_high_input, 40.0, 240.0, 0.4, 150.0), '>='(40.0, 0), '>='(240.0, 0), '>='(0.4, 0), '=<'(0.4, 1), '>='(150.0, 0), is(280.0, '+'(40.0, 240.0)), is(112.0, '*'(280.0, 0.4)), is(168.0, '-'(280.0, 112.0)), is(0.0, max(0.0, '-'(150.0, 168.0))), is(18.0, max(0.0, '-'(168.0, 150.0))), is(7.2, '*'(18.0, 0.4))]).
-% step 42
-step('>'(168.0, '*'(1.1, 150.0)), builtin, [], []).
-% step 43
-step(status(sandy_high_input, over), rule(8), ['='('Field', sandy_high_input), '='('$anonymous17', 280.0), '='('$anonymous18', 112.0), '='('Available', 168.0), '='('$anonymous19', 0.0), '='('$anonymous20', 18.0), '='('$anonymous21', 7.2), '='('$anonymous22', 40.0), '='('$anonymous23', 240.0), '='('$anonymous24', 0.4), '='('Demand', 150.0)], [balance(sandy_high_input, 280.0, 112.0, 168.0, 0.0, 18.0, 7.2), field(sandy_high_input, 40.0, 240.0, 0.4, 150.0), '>'(168.0, '*'(1.1, 150.0))]).
-% step 44
-step(field(balanced_loam, 50.0, 90.0, 0.15, 130.0), fact(2), [], []).
-% step 45
-step('>='(50.0, 0), builtin, [], []).
-% step 46
-step('>='(90.0, 0), builtin, [], []).
-% step 47
-step(is(140.0, '+'(50.0, 90.0)), builtin, [], []).
-% step 48
-step(is(21.0, '*'(140.0, 0.15)), builtin, [], []).
-% step 49
-step(is(119.0, '-'(140.0, 21.0)), builtin, [], []).
-% step 50
-step(is(11.0, max(0.0, '-'(130.0, 119.0))), builtin, [], []).
-% step 51
-step(is(0.0, max(0.0, '-'(119.0, 130.0))), builtin, [], []).
-% step 52
-step(balance(balanced_loam, 140.0, 21.0, 119.0, 11.0, 0.0, 0.0), rule(5), ['='('Field', balanced_loam), '='('Soil', 50.0), '='('Fertilizer', 90.0), '='('Loss', 0.15), '='('Demand', 130.0), '='('Total', 140.0), '='('Lost', 21.0), '='('Available', 119.0), '='('Deficit', 11.0), '='('Surplus', 0.0), '='('Index', 0.0)], [field(balanced_loam, 50.0, 90.0, 0.15, 130.0), '>='(50.0, 0), '>='(90.0, 0), '>='(0.15, 0), '=<'(0.15, 1), '>='(130.0, 0), is(140.0, '+'(50.0, 90.0)), is(21.0, '*'(140.0, 0.15)), is(119.0, '-'(140.0, 21.0)), is(11.0, max(0.0, '-'(130.0, 119.0))), is(0.0, max(0.0, '-'(119.0, 130.0))), is(0.0, '*'(0.0, 0.15))]).
-% step 53
-step('>='(119.0, '*'(0.9, 130.0)), builtin, [], []).
-% step 54
-step('=<'(119.0, '*'(1.1, 130.0)), builtin, [], []).
-% step 55
-step(status(balanced_loam, balanced), rule(7), ['='('Field', balanced_loam), '='('$anonymous9', 140.0), '='('$anonymous10', 21.0), '='('Available', 119.0), '='('$anonymous11', 11.0), '='('$anonymous12', 0.0), '='('$anonymous13', 0.0), '='('$anonymous14', 50.0), '='('$anonymous15', 90.0), '='('$anonymous16', 0.15), '='('Demand', 130.0)], [balance(balanced_loam, 140.0, 21.0, 119.0, 11.0, 0.0, 0.0), field(balanced_loam, 50.0, 90.0, 0.15, 130.0), '>='(119.0, '*'(0.9, 130.0)), '=<'(119.0, '*'(1.1, 130.0))]).
+?- check(status(sandy_high_input, over)).
+true.
 
-% Check
-check passed: status(low_input, under).
+?- check(balance(low_input, 100.0, 15.0, 85.0, 45.0, 0.0, 0.0)).
+true.
 
-check passed: status(balanced_loam, balanced).
-
-check passed: status(high_input, over).
-
-check passed: status(sandy_high_input, over).
-
-check passed: balance(low_input, 100.0, 15.0, 85.0, 45.0, 0.0, 0.0).
-
-check passed: balance(sandy_high_input, Total, Lost, Available, _, Surplus, Index), abs(((Total - Lost) - Available)) < 1e-12, abs((Surplus - 18.0)) < 1e-12, abs((Index - 7.2)) < 1e-12.
-
-condition('C1', resolution, ok, 12).
-condition('C2', well_founded, ok, 55).
-condition('C3', justification, ok, 55).
-condition('C4', coverage, ok, 65).
-condition('C5', re_decision, ok, 43).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 59).
-steps(55).
-verified(12).
-recomputed(43).
-trusted(0).
-claims(4).
-verdict(checked).
+?- check((balance(sandy_high_input, Total, Lost, Available, _, Surplus, Index), abs('-'('-'(Total, Lost), Available)) < 1e-12, abs('-'(Surplus, 18.0)) < 1e-12, abs('-'(Index, 7.2)) < 1e-12)).
+true.

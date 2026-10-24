@@ -151,15 +151,34 @@ h1 span {
   gap:9px;
   flex-wrap:wrap
 }
+.actions button {
+  min-height:40px;
+  border-radius:.5rem;
+  padding:.5rem .85rem;
+  font-weight:600
+}
+.actions button:disabled {
+  opacity:.5
+}
 .run {
-  background:var(--green);
-  min-width:100px
+  background:var(--green)
 }
 .stop {
-  background:#ffd7d0
+  background:var(--coral)
 }
 .share {
   background:var(--cyan)
+}
+.gist {
+  background:var(--yellow)
+}
+.status {
+  flex-basis:100%;
+  min-width:0;
+  margin:0;
+  color:var(--muted);
+  font-size:13px;
+  overflow-wrap:anywhere
 }
 .selectors {
   display:flex;
@@ -246,6 +265,8 @@ textarea {
   width:100%;
   min-height:340px;
   resize:vertical;
+  overflow:auto;
+  scrollbar-width:none;
   background:transparent;
   color:var(--ink);
   border:0;
@@ -261,7 +282,11 @@ pre {
   min-height:340px;
   max-height:600px;
   overflow:auto;
+  scrollbar-width:none;
   flex:1
+}
+textarea::-webkit-scrollbar,pre::-webkit-scrollbar {
+  display:none
 }
 .panel-hint {
   border-top:1px solid #edf0e9;
@@ -299,28 +324,6 @@ pre {
 .share-box button {
   padding:4px 9px;
   background:#d8edf4
-}
-.notes {
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:42px;
-  padding:42px 0 32px
-}
-.number {
-  font-size:11px;
-  color:#466d4a;
-  font-weight:800;
-  letter-spacing:1px
-}
-.notes h2 {
-  font-size:15px;
-  margin:10px 0
-}
-.notes p {
-  font-size:13px;
-  line-height:1.7;
-  color:var(--muted);
-  margin:0
 }
 footer {
   border-top:1px solid var(--line);
@@ -381,12 +384,15 @@ footer {
     align-items:stretch
   }
   .actions {
-    width:100%
+    width:100%;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr))
   }
   .actions button {
     flex:1;
-    padding:11px 10px;
-    font-size:13px
+    min-height:44px;
+    padding:8px;
+    font-size:15px
   }
   .selectors {
     width:100%;
@@ -420,26 +426,6 @@ footer {
   textarea,pre {
     padding-left:15px;
     padding-right:15px
-  }
-  .notes {
-    grid-template-columns:1fr;
-    gap:22px;
-    padding:28px 0
-  }
-  .notes article {
-    display:grid;
-    grid-template-columns:26px 1fr;
-    gap:0 10px
-  }
-  .number {
-    grid-row:1/3;
-    margin-top:3px
-  }
-  .notes h2 {
-    margin:0 0 7px
-  }
-  .notes p {
-    grid-column:2
   }
   footer {
     flex-direction:column;

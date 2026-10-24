@@ -1,67 +1,54 @@
-% Answer
 ?- good_at(Person, Trade).
 Person = joe, Trade = cobbler.
 Person = jane, Trade = carpenter.
+
+?- why.
+wheye-proof 1
+% Rule 1: good_at(Person, Trade) :- description(Person, [good, Trade]).
+step 1 source 1 : description(joe, [good, cobbler]).
+step 2 source 2 : description(jane, [good, carpenter]).
+step 3 rule 1 [1] : good_at(joe, cobbler).
+step 4 rule 1 [2] : good_at(jane, carpenter).
+answer 1 [3]
+answer 1 [4]
 
 ?- classified_as(Person, Trade).
 Person = joe, Trade = cobbler.
 Person = jane, Trade = carpenter.
 
-% Reason
-certificate(eyeon, 1).
+?- why.
+wheye-proof 1
+% Rule 2: classified_as(Person, Trade) :- description(Person, [good, Trade]).
+step 1 source 1 : description(joe, [good, cobbler]).
+step 2 source 2 : description(jane, [good, carpenter]).
+step 3 rule 2 [1] : classified_as(joe, cobbler).
+step 4 rule 2 [2] : classified_as(jane, carpenter).
+answer 2 [3]
+answer 2 [4]
 
-claim(query(1), [good_at(joe, cobbler)]).
-claim(query(1), [good_at(jane, carpenter)]).
-claim(query(3), [classified_as(joe, cobbler)]).
-claim(query(3), [classified_as(jane, carpenter)]).
+?- check(good_at(joe, cobbler)).
+true.
 
-clause(1, description(joe, [good, cobbler]), []).
-clause(2, description(jane, [good, carpenter]), []).
-clause(4, good_at(var('Person'), var('Trade')), [description(var('Person'), [good, var('Trade')])]).
-clause(5, classified_as(var('Person'), var('Trade')), [description(var('Person'), [good, var('Trade')])]).
+?- check(good_at(jane, carpenter)).
+true.
 
-% step 1
-step(description(joe, [good, cobbler]), fact(1), [], []).
-% step 2
-step(good_at(joe, cobbler), rule(4), ['='('Person', joe), '='('Trade', cobbler)], [description(joe, [good, cobbler])]).
-% step 3
-step(description(jane, [good, carpenter]), fact(2), [], []).
-% step 4
-step(good_at(jane, carpenter), rule(4), ['='('Person', jane), '='('Trade', carpenter)], [description(jane, [good, carpenter])]).
-% step 5
-step(classified_as(joe, cobbler), rule(5), ['='('Person', joe), '='('Trade', cobbler)], [description(joe, [good, cobbler])]).
-% step 6
-step(classified_as(jane, carpenter), rule(5), ['='('Person', jane), '='('Trade', carpenter)], [description(jane, [good, carpenter])]).
+?- check(classified_as(joe, cobbler)).
+true.
 
-% Check
-check passed: good_at(joe, cobbler).
+?- check(classified_as(jane, carpenter)).
+true.
 
-check passed: good_at(jane, carpenter).
+?- check(\+ (good_at(joe, carpenter))).
+true.
 
-check passed: classified_as(joe, cobbler).
+?- check(\+ (good_at(sam, cobbler))).
+true.
 
-check passed: classified_as(jane, carpenter).
+?- check(\+ (classified_as(sam, cobbler))).
+true.
 
-check passed: \+ (good_at(joe, carpenter)).
+?- check(aggregate_all(count, (good_at(Person, Trade)), 2)).
+true.
 
-check passed: \+ (good_at(sam, cobbler)).
-
-check passed: \+ (classified_as(sam, cobbler)).
-
-check passed: aggregate_all(count, (good_at(Person, Trade)), 2).
-
-check passed: aggregate_all(count, (classified_as(Person, Trade)), 2).
-
-condition('C1', resolution, ok, 6).
-condition('C2', well_founded, ok, 6).
-condition('C3', justification, ok, 6).
-condition('C4', coverage, ok, 8).
-condition('C5', re_decision, ok, 0).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 10).
-steps(6).
-verified(6).
-recomputed(0).
-trusted(0).
-claims(4).
-verdict(checked).
+?- check(aggregate_all(count, (classified_as(Person, Trade)), 2)).
+true.

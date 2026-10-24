@@ -1,6 +1,6 @@
 # Wheye guide
 
-Version **0.1.16**. Run a Prolog subset in the native CLI or browser, get
+Version **0.1.17**. Run a Prolog subset in the native CLI or browser, get
 answers, and inspect their independently checkable proofs. The
 [specification](https://eyereasoner.github.io/wheye/SPEC/) defines the language
 and the [C1–C9 contract](https://eyereasoner.github.io/wheye/SPEC/#8-verification).
@@ -41,6 +41,14 @@ The playground recognizes saved copies of bundled examples, including older
 versions, and loads their current source. Custom edits retain their exact text
 in saved state and full source share links.
 
+**Create Gist share** uploads the program to an unlisted GitHub Gist and copies
+a share link. Enter a GitHub token with [Gist write permission](https://docs.github.com/en/rest/gists/gists#create-a-gist)
+when prompted; it stays in the current tab's session. Anyone with the link can
+read the Gist. Opening a Gist share restores the source without running it.
+The top status shows `Done · exit 0 · … s` or `Failed · exit 1 · … s`.
+The input and output hide their vertical scrollbars while retaining wheel,
+touch, and keyboard scrolling, including for the largest examples.
+
 ## Explore the examples
 
 All programs are directly in [examples/](https://github.com/eyereasoner/wheye/tree/main/examples/)
@@ -48,9 +56,9 @@ and selectable in the [playground](https://eyereasoner.github.io/wheye/playgroun
 The collection includes lists, structural unification, recursive arithmetic,
 Fibonacci at 10,000, graph algorithms, finite optimization, text processing,
 scientific calculations, and classification chains. Source header comments
-explain each example's assumptions and expected results. Historical transcripts in
-`examples/output/` use an earlier output format; the CLI's certificate and report
-format is described below.
+explain each example's assumptions and expected results. Golden transcripts in
+`examples/output/` contain the current output of every program. The example
+suite compares them exactly and independently checks the certificates under C1–C9.
 
 | Example | What it shows |
 | --- | --- |
@@ -246,10 +254,20 @@ cargo clippy --target wasm32-unknown-unknown --lib --locked -- -D warnings
 git diff --check
 ```
 
-Tests run every packaged program and its goal checks, check C1–C9, reject forged
-certificates including omitted demanded calls, and preserve independent
-exhaustive small-graph oracles. The browser tests use real WebAssembly and
-check worker cancellation, sharing, desktop layout, and phone layout.
+`scripts/test-all` describes each check, times every native test and bundled
+example, and prints overall timing at the end. It continues after failures and
+returns a nonzero status if any check fails. Every example must have exactly one
+golden in `examples/output/`; the suite also checks its saved certificate and
+its expected goal checks. Graph oracles, forged-certificate regressions, worker,
+Pages, Gist sharing, and release recovery tests remain covered. Browser and
+Wasm smoke tests use small examples; the 100,000-level taxonomy and full airport
+graph run natively to avoid exhausting browser memory.
+
+After an intentional output change, regenerate and review the goldens:
+
+```sh
+WHEYE_UPDATE_GOLDENS=1 cargo test --release --locked --test examples -- --nocapture
+```
 
 ```sh
 python3 -m http.server 8766 --bind 127.0.0.1

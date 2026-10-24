@@ -1,4 +1,3 @@
-% Answer
 ?- route(trip, What).
 What = ['drive-gent-brugge', 'drive-brugge-oostende'].
 What = ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'].
@@ -37,271 +36,157 @@ What = direct.
 ?- outcome(trip, What).
 What = "Gent → Brugge → Oostende".
 
-% Reason
-certificate(eyeon, 1).
+?- why.
+wheye-proof 1
+% Rule 1: route([From, To], [Road]) :- road([From, To], Road).
+% Rule 2: route([From, To], [Road | Rest]) :- road([From, Via], Road), route([Via, To], Rest).
+% Rule 3: route(trip, Actions) :- location(traveller, From), destination(trip, To), route([From, To], Actions).
+% Rule 4: actions(Route, Actions) :- route(trip, Actions), name(Actions, Route).
+% Rule 5: is_a(Route, 'available-route') :- actions(Route, Actions).
+% Rule 6: duration([Action | Rest], _Calc1) :- duration(Action, Value), duration(Rest, Remaining), _Calc1 is '+'(Value, Remaining).
+% Rule 7: cost([Action | Rest], _Calc1) :- cost(Action, Value), cost(Rest, Remaining), _Calc1 is '+'(Value, Remaining).
+% Rule 8: belief([Action | Rest], _Calc1) :- belief(Action, Value), belief(Rest, Remaining), _Calc1 is '*'(Value, Remaining).
+% Rule 9: comfort([Action | Rest], _Calc1) :- comfort(Action, Value), comfort(Rest, Remaining), _Calc1 is '*'(Value, Remaining).
+% Rule 10: duration(Route, Value) :- actions(Route, Actions), duration(Actions, Value).
+% Rule 11: cost(Route, Value) :- actions(Route, Actions), cost(Actions, Value).
+% Rule 12: belief(Route, Value) :- actions(Route, Actions), belief(Actions, Value).
+% Rule 13: comfort(Route, Value) :- actions(Route, Actions), comfort(Actions, Value).
+% Rule 14: beats(Route, Other) :- is_a(Route, 'available-route'), is_a(Other, 'available-route'), duration(Route, Duration), duration(Other, OtherDuration), Duration < OtherDuration, cost(Route, Cost), cost(Other, OtherCost), Cost < OtherCost, belief(Route, Belief), belief(Other, OtherBelief), Belief > OtherBelief, comfort(Route, Comfort), comfort(Other, OtherComfort), Comfort > OtherComfort.
+% Rule 15: 'recommended-route'(trip, Route) :- beats(Route, Other).
+% Rule 16: outcome(trip, Label) :- 'recommended-route'(trip, Route), label(Route, Label).
+step 1 source 1 : location(traveller, gent).
+step 2 source 2 : destination(trip, oostende).
+step 3 source 3 : road([gent, brugge], 'drive-gent-brugge').
+step 4 source 4 : duration('drive-gent-brugge', 1500).
+step 5 source 5 : cost('drive-gent-brugge', 0.006).
+step 6 source 6 : belief('drive-gent-brugge', 0.96).
+step 7 source 7 : comfort('drive-gent-brugge', 0.99).
+step 8 source 8 : road([gent, kortrijk], 'drive-gent-kortrijk').
+step 9 source 9 : duration('drive-gent-kortrijk', 1600).
+step 10 source 10 : cost('drive-gent-kortrijk', 0.007).
+step 11 source 11 : belief('drive-gent-kortrijk', 0.96).
+step 12 source 12 : comfort('drive-gent-kortrijk', 0.99).
+step 13 source 13 : road([kortrijk, brugge], 'drive-kortrijk-brugge').
+step 14 source 14 : duration('drive-kortrijk-brugge', 1600).
+step 15 source 15 : cost('drive-kortrijk-brugge', 0.007).
+step 16 source 16 : belief('drive-kortrijk-brugge', 0.96).
+step 17 source 17 : comfort('drive-kortrijk-brugge', 0.99).
+step 18 source 18 : road([brugge, oostende], 'drive-brugge-oostende').
+step 19 source 19 : duration('drive-brugge-oostende', 900).
+step 20 source 20 : cost('drive-brugge-oostende', 0.004).
+step 21 source 21 : belief('drive-brugge-oostende', 0.98).
+step 22 source 22 : comfort('drive-brugge-oostende', 1).
+step 23 source 23 : name(['drive-gent-brugge', 'drive-brugge-oostende'], direct).
+step 24 source 24 : name(['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'], 'via-kortrijk').
+step 25 source 25 : label(direct, "Gent → Brugge → Oostende").
+step 26 source 27 : duration([], 0).
+step 27 source 28 : cost([], 0).
+step 28 source 29 : belief([], 1).
+step 29 source 30 : comfort([], 1).
+step 30 builtin : is(900, '+'(900, 0)).
+step 31 builtin : is(2400, '+'(1500, 900)).
+step 32 builtin : is(0.004, '+'(0.004, 0)).
+step 33 builtin : is(0.01, '+'(0.006, 0.004)).
+step 34 builtin : is(0.98, '*'(0.98, 1)).
+step 35 builtin : is(0.9408, '*'(0.96, 0.98)).
+step 36 builtin : is(1, '*'(1, 1)).
+step 37 builtin : is(0.99, '*'(0.99, 1)).
+step 38 builtin : is(2500, '+'(1600, 900)).
+step 39 builtin : is(4100, '+'(1600, 2500)).
+step 40 builtin : is(0.011, '+'(0.007, 0.004)).
+step 41 builtin : is(0.018, '+'(0.007, 0.011)).
+step 42 builtin : is(0.903168, '*'(0.96, 0.9408)).
+step 43 builtin : is(0.9801, '*'(0.99, 0.99)).
+step 44 builtin : '<'(2400, 4100).
+step 45 builtin : '<'(0.01, 0.018).
+step 46 builtin : '>'(0.9408, 0.903168).
+step 47 builtin : '>'(0.99, 0.9801).
+step 48 rule 1 [18] : route([brugge, oostende], ['drive-brugge-oostende']).
+step 49 rule 6 [19,26,30] : duration(['drive-brugge-oostende'], 900).
+step 50 rule 7 [20,27,32] : cost(['drive-brugge-oostende'], 0.004).
+step 51 rule 8 [21,28,34] : belief(['drive-brugge-oostende'], 0.98).
+step 52 rule 9 [22,29,36] : comfort(['drive-brugge-oostende'], 1).
+step 53 rule 2 [13,48] : route([kortrijk, oostende], ['drive-kortrijk-brugge', 'drive-brugge-oostende']).
+step 54 rule 2 [3,48] : route([gent, oostende], ['drive-gent-brugge', 'drive-brugge-oostende']).
+step 55 rule 6 [4,49,31] : duration(['drive-gent-brugge', 'drive-brugge-oostende'], 2400).
+step 56 rule 6 [14,49,38] : duration(['drive-kortrijk-brugge', 'drive-brugge-oostende'], 2500).
+step 57 rule 7 [5,50,33] : cost(['drive-gent-brugge', 'drive-brugge-oostende'], 0.01).
+step 58 rule 7 [15,50,40] : cost(['drive-kortrijk-brugge', 'drive-brugge-oostende'], 0.011).
+step 59 rule 8 [6,51,35] : belief(['drive-gent-brugge', 'drive-brugge-oostende'], 0.9408).
+step 60 rule 8 [16,51,35] : belief(['drive-kortrijk-brugge', 'drive-brugge-oostende'], 0.9408).
+step 61 rule 9 [7,52,37] : comfort(['drive-gent-brugge', 'drive-brugge-oostende'], 0.99).
+step 62 rule 9 [17,52,37] : comfort(['drive-kortrijk-brugge', 'drive-brugge-oostende'], 0.99).
+step 63 rule 2 [8,53] : route([gent, oostende], ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende']).
+step 64 rule 3 [1,2,54] : route(trip, ['drive-gent-brugge', 'drive-brugge-oostende']).
+step 65 rule 6 [9,56,39] : duration(['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'], 4100).
+step 66 rule 7 [10,58,41] : cost(['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'], 0.018).
+step 67 rule 8 [11,60,42] : belief(['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'], 0.903168).
+step 68 rule 9 [12,62,43] : comfort(['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'], 0.9801).
+step 69 rule 3 [1,2,63] : route(trip, ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende']).
+step 70 rule 4 [64,23] : actions(direct, ['drive-gent-brugge', 'drive-brugge-oostende']).
+step 71 rule 4 [69,24] : actions('via-kortrijk', ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende']).
+step 72 rule 5 [70] : is_a(direct, 'available-route').
+step 73 rule 10 [70,55] : duration(direct, 2400).
+step 74 rule 11 [70,57] : cost(direct, 0.01).
+step 75 rule 12 [70,59] : belief(direct, 0.9408).
+step 76 rule 13 [70,61] : comfort(direct, 0.99).
+step 77 rule 5 [71] : is_a('via-kortrijk', 'available-route').
+step 78 rule 10 [71,65] : duration('via-kortrijk', 4100).
+step 79 rule 11 [71,66] : cost('via-kortrijk', 0.018).
+step 80 rule 12 [71,67] : belief('via-kortrijk', 0.903168).
+step 81 rule 13 [71,68] : comfort('via-kortrijk', 0.9801).
+step 82 rule 14 [72,77,73,78,44,74,79,45,75,80,46,76,81,47] : beats(direct, 'via-kortrijk').
+step 83 rule 15 [82] : 'recommended-route'(trip, direct).
+step 84 rule 16 [83,25] : outcome(trip, "Gent → Brugge → Oostende").
+answer 12 [84]
 
-claim(query(12), [outcome(trip, "Gent → Brugge → Oostende")]).
+?- check(aggregate_all(count, (is_a(Subject, 'available-route')), 2)).
+true.
 
-clause(1, location(traveller, gent), []).
-clause(2, destination(trip, oostende), []).
-clause(3, road([gent, brugge], 'drive-gent-brugge'), []).
-clause(4, duration('drive-gent-brugge', 1500), []).
-clause(5, cost('drive-gent-brugge', 0.006), []).
-clause(6, belief('drive-gent-brugge', 0.96), []).
-clause(7, comfort('drive-gent-brugge', 0.99), []).
-clause(8, road([gent, kortrijk], 'drive-gent-kortrijk'), []).
-clause(9, duration('drive-gent-kortrijk', 1600), []).
-clause(10, cost('drive-gent-kortrijk', 0.007), []).
-clause(11, belief('drive-gent-kortrijk', 0.96), []).
-clause(12, comfort('drive-gent-kortrijk', 0.99), []).
-clause(13, road([kortrijk, brugge], 'drive-kortrijk-brugge'), []).
-clause(14, duration('drive-kortrijk-brugge', 1600), []).
-clause(15, cost('drive-kortrijk-brugge', 0.007), []).
-clause(16, belief('drive-kortrijk-brugge', 0.96), []).
-clause(17, comfort('drive-kortrijk-brugge', 0.99), []).
-clause(18, road([brugge, oostende], 'drive-brugge-oostende'), []).
-clause(19, duration('drive-brugge-oostende', 900), []).
-clause(20, cost('drive-brugge-oostende', 0.004), []).
-clause(21, belief('drive-brugge-oostende', 0.98), []).
-clause(22, comfort('drive-brugge-oostende', 1), []).
-clause(23, name(['drive-gent-brugge', 'drive-brugge-oostende'], direct), []).
-clause(24, name(['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'], 'via-kortrijk'), []).
-clause(25, label(direct, "Gent → Brugge → Oostende"), []).
-clause(27, duration([], 0), []).
-clause(28, cost([], 0), []).
-clause(29, belief([], 1), []).
-clause(30, comfort([], 1), []).
-clause(31, route([var('From'), var('To')], [var('Road')]), [road([var('From'), var('To')], var('Road'))]).
-clause(32, route([var('From'), var('To')], list([var('Road')], var('Rest'))), [road([var('From'), var('Via')], var('Road')), route([var('Via'), var('To')], var('Rest'))]).
-clause(33, route(trip, var('Actions')), [location(traveller, var('From')), destination(trip, var('To')), route([var('From'), var('To')], var('Actions'))]).
-clause(34, actions(var('Route'), var('Actions')), [route(trip, var('Actions')), name(var('Actions'), var('Route'))]).
-clause(35, is_a(var('Route'), 'available-route'), [actions(var('Route'), var('Actions'))]).
-clause(36, duration(list([var('Action')], var('Rest')), var('_Calc1')), [duration(var('Action'), var('Value')), duration(var('Rest'), var('Remaining')), is(var('_Calc1'), '+'(var('Value'), var('Remaining')))]).
-clause(37, cost(list([var('Action')], var('Rest')), var('_Calc1')), [cost(var('Action'), var('Value')), cost(var('Rest'), var('Remaining')), is(var('_Calc1'), '+'(var('Value'), var('Remaining')))]).
-clause(38, belief(list([var('Action')], var('Rest')), var('_Calc1')), [belief(var('Action'), var('Value')), belief(var('Rest'), var('Remaining')), is(var('_Calc1'), '*'(var('Value'), var('Remaining')))]).
-clause(39, comfort(list([var('Action')], var('Rest')), var('_Calc1')), [comfort(var('Action'), var('Value')), comfort(var('Rest'), var('Remaining')), is(var('_Calc1'), '*'(var('Value'), var('Remaining')))]).
-clause(40, duration(var('Route'), var('Value')), [actions(var('Route'), var('Actions')), duration(var('Actions'), var('Value'))]).
-clause(41, cost(var('Route'), var('Value')), [actions(var('Route'), var('Actions')), cost(var('Actions'), var('Value'))]).
-clause(42, belief(var('Route'), var('Value')), [actions(var('Route'), var('Actions')), belief(var('Actions'), var('Value'))]).
-clause(43, comfort(var('Route'), var('Value')), [actions(var('Route'), var('Actions')), comfort(var('Actions'), var('Value'))]).
-clause(44, beats(var('Route'), var('Other')), [is_a(var('Route'), 'available-route'), is_a(var('Other'), 'available-route'), duration(var('Route'), var('Duration')), duration(var('Other'), var('OtherDuration')), '<'(var('Duration'), var('OtherDuration')), cost(var('Route'), var('Cost')), cost(var('Other'), var('OtherCost')), '<'(var('Cost'), var('OtherCost')), belief(var('Route'), var('Belief')), belief(var('Other'), var('OtherBelief')), '>'(var('Belief'), var('OtherBelief')), comfort(var('Route'), var('Comfort')), comfort(var('Other'), var('OtherComfort')), '>'(var('Comfort'), var('OtherComfort'))]).
-clause(45, 'recommended-route'(trip, var('Route')), [beats(var('Route'), var('Other'))]).
-clause(46, outcome(trip, var('Label')), ['recommended-route'(trip, var('Route')), label(var('Route'), var('Label'))]).
+?- check(route(trip, ['drive-gent-brugge', 'drive-brugge-oostende'])).
+true.
 
-% step 1
-step(location(traveller, gent), fact(1), [], []).
-% step 2
-step(destination(trip, oostende), fact(2), [], []).
-% step 3
-step(road([gent, brugge], 'drive-gent-brugge'), fact(3), [], []).
-% step 4
-step(road([brugge, oostende], 'drive-brugge-oostende'), fact(18), [], []).
-% step 5
-step(route([brugge, oostende], ['drive-brugge-oostende']), rule(31), ['='('From', brugge), '='('To', oostende), '='('Road', 'drive-brugge-oostende')], [road([brugge, oostende], 'drive-brugge-oostende')]).
-% step 6
-step(route([gent, oostende], ['drive-gent-brugge', 'drive-brugge-oostende']), rule(32), ['='('From', gent), '='('To', oostende), '='('Via', brugge), '='('Road', 'drive-gent-brugge'), '='('Rest', ['drive-brugge-oostende'])], [road([gent, brugge], 'drive-gent-brugge'), route([brugge, oostende], ['drive-brugge-oostende'])]).
-% step 7
-step(route(trip, ['drive-gent-brugge', 'drive-brugge-oostende']), rule(33), ['='('Actions', ['drive-gent-brugge', 'drive-brugge-oostende']), '='('From', gent), '='('To', oostende)], [location(traveller, gent), destination(trip, oostende), route([gent, oostende], ['drive-gent-brugge', 'drive-brugge-oostende'])]).
-% step 8
-step(name(['drive-gent-brugge', 'drive-brugge-oostende'], direct), fact(23), [], []).
-% step 9
-step(actions(direct, ['drive-gent-brugge', 'drive-brugge-oostende']), rule(34), ['='('Actions', ['drive-gent-brugge', 'drive-brugge-oostende']), '='('Route', direct)], [route(trip, ['drive-gent-brugge', 'drive-brugge-oostende']), name(['drive-gent-brugge', 'drive-brugge-oostende'], direct)]).
-% step 10
-step(is_a(direct, 'available-route'), rule(35), ['='('Route', direct), '='('Actions', ['drive-gent-brugge', 'drive-brugge-oostende'])], [actions(direct, ['drive-gent-brugge', 'drive-brugge-oostende'])]).
-% step 11
-step(road([gent, kortrijk], 'drive-gent-kortrijk'), fact(8), [], []).
-% step 12
-step(road([kortrijk, brugge], 'drive-kortrijk-brugge'), fact(13), [], []).
-% step 13
-step(route([kortrijk, oostende], ['drive-kortrijk-brugge', 'drive-brugge-oostende']), rule(32), ['='('From', kortrijk), '='('To', oostende), '='('Via', brugge), '='('Road', 'drive-kortrijk-brugge'), '='('Rest', ['drive-brugge-oostende'])], [road([kortrijk, brugge], 'drive-kortrijk-brugge'), route([brugge, oostende], ['drive-brugge-oostende'])]).
-% step 14
-step(route([gent, oostende], ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende']), rule(32), ['='('From', gent), '='('To', oostende), '='('Via', kortrijk), '='('Road', 'drive-gent-kortrijk'), '='('Rest', ['drive-kortrijk-brugge', 'drive-brugge-oostende'])], [road([gent, kortrijk], 'drive-gent-kortrijk'), route([kortrijk, oostende], ['drive-kortrijk-brugge', 'drive-brugge-oostende'])]).
-% step 15
-step(route(trip, ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende']), rule(33), ['='('Actions', ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende']), '='('From', gent), '='('To', oostende)], [location(traveller, gent), destination(trip, oostende), route([gent, oostende], ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'])]).
-% step 16
-step(name(['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'], 'via-kortrijk'), fact(24), [], []).
-% step 17
-step(actions('via-kortrijk', ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende']), rule(34), ['='('Actions', ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende']), '='('Route', 'via-kortrijk')], [route(trip, ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende']), name(['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'], 'via-kortrijk')]).
-% step 18
-step(is_a('via-kortrijk', 'available-route'), rule(35), ['='('Route', 'via-kortrijk'), '='('Actions', ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'])], [actions('via-kortrijk', ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'])]).
-% step 19
-step(duration('drive-gent-brugge', 1500), fact(4), [], []).
-% step 20
-step(duration('drive-brugge-oostende', 900), fact(19), [], []).
-% step 21
-step(duration([], 0), fact(27), [], []).
-% step 22
-step(is(900, '+'(900, 0)), builtin, [], []).
-% step 23
-step(duration(['drive-brugge-oostende'], 900), rule(36), ['='('Action', 'drive-brugge-oostende'), '='('Rest', []), '='('_Calc1', 900), '='('Value', 900), '='('Remaining', 0)], [duration('drive-brugge-oostende', 900), duration([], 0), is(900, '+'(900, 0))]).
-% step 24
-step(is(2400, '+'(1500, 900)), builtin, [], []).
-% step 25
-step(duration(['drive-gent-brugge', 'drive-brugge-oostende'], 2400), rule(36), ['='('Action', 'drive-gent-brugge'), '='('Rest', ['drive-brugge-oostende']), '='('_Calc1', 2400), '='('Value', 1500), '='('Remaining', 900)], [duration('drive-gent-brugge', 1500), duration(['drive-brugge-oostende'], 900), is(2400, '+'(1500, 900))]).
-% step 26
-step(duration(direct, 2400), rule(40), ['='('Route', direct), '='('Value', 2400), '='('Actions', ['drive-gent-brugge', 'drive-brugge-oostende'])], [actions(direct, ['drive-gent-brugge', 'drive-brugge-oostende']), duration(['drive-gent-brugge', 'drive-brugge-oostende'], 2400)]).
-% step 27
-step(duration('drive-gent-kortrijk', 1600), fact(9), [], []).
-% step 28
-step(duration('drive-kortrijk-brugge', 1600), fact(14), [], []).
-% step 29
-step(is(2500, '+'(1600, 900)), builtin, [], []).
-% step 30
-step(duration(['drive-kortrijk-brugge', 'drive-brugge-oostende'], 2500), rule(36), ['='('Action', 'drive-kortrijk-brugge'), '='('Rest', ['drive-brugge-oostende']), '='('_Calc1', 2500), '='('Value', 1600), '='('Remaining', 900)], [duration('drive-kortrijk-brugge', 1600), duration(['drive-brugge-oostende'], 900), is(2500, '+'(1600, 900))]).
-% step 31
-step(is(4100, '+'(1600, 2500)), builtin, [], []).
-% step 32
-step(duration(['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'], 4100), rule(36), ['='('Action', 'drive-gent-kortrijk'), '='('Rest', ['drive-kortrijk-brugge', 'drive-brugge-oostende']), '='('_Calc1', 4100), '='('Value', 1600), '='('Remaining', 2500)], [duration('drive-gent-kortrijk', 1600), duration(['drive-kortrijk-brugge', 'drive-brugge-oostende'], 2500), is(4100, '+'(1600, 2500))]).
-% step 33
-step(duration('via-kortrijk', 4100), rule(40), ['='('Route', 'via-kortrijk'), '='('Value', 4100), '='('Actions', ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'])], [actions('via-kortrijk', ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende']), duration(['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'], 4100)]).
-% step 34
-step('<'(2400, 4100), builtin, [], []).
-% step 35
-step(cost('drive-gent-brugge', 0.006), fact(5), [], []).
-% step 36
-step(cost('drive-brugge-oostende', 0.004), fact(20), [], []).
-% step 37
-step(cost([], 0), fact(28), [], []).
-% step 38
-step(is(0.004, '+'(0.004, 0)), builtin, [], []).
-% step 39
-step(cost(['drive-brugge-oostende'], 0.004), rule(37), ['='('Action', 'drive-brugge-oostende'), '='('Rest', []), '='('_Calc1', 0.004), '='('Value', 0.004), '='('Remaining', 0)], [cost('drive-brugge-oostende', 0.004), cost([], 0), is(0.004, '+'(0.004, 0))]).
-% step 40
-step(is(0.01, '+'(0.006, 0.004)), builtin, [], []).
-% step 41
-step(cost(['drive-gent-brugge', 'drive-brugge-oostende'], 0.01), rule(37), ['='('Action', 'drive-gent-brugge'), '='('Rest', ['drive-brugge-oostende']), '='('_Calc1', 0.01), '='('Value', 0.006), '='('Remaining', 0.004)], [cost('drive-gent-brugge', 0.006), cost(['drive-brugge-oostende'], 0.004), is(0.01, '+'(0.006, 0.004))]).
-% step 42
-step(cost(direct, 0.01), rule(41), ['='('Route', direct), '='('Value', 0.01), '='('Actions', ['drive-gent-brugge', 'drive-brugge-oostende'])], [actions(direct, ['drive-gent-brugge', 'drive-brugge-oostende']), cost(['drive-gent-brugge', 'drive-brugge-oostende'], 0.01)]).
-% step 43
-step(cost('drive-gent-kortrijk', 0.007), fact(10), [], []).
-% step 44
-step(cost('drive-kortrijk-brugge', 0.007), fact(15), [], []).
-% step 45
-step(is(0.011, '+'(0.007, 0.004)), builtin, [], []).
-% step 46
-step(cost(['drive-kortrijk-brugge', 'drive-brugge-oostende'], 0.011), rule(37), ['='('Action', 'drive-kortrijk-brugge'), '='('Rest', ['drive-brugge-oostende']), '='('_Calc1', 0.011), '='('Value', 0.007), '='('Remaining', 0.004)], [cost('drive-kortrijk-brugge', 0.007), cost(['drive-brugge-oostende'], 0.004), is(0.011, '+'(0.007, 0.004))]).
-% step 47
-step(is(0.018, '+'(0.007, 0.011)), builtin, [], []).
-% step 48
-step(cost(['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'], 0.018), rule(37), ['='('Action', 'drive-gent-kortrijk'), '='('Rest', ['drive-kortrijk-brugge', 'drive-brugge-oostende']), '='('_Calc1', 0.018), '='('Value', 0.007), '='('Remaining', 0.011)], [cost('drive-gent-kortrijk', 0.007), cost(['drive-kortrijk-brugge', 'drive-brugge-oostende'], 0.011), is(0.018, '+'(0.007, 0.011))]).
-% step 49
-step(cost('via-kortrijk', 0.018), rule(41), ['='('Route', 'via-kortrijk'), '='('Value', 0.018), '='('Actions', ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'])], [actions('via-kortrijk', ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende']), cost(['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'], 0.018)]).
-% step 50
-step('<'(0.01, 0.018), builtin, [], []).
-% step 51
-step(belief('drive-gent-brugge', 0.96), fact(6), [], []).
-% step 52
-step(belief('drive-brugge-oostende', 0.98), fact(21), [], []).
-% step 53
-step(belief([], 1), fact(29), [], []).
-% step 54
-step(is(0.98, '*'(0.98, 1)), builtin, [], []).
-% step 55
-step(belief(['drive-brugge-oostende'], 0.98), rule(38), ['='('Action', 'drive-brugge-oostende'), '='('Rest', []), '='('_Calc1', 0.98), '='('Value', 0.98), '='('Remaining', 1)], [belief('drive-brugge-oostende', 0.98), belief([], 1), is(0.98, '*'(0.98, 1))]).
-% step 56
-step(is(0.9408, '*'(0.96, 0.98)), builtin, [], []).
-% step 57
-step(belief(['drive-gent-brugge', 'drive-brugge-oostende'], 0.9408), rule(38), ['='('Action', 'drive-gent-brugge'), '='('Rest', ['drive-brugge-oostende']), '='('_Calc1', 0.9408), '='('Value', 0.96), '='('Remaining', 0.98)], [belief('drive-gent-brugge', 0.96), belief(['drive-brugge-oostende'], 0.98), is(0.9408, '*'(0.96, 0.98))]).
-% step 58
-step(belief(direct, 0.9408), rule(42), ['='('Route', direct), '='('Value', 0.9408), '='('Actions', ['drive-gent-brugge', 'drive-brugge-oostende'])], [actions(direct, ['drive-gent-brugge', 'drive-brugge-oostende']), belief(['drive-gent-brugge', 'drive-brugge-oostende'], 0.9408)]).
-% step 59
-step(belief('drive-gent-kortrijk', 0.96), fact(11), [], []).
-% step 60
-step(belief('drive-kortrijk-brugge', 0.96), fact(16), [], []).
-% step 61
-step(belief(['drive-kortrijk-brugge', 'drive-brugge-oostende'], 0.9408), rule(38), ['='('Action', 'drive-kortrijk-brugge'), '='('Rest', ['drive-brugge-oostende']), '='('_Calc1', 0.9408), '='('Value', 0.96), '='('Remaining', 0.98)], [belief('drive-kortrijk-brugge', 0.96), belief(['drive-brugge-oostende'], 0.98), is(0.9408, '*'(0.96, 0.98))]).
-% step 62
-step(is(0.903168, '*'(0.96, 0.9408)), builtin, [], []).
-% step 63
-step(belief(['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'], 0.903168), rule(38), ['='('Action', 'drive-gent-kortrijk'), '='('Rest', ['drive-kortrijk-brugge', 'drive-brugge-oostende']), '='('_Calc1', 0.903168), '='('Value', 0.96), '='('Remaining', 0.9408)], [belief('drive-gent-kortrijk', 0.96), belief(['drive-kortrijk-brugge', 'drive-brugge-oostende'], 0.9408), is(0.903168, '*'(0.96, 0.9408))]).
-% step 64
-step(belief('via-kortrijk', 0.903168), rule(42), ['='('Route', 'via-kortrijk'), '='('Value', 0.903168), '='('Actions', ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'])], [actions('via-kortrijk', ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende']), belief(['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'], 0.903168)]).
-% step 65
-step('>'(0.9408, 0.903168), builtin, [], []).
-% step 66
-step(comfort('drive-gent-brugge', 0.99), fact(7), [], []).
-% step 67
-step(comfort('drive-brugge-oostende', 1), fact(22), [], []).
-% step 68
-step(comfort([], 1), fact(30), [], []).
-% step 69
-step(is(1, '*'(1, 1)), builtin, [], []).
-% step 70
-step(comfort(['drive-brugge-oostende'], 1), rule(39), ['='('Action', 'drive-brugge-oostende'), '='('Rest', []), '='('_Calc1', 1), '='('Value', 1), '='('Remaining', 1)], [comfort('drive-brugge-oostende', 1), comfort([], 1), is(1, '*'(1, 1))]).
-% step 71
-step(is(0.99, '*'(0.99, 1)), builtin, [], []).
-% step 72
-step(comfort(['drive-gent-brugge', 'drive-brugge-oostende'], 0.99), rule(39), ['='('Action', 'drive-gent-brugge'), '='('Rest', ['drive-brugge-oostende']), '='('_Calc1', 0.99), '='('Value', 0.99), '='('Remaining', 1)], [comfort('drive-gent-brugge', 0.99), comfort(['drive-brugge-oostende'], 1), is(0.99, '*'(0.99, 1))]).
-% step 73
-step(comfort(direct, 0.99), rule(43), ['='('Route', direct), '='('Value', 0.99), '='('Actions', ['drive-gent-brugge', 'drive-brugge-oostende'])], [actions(direct, ['drive-gent-brugge', 'drive-brugge-oostende']), comfort(['drive-gent-brugge', 'drive-brugge-oostende'], 0.99)]).
-% step 74
-step(comfort('drive-gent-kortrijk', 0.99), fact(12), [], []).
-% step 75
-step(comfort('drive-kortrijk-brugge', 0.99), fact(17), [], []).
-% step 76
-step(comfort(['drive-kortrijk-brugge', 'drive-brugge-oostende'], 0.99), rule(39), ['='('Action', 'drive-kortrijk-brugge'), '='('Rest', ['drive-brugge-oostende']), '='('_Calc1', 0.99), '='('Value', 0.99), '='('Remaining', 1)], [comfort('drive-kortrijk-brugge', 0.99), comfort(['drive-brugge-oostende'], 1), is(0.99, '*'(0.99, 1))]).
-% step 77
-step(is(0.9801, '*'(0.99, 0.99)), builtin, [], []).
-% step 78
-step(comfort(['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'], 0.9801), rule(39), ['='('Action', 'drive-gent-kortrijk'), '='('Rest', ['drive-kortrijk-brugge', 'drive-brugge-oostende']), '='('_Calc1', 0.9801), '='('Value', 0.99), '='('Remaining', 0.99)], [comfort('drive-gent-kortrijk', 0.99), comfort(['drive-kortrijk-brugge', 'drive-brugge-oostende'], 0.99), is(0.9801, '*'(0.99, 0.99))]).
-% step 79
-step(comfort('via-kortrijk', 0.9801), rule(43), ['='('Route', 'via-kortrijk'), '='('Value', 0.9801), '='('Actions', ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'])], [actions('via-kortrijk', ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende']), comfort(['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'], 0.9801)]).
-% step 80
-step('>'(0.99, 0.9801), builtin, [], []).
-% step 81
-step(beats(direct, 'via-kortrijk'), rule(44), ['='('Route', direct), '='('Other', 'via-kortrijk'), '='('Duration', 2400), '='('OtherDuration', 4100), '='('Cost', 0.01), '='('OtherCost', 0.018), '='('Belief', 0.9408), '='('OtherBelief', 0.903168), '='('Comfort', 0.99), '='('OtherComfort', 0.9801)], [is_a(direct, 'available-route'), is_a('via-kortrijk', 'available-route'), duration(direct, 2400), duration('via-kortrijk', 4100), '<'(2400, 4100), cost(direct, 0.01), cost('via-kortrijk', 0.018), '<'(0.01, 0.018), belief(direct, 0.9408), belief('via-kortrijk', 0.903168), '>'(0.9408, 0.903168), comfort(direct, 0.99), comfort('via-kortrijk', 0.9801), '>'(0.99, 0.9801)]).
-% step 82
-step('recommended-route'(trip, direct), rule(45), ['='('Route', direct), '='('Other', 'via-kortrijk')], [beats(direct, 'via-kortrijk')]).
-% step 83
-step(label(direct, "Gent → Brugge → Oostende"), fact(25), [], []).
-% step 84
-step(outcome(trip, "Gent → Brugge → Oostende"), rule(46), ['='('Label', "Gent → Brugge → Oostende"), '='('Route', direct)], ['recommended-route'(trip, direct), label(direct, "Gent → Brugge → Oostende")]).
+?- check(route(trip, ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende'])).
+true.
 
-% Check
-check passed: aggregate_all(count, (is_a(Subject, 'available-route')), 2).
+?- check(duration(direct, 2400)).
+true.
 
-check passed: route(trip, ['drive-gent-brugge', 'drive-brugge-oostende']).
+?- check(cost(direct, 0.01)).
+true.
 
-check passed: route(trip, ['drive-gent-kortrijk', 'drive-kortrijk-brugge', 'drive-brugge-oostende']).
+?- check(belief(direct, 0.9408)).
+true.
 
-check passed: duration(direct, 2400).
+?- check(comfort(direct, 0.99)).
+true.
 
-check passed: cost(direct, 0.01).
+?- check(duration('via-kortrijk', 4100)).
+true.
 
-check passed: belief(direct, 0.9408).
+?- check(cost('via-kortrijk', 0.018)).
+true.
 
-check passed: comfort(direct, 0.99).
+?- check(belief('via-kortrijk', 0.903168)).
+true.
 
-check passed: duration('via-kortrijk', 4100).
+?- check(comfort('via-kortrijk', 0.9801)).
+true.
 
-check passed: cost('via-kortrijk', 0.018).
+?- check(beats(direct, 'via-kortrijk')).
+true.
 
-check passed: belief('via-kortrijk', 0.903168).
+?- check(\+ (beats('via-kortrijk', direct))).
+true.
 
-check passed: comfort('via-kortrijk', 0.9801).
+?- check('recommended-route'(trip, direct)).
+true.
 
-check passed: beats(direct, 'via-kortrijk').
+?- check(\+ ('recommended-route'(trip, 'via-kortrijk'))).
+true.
 
-check passed: \+ (beats('via-kortrijk', direct)).
+?- check(outcome(trip, "Gent → Brugge → Oostende")).
+true.
 
-check passed: 'recommended-route'(trip, direct).
-
-check passed: \+ ('recommended-route'(trip, 'via-kortrijk')).
-
-check passed: outcome(trip, "Gent → Brugge → Oostende").
-
-check passed: \+ (route([oostende, gent], ['drive-brugge-oostende', 'drive-gent-brugge'])).
-
-condition('C1', resolution, ok, 66).
-condition('C2', well_founded, ok, 84).
-condition('C3', justification, ok, 84).
-condition('C4', coverage, ok, 101).
-condition('C5', re_decision, ok, 18).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 85).
-steps(84).
-verified(66).
-recomputed(18).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check(\+ (route([oostende, gent], ['drive-brugge-oostende', 'drive-gent-brugge']))).
+true.

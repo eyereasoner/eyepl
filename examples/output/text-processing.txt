@@ -1,6 +1,43 @@
-% Answer
 ?- sensor_record(Name, Value).
 Name = sensor_0042, Value = 42.
+
+?- why.
+wheye-proof 1
+% Rule 1: append([], Right, Right) :- .
+% Rule 2: append([Head | Tail], Right, [Head | Joined]) :- append(Tail, Right, Joined).
+% Rule 3: decimal_digits([], Value, Value) :- .
+% Rule 4: decimal_digits([Code | Rest], Accumulator, Value) :- Code >= 48, Code =< 57, Next is '-'('+'('*'(Accumulator, 10), Code), 48), decimal_digits(Rest, Next, Value).
+% Rule 5: unsigned_decimal(Text, Value) :- string_codes(Text, [First | Rest]), decimal_digits([First | Rest], 0, Value).
+% Rule 6: sensor_record(Name, Value) :- reading(Text), unsigned_decimal(Text, Value), atom_codes(sensor_, Prefix), string_codes(Text, Digits), append(Prefix, Digits, Codes), atom_codes(Name, Codes).
+step 1 source 1 : reading("0042").
+step 2 rule 3 [] : decimal_digits([], 42, 42).
+step 3 builtin : '>='(50, 48).
+step 4 builtin : '=<'(50, 57).
+step 5 builtin : is(42, '-'('+'('*'(4, 10), 50), 48)).
+step 6 builtin : '>='(52, 48).
+step 7 builtin : '=<'(52, 57).
+step 8 builtin : is(4, '-'('+'('*'(0, 10), 52), 48)).
+step 9 builtin : '>='(48, 48).
+step 10 builtin : '=<'(48, 57).
+step 11 builtin : is(0, '-'('+'('*'(0, 10), 48), 48)).
+step 12 builtin : string_codes("0042", [48, 48, 52, 50]).
+step 13 rule 1 [] : append([], [48, 48, 52, 50], [48, 48, 52, 50]).
+step 14 builtin : atom_codes(sensor_, [115, 101, 110, 115, 111, 114, 95]).
+step 15 builtin : atom_codes(sensor_0042, [115, 101, 110, 115, 111, 114, 95, 48, 48, 52, 50]).
+step 16 rule 4 [3,4,5,2] : decimal_digits([50], 4, 42).
+step 17 rule 2 [13] : append([95], [48, 48, 52, 50], [95, 48, 48, 52, 50]).
+step 18 rule 4 [6,7,8,16] : decimal_digits([52, 50], 0, 42).
+step 19 rule 2 [17] : append([114, 95], [48, 48, 52, 50], [114, 95, 48, 48, 52, 50]).
+step 20 rule 4 [9,10,11,18] : decimal_digits([48, 52, 50], 0, 42).
+step 21 rule 2 [19] : append([111, 114, 95], [48, 48, 52, 50], [111, 114, 95, 48, 48, 52, 50]).
+step 22 rule 4 [9,10,11,20] : decimal_digits([48, 48, 52, 50], 0, 42).
+step 23 rule 2 [21] : append([115, 111, 114, 95], [48, 48, 52, 50], [115, 111, 114, 95, 48, 48, 52, 50]).
+step 24 rule 5 [12,22] : unsigned_decimal("0042", 42).
+step 25 rule 2 [23] : append([110, 115, 111, 114, 95], [48, 48, 52, 50], [110, 115, 111, 114, 95, 48, 48, 52, 50]).
+step 26 rule 2 [25] : append([101, 110, 115, 111, 114, 95], [48, 48, 52, 50], [101, 110, 115, 111, 114, 95, 48, 48, 52, 50]).
+step 27 rule 2 [26] : append([115, 101, 110, 115, 111, 114, 95], [48, 48, 52, 50], [115, 101, 110, 115, 111, 114, 95, 48, 48, 52, 50]).
+step 28 rule 6 [1,24,14,12,27,15] : sensor_record(sensor_0042, 42).
+answer 1 [28]
 
 ?- label_text(Name, Text).
 Name = sensor, Text = "café 😀".
@@ -8,107 +45,32 @@ Name = sensor, Text = "café 😀".
 ?- string_codes("café 😀", Codes).
 Codes = [99, 97, 102, 233, 32, 128512].
 
-% Reason
-certificate(eyeon, 1).
+?- check(sensor_record(sensor_0042, 42)).
+true.
 
-claim(query(1), [sensor_record(sensor_0042, 42)]).
+?- check(label_text(sensor, "café 😀")).
+true.
 
-clause(1, reading("0042"), []).
-clause(3, append([], var('Right'), var('Right')), []).
-clause(4, append(list([var('Head')], var('Tail')), var('Right'), list([var('Head')], var('Joined'))), [append(var('Tail'), var('Right'), var('Joined'))]).
-clause(5, decimal_digits([], var('Value'), var('Value')), []).
-clause(6, decimal_digits(list([var('Code')], var('Rest')), var('Accumulator'), var('Value')), ['>='(var('Code'), 48), '=<'(var('Code'), 57), is(var('Next'), '-'('+'('*'(var('Accumulator'), 10), var('Code')), 48)), decimal_digits(var('Rest'), var('Next'), var('Value'))]).
-clause(7, unsigned_decimal(var('Text'), var('Value')), [string_codes(var('Text'), list([var('First')], var('Rest'))), decimal_digits(list([var('First')], var('Rest')), 0, var('Value'))]).
-clause(8, sensor_record(var('Name'), var('Value')), [reading(var('Text')), unsigned_decimal(var('Text'), var('Value')), atom_codes(sensor_, var('Prefix')), string_codes(var('Text'), var('Digits')), append(var('Prefix'), var('Digits'), var('Codes')), atom_codes(var('Name'), var('Codes'))]).
+?- check(string_codes("café 😀", [99, 97, 102, 233, 32, 128512])).
+true.
 
-% step 1
-step(reading("0042"), fact(1), [], []).
-% step 2
-step(string_codes("0042", [48, 48, 52, 50]), builtin, [], []).
-% step 3
-step('>='(48, 48), builtin, [], []).
-% step 4
-step('=<'(48, 57), builtin, [], []).
-% step 5
-step(is(0, '-'('+'('*'(0, 10), 48), 48)), builtin, [], []).
-% step 6
-step('>='(52, 48), builtin, [], []).
-% step 7
-step('=<'(52, 57), builtin, [], []).
-% step 8
-step(is(4, '-'('+'('*'(0, 10), 52), 48)), builtin, [], []).
-% step 9
-step('>='(50, 48), builtin, [], []).
-% step 10
-step('=<'(50, 57), builtin, [], []).
-% step 11
-step(is(42, '-'('+'('*'(4, 10), 50), 48)), builtin, [], []).
-% step 12
-step(decimal_digits([], 42, 42), fact(5), ['='('Value', 42)], []).
-% step 13
-step(decimal_digits([50], 4, 42), rule(6), ['='('Code', 50), '='('Rest', []), '='('Accumulator', 4), '='('Value', 42), '='('Next', 42)], ['>='(50, 48), '=<'(50, 57), is(42, '-'('+'('*'(4, 10), 50), 48)), decimal_digits([], 42, 42)]).
-% step 14
-step(decimal_digits([52, 50], 0, 42), rule(6), ['='('Code', 52), '='('Rest', [50]), '='('Accumulator', 0), '='('Value', 42), '='('Next', 4)], ['>='(52, 48), '=<'(52, 57), is(4, '-'('+'('*'(0, 10), 52), 48)), decimal_digits([50], 4, 42)]).
-% step 15
-step(decimal_digits([48, 52, 50], 0, 42), rule(6), ['='('Code', 48), '='('Rest', [52, 50]), '='('Accumulator', 0), '='('Value', 42), '='('Next', 0)], ['>='(48, 48), '=<'(48, 57), is(0, '-'('+'('*'(0, 10), 48), 48)), decimal_digits([52, 50], 0, 42)]).
-% step 16
-step(decimal_digits([48, 48, 52, 50], 0, 42), rule(6), ['='('Code', 48), '='('Rest', [48, 52, 50]), '='('Accumulator', 0), '='('Value', 42), '='('Next', 0)], ['>='(48, 48), '=<'(48, 57), is(0, '-'('+'('*'(0, 10), 48), 48)), decimal_digits([48, 52, 50], 0, 42)]).
-% step 17
-step(unsigned_decimal("0042", 42), rule(7), ['='('Text', "0042"), '='('Value', 42), '='('First', 48), '='('Rest', [48, 52, 50])], [string_codes("0042", [48, 48, 52, 50]), decimal_digits([48, 48, 52, 50], 0, 42)]).
-% step 18
-step(atom_codes(sensor_, [115, 101, 110, 115, 111, 114, 95]), builtin, [], []).
-% step 19
-step(append([], [48, 48, 52, 50], [48, 48, 52, 50]), fact(3), ['='('Right', [48, 48, 52, 50])], []).
-% step 20
-step(append([95], [48, 48, 52, 50], [95, 48, 48, 52, 50]), rule(4), ['='('Head', 95), '='('Tail', []), '='('Right', [48, 48, 52, 50]), '='('Joined', [48, 48, 52, 50])], [append([], [48, 48, 52, 50], [48, 48, 52, 50])]).
-% step 21
-step(append([114, 95], [48, 48, 52, 50], [114, 95, 48, 48, 52, 50]), rule(4), ['='('Head', 114), '='('Tail', [95]), '='('Right', [48, 48, 52, 50]), '='('Joined', [95, 48, 48, 52, 50])], [append([95], [48, 48, 52, 50], [95, 48, 48, 52, 50])]).
-% step 22
-step(append([111, 114, 95], [48, 48, 52, 50], [111, 114, 95, 48, 48, 52, 50]), rule(4), ['='('Head', 111), '='('Tail', [114, 95]), '='('Right', [48, 48, 52, 50]), '='('Joined', [114, 95, 48, 48, 52, 50])], [append([114, 95], [48, 48, 52, 50], [114, 95, 48, 48, 52, 50])]).
-% step 23
-step(append([115, 111, 114, 95], [48, 48, 52, 50], [115, 111, 114, 95, 48, 48, 52, 50]), rule(4), ['='('Head', 115), '='('Tail', [111, 114, 95]), '='('Right', [48, 48, 52, 50]), '='('Joined', [111, 114, 95, 48, 48, 52, 50])], [append([111, 114, 95], [48, 48, 52, 50], [111, 114, 95, 48, 48, 52, 50])]).
-% step 24
-step(append([110, 115, 111, 114, 95], [48, 48, 52, 50], [110, 115, 111, 114, 95, 48, 48, 52, 50]), rule(4), ['='('Head', 110), '='('Tail', [115, 111, 114, 95]), '='('Right', [48, 48, 52, 50]), '='('Joined', [115, 111, 114, 95, 48, 48, 52, 50])], [append([115, 111, 114, 95], [48, 48, 52, 50], [115, 111, 114, 95, 48, 48, 52, 50])]).
-% step 25
-step(append([101, 110, 115, 111, 114, 95], [48, 48, 52, 50], [101, 110, 115, 111, 114, 95, 48, 48, 52, 50]), rule(4), ['='('Head', 101), '='('Tail', [110, 115, 111, 114, 95]), '='('Right', [48, 48, 52, 50]), '='('Joined', [110, 115, 111, 114, 95, 48, 48, 52, 50])], [append([110, 115, 111, 114, 95], [48, 48, 52, 50], [110, 115, 111, 114, 95, 48, 48, 52, 50])]).
-% step 26
-step(append([115, 101, 110, 115, 111, 114, 95], [48, 48, 52, 50], [115, 101, 110, 115, 111, 114, 95, 48, 48, 52, 50]), rule(4), ['='('Head', 115), '='('Tail', [101, 110, 115, 111, 114, 95]), '='('Right', [48, 48, 52, 50]), '='('Joined', [101, 110, 115, 111, 114, 95, 48, 48, 52, 50])], [append([101, 110, 115, 111, 114, 95], [48, 48, 52, 50], [101, 110, 115, 111, 114, 95, 48, 48, 52, 50])]).
-% step 27
-step(atom_codes(sensor_0042, [115, 101, 110, 115, 111, 114, 95, 48, 48, 52, 50]), builtin, [], []).
-% step 28
-step(sensor_record(sensor_0042, 42), rule(8), ['='('Text', "0042"), '='('Value', 42), '='('Prefix', [115, 101, 110, 115, 111, 114, 95]), '='('Digits', [48, 48, 52, 50]), '='('Codes', [115, 101, 110, 115, 111, 114, 95, 48, 48, 52, 50]), '='('Name', sensor_0042)], [reading("0042"), unsigned_decimal("0042", 42), atom_codes(sensor_, [115, 101, 110, 115, 111, 114, 95]), string_codes("0042", [48, 48, 52, 50]), append([115, 101, 110, 115, 111, 114, 95], [48, 48, 52, 50], [115, 101, 110, 115, 111, 114, 95, 48, 48, 52, 50]), atom_codes(sensor_0042, [115, 101, 110, 115, 111, 114, 95, 48, 48, 52, 50])]).
+?- check(unsigned_decimal("900719925474099312345", 900719925474099312345)).
+true.
 
-% Check
-check passed: sensor_record(sensor_0042, 42).
+?- check(unsigned_decimal("0", 0)).
+true.
 
-check passed: label_text(sensor, "café 😀").
+?- check(\+ (unsigned_decimal("", 0))).
+true.
 
-check passed: string_codes("café 😀", [99, 97, 102, 233, 32, 128512]).
+?- check(\+ (unsigned_decimal("4x", 4))).
+true.
 
-check passed: unsigned_decimal("900719925474099312345", 900719925474099312345).
+?- check(\+ (unsigned_decimal("-42", -42))).
+true.
 
-check passed: unsigned_decimal("0", 0).
+?- check(atom_codes('', [])).
+true.
 
-check passed: \+ (unsigned_decimal("", 0)).
-
-check passed: \+ (unsigned_decimal("4x", 4)).
-
-check passed: \+ (unsigned_decimal("-42", -42)).
-
-check passed: atom_codes('', []).
-
-check passed: string_codes("", []).
-
-condition('C1', resolution, ok, 16).
-condition('C2', well_founded, ok, 28).
-condition('C3', justification, ok, 28).
-condition('C4', coverage, ok, 32).
-condition('C5', re_decision, ok, 12).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 29).
-steps(28).
-verified(16).
-recomputed(12).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check(string_codes("", [])).
+true.

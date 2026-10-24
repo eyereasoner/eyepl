@@ -1,141 +1,177 @@
-% Answer
 ?- finding(Subject, Reason).
 Subject = customer(c2), Reason = empty_email.
 Subject = order(o3), Reason = invalid_amount(-5).
 Subject = order(o3), Reason = duplicate_key(r09, r10).
 Subject = customer(c1), Reason = conflicting_email("ada@example.org", "ada.new@example.org").
 Subject = record(r11), Reason = unsupported_shape(shipment, 1).
-Subject = order(o2), Reason = unknown_customer(c9).
 Subject = customer(c3), Reason = missing_email.
+Subject = order(o2), Reason = unknown_customer(c9).
+
+?- why.
+wheye-proof 1
+% Rule 1: length([_ | Rest], Count) :- length(Rest, Previous), Count is '+'(Previous, 1).
+% Rule 2: customer(Id) :- record(_, customer(Id, _)).
+% Rule 3: has_email(Id) :- record(_, email(Id, _)).
+% Rule 4: record_shape(Row, Name, Arity) :- record(Row, Term), Term =.. [Name | Arguments], length(Arguments, Arity).
+% Rule 5: finding(record(Row), unsupported_shape(Name, Arity)) :- record_shape(Row, Name, Arity), \+ (allowed_shape(Name, Arity)).
+% Rule 6: finding(customer(Id), missing_email) :- customer(Id), \+ (has_email(Id)).
+% Rule 7: finding(customer(Id), empty_email) :- record(_, email(Id, "")).
+% Rule 8: finding(customer(Id), conflicting_email(Left, Right)) :- record(Row, email(Id, Left)), record(Other, email(Id, Right)), Row @< Other, Left \= Right.
+% Rule 9: finding(order(Id), unknown_customer(Customer)) :- record(_, order(Id, Customer, _)), \+ (customer(Customer)).
+% Rule 10: finding(order(Id), invalid_amount(Amount)) :- record(_, order(Id, _, Amount)), Amount < 0.
+% Rule 11: finding(order(Id), duplicate_key(Row, Other)) :- record(Row, order(Id, _, _)), record(Other, order(Id, _, _)), Row @< Other.
+step 1 source 1 : record(r01, customer(c1, "Ada")).
+step 2 source 2 : record(r02, customer(c2, "Lin")).
+step 3 source 3 : record(r03, customer(c3, "Mira")).
+step 4 source 4 : record(r04, email(c1, "ada@example.org")).
+step 5 source 5 : record(r05, email(c1, "ada.new@example.org")).
+step 6 source 6 : record(r06, email(c2, "")).
+step 7 source 7 : record(r07, order(o1, c1, 120)).
+step 8 source 8 : record(r08, order(o2, c9, 45)).
+step 9 source 9 : record(r09, order(o3, c2, -5)).
+step 10 source 10 : record(r10, order(o3, c2, 9)).
+step 11 source 11 : record(r11, shipment(o1)).
+step 12 source 12 : allowed_shape(customer, 2).
+step 13 source 13 : allowed_shape(email, 2).
+step 14 source 14 : allowed_shape(order, 3).
+step 15 source 15 : length([], 0).
+step 16 builtin : '<'(-5, 0).
+step 17 builtin : '@<'(r09, r10).
+step 18 builtin : '@<'(r04, r05).
+step 19 builtin : '\\='("ada@example.org", "ada.new@example.org").
+step 20 builtin : is(1, '+'(0, 1)).
+step 21 builtin : '=..'(shipment(o1), [shipment, o1]).
+step 22 builtin : is(2, '+'(1, 1)).
+step 23 builtin : '=..'(customer(c1, "Ada"), [customer, c1, "Ada"]).
+step 24 builtin : '=..'(customer(c2, "Lin"), [customer, c2, "Lin"]).
+step 25 builtin : '=..'(customer(c3, "Mira"), [customer, c3, "Mira"]).
+step 26 builtin : '=..'(email(c1, "ada@example.org"), [email, c1, "ada@example.org"]).
+step 27 builtin : '=..'(email(c1, "ada.new@example.org"), [email, c1, "ada.new@example.org"]).
+step 28 builtin : '=..'(email(c2, ""), [email, c2, ""]).
+step 29 builtin : is(3, '+'(2, 1)).
+step 30 builtin : '=..'(order(o1, c1, 120), [order, o1, c1, 120]).
+step 31 builtin : '=..'(order(o2, c9, 45), [order, o2, c9, 45]).
+step 32 builtin : '=..'(order(o3, c2, -5), [order, o3, c2, -5]).
+step 33 builtin : '=..'(order(o3, c2, 9), [order, o3, c2, 9]).
+step 34 rule 2 [1] : customer(c1).
+step 35 rule 2 [2] : customer(c2).
+step 36 rule 2 [3] : customer(c3).
+step 37 rule 3 [4] : has_email(c1).
+step 38 rule 3 [6] : has_email(c2).
+step 39 rule 7 [6] : finding(customer(c2), empty_email).
+step 40 rule 10 [9,16] : finding(order(o3), invalid_amount(-5)).
+step 41 rule 11 [9,10,17] : finding(order(o3), duplicate_key(r09, r10)).
+step 42 rule 8 [4,5,18,19] : finding(customer(c1), conflicting_email("ada@example.org", "ada.new@example.org")).
+step 43 rule 1 [15,20] : length([o1], 1).
+step 44 rule 1 [15,20] : length(["Ada"], 1).
+step 45 rule 1 [15,20] : length(["Lin"], 1).
+step 46 rule 1 [15,20] : length(["Mira"], 1).
+step 47 rule 1 [15,20] : length(["ada@example.org"], 1).
+step 48 rule 1 [15,20] : length(["ada.new@example.org"], 1).
+step 49 rule 1 [15,20] : length([""], 1).
+step 50 rule 1 [15,20] : length([120], 1).
+step 51 rule 1 [15,20] : length([45], 1).
+step 52 rule 1 [15,20] : length([-5], 1).
+step 53 rule 1 [15,20] : length([9], 1).
+step 54 rule 4 [11,21,43] : record_shape(r11, shipment, 1).
+step 55 rule 1 [44,22] : length([c1, "Ada"], 2).
+step 56 rule 1 [45,22] : length([c2, "Lin"], 2).
+step 57 rule 1 [46,22] : length([c3, "Mira"], 2).
+step 58 rule 1 [47,22] : length([c1, "ada@example.org"], 2).
+step 59 rule 1 [48,22] : length([c1, "ada.new@example.org"], 2).
+step 60 rule 1 [49,22] : length([c2, ""], 2).
+step 61 rule 1 [50,22] : length([c1, 120], 2).
+step 62 rule 1 [51,22] : length([c9, 45], 2).
+step 63 rule 1 [52,22] : length([c2, -5], 2).
+step 64 rule 1 [53,22] : length([c2, 9], 2).
+step 65 rule 4 [1,23,55] : record_shape(r01, customer, 2).
+step 66 rule 4 [2,24,56] : record_shape(r02, customer, 2).
+step 67 rule 4 [3,25,57] : record_shape(r03, customer, 2).
+step 68 rule 4 [4,26,58] : record_shape(r04, email, 2).
+step 69 rule 4 [5,27,59] : record_shape(r05, email, 2).
+step 70 rule 4 [6,28,60] : record_shape(r06, email, 2).
+step 71 rule 1 [61,29] : length([o1, c1, 120], 3).
+step 72 rule 1 [62,29] : length([o2, c9, 45], 3).
+step 73 rule 1 [63,29] : length([o3, c2, -5], 3).
+step 74 rule 1 [64,29] : length([o3, c2, 9], 3).
+step 75 rule 4 [7,30,71] : record_shape(r07, order, 3).
+step 76 rule 4 [8,31,72] : record_shape(r08, order, 3).
+step 77 rule 4 [9,32,73] : record_shape(r09, order, 3).
+step 78 rule 4 [10,33,74] : record_shape(r10, order, 3).
+step 79 absent 1 : allowed_shape(shipment, 1).
+step 80 absent 1 : has_email(c3).
+step 81 absent 1 : customer(c9).
+step 82 rule 5 [54,79] : finding(record(r11), unsupported_shape(shipment, 1)).
+step 83 rule 6 [36,80] : finding(customer(c3), missing_email).
+step 84 rule 9 [8,81] : finding(order(o2), unknown_customer(c9)).
+boundary 1 level 0 [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78]
+demand 1 : length([""], _WheyeCall0).
+demand 1 : length(["Ada"], _WheyeCall0).
+demand 1 : length(["Lin"], _WheyeCall0).
+demand 1 : length(["Mira"], _WheyeCall0).
+demand 1 : length(["ada.new@example.org"], _WheyeCall0).
+demand 1 : length(["ada@example.org"], _WheyeCall0).
+demand 1 : length([-5], _WheyeCall0).
+demand 1 : length([120], _WheyeCall0).
+demand 1 : length([45], _WheyeCall0).
+demand 1 : length([9], _WheyeCall0).
+demand 1 : length([], _WheyeCall0).
+demand 1 : length([c1, "Ada"], _WheyeCall0).
+demand 1 : length([c1, "ada.new@example.org"], _WheyeCall0).
+demand 1 : length([c1, "ada@example.org"], _WheyeCall0).
+demand 1 : length([c1, 120], _WheyeCall0).
+demand 1 : length([c2, ""], _WheyeCall0).
+demand 1 : length([c2, "Lin"], _WheyeCall0).
+demand 1 : length([c2, -5], _WheyeCall0).
+demand 1 : length([c2, 9], _WheyeCall0).
+demand 1 : length([c3, "Mira"], _WheyeCall0).
+demand 1 : length([c9, 45], _WheyeCall0).
+demand 1 : length([o1, c1, 120], _WheyeCall0).
+demand 1 : length([o1], _WheyeCall0).
+demand 1 : length([o2, c9, 45], _WheyeCall0).
+demand 1 : length([o3, c2, -5], _WheyeCall0).
+demand 1 : length([o3, c2, 9], _WheyeCall0).
+answer 1 [39]
+answer 1 [40]
+answer 1 [41]
+answer 1 [42]
+answer 1 [82]
+answer 1 [83]
+answer 1 [84]
 
 ?- audit_summary(Kind, Count).
 Kind = customer_count, Count = 3.
 Kind = finding_count, Count = 7.
 
-% Reason
-certificate(eyeon, 1).
+?- check(finding(customer(c1), conflicting_email("ada@example.org", "ada.new@example.org"))).
+true.
 
-claim(query(1), [finding(customer(c2), empty_email)]).
-claim(query(1), [finding(order(o3), invalid_amount(-5))]).
-claim(query(1), [finding(order(o3), duplicate_key(r09, r10))]).
-claim(query(1), [finding(customer(c1), conflicting_email("ada@example.org", "ada.new@example.org"))]).
-claim(query(1), [finding(record(r11), unsupported_shape(shipment, 1))]).
-claim(query(1), [finding(order(o2), unknown_customer(c9))]).
-claim(query(1), [finding(customer(c3), missing_email)]).
+?- check(finding(customer(c2), empty_email)).
+true.
 
-clause(3, record(r03, customer(c3, "Mira")), []).
-clause(4, record(r04, email(c1, "ada@example.org")), []).
-clause(5, record(r05, email(c1, "ada.new@example.org")), []).
-clause(6, record(r06, email(c2, "")), []).
-clause(8, record(r08, order(o2, c9, 45)), []).
-clause(9, record(r09, order(o3, c2, -5)), []).
-clause(10, record(r10, order(o3, c2, 9)), []).
-clause(11, record(r11, shipment(o1)), []).
-clause(15, length([], 0), []).
-clause(16, length(list([var('$anonymous1')], var('Rest')), var('Count')), [length(var('Rest'), var('Previous')), is(var('Count'), '+'(var('Previous'), 1))]).
-clause(17, customer(var('Id')), [record(var('$anonymous2'), customer(var('Id'), var('$anonymous3')))]).
-clause(19, record_shape(var('Row'), var('Name'), var('Arity')), [record(var('Row'), var('Term')), '=..'(var('Term'), list([var('Name')], var('Arguments'))), length(var('Arguments'), var('Arity'))]).
-clause(20, finding(record(var('Row')), unsupported_shape(var('Name'), var('Arity'))), [record_shape(var('Row'), var('Name'), var('Arity')), '\\+'(allowed_shape(var('Name'), var('Arity')))]).
-clause(21, finding(customer(var('Id')), missing_email), [customer(var('Id')), '\\+'(has_email(var('Id')))]).
-clause(22, finding(customer(var('Id')), empty_email), [record(var('$anonymous6'), email(var('Id'), ""))]).
-clause(23, finding(customer(var('Id')), conflicting_email(var('Left'), var('Right'))), [record(var('Row'), email(var('Id'), var('Left'))), record(var('Other'), email(var('Id'), var('Right'))), '@<'(var('Row'), var('Other')), '\\='(var('Left'), var('Right'))]).
-clause(24, finding(order(var('Id')), unknown_customer(var('Customer'))), [record(var('$anonymous7'), order(var('Id'), var('Customer'), var('$anonymous8'))), '\\+'(customer(var('Customer')))]).
-clause(25, finding(order(var('Id')), invalid_amount(var('Amount'))), [record(var('$anonymous9'), order(var('Id'), var('$anonymous10'), var('Amount'))), '<'(var('Amount'), 0)]).
-clause(26, finding(order(var('Id')), duplicate_key(var('Row'), var('Other'))), [record(var('Row'), order(var('Id'), var('$anonymous11'), var('$anonymous12'))), record(var('Other'), order(var('Id'), var('$anonymous13'), var('$anonymous14'))), '@<'(var('Row'), var('Other'))]).
+?- check(finding(customer(c3), missing_email)).
+true.
 
-% step 1
-step(record(r06, email(c2, "")), fact(6), [], []).
-% step 2
-step(finding(customer(c2), empty_email), rule(22), ['='('$anonymous6', r06), '='('Id', c2)], [record(r06, email(c2, ""))]).
-% step 3
-step(record(r09, order(o3, c2, -5)), fact(9), [], []).
-% step 4
-step('<'(-5, 0), builtin, [], []).
-% step 5
-step(finding(order(o3), invalid_amount(-5)), rule(25), ['='('$anonymous9', r09), '='('Id', o3), '='('$anonymous10', c2), '='('Amount', -5)], [record(r09, order(o3, c2, -5)), '<'(-5, 0)]).
-% step 6
-step(record(r10, order(o3, c2, 9)), fact(10), [], []).
-% step 7
-step('@<'(r09, r10), builtin, [], []).
-% step 8
-step(finding(order(o3), duplicate_key(r09, r10)), rule(26), ['='('Row', r09), '='('Id', o3), '='('$anonymous11', c2), '='('$anonymous12', -5), '='('Other', r10), '='('$anonymous13', c2), '='('$anonymous14', 9)], [record(r09, order(o3, c2, -5)), record(r10, order(o3, c2, 9)), '@<'(r09, r10)]).
-% step 9
-step(record(r04, email(c1, "ada@example.org")), fact(4), [], []).
-% step 10
-step(record(r05, email(c1, "ada.new@example.org")), fact(5), [], []).
-% step 11
-step('@<'(r04, r05), builtin, [], []).
-% step 12
-step('\\='("ada@example.org", "ada.new@example.org"), builtin, [], []).
-% step 13
-step(finding(customer(c1), conflicting_email("ada@example.org", "ada.new@example.org")), rule(23), ['='('Row', r04), '='('Id', c1), '='('Left', "ada@example.org"), '='('Other', r05), '='('Right', "ada.new@example.org")], [record(r04, email(c1, "ada@example.org")), record(r05, email(c1, "ada.new@example.org")), '@<'(r04, r05), '\\='("ada@example.org", "ada.new@example.org")]).
-% step 14
-step(record(r11, shipment(o1)), fact(11), [], []).
-% step 15
-step('=..'(shipment(o1), [shipment, o1]), builtin, [], []).
-% step 16
-step(length([], 0), fact(15), [], []).
-% step 17
-step(is(1, '+'(0, 1)), builtin, [], []).
-% step 18
-step(length([o1], 1), rule(16), ['='('$anonymous1', o1), '='('Rest', []), '='('Count', 1), '='('Previous', 0)], [length([], 0), is(1, '+'(0, 1))]).
-% step 19
-step(record_shape(r11, shipment, 1), rule(19), ['='('Row', r11), '='('Term', shipment(o1)), '='('Name', shipment), '='('Arguments', [o1]), '='('Arity', 1)], [record(r11, shipment(o1)), '=..'(shipment(o1), [shipment, o1]), length([o1], 1)]).
-% step 20
-step('\\+'(allowed_shape(shipment, 1)), absent, [], []).
-% step 21
-step(finding(record(r11), unsupported_shape(shipment, 1)), rule(20), ['='('Row', r11), '='('Name', shipment), '='('Arity', 1)], [record_shape(r11, shipment, 1), '\\+'(allowed_shape(shipment, 1))]).
-% step 22
-step(record(r08, order(o2, c9, 45)), fact(8), [], []).
-% step 23
-step('\\+'(customer(c9)), absent, [], []).
-% step 24
-step(finding(order(o2), unknown_customer(c9)), rule(24), ['='('$anonymous7', r08), '='('Id', o2), '='('Customer', c9), '='('$anonymous8', 45)], [record(r08, order(o2, c9, 45)), '\\+'(customer(c9))]).
-% step 25
-step(record(r03, customer(c3, "Mira")), fact(3), [], []).
-% step 26
-step(customer(c3), rule(17), ['='('$anonymous2', r03), '='('Id', c3), '='('$anonymous3', "Mira")], [record(r03, customer(c3, "Mira"))]).
-% step 27
-step('\\+'(has_email(c3)), absent, [], []).
-% step 28
-step(finding(customer(c3), missing_email), rule(21), ['='('Id', c3)], [customer(c3), '\\+'(has_email(c3))]).
+?- check(finding(order(o2), unknown_customer(c9))).
+true.
 
-% Check
-check passed: finding(customer(c1), conflicting_email("ada@example.org", "ada.new@example.org")).
+?- check(finding(order(o3), invalid_amount(-5))).
+true.
 
-check passed: finding(customer(c2), empty_email).
+?- check(finding(order(o3), duplicate_key(r09, r10))).
+true.
 
-check passed: finding(customer(c3), missing_email).
+?- check(finding(record(r11), unsupported_shape(shipment, 1))).
+true.
 
-check passed: finding(order(o2), unknown_customer(c9)).
+?- check(audit_summary(customer_count, 3)).
+true.
 
-check passed: finding(order(o3), invalid_amount(-5)).
+?- check(audit_summary(finding_count, 7)).
+true.
 
-check passed: finding(order(o3), duplicate_key(r09, r10)).
+?- check(\+ (finding(order(o1), invalid_amount(120)))).
+true.
 
-check passed: finding(record(r11), unsupported_shape(shipment, 1)).
-
-check passed: audit_summary(customer_count, 3).
-
-check passed: audit_summary(finding_count, 7).
-
-check passed: \+ (finding(order(o1), invalid_amount(120))).
-
-check passed: \+ (finding(customer(c1), missing_email)).
-
-condition('C1', resolution, ok, 19).
-condition('C2', well_founded, ok, 28).
-condition('C3', justification, ok, 28).
-condition('C4', coverage, ok, 29).
-condition('C5', re_decision, ok, 6).
-condition('C6', boundary_consistency, ok, 3).
-condition('C7', relevance, ok, 35).
-obligation(absent, theory_scoped, '\\+'(allowed_shape(shipment, 1))).
-obligation(absent, theory_scoped, '\\+'(customer(c9))).
-obligation(absent, theory_scoped, '\\+'(has_email(c3))).
-steps(28).
-verified(19).
-recomputed(6).
-trusted(3).
-claims(7).
-verdict(checked_with_obligations).
+?- check(\+ (finding(customer(c1), missing_email))).
+true.

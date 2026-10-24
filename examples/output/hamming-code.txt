@@ -1,118 +1,60 @@
-% Answer
 ?- decoded(Name, Syndrome, Corrected, Payload).
 Name = packet1, Syndrome = 5, Corrected = [1, 0, 1, 1, 0, 1, 0], Payload = [1, 0, 1, 0].
 
-% Reason
-certificate(eyeon, 1).
+?- why.
+wheye-proof 1
+% Rule 1: decode([B1, B2, B3, B4, B5, B6, B7], Syndrome, Corrected, [D1, D2, D3, D4]) :- bit(B1), bit(B2), bit(B3), bit(B4), bit(B5), bit(B6), bit(B7), S1 is mod('+'('+'('+'(B1, B3), B5), B7), 2), S2 is mod('+'('+'('+'(B2, B3), B6), B7), 2), S4 is mod('+'('+'('+'(B4, B5), B6), B7), 2), Syndrome is '+'('+'(S1, '*'(2, S2)), '*'(4, S4)), correct([B1, B2, B3, B4, B5, B6, B7], 1, Syndrome, Corrected), Corrected = [_, _, D1, _, D2, D3, D4].
+% Rule 2: correct([], _, _, []) :- .
+% Rule 3: correct([Bit | Rest], Position, Syndrome, [Fixed | Tail]) :- correct_bit(Position, Syndrome, Bit, Fixed), Next is '+'(Position, 1), correct(Rest, Next, Syndrome, Tail).
+% Rule 4: correct_bit(Position, Syndrome, Bit, Fixed) :- Position =:= Syndrome, Fixed is '-'(1, Bit).
+% Rule 5: correct_bit(Position, Syndrome, Bit, Bit) :- Position =\= Syndrome.
+% Rule 6: decoded(Name, Syndrome, Corrected, Payload) :- received(Name, Bits), decode(Bits, Syndrome, Corrected, Payload).
+step 1 source 1 : received(packet1, [1, 0, 1, 1, 1, 1, 0]).
+step 2 source 2 : bit(0).
+step 3 source 3 : bit(1).
+step 4 builtin : '=\\='(1, 5).
+step 5 builtin : '=\\='(2, 5).
+step 6 builtin : '=\\='(3, 5).
+step 7 builtin : '=\\='(4, 5).
+step 8 builtin : '=:='(5, 5).
+step 9 builtin : is(0, '-'(1, 1)).
+step 10 builtin : '=\\='(6, 5).
+step 11 builtin : '=\\='(7, 5).
+step 12 rule 2 [] : correct([], 8, 5, []).
+step 13 builtin : is(8, '+'(7, 1)).
+step 14 builtin : is(7, '+'(6, 1)).
+step 15 builtin : is(6, '+'(5, 1)).
+step 16 builtin : is(5, '+'(4, 1)).
+step 17 builtin : is(4, '+'(3, 1)).
+step 18 builtin : is(3, '+'(2, 1)).
+step 19 builtin : is(2, '+'(1, 1)).
+step 20 builtin : is(1, mod('+'('+'('+'(1, 1), 1), 0), 2)).
+step 21 builtin : is(0, mod('+'('+'('+'(0, 1), 1), 0), 2)).
+step 22 builtin : is(5, '+'('+'(1, '*'(2, 0)), '*'(4, 1))).
+step 23 builtin : '='([1, 0, 1, 1, 0, 1, 0], [1, 0, 1, 1, 0, 1, 0]).
+step 24 rule 5 [4] : correct_bit(1, 5, 1, 1).
+step 25 rule 5 [5] : correct_bit(2, 5, 0, 0).
+step 26 rule 5 [6] : correct_bit(3, 5, 1, 1).
+step 27 rule 5 [7] : correct_bit(4, 5, 1, 1).
+step 28 rule 4 [8,9] : correct_bit(5, 5, 1, 0).
+step 29 rule 5 [10] : correct_bit(6, 5, 1, 1).
+step 30 rule 5 [11] : correct_bit(7, 5, 0, 0).
+step 31 rule 3 [30,13,12] : correct([0], 7, 5, [0]).
+step 32 rule 3 [29,14,31] : correct([1, 0], 6, 5, [1, 0]).
+step 33 rule 3 [28,15,32] : correct([1, 1, 0], 5, 5, [0, 1, 0]).
+step 34 rule 3 [27,16,33] : correct([1, 1, 1, 0], 4, 5, [1, 0, 1, 0]).
+step 35 rule 3 [26,17,34] : correct([1, 1, 1, 1, 0], 3, 5, [1, 1, 0, 1, 0]).
+step 36 rule 3 [25,18,35] : correct([0, 1, 1, 1, 1, 0], 2, 5, [0, 1, 1, 0, 1, 0]).
+step 37 rule 3 [24,19,36] : correct([1, 0, 1, 1, 1, 1, 0], 1, 5, [1, 0, 1, 1, 0, 1, 0]).
+step 38 rule 1 [3,2,3,3,3,3,2,20,21,20,22,37,23] : decode([1, 0, 1, 1, 1, 1, 0], 5, [1, 0, 1, 1, 0, 1, 0], [1, 0, 1, 0]).
+step 39 rule 6 [1,38] : decoded(packet1, 5, [1, 0, 1, 1, 0, 1, 0], [1, 0, 1, 0]).
+answer 1 [39]
 
-claim(query(1), [decoded(packet1, 5, [1, 0, 1, 1, 0, 1, 0], [1, 0, 1, 0])]).
+?- check(decoded(packet1, 5, [1, 0, 1, 1, 0, 1, 0], [1, 0, 1, 0])).
+true.
 
-clause(1, received(packet1, [1, 0, 1, 1, 1, 1, 0]), []).
-clause(2, bit(0), []).
-clause(3, bit(1), []).
-clause(4, decode([var('B1'), var('B2'), var('B3'), var('B4'), var('B5'), var('B6'), var('B7')], var('Syndrome'), var('Corrected'), [var('D1'), var('D2'), var('D3'), var('D4')]), [bit(var('B1')), bit(var('B2')), bit(var('B3')), bit(var('B4')), bit(var('B5')), bit(var('B6')), bit(var('B7')), is(var('S1'), mod('+'('+'('+'(var('B1'), var('B3')), var('B5')), var('B7')), 2)), is(var('S2'), mod('+'('+'('+'(var('B2'), var('B3')), var('B6')), var('B7')), 2)), is(var('S4'), mod('+'('+'('+'(var('B4'), var('B5')), var('B6')), var('B7')), 2)), is(var('Syndrome'), '+'('+'(var('S1'), '*'(2, var('S2'))), '*'(4, var('S4')))), correct([var('B1'), var('B2'), var('B3'), var('B4'), var('B5'), var('B6'), var('B7')], 1, var('Syndrome'), var('Corrected')), '='(var('Corrected'), [var('$anonymous1'), var('$anonymous2'), var('D1'), var('$anonymous3'), var('D2'), var('D3'), var('D4')])]).
-clause(5, correct([], var('$anonymous4'), var('$anonymous5'), []), []).
-clause(6, correct(list([var('Bit')], var('Rest')), var('Position'), var('Syndrome'), list([var('Fixed')], var('Tail'))), [correct_bit(var('Position'), var('Syndrome'), var('Bit'), var('Fixed')), is(var('Next'), '+'(var('Position'), 1)), correct(var('Rest'), var('Next'), var('Syndrome'), var('Tail'))]).
-clause(7, correct_bit(var('Position'), var('Syndrome'), var('Bit'), var('Fixed')), ['=:='(var('Position'), var('Syndrome')), is(var('Fixed'), '-'(1, var('Bit')))]).
-clause(8, correct_bit(var('Position'), var('Syndrome'), var('Bit'), var('Bit')), ['=\\='(var('Position'), var('Syndrome'))]).
-clause(9, decoded(var('Name'), var('Syndrome'), var('Corrected'), var('Payload')), [received(var('Name'), var('Bits')), decode(var('Bits'), var('Syndrome'), var('Corrected'), var('Payload'))]).
+?- check(decode([1, 0, 1, 1, 0, 1, 0], 0, [1, 0, 1, 1, 0, 1, 0], [1, 0, 1, 0])).
+true.
 
-% step 1
-step(received(packet1, [1, 0, 1, 1, 1, 1, 0]), fact(1), [], []).
-% step 2
-step(bit(1), fact(3), [], []).
-% step 3
-step(bit(0), fact(2), [], []).
-% step 4
-step(is(1, mod('+'('+'('+'(1, 1), 1), 0), 2)), builtin, [], []).
-% step 5
-step(is(0, mod('+'('+'('+'(0, 1), 1), 0), 2)), builtin, [], []).
-% step 6
-step(is(5, '+'('+'(1, '*'(2, 0)), '*'(4, 1))), builtin, [], []).
-% step 7
-step('=\\='(1, 5), builtin, [], []).
-% step 8
-step(correct_bit(1, 5, 1, 1), rule(8), ['='('Position', 1), '='('Syndrome', 5), '='('Bit', 1)], ['=\\='(1, 5)]).
-% step 9
-step(is(2, '+'(1, 1)), builtin, [], []).
-% step 10
-step('=\\='(2, 5), builtin, [], []).
-% step 11
-step(correct_bit(2, 5, 0, 0), rule(8), ['='('Position', 2), '='('Syndrome', 5), '='('Bit', 0)], ['=\\='(2, 5)]).
-% step 12
-step(is(3, '+'(2, 1)), builtin, [], []).
-% step 13
-step('=\\='(3, 5), builtin, [], []).
-% step 14
-step(correct_bit(3, 5, 1, 1), rule(8), ['='('Position', 3), '='('Syndrome', 5), '='('Bit', 1)], ['=\\='(3, 5)]).
-% step 15
-step(is(4, '+'(3, 1)), builtin, [], []).
-% step 16
-step('=\\='(4, 5), builtin, [], []).
-% step 17
-step(correct_bit(4, 5, 1, 1), rule(8), ['='('Position', 4), '='('Syndrome', 5), '='('Bit', 1)], ['=\\='(4, 5)]).
-% step 18
-step(is(5, '+'(4, 1)), builtin, [], []).
-% step 19
-step('=:='(5, 5), builtin, [], []).
-% step 20
-step(is(0, '-'(1, 1)), builtin, [], []).
-% step 21
-step(correct_bit(5, 5, 1, 0), rule(7), ['='('Position', 5), '='('Syndrome', 5), '='('Bit', 1), '='('Fixed', 0)], ['=:='(5, 5), is(0, '-'(1, 1))]).
-% step 22
-step(is(6, '+'(5, 1)), builtin, [], []).
-% step 23
-step('=\\='(6, 5), builtin, [], []).
-% step 24
-step(correct_bit(6, 5, 1, 1), rule(8), ['='('Position', 6), '='('Syndrome', 5), '='('Bit', 1)], ['=\\='(6, 5)]).
-% step 25
-step(is(7, '+'(6, 1)), builtin, [], []).
-% step 26
-step('=\\='(7, 5), builtin, [], []).
-% step 27
-step(correct_bit(7, 5, 0, 0), rule(8), ['='('Position', 7), '='('Syndrome', 5), '='('Bit', 0)], ['=\\='(7, 5)]).
-% step 28
-step(is(8, '+'(7, 1)), builtin, [], []).
-% step 29
-step(correct([], 8, 5, []), fact(5), ['='('$anonymous4', 8), '='('$anonymous5', 5)], []).
-% step 30
-step(correct([0], 7, 5, [0]), rule(6), ['='('Bit', 0), '='('Rest', []), '='('Position', 7), '='('Syndrome', 5), '='('Fixed', 0), '='('Next', 8), '='('Tail', [])], [correct_bit(7, 5, 0, 0), is(8, '+'(7, 1)), correct([], 8, 5, [])]).
-% step 31
-step(correct([1, 0], 6, 5, [1, 0]), rule(6), ['='('Bit', 1), '='('Rest', [0]), '='('Position', 6), '='('Syndrome', 5), '='('Fixed', 1), '='('Next', 7), '='('Tail', [0])], [correct_bit(6, 5, 1, 1), is(7, '+'(6, 1)), correct([0], 7, 5, [0])]).
-% step 32
-step(correct([1, 1, 0], 5, 5, [0, 1, 0]), rule(6), ['='('Bit', 1), '='('Rest', [1, 0]), '='('Position', 5), '='('Syndrome', 5), '='('Fixed', 0), '='('Next', 6), '='('Tail', [1, 0])], [correct_bit(5, 5, 1, 0), is(6, '+'(5, 1)), correct([1, 0], 6, 5, [1, 0])]).
-% step 33
-step(correct([1, 1, 1, 0], 4, 5, [1, 0, 1, 0]), rule(6), ['='('Bit', 1), '='('Rest', [1, 1, 0]), '='('Position', 4), '='('Syndrome', 5), '='('Fixed', 1), '='('Next', 5), '='('Tail', [0, 1, 0])], [correct_bit(4, 5, 1, 1), is(5, '+'(4, 1)), correct([1, 1, 0], 5, 5, [0, 1, 0])]).
-% step 34
-step(correct([1, 1, 1, 1, 0], 3, 5, [1, 1, 0, 1, 0]), rule(6), ['='('Bit', 1), '='('Rest', [1, 1, 1, 0]), '='('Position', 3), '='('Syndrome', 5), '='('Fixed', 1), '='('Next', 4), '='('Tail', [1, 0, 1, 0])], [correct_bit(3, 5, 1, 1), is(4, '+'(3, 1)), correct([1, 1, 1, 0], 4, 5, [1, 0, 1, 0])]).
-% step 35
-step(correct([0, 1, 1, 1, 1, 0], 2, 5, [0, 1, 1, 0, 1, 0]), rule(6), ['='('Bit', 0), '='('Rest', [1, 1, 1, 1, 0]), '='('Position', 2), '='('Syndrome', 5), '='('Fixed', 0), '='('Next', 3), '='('Tail', [1, 1, 0, 1, 0])], [correct_bit(2, 5, 0, 0), is(3, '+'(2, 1)), correct([1, 1, 1, 1, 0], 3, 5, [1, 1, 0, 1, 0])]).
-% step 36
-step(correct([1, 0, 1, 1, 1, 1, 0], 1, 5, [1, 0, 1, 1, 0, 1, 0]), rule(6), ['='('Bit', 1), '='('Rest', [0, 1, 1, 1, 1, 0]), '='('Position', 1), '='('Syndrome', 5), '='('Fixed', 1), '='('Next', 2), '='('Tail', [0, 1, 1, 0, 1, 0])], [correct_bit(1, 5, 1, 1), is(2, '+'(1, 1)), correct([0, 1, 1, 1, 1, 0], 2, 5, [0, 1, 1, 0, 1, 0])]).
-% step 37
-step('='([1, 0, 1, 1, 0, 1, 0], [1, 0, 1, 1, 0, 1, 0]), builtin, [], []).
-% step 38
-step(decode([1, 0, 1, 1, 1, 1, 0], 5, [1, 0, 1, 1, 0, 1, 0], [1, 0, 1, 0]), rule(4), ['='('B1', 1), '='('B2', 0), '='('B3', 1), '='('B4', 1), '='('B5', 1), '='('B6', 1), '='('B7', 0), '='('Syndrome', 5), '='('Corrected', [1, 0, 1, 1, 0, 1, 0]), '='('S1', 1), '='('S2', 0), '='('S4', 1), '='('$anonymous1', 1), '='('$anonymous2', 0), '='('D1', 1), '='('$anonymous3', 1), '='('D2', 0), '='('D3', 1), '='('D4', 0)], [bit(1), bit(0), bit(1), bit(1), bit(1), bit(1), bit(0), is(1, mod('+'('+'('+'(1, 1), 1), 0), 2)), is(0, mod('+'('+'('+'(0, 1), 1), 0), 2)), is(1, mod('+'('+'('+'(1, 1), 1), 0), 2)), is(5, '+'('+'(1, '*'(2, 0)), '*'(4, 1))), correct([1, 0, 1, 1, 1, 1, 0], 1, 5, [1, 0, 1, 1, 0, 1, 0]), '='([1, 0, 1, 1, 0, 1, 0], [1, 0, 1, 1, 0, 1, 0])]).
-% step 39
-step(decoded(packet1, 5, [1, 0, 1, 1, 0, 1, 0], [1, 0, 1, 0]), rule(9), ['='('Name', packet1), '='('Bits', [1, 0, 1, 1, 1, 1, 0]), '='('Syndrome', 5), '='('Corrected', [1, 0, 1, 1, 0, 1, 0]), '='('Payload', [1, 0, 1, 0])], [received(packet1, [1, 0, 1, 1, 1, 1, 0]), decode([1, 0, 1, 1, 1, 1, 0], 5, [1, 0, 1, 1, 0, 1, 0], [1, 0, 1, 0])]).
-
-% Check
-check passed: decoded(packet1, 5, [1, 0, 1, 1, 0, 1, 0], [1, 0, 1, 0]).
-
-check passed: decode([1, 0, 1, 1, 0, 1, 0], 0, [1, 0, 1, 1, 0, 1, 0], [1, 0, 1, 0]).
-
-check passed: decode([0, 0, 0, 0, 0, 0, 1], 7, [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0]).
-
-condition('C1', resolution, ok, 20).
-condition('C2', well_founded, ok, 39).
-condition('C3', justification, ok, 39).
-condition('C4', coverage, ok, 45).
-condition('C5', re_decision, ok, 19).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 40).
-steps(39).
-verified(20).
-recomputed(19).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check(decode([0, 0, 0, 0, 0, 0, 1], 7, [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0])).
+true.

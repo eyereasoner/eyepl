@@ -12,7 +12,7 @@ const documents = {
   'README.md': '**Version 0.1.0**\n',
   'GUIDE.md': 'Version **0.1.0**.\n',
   'SPEC.md': 'Version **0.1.0**.\n',
-  'playground.html': '<span id="version">v0.1.0</span>\n<span>wheye · version 0.1.0</span>\n',
+  'playground.html': '<span id="version">v0.1.0</span>\n',
 };
 
 // Real local Git repositories exercise commits, annotated tags, and atomic pushes.

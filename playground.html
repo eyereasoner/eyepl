@@ -11,7 +11,7 @@
 <body>
   <main>
     <header class="masthead">
-      <a class="brand" href="./" aria-label="wheye home"><img src="assets/eye.png" width="64" height="64" alt=""><span class="brand-copy"><span class="brand-name">Wheye playground<span class="version" id="version">v0.1.16</span></span></span></a>
+      <a class="brand" href="./" aria-label="wheye home"><img src="assets/eye.png" width="64" height="64" alt=""><span class="brand-copy"><span class="brand-name">Wheye playground<span class="version" id="version">v0.1.17</span></span></span></a>
       <nav class="site-nav" aria-label="Project">
         <a href="https://eyereasoner.github.io/wheye/">Guide</a>
         <a href="https://eyereasoner.github.io/wheye/playground/" aria-current="page">Playground</a>
@@ -23,9 +23,10 @@
     <section class="workspace" aria-label="Reasoning playground">
       <div class="toolbar">
         <div class="actions">
-          <button type="button" id="run" class="run">▶ Run</button>
-          <button type="button" id="stop" class="stop" disabled>■ Stop</button>
-          <button type="button" id="share" class="share">↗ Share link</button>
+          <button type="button" id="run" class="run">Run</button>
+          <button type="button" id="stop" class="stop" disabled>Stop</button>
+          <button type="button" id="share" class="share">Share link</button>
+          <button type="button" id="create-gist-share" class="gist" title="Upload your program to an unlisted GitHub Gist and copy a share link.">Create Gist share</button>
         </div>
         <div class="selectors">
           <label>Explore<select id="example">
@@ -122,6 +123,8 @@
               <option value="witnesses">Witnesses</option>
             </select></label>
         </div>
+        <p id="status" class="status" role="status" aria-live="polite">Ready when you are.</p>
+        <p id="share-status" class="status" role="status" aria-live="polite" hidden></p>
       </div>
       <div id="share-box" class="share-box" hidden><label for="share-url">Your share link</label><input id="share-url" readonly><button type="button" id="close-share" aria-label="Close share link">×</button></div>
       <div class="editors">
@@ -141,16 +144,10 @@ mortal(Person) :- human(Person).
           <pre id="output" tabindex="0" aria-label="Program output">Your first answer is one click away.
 
 Press Run to find out who is mortal.</pre>
-          <p class="panel-hint" id="status" role="status" aria-live="polite">Ready when you are.</p>
         </section>
       </div>
     </section>
-    <section class="notes" aria-label="How it works">
-      <article><span class="number">01</span><h2>Say what you know.</h2><p>A fact names a relationship. A rule connects it to something that follows.</p></article>
-      <article><span class="number">02</span><h2>Ask what follows.</h2><p>Questions select answers. Repeated facts and paths produce one answer per distinct binding.</p></article>
-      <article><span class="number">03</span><h2>See the evidence.</h2><p>Use <code>?- why.</code> for the proof certificate and <code>?- check.</code> to verify C1–C9. Use <code>?- check(Goal).</code> for a true or false result.</p></article>
-    </section>
-    <footer><span>wheye · version 0.1.16</span><span>Runs in your browser. Your program stays on your device unless you share it.</span></footer>
+    <footer>Runs in your browser. Your program stays on your device unless you share it.</footer>
   </main>
   <script type="module" src="playground.js"></script>
 </body>

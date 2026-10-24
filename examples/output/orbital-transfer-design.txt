@@ -1,56 +1,26 @@
-% Answer
 ?- transfer_report(Name, DeltaV, Days).
 Name = earth_mars, DeltaV = 5.593588, Days = 258.865827.
 
-% Reason
-certificate(eyeon, 1).
+?- why.
+wheye-proof 1
+% Rule 1: hohmann(Name, DepartureDV, ArrivalDV, Days) :- transfer(Name, Mu, R1, R2), Mu > 0, R1 > 0, R2 > 0, Axis is '/'('+'(R1, R2), 2), DepartureDV is abs('-'(sqrt('*'(Mu, '-'('/'(2, R1), '/'(1, Axis)))), sqrt('/'(Mu, R1)))), ArrivalDV is abs('-'(sqrt('/'(Mu, R2)), sqrt('*'(Mu, '-'('/'(2, R2), '/'(1, Axis)))))), Days is '/'('*'(pi, sqrt('/'('**'(Axis, 3), Mu))), 86400).
+% Rule 2: transfer_report(Name, TotalDV, Days) :- hohmann(Name, Departure, Arrival, Time), TotalDV is '/'(round('*'('+'(Departure, Arrival), 1000000)), 1000000), Days is '/'(round('*'(Time, 1000000)), 1000000).
+step 1 source 1 : transfer(earth_mars, 132712440018.0, 149597870.7, 227939200.0).
+step 2 builtin : '>'(132712440018.0, 0).
+step 3 builtin : '>'(149597870.7, 0).
+step 4 builtin : '>'(227939200.0, 0).
+step 5 builtin : is(188768535.35, '/'('+'(149597870.7, 227939200.0), 2)).
+step 6 builtin : is(2.9446911328430403, abs('-'(sqrt('*'(132712440018.0, '-'('/'(2, 149597870.7), '/'(1, 188768535.35)))), sqrt('/'(132712440018.0, 149597870.7))))).
+step 7 builtin : is(2.6488967223855973, abs('-'(sqrt('/'(132712440018.0, 227939200.0)), sqrt('*'(132712440018.0, '-'('/'(2, 227939200.0), '/'(1, 188768535.35))))))).
+step 8 builtin : is(258.865826767963, '/'('*'(pi, sqrt('/'('**'(188768535.35, 3), 132712440018.0))), 86400)).
+step 9 rule 1 [1,2,3,4,5,6,7,8] : hohmann(earth_mars, 2.9446911328430403, 2.6488967223855973, 258.865826767963).
+step 10 builtin : is(5.593588, '/'(round('*'('+'(2.9446911328430403, 2.6488967223855973), 1000000)), 1000000)).
+step 11 builtin : is(258.865827, '/'(round('*'(258.865826767963, 1000000)), 1000000)).
+step 12 rule 2 [9,10,11] : transfer_report(earth_mars, 5.593588, 258.865827).
+answer 1 [12]
 
-claim(query(1), [transfer_report(earth_mars, 5.593588, 258.865827)]).
+?- check((hohmann(earth_mars, D1, D2, Days), D1 > 2.9, D1 < 3.0, D2 > 2.6, D2 < 2.7, Days > 258, Days < 260)).
+true.
 
-clause(1, transfer(earth_mars, 132712440018.0, 149597870.7, 227939200.0), []).
-clause(2, hohmann(var('Name'), var('DepartureDV'), var('ArrivalDV'), var('Days')), [transfer(var('Name'), var('Mu'), var('R1'), var('R2')), '>'(var('Mu'), 0), '>'(var('R1'), 0), '>'(var('R2'), 0), is(var('Axis'), '/'('+'(var('R1'), var('R2')), 2)), is(var('DepartureDV'), abs('-'(sqrt('*'(var('Mu'), '-'('/'(2, var('R1')), '/'(1, var('Axis'))))), sqrt('/'(var('Mu'), var('R1')))))), is(var('ArrivalDV'), abs('-'(sqrt('/'(var('Mu'), var('R2'))), sqrt('*'(var('Mu'), '-'('/'(2, var('R2')), '/'(1, var('Axis')))))))), is(var('Days'), '/'('*'(pi, sqrt('/'('**'(var('Axis'), 3), var('Mu')))), 86400))]).
-clause(3, transfer_report(var('Name'), var('TotalDV'), var('Days')), [hohmann(var('Name'), var('Departure'), var('Arrival'), var('Time')), is(var('TotalDV'), '/'(round('*'('+'(var('Departure'), var('Arrival')), 1000000)), 1000000)), is(var('Days'), '/'(round('*'(var('Time'), 1000000)), 1000000))]).
-
-% step 1
-step(transfer(earth_mars, 132712440018.0, 149597870.7, 227939200.0), fact(1), [], []).
-% step 2
-step('>'(132712440018.0, 0), builtin, [], []).
-% step 3
-step('>'(149597870.7, 0), builtin, [], []).
-% step 4
-step('>'(227939200.0, 0), builtin, [], []).
-% step 5
-step(is(188768535.35, '/'('+'(149597870.7, 227939200.0), 2)), builtin, [], []).
-% step 6
-step(is(2.9446911328430403, abs('-'(sqrt('*'(132712440018.0, '-'('/'(2, 149597870.7), '/'(1, 188768535.35)))), sqrt('/'(132712440018.0, 149597870.7))))), builtin, [], []).
-% step 7
-step(is(2.6488967223855973, abs('-'(sqrt('/'(132712440018.0, 227939200.0)), sqrt('*'(132712440018.0, '-'('/'(2, 227939200.0), '/'(1, 188768535.35))))))), builtin, [], []).
-% step 8
-step(is(258.865826767963, '/'('*'(pi, sqrt('/'('**'(188768535.35, 3), 132712440018.0))), 86400)), builtin, [], []).
-% step 9
-step(hohmann(earth_mars, 2.9446911328430403, 2.6488967223855973, 258.865826767963), rule(2), ['='('Name', earth_mars), '='('Mu', 132712440018.0), '='('R1', 149597870.7), '='('R2', 227939200.0), '='('Axis', 188768535.35), '='('DepartureDV', 2.9446911328430403), '='('ArrivalDV', 2.6488967223855973), '='('Days', 258.865826767963)], [transfer(earth_mars, 132712440018.0, 149597870.7, 227939200.0), '>'(132712440018.0, 0), '>'(149597870.7, 0), '>'(227939200.0, 0), is(188768535.35, '/'('+'(149597870.7, 227939200.0), 2)), is(2.9446911328430403, abs('-'(sqrt('*'(132712440018.0, '-'('/'(2, 149597870.7), '/'(1, 188768535.35)))), sqrt('/'(132712440018.0, 149597870.7))))), is(2.6488967223855973, abs('-'(sqrt('/'(132712440018.0, 227939200.0)), sqrt('*'(132712440018.0, '-'('/'(2, 227939200.0), '/'(1, 188768535.35))))))), is(258.865826767963, '/'('*'(pi, sqrt('/'('**'(188768535.35, 3), 132712440018.0))), 86400))]).
-% step 10
-step(is(5.593588, '/'(round('*'('+'(2.9446911328430403, 2.6488967223855973), 1000000)), 1000000)), builtin, [], []).
-% step 11
-step(is(258.865827, '/'(round('*'(258.865826767963, 1000000)), 1000000)), builtin, [], []).
-% step 12
-step(transfer_report(earth_mars, 5.593588, 258.865827), rule(3), ['='('Name', earth_mars), '='('Departure', 2.9446911328430403), '='('Arrival', 2.6488967223855973), '='('Time', 258.865826767963), '='('TotalDV', 5.593588), '='('Days', 258.865827)], [hohmann(earth_mars, 2.9446911328430403, 2.6488967223855973, 258.865826767963), is(5.593588, '/'(round('*'('+'(2.9446911328430403, 2.6488967223855973), 1000000)), 1000000)), is(258.865827, '/'(round('*'(258.865826767963, 1000000)), 1000000))]).
-
-% Check
-check passed: hohmann(earth_mars, D1, D2, Days), D1 > 2.9, D1 < 3.0, D2 > 2.6, D2 < 2.7, Days > 258, Days < 260.
-
-check passed: hohmann(earth_mars, D1, D2, _), (D1 + D2) < 6.
-
-condition('C1', resolution, ok, 3).
-condition('C2', well_founded, ok, 12).
-condition('C3', justification, ok, 12).
-condition('C4', coverage, ok, 12).
-condition('C5', re_decision, ok, 9).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 13).
-steps(12).
-verified(3).
-recomputed(9).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check((hohmann(earth_mars, D1, D2, _), '+'(D1, D2) < 6)).
+true.

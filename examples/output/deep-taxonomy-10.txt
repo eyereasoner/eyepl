@@ -1,71 +1,44 @@
-% Answer
 ?- is_a(Who, a2).
 Who = ind.
 
-% Reason
-certificate(eyeon, 1).
+?- why.
+wheye-proof 1
+% Rule 1: is_a(Entity, a2) :- is_a(Entity, n10).
+% Rule 2: is_a(Entity, n1) :- is_a(Entity, n0).
+% Rule 5: is_a(Entity, n2) :- is_a(Entity, n1).
+% Rule 8: is_a(Entity, n3) :- is_a(Entity, n2).
+% Rule 11: is_a(Entity, n4) :- is_a(Entity, n3).
+% Rule 14: is_a(Entity, n5) :- is_a(Entity, n4).
+% Rule 17: is_a(Entity, n6) :- is_a(Entity, n5).
+% Rule 20: is_a(Entity, n7) :- is_a(Entity, n6).
+% Rule 23: is_a(Entity, n8) :- is_a(Entity, n7).
+% Rule 26: is_a(Entity, n9) :- is_a(Entity, n8).
+% Rule 29: is_a(Entity, n10) :- is_a(Entity, n9).
+step 1 source 1 : is_a(ind, n0).
+step 2 rule 2 [1] : is_a(ind, n1).
+step 3 rule 5 [2] : is_a(ind, n2).
+step 4 rule 8 [3] : is_a(ind, n3).
+step 5 rule 11 [4] : is_a(ind, n4).
+step 6 rule 14 [5] : is_a(ind, n5).
+step 7 rule 17 [6] : is_a(ind, n6).
+step 8 rule 20 [7] : is_a(ind, n7).
+step 9 rule 23 [8] : is_a(ind, n8).
+step 10 rule 26 [9] : is_a(ind, n9).
+step 11 rule 29 [10] : is_a(ind, n10).
+step 12 rule 1 [11] : is_a(ind, a2).
+answer 1 [12]
 
-claim(query(1), [is_a(ind, a2)]).
+?- check(is_a(ind, a2)).
+true.
 
-clause(1, is_a(ind, n0), []).
-clause(2, is_a(var('Entity'), a2), [is_a(var('Entity'), n10)]).
-clause(3, is_a(var('Entity'), n1), [is_a(var('Entity'), n0)]).
-clause(6, is_a(var('Entity'), n2), [is_a(var('Entity'), n1)]).
-clause(9, is_a(var('Entity'), n3), [is_a(var('Entity'), n2)]).
-clause(12, is_a(var('Entity'), n4), [is_a(var('Entity'), n3)]).
-clause(15, is_a(var('Entity'), n5), [is_a(var('Entity'), n4)]).
-clause(18, is_a(var('Entity'), n6), [is_a(var('Entity'), n5)]).
-clause(21, is_a(var('Entity'), n7), [is_a(var('Entity'), n6)]).
-clause(24, is_a(var('Entity'), n8), [is_a(var('Entity'), n7)]).
-clause(27, is_a(var('Entity'), n9), [is_a(var('Entity'), n8)]).
-clause(30, is_a(var('Entity'), n10), [is_a(var('Entity'), n9)]).
+?- check(is_a(ind, n10)).
+true.
 
-% step 1
-step(is_a(ind, n0), fact(1), [], []).
-% step 2
-step(is_a(ind, n1), rule(3), ['='('Entity', ind)], [is_a(ind, n0)]).
-% step 3
-step(is_a(ind, n2), rule(6), ['='('Entity', ind)], [is_a(ind, n1)]).
-% step 4
-step(is_a(ind, n3), rule(9), ['='('Entity', ind)], [is_a(ind, n2)]).
-% step 5
-step(is_a(ind, n4), rule(12), ['='('Entity', ind)], [is_a(ind, n3)]).
-% step 6
-step(is_a(ind, n5), rule(15), ['='('Entity', ind)], [is_a(ind, n4)]).
-% step 7
-step(is_a(ind, n6), rule(18), ['='('Entity', ind)], [is_a(ind, n5)]).
-% step 8
-step(is_a(ind, n7), rule(21), ['='('Entity', ind)], [is_a(ind, n6)]).
-% step 9
-step(is_a(ind, n8), rule(24), ['='('Entity', ind)], [is_a(ind, n7)]).
-% step 10
-step(is_a(ind, n9), rule(27), ['='('Entity', ind)], [is_a(ind, n8)]).
-% step 11
-step(is_a(ind, n10), rule(30), ['='('Entity', ind)], [is_a(ind, n9)]).
-% step 12
-step(is_a(ind, a2), rule(2), ['='('Entity', ind)], [is_a(ind, n10)]).
+?- check(is_a(ind, i10)).
+true.
 
-% Check
-check passed: is_a(ind, a2).
+?- check(is_a(ind, j10)).
+true.
 
-check passed: is_a(ind, n10).
-
-check passed: is_a(ind, i10).
-
-check passed: is_a(ind, j10).
-
-check passed: \+ (is_a(ind, n11)).
-
-condition('C1', resolution, ok, 12).
-condition('C2', well_founded, ok, 12).
-condition('C3', justification, ok, 12).
-condition('C4', coverage, ok, 12).
-condition('C5', re_decision, ok, 0).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 13).
-steps(12).
-verified(12).
-recomputed(0).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check(\+ (is_a(ind, n11))).
+true.

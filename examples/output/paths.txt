@@ -1,46 +1,28 @@
-% Answer
 ?- reaches(Who, ada).
 Who = cara.
 Who = ben.
 
-% Reason
-certificate(eyeon, 1).
+?- reaches(ben, ada).
+true.
 
-claim(query(2), [reaches(ben, ada)]).
+?- why.
+wheye-proof 1
+% Rule 1: reaches(From, To) :- follows(From, To).
+% Rule 2: reaches(From, ada) :- reaches(From, Via), follows(Via, ada).
+step 1 source 2 : follows(ben, cara).
+step 2 source 3 : follows(cara, ada).
+step 3 rule 1 [1] : reaches(ben, cara).
+step 4 rule 2 [3,2] : reaches(ben, ada).
+answer 2 [4]
 
-clause(2, follows(ben, cara), []).
-clause(3, follows(cara, ada), []).
-clause(4, reaches(var('From'), var('To')), [follows(var('From'), var('To'))]).
-clause(5, reaches(var('From'), ada), [reaches(var('From'), var('Via')), follows(var('Via'), ada)]).
+?- check(\+ (reaches(ada, ada))).
+true.
 
-% step 1
-step(follows(ben, cara), fact(2), [], []).
-% step 2
-step(reaches(ben, cara), rule(4), ['='('From', ben), '='('To', cara)], [follows(ben, cara)]).
-% step 3
-step(follows(cara, ada), fact(3), [], []).
-% step 4
-step(reaches(ben, ada), rule(5), ['='('From', ben), '='('Via', cara)], [reaches(ben, cara), follows(cara, ada)]).
+?- check(reaches(ben, ada)).
+true.
 
-% Check
-check passed: \+ (reaches(ada, ada)).
+?- check(reaches(cara, ada)).
+true.
 
-check passed: reaches(ben, ada).
-
-check passed: reaches(cara, ada).
-
-check passed: reaches(ben, cara).
-
-condition('C1', resolution, ok, 4).
-condition('C2', well_founded, ok, 4).
-condition('C3', justification, ok, 4).
-condition('C4', coverage, ok, 4).
-condition('C5', re_decision, ok, 0).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 5).
-steps(4).
-verified(4).
-recomputed(0).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check(reaches(ben, cara)).
+true.

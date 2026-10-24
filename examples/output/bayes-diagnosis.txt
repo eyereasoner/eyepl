@@ -1,6 +1,5 @@
-% Answer
 ?- scores(case, What).
-What = [0.001547, 0.000048000000000000015, 7.499999999999999e-7, 0.00004787999999999999].
+What = [0.001547, 4.8000000000000015e-5, 7.499999999999999e-7, 4.787999999999999e-5].
 
 ?- 'evidence-total'(case, What).
 What = 0.00164363.
@@ -17,335 +16,158 @@ What = 0.0004563070764101409.
 ?- posterior(['bacterial-pneumonia', case], What).
 What = 0.029130643758023392.
 
-% Reason
-certificate(eyeon, 1).
+?- why.
+wheye-proof 1
+% Rule 1: factor([Disease, [Symptom, present]], Probability) :- probability([Disease, Symptom], Probability).
+% Rule 2: factor([Disease, [Symptom, absent]], _Calc1) :- probability([Disease, Symptom], Probability), _Calc1 is '-'(1, Probability).
+% Rule 3: likelihood([Disease, []], 1) :- is_a(Disease, disease).
+% Rule 4: likelihood([Disease, [Observation | Rest]], _Calc1) :- factor([Disease, Observation], Factor), likelihood([Disease, Rest], Remaining), _Calc1 is '*'(Factor, Remaining).
+% Rule 5: score([Disease, Case], _Calc1) :- prior(Disease, Prior), evidence(Case, Evidence), likelihood([Disease, Evidence], Likelihood), _Calc1 is '*'(Prior, Likelihood).
+% Rule 6: scores([[], Case], []) :- is_a(Case, 'patient-case').
+% Rule 7: scores([[Disease | Rest], Case], [Score | Remaining]) :- score([Disease, Case], Score), scores([Rest, Case], Remaining).
+% Rule 8: sum([Value | Rest], _Calc1) :- sum(Rest, Remaining), _Calc1 is '+'(Value, Remaining).
+% Rule 9: scores(Case, Scores) :- is_a(Case, 'patient-case'), diseases(Case, Diseases), scores([Diseases, Case], Scores).
+% Rule 10: 'evidence-total'(Case, Total) :- is_a(Case, 'patient-case'), scores(Case, Scores), sum(Scores, Total).
+% Rule 11: candidates(Case, Diseases) :- is_a(Case, 'patient-case'), diseases(Case, Diseases).
+% Rule 12: candidates(Case, Rest) :- candidates(Case, [Disease | Rest]).
+% Rule 13: posterior([Disease, Case], _Calc1) :- candidates(Case, [Disease | Rest]), score([Disease, Case], Score), 'evidence-total'(Case, Total), Total > 0, _Calc1 is '/'(Score, Total).
+step 1 source 1 : is_a(covid19, disease).
+step 2 source 2 : is_a(influenza, disease).
+step 3 source 3 : is_a('allergic-rhinitis', disease).
+step 4 source 4 : is_a('bacterial-pneumonia', disease).
+step 5 source 5 : prior(covid19, 0.05).
+step 6 source 6 : prior(influenza, 0.03).
+step 7 source 7 : prior('allergic-rhinitis', 0.1).
+step 8 source 8 : prior('bacterial-pneumonia', 0.01).
+step 9 source 9 : probability([covid19, fever], 0.7).
+step 10 source 10 : probability([covid19, 'dry-cough'], 0.65).
+step 11 source 11 : probability([covid19, 'loss-of-smell'], 0.4).
+step 12 source 12 : probability([covid19, sneezing], 0.15).
+step 13 source 13 : probability([covid19, 'short-breath'], 0.2).
+step 14 source 14 : probability([influenza, fever], 0.8).
+step 15 source 15 : probability([influenza, 'dry-cough'], 0.5).
+step 16 source 16 : probability([influenza, 'loss-of-smell'], 0.05).
+step 17 source 17 : probability([influenza, sneezing], 0.2).
+step 18 source 18 : probability([influenza, 'short-breath'], 0.1).
+step 19 source 19 : probability(['allergic-rhinitis', fever], 0.05).
+step 20 source 20 : probability(['allergic-rhinitis', 'dry-cough'], 0.15).
+step 21 source 21 : probability(['allergic-rhinitis', 'loss-of-smell'], 0.1).
+step 22 source 22 : probability(['allergic-rhinitis', sneezing], 0.8).
+step 23 source 23 : probability(['allergic-rhinitis', 'short-breath'], 0.05).
+step 24 source 24 : probability(['bacterial-pneumonia', fever], 0.7).
+step 25 source 25 : probability(['bacterial-pneumonia', 'dry-cough'], 0.6).
+step 26 source 26 : probability(['bacterial-pneumonia', 'loss-of-smell'], 0.02).
+step 27 source 27 : probability(['bacterial-pneumonia', sneezing], 0.05).
+step 28 source 28 : probability(['bacterial-pneumonia', 'short-breath'], 0.6).
+step 29 source 29 : is_a(case, 'patient-case').
+step 30 source 30 : diseases(case, [covid19, influenza, 'allergic-rhinitis', 'bacterial-pneumonia']).
+step 31 source 31 : evidence(case, [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]).
+step 32 source 32 : sum([], 0).
+step 33 builtin : is(0.85, '-'(1, 0.15)).
+step 34 builtin : is(0.8, '-'(1, 0.2)).
+step 35 builtin : is(0.19999999999999996, '-'(1, 0.8)).
+step 36 builtin : is(0.95, '-'(1, 0.05)).
+step 37 builtin : is(0.2, '*'(0.2, 1)).
+step 38 builtin : is(0.1, '*'(0.1, 1)).
+step 39 builtin : is(0.17, '*'(0.85, 0.2)).
+step 40 builtin : is(0.05, '*'(0.05, 1)).
+step 41 builtin : is(0.08000000000000002, '*'(0.8, 0.1)).
+step 42 builtin : is(0.6, '*'(0.6, 1)).
+step 43 builtin : is(0.068, '*'(0.4, 0.17)).
+step 44 builtin : is(0.009999999999999998, '*'(0.19999999999999996, 0.05)).
+step 45 builtin : is(0.004000000000000001, '*'(0.05, 0.08000000000000002)).
+step 46 builtin : is(0.57, '*'(0.95, 0.6)).
+step 47 builtin : is(0.0442, '*'(0.65, 0.068)).
+step 48 builtin : is(0.0009999999999999998, '*'(0.1, 0.009999999999999998)).
+step 49 builtin : is(0.0020000000000000005, '*'(0.5, 0.004000000000000001)).
+step 50 builtin : is(0.011399999999999999, '*'(0.02, 0.57)).
+step 51 builtin : is(0.03094, '*'(0.7, 0.0442)).
+step 52 builtin : is(0.00014999999999999996, '*'(0.15, 0.0009999999999999998)).
+step 53 builtin : is(0.0016000000000000005, '*'(0.8, 0.0020000000000000005)).
+step 54 builtin : is(0.006839999999999999, '*'(0.6, 0.011399999999999999)).
+step 55 builtin : is(0.001547, '*'(0.05, 0.03094)).
+step 56 builtin : is(7.4999999999999985e-6, '*'(0.05, 0.00014999999999999996)).
+step 57 builtin : is(4.8000000000000015e-5, '*'(0.03, 0.0016000000000000005)).
+step 58 builtin : is(0.004787999999999999, '*'(0.7, 0.006839999999999999)).
+step 59 builtin : is(7.499999999999999e-7, '*'(0.1, 7.4999999999999985e-6)).
+step 60 builtin : is(4.787999999999999e-5, '*'(0.01, 0.004787999999999999)).
+step 61 builtin : is(4.787999999999999e-5, '+'(4.787999999999999e-5, 0)).
+step 62 builtin : is(4.862999999999999e-5, '+'(7.499999999999999e-7, 4.787999999999999e-5)).
+step 63 builtin : is(9.663e-5, '+'(4.8000000000000015e-5, 4.862999999999999e-5)).
+step 64 builtin : is(0.00164363, '+'(0.001547, 9.663e-5)).
+step 65 builtin : '>'(0.00164363, 0).
+step 66 builtin : is(0.029130643758023392, '/'(4.787999999999999e-5, 0.00164363)).
+step 67 rule 3 [1] : likelihood([covid19, []], 1).
+step 68 rule 3 [2] : likelihood([influenza, []], 1).
+step 69 rule 3 [3] : likelihood(['allergic-rhinitis', []], 1).
+step 70 rule 3 [4] : likelihood(['bacterial-pneumonia', []], 1).
+step 71 rule 1 [9] : factor([covid19, [fever, present]], 0.7).
+step 72 rule 1 [10] : factor([covid19, ['dry-cough', present]], 0.65).
+step 73 rule 1 [11] : factor([covid19, ['loss-of-smell', present]], 0.4).
+step 74 rule 1 [13] : factor([covid19, ['short-breath', present]], 0.2).
+step 75 rule 1 [14] : factor([influenza, [fever, present]], 0.8).
+step 76 rule 1 [15] : factor([influenza, ['dry-cough', present]], 0.5).
+step 77 rule 1 [16] : factor([influenza, ['loss-of-smell', present]], 0.05).
+step 78 rule 1 [18] : factor([influenza, ['short-breath', present]], 0.1).
+step 79 rule 1 [19] : factor(['allergic-rhinitis', [fever, present]], 0.05).
+step 80 rule 1 [20] : factor(['allergic-rhinitis', ['dry-cough', present]], 0.15).
+step 81 rule 1 [21] : factor(['allergic-rhinitis', ['loss-of-smell', present]], 0.1).
+step 82 rule 1 [23] : factor(['allergic-rhinitis', ['short-breath', present]], 0.05).
+step 83 rule 1 [24] : factor(['bacterial-pneumonia', [fever, present]], 0.7).
+step 84 rule 1 [25] : factor(['bacterial-pneumonia', ['dry-cough', present]], 0.6).
+step 85 rule 1 [26] : factor(['bacterial-pneumonia', ['loss-of-smell', present]], 0.02).
+step 86 rule 1 [28] : factor(['bacterial-pneumonia', ['short-breath', present]], 0.6).
+step 87 rule 6 [29] : scores([[], case], []).
+step 88 rule 11 [29,30] : candidates(case, [covid19, influenza, 'allergic-rhinitis', 'bacterial-pneumonia']).
+step 89 rule 2 [12,33] : factor([covid19, [sneezing, absent]], 0.85).
+step 90 rule 2 [17,34] : factor([influenza, [sneezing, absent]], 0.8).
+step 91 rule 2 [22,35] : factor(['allergic-rhinitis', [sneezing, absent]], 0.19999999999999996).
+step 92 rule 2 [27,36] : factor(['bacterial-pneumonia', [sneezing, absent]], 0.95).
+step 93 rule 8 [32,61] : sum([4.787999999999999e-5], 4.787999999999999e-5).
+step 94 rule 4 [74,67,37] : likelihood([covid19, [['short-breath', present]]], 0.2).
+step 95 rule 4 [78,68,38] : likelihood([influenza, [['short-breath', present]]], 0.1).
+step 96 rule 4 [82,69,40] : likelihood(['allergic-rhinitis', [['short-breath', present]]], 0.05).
+step 97 rule 4 [86,70,42] : likelihood(['bacterial-pneumonia', [['short-breath', present]]], 0.6).
+step 98 rule 12 [88] : candidates(case, [influenza, 'allergic-rhinitis', 'bacterial-pneumonia']).
+step 99 rule 8 [93,62] : sum([7.499999999999999e-7, 4.787999999999999e-5], 4.862999999999999e-5).
+step 100 rule 4 [89,94,39] : likelihood([covid19, [[sneezing, absent], ['short-breath', present]]], 0.17).
+step 101 rule 4 [90,95,41] : likelihood([influenza, [[sneezing, absent], ['short-breath', present]]], 0.08000000000000002).
+step 102 rule 4 [91,96,44] : likelihood(['allergic-rhinitis', [[sneezing, absent], ['short-breath', present]]], 0.009999999999999998).
+step 103 rule 4 [92,97,46] : likelihood(['bacterial-pneumonia', [[sneezing, absent], ['short-breath', present]]], 0.57).
+step 104 rule 12 [98] : candidates(case, ['allergic-rhinitis', 'bacterial-pneumonia']).
+step 105 rule 8 [99,63] : sum([4.8000000000000015e-5, 7.499999999999999e-7, 4.787999999999999e-5], 9.663e-5).
+step 106 rule 4 [73,100,43] : likelihood([covid19, [['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.068).
+step 107 rule 4 [77,101,45] : likelihood([influenza, [['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.004000000000000001).
+step 108 rule 4 [81,102,48] : likelihood(['allergic-rhinitis', [['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.0009999999999999998).
+step 109 rule 4 [85,103,50] : likelihood(['bacterial-pneumonia', [['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.011399999999999999).
+step 110 rule 12 [104] : candidates(case, ['bacterial-pneumonia']).
+step 111 rule 8 [105,64] : sum([0.001547, 4.8000000000000015e-5, 7.499999999999999e-7, 4.787999999999999e-5], 0.00164363).
+step 112 rule 4 [72,106,47] : likelihood([covid19, [['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.0442).
+step 113 rule 4 [76,107,49] : likelihood([influenza, [['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.0020000000000000005).
+step 114 rule 4 [80,108,52] : likelihood(['allergic-rhinitis', [['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.00014999999999999996).
+step 115 rule 4 [84,109,54] : likelihood(['bacterial-pneumonia', [['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.006839999999999999).
+step 116 rule 4 [71,112,51] : likelihood([covid19, [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.03094).
+step 117 rule 4 [75,113,53] : likelihood([influenza, [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.0016000000000000005).
+step 118 rule 4 [79,114,56] : likelihood(['allergic-rhinitis', [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 7.4999999999999985e-6).
+step 119 rule 4 [83,115,58] : likelihood(['bacterial-pneumonia', [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.004787999999999999).
+step 120 rule 5 [5,31,116,55] : score([covid19, case], 0.001547).
+step 121 rule 5 [6,31,117,57] : score([influenza, case], 4.8000000000000015e-5).
+step 122 rule 5 [7,31,118,59] : score(['allergic-rhinitis', case], 7.499999999999999e-7).
+step 123 rule 5 [8,31,119,60] : score(['bacterial-pneumonia', case], 4.787999999999999e-5).
+step 124 rule 7 [123,87] : scores([['bacterial-pneumonia'], case], [4.787999999999999e-5]).
+step 125 rule 7 [122,124] : scores([['allergic-rhinitis', 'bacterial-pneumonia'], case], [7.499999999999999e-7, 4.787999999999999e-5]).
+step 126 rule 7 [121,125] : scores([[influenza, 'allergic-rhinitis', 'bacterial-pneumonia'], case], [4.8000000000000015e-5, 7.499999999999999e-7, 4.787999999999999e-5]).
+step 127 rule 7 [120,126] : scores([[covid19, influenza, 'allergic-rhinitis', 'bacterial-pneumonia'], case], [0.001547, 4.8000000000000015e-5, 7.499999999999999e-7, 4.787999999999999e-5]).
+step 128 rule 9 [29,30,127] : scores(case, [0.001547, 4.8000000000000015e-5, 7.499999999999999e-7, 4.787999999999999e-5]).
+step 129 rule 10 [29,128,111] : 'evidence-total'(case, 0.00164363).
+step 130 rule 13 [110,123,129,65,66] : posterior(['bacterial-pneumonia', case], 0.029130643758023392).
+answer 6 [130]
 
-claim(query(6), [posterior(['bacterial-pneumonia', case], 0.029130643758023392)]).
+?- check(aggregate_all(count, (is_a(Subject, 'invalid-probability')), 0)).
+true.
 
-clause(1, is_a(covid19, disease), []).
-clause(2, is_a(influenza, disease), []).
-clause(3, is_a('allergic-rhinitis', disease), []).
-clause(4, is_a('bacterial-pneumonia', disease), []).
-clause(5, prior(covid19, 0.05), []).
-clause(6, prior(influenza, 0.03), []).
-clause(7, prior('allergic-rhinitis', 0.1), []).
-clause(8, prior('bacterial-pneumonia', 0.01), []).
-clause(9, probability([covid19, fever], 0.7), []).
-clause(10, probability([covid19, 'dry-cough'], 0.65), []).
-clause(11, probability([covid19, 'loss-of-smell'], 0.4), []).
-clause(12, probability([covid19, sneezing], 0.15), []).
-clause(13, probability([covid19, 'short-breath'], 0.2), []).
-clause(14, probability([influenza, fever], 0.8), []).
-clause(15, probability([influenza, 'dry-cough'], 0.5), []).
-clause(16, probability([influenza, 'loss-of-smell'], 0.05), []).
-clause(17, probability([influenza, sneezing], 0.2), []).
-clause(18, probability([influenza, 'short-breath'], 0.1), []).
-clause(19, probability(['allergic-rhinitis', fever], 0.05), []).
-clause(20, probability(['allergic-rhinitis', 'dry-cough'], 0.15), []).
-clause(21, probability(['allergic-rhinitis', 'loss-of-smell'], 0.1), []).
-clause(22, probability(['allergic-rhinitis', sneezing], 0.8), []).
-clause(23, probability(['allergic-rhinitis', 'short-breath'], 0.05), []).
-clause(24, probability(['bacterial-pneumonia', fever], 0.7), []).
-clause(25, probability(['bacterial-pneumonia', 'dry-cough'], 0.6), []).
-clause(26, probability(['bacterial-pneumonia', 'loss-of-smell'], 0.02), []).
-clause(27, probability(['bacterial-pneumonia', sneezing], 0.05), []).
-clause(28, probability(['bacterial-pneumonia', 'short-breath'], 0.6), []).
-clause(29, is_a(case, 'patient-case'), []).
-clause(30, diseases(case, [covid19, influenza, 'allergic-rhinitis', 'bacterial-pneumonia']), []).
-clause(31, evidence(case, [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]), []).
-clause(32, sum([], 0), []).
-clause(33, factor([var('Disease'), [var('Symptom'), present]], var('Probability')), [probability([var('Disease'), var('Symptom')], var('Probability'))]).
-clause(34, factor([var('Disease'), [var('Symptom'), absent]], var('_Calc1')), [probability([var('Disease'), var('Symptom')], var('Probability')), is(var('_Calc1'), '-'(1, var('Probability')))]).
-clause(35, likelihood([var('Disease'), []], 1), [is_a(var('Disease'), disease)]).
-clause(36, likelihood([var('Disease'), list([var('Observation')], var('Rest'))], var('_Calc1')), [factor([var('Disease'), var('Observation')], var('Factor')), likelihood([var('Disease'), var('Rest')], var('Remaining')), is(var('_Calc1'), '*'(var('Factor'), var('Remaining')))]).
-clause(37, score([var('Disease'), var('Case')], var('_Calc1')), [prior(var('Disease'), var('Prior')), evidence(var('Case'), var('Evidence')), likelihood([var('Disease'), var('Evidence')], var('Likelihood')), is(var('_Calc1'), '*'(var('Prior'), var('Likelihood')))]).
-clause(38, scores([[], var('Case')], []), [is_a(var('Case'), 'patient-case')]).
-clause(39, scores([list([var('Disease')], var('Rest')), var('Case')], list([var('Score')], var('Remaining'))), [score([var('Disease'), var('Case')], var('Score')), scores([var('Rest'), var('Case')], var('Remaining'))]).
-clause(40, sum(list([var('Value')], var('Rest')), var('_Calc1')), [sum(var('Rest'), var('Remaining')), is(var('_Calc1'), '+'(var('Value'), var('Remaining')))]).
-clause(41, scores(var('Case'), var('Scores')), [is_a(var('Case'), 'patient-case'), diseases(var('Case'), var('Diseases')), scores([var('Diseases'), var('Case')], var('Scores'))]).
-clause(42, 'evidence-total'(var('Case'), var('Total')), [is_a(var('Case'), 'patient-case'), scores(var('Case'), var('Scores')), sum(var('Scores'), var('Total'))]).
-clause(43, candidates(var('Case'), var('Diseases')), [is_a(var('Case'), 'patient-case'), diseases(var('Case'), var('Diseases'))]).
-clause(44, candidates(var('Case'), var('Rest')), [candidates(var('Case'), list([var('Disease')], var('Rest')))]).
-clause(45, posterior([var('Disease'), var('Case')], var('_Calc1')), [candidates(var('Case'), list([var('Disease')], var('Rest'))), score([var('Disease'), var('Case')], var('Score')), 'evidence-total'(var('Case'), var('Total')), '>'(var('Total'), 0), is(var('_Calc1'), '/'(var('Score'), var('Total')))]).
+?- check(is_a(case, 'normalizable-case')).
+true.
 
-% step 1
-step(is_a(case, 'patient-case'), fact(29), [], []).
-% step 2
-step(diseases(case, [covid19, influenza, 'allergic-rhinitis', 'bacterial-pneumonia']), fact(30), [], []).
-% step 3
-step(candidates(case, [covid19, influenza, 'allergic-rhinitis', 'bacterial-pneumonia']), rule(43), ['='('Case', case), '='('Diseases', [covid19, influenza, 'allergic-rhinitis', 'bacterial-pneumonia'])], [is_a(case, 'patient-case'), diseases(case, [covid19, influenza, 'allergic-rhinitis', 'bacterial-pneumonia'])]).
-% step 4
-step(candidates(case, [influenza, 'allergic-rhinitis', 'bacterial-pneumonia']), rule(44), ['='('Case', case), '='('Disease', covid19), '='('Rest', [influenza, 'allergic-rhinitis', 'bacterial-pneumonia'])], [candidates(case, [covid19, influenza, 'allergic-rhinitis', 'bacterial-pneumonia'])]).
-% step 5
-step(candidates(case, ['allergic-rhinitis', 'bacterial-pneumonia']), rule(44), ['='('Case', case), '='('Disease', influenza), '='('Rest', ['allergic-rhinitis', 'bacterial-pneumonia'])], [candidates(case, [influenza, 'allergic-rhinitis', 'bacterial-pneumonia'])]).
-% step 6
-step(candidates(case, ['bacterial-pneumonia']), rule(44), ['='('Case', case), '='('Disease', 'allergic-rhinitis'), '='('Rest', ['bacterial-pneumonia'])], [candidates(case, ['allergic-rhinitis', 'bacterial-pneumonia'])]).
-% step 7
-step(prior('bacterial-pneumonia', 0.01), fact(8), [], []).
-% step 8
-step(evidence(case, [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]), fact(31), [], []).
-% step 9
-step(probability(['bacterial-pneumonia', fever], 0.7), fact(24), [], []).
-% step 10
-step(factor(['bacterial-pneumonia', [fever, present]], 0.7), rule(33), ['='('Disease', 'bacterial-pneumonia'), '='('Symptom', fever), '='('Probability', 0.7)], [probability(['bacterial-pneumonia', fever], 0.7)]).
-% step 11
-step(probability(['bacterial-pneumonia', 'dry-cough'], 0.6), fact(25), [], []).
-% step 12
-step(factor(['bacterial-pneumonia', ['dry-cough', present]], 0.6), rule(33), ['='('Disease', 'bacterial-pneumonia'), '='('Symptom', 'dry-cough'), '='('Probability', 0.6)], [probability(['bacterial-pneumonia', 'dry-cough'], 0.6)]).
-% step 13
-step(probability(['bacterial-pneumonia', 'loss-of-smell'], 0.02), fact(26), [], []).
-% step 14
-step(factor(['bacterial-pneumonia', ['loss-of-smell', present]], 0.02), rule(33), ['='('Disease', 'bacterial-pneumonia'), '='('Symptom', 'loss-of-smell'), '='('Probability', 0.02)], [probability(['bacterial-pneumonia', 'loss-of-smell'], 0.02)]).
-% step 15
-step(probability(['bacterial-pneumonia', sneezing], 0.05), fact(27), [], []).
-% step 16
-step(is(0.95, '-'(1, 0.05)), builtin, [], []).
-% step 17
-step(factor(['bacterial-pneumonia', [sneezing, absent]], 0.95), rule(34), ['='('Disease', 'bacterial-pneumonia'), '='('Symptom', sneezing), '='('_Calc1', 0.95), '='('Probability', 0.05)], [probability(['bacterial-pneumonia', sneezing], 0.05), is(0.95, '-'(1, 0.05))]).
-% step 18
-step(probability(['bacterial-pneumonia', 'short-breath'], 0.6), fact(28), [], []).
-% step 19
-step(factor(['bacterial-pneumonia', ['short-breath', present]], 0.6), rule(33), ['='('Disease', 'bacterial-pneumonia'), '='('Symptom', 'short-breath'), '='('Probability', 0.6)], [probability(['bacterial-pneumonia', 'short-breath'], 0.6)]).
-% step 20
-step(is_a('bacterial-pneumonia', disease), fact(4), [], []).
-% step 21
-step(likelihood(['bacterial-pneumonia', []], 1), rule(35), ['='('Disease', 'bacterial-pneumonia')], [is_a('bacterial-pneumonia', disease)]).
-% step 22
-step(is(0.6, '*'(0.6, 1)), builtin, [], []).
-% step 23
-step(likelihood(['bacterial-pneumonia', [['short-breath', present]]], 0.6), rule(36), ['='('Disease', 'bacterial-pneumonia'), '='('Observation', ['short-breath', present]), '='('Rest', []), '='('_Calc1', 0.6), '='('Factor', 0.6), '='('Remaining', 1)], [factor(['bacterial-pneumonia', ['short-breath', present]], 0.6), likelihood(['bacterial-pneumonia', []], 1), is(0.6, '*'(0.6, 1))]).
-% step 24
-step(is(0.57, '*'(0.95, 0.6)), builtin, [], []).
-% step 25
-step(likelihood(['bacterial-pneumonia', [[sneezing, absent], ['short-breath', present]]], 0.57), rule(36), ['='('Disease', 'bacterial-pneumonia'), '='('Observation', [sneezing, absent]), '='('Rest', [['short-breath', present]]), '='('_Calc1', 0.57), '='('Factor', 0.95), '='('Remaining', 0.6)], [factor(['bacterial-pneumonia', [sneezing, absent]], 0.95), likelihood(['bacterial-pneumonia', [['short-breath', present]]], 0.6), is(0.57, '*'(0.95, 0.6))]).
-% step 26
-step(is(0.011399999999999999, '*'(0.02, 0.57)), builtin, [], []).
-% step 27
-step(likelihood(['bacterial-pneumonia', [['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.011399999999999999), rule(36), ['='('Disease', 'bacterial-pneumonia'), '='('Observation', ['loss-of-smell', present]), '='('Rest', [[sneezing, absent], ['short-breath', present]]), '='('_Calc1', 0.011399999999999999), '='('Factor', 0.02), '='('Remaining', 0.57)], [factor(['bacterial-pneumonia', ['loss-of-smell', present]], 0.02), likelihood(['bacterial-pneumonia', [[sneezing, absent], ['short-breath', present]]], 0.57), is(0.011399999999999999, '*'(0.02, 0.57))]).
-% step 28
-step(is(0.006839999999999999, '*'(0.6, 0.011399999999999999)), builtin, [], []).
-% step 29
-step(likelihood(['bacterial-pneumonia', [['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.006839999999999999), rule(36), ['='('Disease', 'bacterial-pneumonia'), '='('Observation', ['dry-cough', present]), '='('Rest', [['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]), '='('_Calc1', 0.006839999999999999), '='('Factor', 0.6), '='('Remaining', 0.011399999999999999)], [factor(['bacterial-pneumonia', ['dry-cough', present]], 0.6), likelihood(['bacterial-pneumonia', [['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.011399999999999999), is(0.006839999999999999, '*'(0.6, 0.011399999999999999))]).
-% step 30
-step(is(0.004787999999999999, '*'(0.7, 0.006839999999999999)), builtin, [], []).
-% step 31
-step(likelihood(['bacterial-pneumonia', [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.004787999999999999), rule(36), ['='('Disease', 'bacterial-pneumonia'), '='('Observation', [fever, present]), '='('Rest', [['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]), '='('_Calc1', 0.004787999999999999), '='('Factor', 0.7), '='('Remaining', 0.006839999999999999)], [factor(['bacterial-pneumonia', [fever, present]], 0.7), likelihood(['bacterial-pneumonia', [['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.006839999999999999), is(0.004787999999999999, '*'(0.7, 0.006839999999999999))]).
-% step 32
-step(is(0.00004787999999999999, '*'(0.01, 0.004787999999999999)), builtin, [], []).
-% step 33
-step(score(['bacterial-pneumonia', case], 0.00004787999999999999), rule(37), ['='('Disease', 'bacterial-pneumonia'), '='('Case', case), '='('_Calc1', 0.00004787999999999999), '='('Prior', 0.01), '='('Evidence', [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]), '='('Likelihood', 0.004787999999999999)], [prior('bacterial-pneumonia', 0.01), evidence(case, [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]), likelihood(['bacterial-pneumonia', [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.004787999999999999), is(0.00004787999999999999, '*'(0.01, 0.004787999999999999))]).
-% step 34
-step(prior(covid19, 0.05), fact(5), [], []).
-% step 35
-step(probability([covid19, fever], 0.7), fact(9), [], []).
-% step 36
-step(factor([covid19, [fever, present]], 0.7), rule(33), ['='('Disease', covid19), '='('Symptom', fever), '='('Probability', 0.7)], [probability([covid19, fever], 0.7)]).
-% step 37
-step(probability([covid19, 'dry-cough'], 0.65), fact(10), [], []).
-% step 38
-step(factor([covid19, ['dry-cough', present]], 0.65), rule(33), ['='('Disease', covid19), '='('Symptom', 'dry-cough'), '='('Probability', 0.65)], [probability([covid19, 'dry-cough'], 0.65)]).
-% step 39
-step(probability([covid19, 'loss-of-smell'], 0.4), fact(11), [], []).
-% step 40
-step(factor([covid19, ['loss-of-smell', present]], 0.4), rule(33), ['='('Disease', covid19), '='('Symptom', 'loss-of-smell'), '='('Probability', 0.4)], [probability([covid19, 'loss-of-smell'], 0.4)]).
-% step 41
-step(probability([covid19, sneezing], 0.15), fact(12), [], []).
-% step 42
-step(is(0.85, '-'(1, 0.15)), builtin, [], []).
-% step 43
-step(factor([covid19, [sneezing, absent]], 0.85), rule(34), ['='('Disease', covid19), '='('Symptom', sneezing), '='('_Calc1', 0.85), '='('Probability', 0.15)], [probability([covid19, sneezing], 0.15), is(0.85, '-'(1, 0.15))]).
-% step 44
-step(probability([covid19, 'short-breath'], 0.2), fact(13), [], []).
-% step 45
-step(factor([covid19, ['short-breath', present]], 0.2), rule(33), ['='('Disease', covid19), '='('Symptom', 'short-breath'), '='('Probability', 0.2)], [probability([covid19, 'short-breath'], 0.2)]).
-% step 46
-step(is_a(covid19, disease), fact(1), [], []).
-% step 47
-step(likelihood([covid19, []], 1), rule(35), ['='('Disease', covid19)], [is_a(covid19, disease)]).
-% step 48
-step(is(0.2, '*'(0.2, 1)), builtin, [], []).
-% step 49
-step(likelihood([covid19, [['short-breath', present]]], 0.2), rule(36), ['='('Disease', covid19), '='('Observation', ['short-breath', present]), '='('Rest', []), '='('_Calc1', 0.2), '='('Factor', 0.2), '='('Remaining', 1)], [factor([covid19, ['short-breath', present]], 0.2), likelihood([covid19, []], 1), is(0.2, '*'(0.2, 1))]).
-% step 50
-step(is(0.17, '*'(0.85, 0.2)), builtin, [], []).
-% step 51
-step(likelihood([covid19, [[sneezing, absent], ['short-breath', present]]], 0.17), rule(36), ['='('Disease', covid19), '='('Observation', [sneezing, absent]), '='('Rest', [['short-breath', present]]), '='('_Calc1', 0.17), '='('Factor', 0.85), '='('Remaining', 0.2)], [factor([covid19, [sneezing, absent]], 0.85), likelihood([covid19, [['short-breath', present]]], 0.2), is(0.17, '*'(0.85, 0.2))]).
-% step 52
-step(is(0.068, '*'(0.4, 0.17)), builtin, [], []).
-% step 53
-step(likelihood([covid19, [['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.068), rule(36), ['='('Disease', covid19), '='('Observation', ['loss-of-smell', present]), '='('Rest', [[sneezing, absent], ['short-breath', present]]), '='('_Calc1', 0.068), '='('Factor', 0.4), '='('Remaining', 0.17)], [factor([covid19, ['loss-of-smell', present]], 0.4), likelihood([covid19, [[sneezing, absent], ['short-breath', present]]], 0.17), is(0.068, '*'(0.4, 0.17))]).
-% step 54
-step(is(0.0442, '*'(0.65, 0.068)), builtin, [], []).
-% step 55
-step(likelihood([covid19, [['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.0442), rule(36), ['='('Disease', covid19), '='('Observation', ['dry-cough', present]), '='('Rest', [['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]), '='('_Calc1', 0.0442), '='('Factor', 0.65), '='('Remaining', 0.068)], [factor([covid19, ['dry-cough', present]], 0.65), likelihood([covid19, [['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.068), is(0.0442, '*'(0.65, 0.068))]).
-% step 56
-step(is(0.03094, '*'(0.7, 0.0442)), builtin, [], []).
-% step 57
-step(likelihood([covid19, [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.03094), rule(36), ['='('Disease', covid19), '='('Observation', [fever, present]), '='('Rest', [['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]), '='('_Calc1', 0.03094), '='('Factor', 0.7), '='('Remaining', 0.0442)], [factor([covid19, [fever, present]], 0.7), likelihood([covid19, [['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.0442), is(0.03094, '*'(0.7, 0.0442))]).
-% step 58
-step(is(0.001547, '*'(0.05, 0.03094)), builtin, [], []).
-% step 59
-step(score([covid19, case], 0.001547), rule(37), ['='('Disease', covid19), '='('Case', case), '='('_Calc1', 0.001547), '='('Prior', 0.05), '='('Evidence', [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]), '='('Likelihood', 0.03094)], [prior(covid19, 0.05), evidence(case, [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]), likelihood([covid19, [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.03094), is(0.001547, '*'(0.05, 0.03094))]).
-% step 60
-step(prior(influenza, 0.03), fact(6), [], []).
-% step 61
-step(probability([influenza, fever], 0.8), fact(14), [], []).
-% step 62
-step(factor([influenza, [fever, present]], 0.8), rule(33), ['='('Disease', influenza), '='('Symptom', fever), '='('Probability', 0.8)], [probability([influenza, fever], 0.8)]).
-% step 63
-step(probability([influenza, 'dry-cough'], 0.5), fact(15), [], []).
-% step 64
-step(factor([influenza, ['dry-cough', present]], 0.5), rule(33), ['='('Disease', influenza), '='('Symptom', 'dry-cough'), '='('Probability', 0.5)], [probability([influenza, 'dry-cough'], 0.5)]).
-% step 65
-step(probability([influenza, 'loss-of-smell'], 0.05), fact(16), [], []).
-% step 66
-step(factor([influenza, ['loss-of-smell', present]], 0.05), rule(33), ['='('Disease', influenza), '='('Symptom', 'loss-of-smell'), '='('Probability', 0.05)], [probability([influenza, 'loss-of-smell'], 0.05)]).
-% step 67
-step(probability([influenza, sneezing], 0.2), fact(17), [], []).
-% step 68
-step(is(0.8, '-'(1, 0.2)), builtin, [], []).
-% step 69
-step(factor([influenza, [sneezing, absent]], 0.8), rule(34), ['='('Disease', influenza), '='('Symptom', sneezing), '='('_Calc1', 0.8), '='('Probability', 0.2)], [probability([influenza, sneezing], 0.2), is(0.8, '-'(1, 0.2))]).
-% step 70
-step(probability([influenza, 'short-breath'], 0.1), fact(18), [], []).
-% step 71
-step(factor([influenza, ['short-breath', present]], 0.1), rule(33), ['='('Disease', influenza), '='('Symptom', 'short-breath'), '='('Probability', 0.1)], [probability([influenza, 'short-breath'], 0.1)]).
-% step 72
-step(is_a(influenza, disease), fact(2), [], []).
-% step 73
-step(likelihood([influenza, []], 1), rule(35), ['='('Disease', influenza)], [is_a(influenza, disease)]).
-% step 74
-step(is(0.1, '*'(0.1, 1)), builtin, [], []).
-% step 75
-step(likelihood([influenza, [['short-breath', present]]], 0.1), rule(36), ['='('Disease', influenza), '='('Observation', ['short-breath', present]), '='('Rest', []), '='('_Calc1', 0.1), '='('Factor', 0.1), '='('Remaining', 1)], [factor([influenza, ['short-breath', present]], 0.1), likelihood([influenza, []], 1), is(0.1, '*'(0.1, 1))]).
-% step 76
-step(is(0.08000000000000002, '*'(0.8, 0.1)), builtin, [], []).
-% step 77
-step(likelihood([influenza, [[sneezing, absent], ['short-breath', present]]], 0.08000000000000002), rule(36), ['='('Disease', influenza), '='('Observation', [sneezing, absent]), '='('Rest', [['short-breath', present]]), '='('_Calc1', 0.08000000000000002), '='('Factor', 0.8), '='('Remaining', 0.1)], [factor([influenza, [sneezing, absent]], 0.8), likelihood([influenza, [['short-breath', present]]], 0.1), is(0.08000000000000002, '*'(0.8, 0.1))]).
-% step 78
-step(is(0.004000000000000001, '*'(0.05, 0.08000000000000002)), builtin, [], []).
-% step 79
-step(likelihood([influenza, [['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.004000000000000001), rule(36), ['='('Disease', influenza), '='('Observation', ['loss-of-smell', present]), '='('Rest', [[sneezing, absent], ['short-breath', present]]), '='('_Calc1', 0.004000000000000001), '='('Factor', 0.05), '='('Remaining', 0.08000000000000002)], [factor([influenza, ['loss-of-smell', present]], 0.05), likelihood([influenza, [[sneezing, absent], ['short-breath', present]]], 0.08000000000000002), is(0.004000000000000001, '*'(0.05, 0.08000000000000002))]).
-% step 80
-step(is(0.0020000000000000005, '*'(0.5, 0.004000000000000001)), builtin, [], []).
-% step 81
-step(likelihood([influenza, [['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.0020000000000000005), rule(36), ['='('Disease', influenza), '='('Observation', ['dry-cough', present]), '='('Rest', [['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]), '='('_Calc1', 0.0020000000000000005), '='('Factor', 0.5), '='('Remaining', 0.004000000000000001)], [factor([influenza, ['dry-cough', present]], 0.5), likelihood([influenza, [['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.004000000000000001), is(0.0020000000000000005, '*'(0.5, 0.004000000000000001))]).
-% step 82
-step(is(0.0016000000000000005, '*'(0.8, 0.0020000000000000005)), builtin, [], []).
-% step 83
-step(likelihood([influenza, [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.0016000000000000005), rule(36), ['='('Disease', influenza), '='('Observation', [fever, present]), '='('Rest', [['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]), '='('_Calc1', 0.0016000000000000005), '='('Factor', 0.8), '='('Remaining', 0.0020000000000000005)], [factor([influenza, [fever, present]], 0.8), likelihood([influenza, [['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.0020000000000000005), is(0.0016000000000000005, '*'(0.8, 0.0020000000000000005))]).
-% step 84
-step(is(0.000048000000000000015, '*'(0.03, 0.0016000000000000005)), builtin, [], []).
-% step 85
-step(score([influenza, case], 0.000048000000000000015), rule(37), ['='('Disease', influenza), '='('Case', case), '='('_Calc1', 0.000048000000000000015), '='('Prior', 0.03), '='('Evidence', [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]), '='('Likelihood', 0.0016000000000000005)], [prior(influenza, 0.03), evidence(case, [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]), likelihood([influenza, [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.0016000000000000005), is(0.000048000000000000015, '*'(0.03, 0.0016000000000000005))]).
-% step 86
-step(prior('allergic-rhinitis', 0.1), fact(7), [], []).
-% step 87
-step(probability(['allergic-rhinitis', fever], 0.05), fact(19), [], []).
-% step 88
-step(factor(['allergic-rhinitis', [fever, present]], 0.05), rule(33), ['='('Disease', 'allergic-rhinitis'), '='('Symptom', fever), '='('Probability', 0.05)], [probability(['allergic-rhinitis', fever], 0.05)]).
-% step 89
-step(probability(['allergic-rhinitis', 'dry-cough'], 0.15), fact(20), [], []).
-% step 90
-step(factor(['allergic-rhinitis', ['dry-cough', present]], 0.15), rule(33), ['='('Disease', 'allergic-rhinitis'), '='('Symptom', 'dry-cough'), '='('Probability', 0.15)], [probability(['allergic-rhinitis', 'dry-cough'], 0.15)]).
-% step 91
-step(probability(['allergic-rhinitis', 'loss-of-smell'], 0.1), fact(21), [], []).
-% step 92
-step(factor(['allergic-rhinitis', ['loss-of-smell', present]], 0.1), rule(33), ['='('Disease', 'allergic-rhinitis'), '='('Symptom', 'loss-of-smell'), '='('Probability', 0.1)], [probability(['allergic-rhinitis', 'loss-of-smell'], 0.1)]).
-% step 93
-step(probability(['allergic-rhinitis', sneezing], 0.8), fact(22), [], []).
-% step 94
-step(is(0.19999999999999996, '-'(1, 0.8)), builtin, [], []).
-% step 95
-step(factor(['allergic-rhinitis', [sneezing, absent]], 0.19999999999999996), rule(34), ['='('Disease', 'allergic-rhinitis'), '='('Symptom', sneezing), '='('_Calc1', 0.19999999999999996), '='('Probability', 0.8)], [probability(['allergic-rhinitis', sneezing], 0.8), is(0.19999999999999996, '-'(1, 0.8))]).
-% step 96
-step(probability(['allergic-rhinitis', 'short-breath'], 0.05), fact(23), [], []).
-% step 97
-step(factor(['allergic-rhinitis', ['short-breath', present]], 0.05), rule(33), ['='('Disease', 'allergic-rhinitis'), '='('Symptom', 'short-breath'), '='('Probability', 0.05)], [probability(['allergic-rhinitis', 'short-breath'], 0.05)]).
-% step 98
-step(is_a('allergic-rhinitis', disease), fact(3), [], []).
-% step 99
-step(likelihood(['allergic-rhinitis', []], 1), rule(35), ['='('Disease', 'allergic-rhinitis')], [is_a('allergic-rhinitis', disease)]).
-% step 100
-step(is(0.05, '*'(0.05, 1)), builtin, [], []).
-% step 101
-step(likelihood(['allergic-rhinitis', [['short-breath', present]]], 0.05), rule(36), ['='('Disease', 'allergic-rhinitis'), '='('Observation', ['short-breath', present]), '='('Rest', []), '='('_Calc1', 0.05), '='('Factor', 0.05), '='('Remaining', 1)], [factor(['allergic-rhinitis', ['short-breath', present]], 0.05), likelihood(['allergic-rhinitis', []], 1), is(0.05, '*'(0.05, 1))]).
-% step 102
-step(is(0.009999999999999998, '*'(0.19999999999999996, 0.05)), builtin, [], []).
-% step 103
-step(likelihood(['allergic-rhinitis', [[sneezing, absent], ['short-breath', present]]], 0.009999999999999998), rule(36), ['='('Disease', 'allergic-rhinitis'), '='('Observation', [sneezing, absent]), '='('Rest', [['short-breath', present]]), '='('_Calc1', 0.009999999999999998), '='('Factor', 0.19999999999999996), '='('Remaining', 0.05)], [factor(['allergic-rhinitis', [sneezing, absent]], 0.19999999999999996), likelihood(['allergic-rhinitis', [['short-breath', present]]], 0.05), is(0.009999999999999998, '*'(0.19999999999999996, 0.05))]).
-% step 104
-step(is(0.0009999999999999998, '*'(0.1, 0.009999999999999998)), builtin, [], []).
-% step 105
-step(likelihood(['allergic-rhinitis', [['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.0009999999999999998), rule(36), ['='('Disease', 'allergic-rhinitis'), '='('Observation', ['loss-of-smell', present]), '='('Rest', [[sneezing, absent], ['short-breath', present]]), '='('_Calc1', 0.0009999999999999998), '='('Factor', 0.1), '='('Remaining', 0.009999999999999998)], [factor(['allergic-rhinitis', ['loss-of-smell', present]], 0.1), likelihood(['allergic-rhinitis', [[sneezing, absent], ['short-breath', present]]], 0.009999999999999998), is(0.0009999999999999998, '*'(0.1, 0.009999999999999998))]).
-% step 106
-step(is(0.00014999999999999996, '*'(0.15, 0.0009999999999999998)), builtin, [], []).
-% step 107
-step(likelihood(['allergic-rhinitis', [['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.00014999999999999996), rule(36), ['='('Disease', 'allergic-rhinitis'), '='('Observation', ['dry-cough', present]), '='('Rest', [['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]), '='('_Calc1', 0.00014999999999999996), '='('Factor', 0.15), '='('Remaining', 0.0009999999999999998)], [factor(['allergic-rhinitis', ['dry-cough', present]], 0.15), likelihood(['allergic-rhinitis', [['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.0009999999999999998), is(0.00014999999999999996, '*'(0.15, 0.0009999999999999998))]).
-% step 108
-step(is(0.0000074999999999999985, '*'(0.05, 0.00014999999999999996)), builtin, [], []).
-% step 109
-step(likelihood(['allergic-rhinitis', [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.0000074999999999999985), rule(36), ['='('Disease', 'allergic-rhinitis'), '='('Observation', [fever, present]), '='('Rest', [['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]), '='('_Calc1', 0.0000074999999999999985), '='('Factor', 0.05), '='('Remaining', 0.00014999999999999996)], [factor(['allergic-rhinitis', [fever, present]], 0.05), likelihood(['allergic-rhinitis', [['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.00014999999999999996), is(0.0000074999999999999985, '*'(0.05, 0.00014999999999999996))]).
-% step 110
-step(is(7.499999999999999e-7, '*'(0.1, 0.0000074999999999999985)), builtin, [], []).
-% step 111
-step(score(['allergic-rhinitis', case], 7.499999999999999e-7), rule(37), ['='('Disease', 'allergic-rhinitis'), '='('Case', case), '='('_Calc1', 7.499999999999999e-7), '='('Prior', 0.1), '='('Evidence', [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]), '='('Likelihood', 0.0000074999999999999985)], [prior('allergic-rhinitis', 0.1), evidence(case, [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]), likelihood(['allergic-rhinitis', [[fever, present], ['dry-cough', present], ['loss-of-smell', present], [sneezing, absent], ['short-breath', present]]], 0.0000074999999999999985), is(7.499999999999999e-7, '*'(0.1, 0.0000074999999999999985))]).
-% step 112
-step(scores([[], case], []), rule(38), ['='('Case', case)], [is_a(case, 'patient-case')]).
-% step 113
-step(scores([['bacterial-pneumonia'], case], [0.00004787999999999999]), rule(39), ['='('Disease', 'bacterial-pneumonia'), '='('Rest', []), '='('Case', case), '='('Score', 0.00004787999999999999), '='('Remaining', [])], [score(['bacterial-pneumonia', case], 0.00004787999999999999), scores([[], case], [])]).
-% step 114
-step(scores([['allergic-rhinitis', 'bacterial-pneumonia'], case], [7.499999999999999e-7, 0.00004787999999999999]), rule(39), ['='('Disease', 'allergic-rhinitis'), '='('Rest', ['bacterial-pneumonia']), '='('Case', case), '='('Score', 7.499999999999999e-7), '='('Remaining', [0.00004787999999999999])], [score(['allergic-rhinitis', case], 7.499999999999999e-7), scores([['bacterial-pneumonia'], case], [0.00004787999999999999])]).
-% step 115
-step(scores([[influenza, 'allergic-rhinitis', 'bacterial-pneumonia'], case], [0.000048000000000000015, 7.499999999999999e-7, 0.00004787999999999999]), rule(39), ['='('Disease', influenza), '='('Rest', ['allergic-rhinitis', 'bacterial-pneumonia']), '='('Case', case), '='('Score', 0.000048000000000000015), '='('Remaining', [7.499999999999999e-7, 0.00004787999999999999])], [score([influenza, case], 0.000048000000000000015), scores([['allergic-rhinitis', 'bacterial-pneumonia'], case], [7.499999999999999e-7, 0.00004787999999999999])]).
-% step 116
-step(scores([[covid19, influenza, 'allergic-rhinitis', 'bacterial-pneumonia'], case], [0.001547, 0.000048000000000000015, 7.499999999999999e-7, 0.00004787999999999999]), rule(39), ['='('Disease', covid19), '='('Rest', [influenza, 'allergic-rhinitis', 'bacterial-pneumonia']), '='('Case', case), '='('Score', 0.001547), '='('Remaining', [0.000048000000000000015, 7.499999999999999e-7, 0.00004787999999999999])], [score([covid19, case], 0.001547), scores([[influenza, 'allergic-rhinitis', 'bacterial-pneumonia'], case], [0.000048000000000000015, 7.499999999999999e-7, 0.00004787999999999999])]).
-% step 117
-step(scores(case, [0.001547, 0.000048000000000000015, 7.499999999999999e-7, 0.00004787999999999999]), rule(41), ['='('Case', case), '='('Scores', [0.001547, 0.000048000000000000015, 7.499999999999999e-7, 0.00004787999999999999]), '='('Diseases', [covid19, influenza, 'allergic-rhinitis', 'bacterial-pneumonia'])], [is_a(case, 'patient-case'), diseases(case, [covid19, influenza, 'allergic-rhinitis', 'bacterial-pneumonia']), scores([[covid19, influenza, 'allergic-rhinitis', 'bacterial-pneumonia'], case], [0.001547, 0.000048000000000000015, 7.499999999999999e-7, 0.00004787999999999999])]).
-% step 118
-step(sum([], 0), fact(32), [], []).
-% step 119
-step(is(0.00004787999999999999, '+'(0.00004787999999999999, 0)), builtin, [], []).
-% step 120
-step(sum([0.00004787999999999999], 0.00004787999999999999), rule(40), ['='('Value', 0.00004787999999999999), '='('Rest', []), '='('_Calc1', 0.00004787999999999999), '='('Remaining', 0)], [sum([], 0), is(0.00004787999999999999, '+'(0.00004787999999999999, 0))]).
-% step 121
-step(is(0.00004862999999999999, '+'(7.499999999999999e-7, 0.00004787999999999999)), builtin, [], []).
-% step 122
-step(sum([7.499999999999999e-7, 0.00004787999999999999], 0.00004862999999999999), rule(40), ['='('Value', 7.499999999999999e-7), '='('Rest', [0.00004787999999999999]), '='('_Calc1', 0.00004862999999999999), '='('Remaining', 0.00004787999999999999)], [sum([0.00004787999999999999], 0.00004787999999999999), is(0.00004862999999999999, '+'(7.499999999999999e-7, 0.00004787999999999999))]).
-% step 123
-step(is(0.00009663, '+'(0.000048000000000000015, 0.00004862999999999999)), builtin, [], []).
-% step 124
-step(sum([0.000048000000000000015, 7.499999999999999e-7, 0.00004787999999999999], 0.00009663), rule(40), ['='('Value', 0.000048000000000000015), '='('Rest', [7.499999999999999e-7, 0.00004787999999999999]), '='('_Calc1', 0.00009663), '='('Remaining', 0.00004862999999999999)], [sum([7.499999999999999e-7, 0.00004787999999999999], 0.00004862999999999999), is(0.00009663, '+'(0.000048000000000000015, 0.00004862999999999999))]).
-% step 125
-step(is(0.00164363, '+'(0.001547, 0.00009663)), builtin, [], []).
-% step 126
-step(sum([0.001547, 0.000048000000000000015, 7.499999999999999e-7, 0.00004787999999999999], 0.00164363), rule(40), ['='('Value', 0.001547), '='('Rest', [0.000048000000000000015, 7.499999999999999e-7, 0.00004787999999999999]), '='('_Calc1', 0.00164363), '='('Remaining', 0.00009663)], [sum([0.000048000000000000015, 7.499999999999999e-7, 0.00004787999999999999], 0.00009663), is(0.00164363, '+'(0.001547, 0.00009663))]).
-% step 127
-step('evidence-total'(case, 0.00164363), rule(42), ['='('Case', case), '='('Scores', [0.001547, 0.000048000000000000015, 7.499999999999999e-7, 0.00004787999999999999]), '='('Total', 0.00164363)], [is_a(case, 'patient-case'), scores(case, [0.001547, 0.000048000000000000015, 7.499999999999999e-7, 0.00004787999999999999]), sum([0.001547, 0.000048000000000000015, 7.499999999999999e-7, 0.00004787999999999999], 0.00164363)]).
-% step 128
-step('>'(0.00164363, 0), builtin, [], []).
-% step 129
-step(is(0.029130643758023392, '/'(0.00004787999999999999, 0.00164363)), builtin, [], []).
-% step 130
-step(posterior(['bacterial-pneumonia', case], 0.029130643758023392), rule(45), ['='('Case', case), '='('Disease', 'bacterial-pneumonia'), '='('Rest', []), '='('Score', 0.00004787999999999999), '='('Total', 0.00164363), '='('_Calc1', 0.029130643758023392)], [candidates(case, ['bacterial-pneumonia']), score(['bacterial-pneumonia', case], 0.00004787999999999999), 'evidence-total'(case, 0.00164363), '>'(0.00164363, 0), is(0.029130643758023392, '/'(0.00004787999999999999, 0.00164363))]).
-
-% Check
-check passed: aggregate_all(count, (is_a(Subject, 'invalid-probability')), 0).
-
-check passed: is_a(case, 'normalizable-case').
-
-check passed: is_a(case, 'normalized-case').
-
-condition('C1', resolution, ok, 96).
-condition('C2', well_founded, ok, 130).
-condition('C3', justification, ok, 130).
-condition('C4', coverage, ok, 138).
-condition('C5', re_decision, ok, 34).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 131).
-steps(130).
-verified(96).
-recomputed(34).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check(is_a(case, 'normalized-case')).
+true.

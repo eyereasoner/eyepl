@@ -15,6 +15,9 @@ Keep diagnostics specific and user-facing text direct.
   the situation, result, and language feature. Do not mention project provenance.
   After editing them, run `node scripts/index-examples.mjs` to update fingerprints
   used for short share links and restoring older bundled examples.
+  `examples/output/*.txt` are exact golden transcripts for every program;
+  update intentional output changes with `WHEYE_UPDATE_GOLDENS=1 cargo test
+  --release --locked --test examples -- --nocapture` and review their diffs.
 - `tests/`: language, CLI, proof, worker, Pages, browser, and release checks.
 - `benches/taxonomy.rs`: standalone taxonomy timing benchmark.
 - `playground.html`, `playground.css`, `playground.js`, `playground-worker.js`:
@@ -71,6 +74,9 @@ It checks formatting, Rust tests, native clippy, API docs, the browser worker,
 Pages, and release tooling. Node.js 22 or later is required. Browser changes also
 need a real browser check at desktop and phone widths; `tests/browser.mjs`
 automates it through Chrome's debugging interface (see the guide).
+Keep browser and Wasm smoke tests small (taxonomy depth 100 or less). Run the
+100,000-level taxonomy and full airport graph only in native tests; do not run
+them in Chrome or retain their Wasm heaps across browser tests.
 
 Rebuild `pkg/` after Rust changes, and run Wasm clippy. The build requires
 `wasm-pack` and the `wasm32-unknown-unknown` Rust target. Documentation-only changes

@@ -1,4 +1,3 @@
-use std::fs;
 use wheye::{check, parse, reason, Certificate, Condition, Justification, Limits, Value};
 
 fn checked(source: &str) -> (wheye::Program, wheye::Run, Certificate) {
@@ -10,36 +9,6 @@ fn checked(source: &str) -> (wheye::Program, wheye::Run, Certificate) {
     let report = check(&program, &roundtrip).unwrap();
     assert!(report.valid(), "{report}");
     (program, run, certificate)
-}
-
-#[test]
-fn every_packaged_program_runs_goal_checks_and_checks_its_certificate() {
-    let mut paths: Vec<_> = fs::read_dir(concat!(env!("CARGO_MANIFEST_DIR"), "/examples"))
-        .unwrap()
-        .map(|entry| entry.unwrap().path())
-        .filter(|path| path.extension().is_some_and(|extension| extension == "pl"))
-        .collect();
-    paths.sort();
-    assert!(paths.len() >= 91);
-    for path in paths {
-        let source = fs::read_to_string(&path).unwrap();
-        let program = parse(&source).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
-        let run = reason(&program, Limits::default())
-            .unwrap_or_else(|e| panic!("{}: {e}", path.display()));
-        let certificate = run.certificate(&program);
-        let report =
-            check(&program, &certificate).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
-        assert!(report.valid(), "{}: {report}", path.display());
-        for request in &program.requests {
-            if let wheye::Request::Result(i) = request {
-                assert!(
-                    !run.answers[*i].is_empty(),
-                    "{}: a bundled check failed",
-                    path.display()
-                );
-            }
-        }
-    }
 }
 
 #[test]

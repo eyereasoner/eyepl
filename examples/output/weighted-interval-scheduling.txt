@@ -1,309 +1,188 @@
-% Answer
 ?- weighted_interval_answer(Kind, Value).
-Kind = candidate_count, Value = 8.
 Kind = best_value, Value = 13.
 Kind = chosen_interval, Value = interval(1, 1, 4, 5).
 Kind = chosen_interval, Value = interval(4, 4, 7, 4).
 Kind = chosen_interval, Value = interval(8, 8, 11, 4).
+Kind = candidate_count, Value = 8.
 
-% Reason
-certificate(eyeon, 1).
+?- optimal_schedule(Ids, Value).
+Ids = [1, 4, 8], Value = 13.
 
-claim(query(2), [optimal_schedule([1, 4, 8], 13)]).
+?- why.
+wheye-proof 1
+% Rule 1: compatible_before(I, J) :- interval(I, Start, _, _), interval(J, _, Finish, _), J < I, Finish =< Start.
+% Rule 2: has_compatible(I) :- compatible_before(I, _).
+% Rule 3: previous_compatible(I, J) :- interval(I, _, _, _), aggregate_all(max(K), (compatible_before(I, K)), J).
+% Rule 4: previous_compatible(I, 0) :- interval(I, _, _, _), \+ (has_compatible(I)).
+% Rule 5: best_to(I, Best) :- I > 0, alternatives(I, _, Take, Skip), Best is max(Take, Skip).
+% Rule 6: alternatives(I, Compatible, Take, Skip) :- interval(I, _, _, Value), Previous is '-'(I, 1), best_to(Previous, Skip), previous_compatible(I, Compatible), best_to(Compatible, Prefix), Take is '+'(Value, Prefix).
+% Rule 7: chosen_to(I, Chosen) :- I > 0, alternatives(I, Compatible, Take, Skip), Take >= Skip, chosen_to(Compatible, Prefix), append(Prefix, [I], Chosen).
+% Rule 9: append([], Right, Right) :- .
+% Rule 10: append([Head | Rest], Right, [Head | Joined]) :- append(Rest, Right, Joined).
+% Rule 11: member(Head, [Head | _]) :- .
+% Rule 12: member(Value, [_ | Rest]) :- member(Value, Rest).
+% Rule 13: optimal_schedule(Ids, Value) :- last_interval(Last), best_to(Last, Value), chosen_to(Last, Ids).
+step 1 source 1 : last_interval(8).
+step 2 source 2 : interval(1, 1, 4, 5).
+step 3 source 3 : interval(2, 3, 5, 1).
+step 4 source 4 : interval(3, 0, 6, 8).
+step 5 source 5 : interval(4, 4, 7, 4).
+step 6 source 6 : interval(5, 3, 9, 6).
+step 7 source 7 : interval(6, 5, 9, 3).
+step 8 source 8 : interval(7, 6, 10, 2).
+step 9 source 9 : interval(8, 8, 11, 4).
+step 10 source 10 : best_to(0, 0).
+step 11 source 11 : chosen_to(0, []).
+step 12 builtin : '<'(1, 4).
+step 13 builtin : '=<'(4, 4).
+step 14 builtin : '<'(1, 6).
+step 15 builtin : '=<'(4, 5).
+step 16 builtin : '<'(2, 6).
+step 17 builtin : '=<'(5, 5).
+step 18 builtin : '<'(1, 7).
+step 19 builtin : '=<'(4, 6).
+step 20 builtin : '<'(2, 7).
+step 21 builtin : '=<'(5, 6).
+step 22 builtin : '<'(3, 7).
+step 23 builtin : '=<'(6, 6).
+step 24 builtin : '<'(1, 8).
+step 25 builtin : '=<'(4, 8).
+step 26 builtin : '<'(2, 8).
+step 27 builtin : '=<'(5, 8).
+step 28 builtin : '<'(3, 8).
+step 29 builtin : '=<'(6, 8).
+step 30 builtin : '<'(4, 8).
+step 31 builtin : '=<'(7, 8).
+step 32 builtin : is(0, '-'(1, 1)).
+step 33 builtin : is(5, '+'(5, 0)).
+step 34 builtin : '>'(1, 0).
+step 35 builtin : is(5, max(5, 0)).
+step 36 builtin : is(1, '-'(2, 1)).
+step 37 builtin : is(1, '+'(1, 0)).
+step 38 builtin : '>'(2, 0).
+step 39 builtin : is(5, max(1, 5)).
+step 40 builtin : is(2, '-'(3, 1)).
+step 41 builtin : is(8, '+'(8, 0)).
+step 42 builtin : '>'(3, 0).
+step 43 builtin : is(8, max(8, 5)).
+step 44 builtin : is(3, '-'(4, 1)).
+step 45 builtin : is(9, '+'(4, 5)).
+step 46 builtin : '>'(4, 0).
+step 47 builtin : is(9, max(9, 8)).
+step 48 builtin : is(4, '-'(5, 1)).
+step 49 builtin : is(6, '+'(6, 0)).
+step 50 builtin : '>'(5, 0).
+step 51 builtin : is(9, max(6, 9)).
+step 52 builtin : is(5, '-'(6, 1)).
+step 53 builtin : is(8, '+'(3, 5)).
+step 54 builtin : '>'(6, 0).
+step 55 builtin : is(9, max(8, 9)).
+step 56 builtin : is(6, '-'(7, 1)).
+step 57 builtin : is(10, '+'(2, 8)).
+step 58 builtin : '>'(7, 0).
+step 59 builtin : is(10, max(10, 9)).
+step 60 builtin : is(7, '-'(8, 1)).
+step 61 builtin : is(13, '+'(4, 9)).
+step 62 builtin : '>'(8, 0).
+step 63 builtin : is(13, max(13, 10)).
+step 64 rule 9 [] : append([], [1], [1]).
+step 65 builtin : '>='(5, 0).
+step 66 rule 9 [] : append([], [4], [4]).
+step 67 builtin : '>='(9, 8).
+step 68 rule 9 [] : append([], [8], [8]).
+step 69 builtin : '>='(13, 10).
+step 70 rule 11 [] : member(1, [1, 4, 8]).
+step 71 rule 11 [] : member(4, [4, 8]).
+step 72 rule 11 [] : member(8, [8]).
+step 73 rule 1 [5,2,12,13] : compatible_before(4, 1).
+step 74 rule 1 [7,2,14,15] : compatible_before(6, 1).
+step 75 rule 1 [7,3,16,17] : compatible_before(6, 2).
+step 76 rule 1 [8,2,18,19] : compatible_before(7, 1).
+step 77 rule 1 [8,3,20,21] : compatible_before(7, 2).
+step 78 rule 1 [8,4,22,23] : compatible_before(7, 3).
+step 79 rule 1 [9,2,24,25] : compatible_before(8, 1).
+step 80 rule 1 [9,3,26,27] : compatible_before(8, 2).
+step 81 rule 1 [9,4,28,29] : compatible_before(8, 3).
+step 82 rule 1 [9,5,30,31] : compatible_before(8, 4).
+step 83 rule 10 [66] : append([1], [4], [1, 4]).
+step 84 rule 10 [68] : append([4], [8], [4, 8]).
+step 85 rule 12 [71] : member(4, [1, 4, 8]).
+step 86 rule 12 [72] : member(8, [4, 8]).
+step 87 rule 2 [73] : has_compatible(4).
+step 88 rule 2 [74] : has_compatible(6).
+step 89 rule 2 [76] : has_compatible(7).
+step 90 rule 2 [79] : has_compatible(8).
+step 91 rule 10 [84] : append([1, 4], [8], [1, 4, 8]).
+step 92 rule 12 [86] : member(8, [1, 4, 8]).
+step 93 absent 1 : has_compatible(1).
+step 94 absent 1 : has_compatible(2).
+step 95 absent 1 : has_compatible(3).
+step 96 absent 1 : has_compatible(5).
+step 97 aggregate r3 2 1 : '$aggregate:r3:2'([binding('I', 4), binding('_$6', 4), binding('_$7', 7), binding('_$8', 4)], 1).
+step 98 aggregate r3 2 1 : '$aggregate:r3:2'([binding('I', 6), binding('_$6', 5), binding('_$7', 9), binding('_$8', 3)], 2).
+step 99 aggregate r3 2 1 : '$aggregate:r3:2'([binding('I', 7), binding('_$6', 6), binding('_$7', 10), binding('_$8', 2)], 3).
+step 100 aggregate r3 2 1 : '$aggregate:r3:2'([binding('I', 8), binding('_$6', 8), binding('_$7', 11), binding('_$8', 4)], 4).
+step 101 rule 4 [2,93] : previous_compatible(1, 0).
+step 102 rule 4 [3,94] : previous_compatible(2, 0).
+step 103 rule 4 [4,95] : previous_compatible(3, 0).
+step 104 rule 4 [6,96] : previous_compatible(5, 0).
+step 105 rule 3 [5,97] : previous_compatible(4, 1).
+step 106 rule 3 [7,98] : previous_compatible(6, 2).
+step 107 rule 3 [8,99] : previous_compatible(7, 3).
+step 108 rule 3 [9,100] : previous_compatible(8, 4).
+step 109 rule 6 [2,32,10,101,10,33] : alternatives(1, 0, 5, 0).
+step 110 rule 5 [34,109,35] : best_to(1, 5).
+step 111 rule 7 [34,109,65,11,64] : chosen_to(1, [1]).
+step 112 rule 6 [3,36,110,102,10,37] : alternatives(2, 0, 1, 5).
+step 113 rule 5 [38,112,39] : best_to(2, 5).
+step 114 rule 6 [4,40,113,103,10,41] : alternatives(3, 0, 8, 5).
+step 115 rule 5 [42,114,43] : best_to(3, 8).
+step 116 rule 6 [5,44,115,105,110,45] : alternatives(4, 1, 9, 8).
+step 117 rule 5 [46,116,47] : best_to(4, 9).
+step 118 rule 7 [46,116,67,111,83] : chosen_to(4, [1, 4]).
+step 119 rule 6 [6,48,117,104,10,49] : alternatives(5, 0, 6, 9).
+step 120 rule 5 [50,119,51] : best_to(5, 9).
+step 121 rule 6 [7,52,120,106,113,53] : alternatives(6, 2, 8, 9).
+step 122 rule 5 [54,121,55] : best_to(6, 9).
+step 123 rule 6 [8,56,122,107,115,57] : alternatives(7, 3, 10, 9).
+step 124 rule 5 [58,123,59] : best_to(7, 10).
+step 125 rule 6 [9,60,124,108,117,61] : alternatives(8, 4, 13, 10).
+step 126 rule 5 [62,125,63] : best_to(8, 13).
+step 127 rule 7 [62,125,69,118,91] : chosen_to(8, [1, 4, 8]).
+step 128 rule 13 [1,126,127] : optimal_schedule([1, 4, 8], 13).
+boundary 1 level 0 [1,2,3,4,5,6,7,8,9,10,11,64,66,68,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92]
+demand 1 : append([1, 4], [8], _WheyeCall0).
+demand 1 : append([1], [4], _WheyeCall0).
+demand 1 : append([4], [8], _WheyeCall0).
+demand 1 : append([], [1], _WheyeCall0).
+demand 1 : append([], [4], _WheyeCall0).
+demand 1 : append([], [8], _WheyeCall0).
+demand 1 : member(_WheyeCall0, [1, 4, 8]).
+demand 1 : member(_WheyeCall0, [4, 8]).
+demand 1 : member(_WheyeCall0, [8]).
+demand 1 : member(_WheyeCall0, []).
+answer 2 [128]
 
-clause(1, last_interval(8), []).
-clause(2, interval(1, 1, 4, 5), []).
-clause(3, interval(2, 3, 5, 1), []).
-clause(4, interval(3, 0, 6, 8), []).
-clause(5, interval(4, 4, 7, 4), []).
-clause(6, interval(5, 3, 9, 6), []).
-clause(7, interval(6, 5, 9, 3), []).
-clause(8, interval(7, 6, 10, 2), []).
-clause(9, interval(8, 8, 11, 4), []).
-clause(10, compatible_before(var('I'), var('J')), [interval(var('I'), var('Start'), var('$anonymous1'), var('$anonymous2')), interval(var('J'), var('$anonymous3'), var('Finish'), var('$anonymous4')), '<'(var('J'), var('I')), '=<'(var('Finish'), var('Start'))]).
-clause(12, previous_compatible(var('I'), var('J')), [interval(var('I'), var('$anonymous6'), var('$anonymous7'), var('$anonymous8')), aggregate_all(max(var('K')), [compatible_before(var('I'), var('K'))], var('J'))]).
-clause(13, previous_compatible(var('I'), 0), [interval(var('I'), var('$anonymous9'), var('$anonymous10'), var('$anonymous11')), '\\+'(has_compatible(var('I')))]).
-clause(14, best_to(0, 0), []).
-clause(15, best_to(var('I'), var('Best')), ['>'(var('I'), 0), alternatives(var('I'), var('$anonymous12'), var('Take'), var('Skip')), is(var('Best'), max(var('Take'), var('Skip')))]).
-clause(16, alternatives(var('I'), var('Compatible'), var('Take'), var('Skip')), [interval(var('I'), var('$anonymous13'), var('$anonymous14'), var('Value')), is(var('Previous'), '-'(var('I'), 1)), best_to(var('Previous'), var('Skip')), previous_compatible(var('I'), var('Compatible')), best_to(var('Compatible'), var('Prefix')), is(var('Take'), '+'(var('Value'), var('Prefix')))]).
-clause(17, chosen_to(0, []), []).
-clause(18, chosen_to(var('I'), var('Chosen')), ['>'(var('I'), 0), alternatives(var('I'), var('Compatible'), var('Take'), var('Skip')), '>='(var('Take'), var('Skip')), chosen_to(var('Compatible'), var('Prefix')), append(var('Prefix'), [var('I')], var('Chosen'))]).
-clause(20, append([], var('Right'), var('Right')), []).
-clause(21, append(list([var('Head')], var('Rest')), var('Right'), list([var('Head')], var('Joined'))), [append(var('Rest'), var('Right'), var('Joined'))]).
-clause(24, optimal_schedule(var('Ids'), var('Value')), [last_interval(var('Last')), best_to(var('Last'), var('Value')), chosen_to(var('Last'), var('Ids'))]).
+?- check(optimal_schedule([1, 4, 8], 13)).
+true.
 
-% step 1
-step(last_interval(8), fact(1), [], []).
-% step 2
-step('>'(8, 0), builtin, [], []).
-% step 3
-step(interval(8, 8, 11, 4), fact(9), [], []).
-% step 4
-step(is(7, '-'(8, 1)), builtin, [], []).
-% step 5
-step('>'(7, 0), builtin, [], []).
-% step 6
-step(interval(7, 6, 10, 2), fact(8), [], []).
-% step 7
-step(is(6, '-'(7, 1)), builtin, [], []).
-% step 8
-step('>'(6, 0), builtin, [], []).
-% step 9
-step(interval(6, 5, 9, 3), fact(7), [], []).
-% step 10
-step(is(5, '-'(6, 1)), builtin, [], []).
-% step 11
-step('>'(5, 0), builtin, [], []).
-% step 12
-step(interval(5, 3, 9, 6), fact(6), [], []).
-% step 13
-step(is(4, '-'(5, 1)), builtin, [], []).
-% step 14
-step('>'(4, 0), builtin, [], []).
-% step 15
-step(interval(4, 4, 7, 4), fact(5), [], []).
-% step 16
-step(is(3, '-'(4, 1)), builtin, [], []).
-% step 17
-step('>'(3, 0), builtin, [], []).
-% step 18
-step(interval(3, 0, 6, 8), fact(4), [], []).
-% step 19
-step(is(2, '-'(3, 1)), builtin, [], []).
-% step 20
-step('>'(2, 0), builtin, [], []).
-% step 21
-step(interval(2, 3, 5, 1), fact(3), [], []).
-% step 22
-step(is(1, '-'(2, 1)), builtin, [], []).
-% step 23
-step('>'(1, 0), builtin, [], []).
-% step 24
-step(interval(1, 1, 4, 5), fact(2), [], []).
-% step 25
-step(is(0, '-'(1, 1)), builtin, [], []).
-% step 26
-step(best_to(0, 0), fact(14), [], []).
-% step 27
-step('\\+'(has_compatible(1)), absent, [], []).
-% step 28
-step(previous_compatible(1, 0), rule(13), ['='('I', 1), '='('$anonymous9', 1), '='('$anonymous10', 4), '='('$anonymous11', 5)], [interval(1, 1, 4, 5), '\\+'(has_compatible(1))]).
-% step 29
-step(is(5, '+'(5, 0)), builtin, [], []).
-% step 30
-step(alternatives(1, 0, 5, 0), rule(16), ['='('I', 1), '='('Compatible', 0), '='('Take', 5), '='('Skip', 0), '='('$anonymous13', 1), '='('$anonymous14', 4), '='('Value', 5), '='('Previous', 0), '='('Prefix', 0)], [interval(1, 1, 4, 5), is(0, '-'(1, 1)), best_to(0, 0), previous_compatible(1, 0), best_to(0, 0), is(5, '+'(5, 0))]).
-% step 31
-step(is(5, max(5, 0)), builtin, [], []).
-% step 32
-step(best_to(1, 5), rule(15), ['='('I', 1), '='('Best', 5), '='('$anonymous12', 0), '='('Take', 5), '='('Skip', 0)], ['>'(1, 0), alternatives(1, 0, 5, 0), is(5, max(5, 0))]).
-% step 33
-step('\\+'(has_compatible(2)), absent, [], []).
-% step 34
-step(previous_compatible(2, 0), rule(13), ['='('I', 2), '='('$anonymous9', 3), '='('$anonymous10', 5), '='('$anonymous11', 1)], [interval(2, 3, 5, 1), '\\+'(has_compatible(2))]).
-% step 35
-step(is(1, '+'(1, 0)), builtin, [], []).
-% step 36
-step(alternatives(2, 0, 1, 5), rule(16), ['='('I', 2), '='('Compatible', 0), '='('Take', 1), '='('Skip', 5), '='('$anonymous13', 3), '='('$anonymous14', 5), '='('Value', 1), '='('Previous', 1), '='('Prefix', 0)], [interval(2, 3, 5, 1), is(1, '-'(2, 1)), best_to(1, 5), previous_compatible(2, 0), best_to(0, 0), is(1, '+'(1, 0))]).
-% step 37
-step(is(5, max(1, 5)), builtin, [], []).
-% step 38
-step(best_to(2, 5), rule(15), ['='('I', 2), '='('Best', 5), '='('$anonymous12', 0), '='('Take', 1), '='('Skip', 5)], ['>'(2, 0), alternatives(2, 0, 1, 5), is(5, max(1, 5))]).
-% step 39
-step('\\+'(has_compatible(3)), absent, [], []).
-% step 40
-step(previous_compatible(3, 0), rule(13), ['='('I', 3), '='('$anonymous9', 0), '='('$anonymous10', 6), '='('$anonymous11', 8)], [interval(3, 0, 6, 8), '\\+'(has_compatible(3))]).
-% step 41
-step(is(8, '+'(8, 0)), builtin, [], []).
-% step 42
-step(alternatives(3, 0, 8, 5), rule(16), ['='('I', 3), '='('Compatible', 0), '='('Take', 8), '='('Skip', 5), '='('$anonymous13', 0), '='('$anonymous14', 6), '='('Value', 8), '='('Previous', 2), '='('Prefix', 0)], [interval(3, 0, 6, 8), is(2, '-'(3, 1)), best_to(2, 5), previous_compatible(3, 0), best_to(0, 0), is(8, '+'(8, 0))]).
-% step 43
-step(is(8, max(8, 5)), builtin, [], []).
-% step 44
-step(best_to(3, 8), rule(15), ['='('I', 3), '='('Best', 8), '='('$anonymous12', 0), '='('Take', 8), '='('Skip', 5)], ['>'(3, 0), alternatives(3, 0, 8, 5), is(8, max(8, 5))]).
-% step 45
-step('<'(1, 4), builtin, [], []).
-% step 46
-step('=<'(4, 4), builtin, [], []).
-% step 47
-step(compatible_before(4, 1), rule(10), ['='('I', 4), '='('Start', 4), '='('$anonymous1', 7), '='('$anonymous2', 4), '='('J', 1), '='('$anonymous3', 1), '='('Finish', 4), '='('$anonymous4', 5)], [interval(4, 4, 7, 4), interval(1, 1, 4, 5), '<'(1, 4), '=<'(4, 4)]).
-% step 48
-step(aggregate_all(max(V0), [compatible_before(4, V0)], 1), collected, [], [[compatible_before(4, 1)]]).
-% step 49
-step(previous_compatible(4, 1), rule(12), ['='('I', 4), '='('J', 1), '='('$anonymous6', 4), '='('$anonymous7', 7), '='('$anonymous8', 4)], [interval(4, 4, 7, 4), aggregate_all(max(V0), [compatible_before(4, V0)], 1)]).
-% step 50
-step(is(9, '+'(4, 5)), builtin, [], []).
-% step 51
-step(alternatives(4, 1, 9, 8), rule(16), ['='('I', 4), '='('Compatible', 1), '='('Take', 9), '='('Skip', 8), '='('$anonymous13', 4), '='('$anonymous14', 7), '='('Value', 4), '='('Previous', 3), '='('Prefix', 5)], [interval(4, 4, 7, 4), is(3, '-'(4, 1)), best_to(3, 8), previous_compatible(4, 1), best_to(1, 5), is(9, '+'(4, 5))]).
-% step 52
-step(is(9, max(9, 8)), builtin, [], []).
-% step 53
-step(best_to(4, 9), rule(15), ['='('I', 4), '='('Best', 9), '='('$anonymous12', 1), '='('Take', 9), '='('Skip', 8)], ['>'(4, 0), alternatives(4, 1, 9, 8), is(9, max(9, 8))]).
-% step 54
-step('\\+'(has_compatible(5)), absent, [], []).
-% step 55
-step(previous_compatible(5, 0), rule(13), ['='('I', 5), '='('$anonymous9', 3), '='('$anonymous10', 9), '='('$anonymous11', 6)], [interval(5, 3, 9, 6), '\\+'(has_compatible(5))]).
-% step 56
-step(is(6, '+'(6, 0)), builtin, [], []).
-% step 57
-step(alternatives(5, 0, 6, 9), rule(16), ['='('I', 5), '='('Compatible', 0), '='('Take', 6), '='('Skip', 9), '='('$anonymous13', 3), '='('$anonymous14', 9), '='('Value', 6), '='('Previous', 4), '='('Prefix', 0)], [interval(5, 3, 9, 6), is(4, '-'(5, 1)), best_to(4, 9), previous_compatible(5, 0), best_to(0, 0), is(6, '+'(6, 0))]).
-% step 58
-step(is(9, max(6, 9)), builtin, [], []).
-% step 59
-step(best_to(5, 9), rule(15), ['='('I', 5), '='('Best', 9), '='('$anonymous12', 0), '='('Take', 6), '='('Skip', 9)], ['>'(5, 0), alternatives(5, 0, 6, 9), is(9, max(6, 9))]).
-% step 60
-step('<'(1, 6), builtin, [], []).
-% step 61
-step('=<'(4, 5), builtin, [], []).
-% step 62
-step(compatible_before(6, 1), rule(10), ['='('I', 6), '='('Start', 5), '='('$anonymous1', 9), '='('$anonymous2', 3), '='('J', 1), '='('$anonymous3', 1), '='('Finish', 4), '='('$anonymous4', 5)], [interval(6, 5, 9, 3), interval(1, 1, 4, 5), '<'(1, 6), '=<'(4, 5)]).
-% step 63
-step('<'(2, 6), builtin, [], []).
-% step 64
-step('=<'(5, 5), builtin, [], []).
-% step 65
-step(compatible_before(6, 2), rule(10), ['='('I', 6), '='('Start', 5), '='('$anonymous1', 9), '='('$anonymous2', 3), '='('J', 2), '='('$anonymous3', 3), '='('Finish', 5), '='('$anonymous4', 1)], [interval(6, 5, 9, 3), interval(2, 3, 5, 1), '<'(2, 6), '=<'(5, 5)]).
-% step 66
-step(aggregate_all(max(V0), [compatible_before(6, V0)], 2), collected, [], [[compatible_before(6, 1)], [compatible_before(6, 2)]]).
-% step 67
-step(previous_compatible(6, 2), rule(12), ['='('I', 6), '='('J', 2), '='('$anonymous6', 5), '='('$anonymous7', 9), '='('$anonymous8', 3)], [interval(6, 5, 9, 3), aggregate_all(max(V0), [compatible_before(6, V0)], 2)]).
-% step 68
-step(is(8, '+'(3, 5)), builtin, [], []).
-% step 69
-step(alternatives(6, 2, 8, 9), rule(16), ['='('I', 6), '='('Compatible', 2), '='('Take', 8), '='('Skip', 9), '='('$anonymous13', 5), '='('$anonymous14', 9), '='('Value', 3), '='('Previous', 5), '='('Prefix', 5)], [interval(6, 5, 9, 3), is(5, '-'(6, 1)), best_to(5, 9), previous_compatible(6, 2), best_to(2, 5), is(8, '+'(3, 5))]).
-% step 70
-step(is(9, max(8, 9)), builtin, [], []).
-% step 71
-step(best_to(6, 9), rule(15), ['='('I', 6), '='('Best', 9), '='('$anonymous12', 2), '='('Take', 8), '='('Skip', 9)], ['>'(6, 0), alternatives(6, 2, 8, 9), is(9, max(8, 9))]).
-% step 72
-step('<'(1, 7), builtin, [], []).
-% step 73
-step('=<'(4, 6), builtin, [], []).
-% step 74
-step(compatible_before(7, 1), rule(10), ['='('I', 7), '='('Start', 6), '='('$anonymous1', 10), '='('$anonymous2', 2), '='('J', 1), '='('$anonymous3', 1), '='('Finish', 4), '='('$anonymous4', 5)], [interval(7, 6, 10, 2), interval(1, 1, 4, 5), '<'(1, 7), '=<'(4, 6)]).
-% step 75
-step('<'(2, 7), builtin, [], []).
-% step 76
-step('=<'(5, 6), builtin, [], []).
-% step 77
-step(compatible_before(7, 2), rule(10), ['='('I', 7), '='('Start', 6), '='('$anonymous1', 10), '='('$anonymous2', 2), '='('J', 2), '='('$anonymous3', 3), '='('Finish', 5), '='('$anonymous4', 1)], [interval(7, 6, 10, 2), interval(2, 3, 5, 1), '<'(2, 7), '=<'(5, 6)]).
-% step 78
-step('<'(3, 7), builtin, [], []).
-% step 79
-step('=<'(6, 6), builtin, [], []).
-% step 80
-step(compatible_before(7, 3), rule(10), ['='('I', 7), '='('Start', 6), '='('$anonymous1', 10), '='('$anonymous2', 2), '='('J', 3), '='('$anonymous3', 0), '='('Finish', 6), '='('$anonymous4', 8)], [interval(7, 6, 10, 2), interval(3, 0, 6, 8), '<'(3, 7), '=<'(6, 6)]).
-% step 81
-step(aggregate_all(max(V0), [compatible_before(7, V0)], 3), collected, [], [[compatible_before(7, 1)], [compatible_before(7, 2)], [compatible_before(7, 3)]]).
-% step 82
-step(previous_compatible(7, 3), rule(12), ['='('I', 7), '='('J', 3), '='('$anonymous6', 6), '='('$anonymous7', 10), '='('$anonymous8', 2)], [interval(7, 6, 10, 2), aggregate_all(max(V0), [compatible_before(7, V0)], 3)]).
-% step 83
-step(is(10, '+'(2, 8)), builtin, [], []).
-% step 84
-step(alternatives(7, 3, 10, 9), rule(16), ['='('I', 7), '='('Compatible', 3), '='('Take', 10), '='('Skip', 9), '='('$anonymous13', 6), '='('$anonymous14', 10), '='('Value', 2), '='('Previous', 6), '='('Prefix', 8)], [interval(7, 6, 10, 2), is(6, '-'(7, 1)), best_to(6, 9), previous_compatible(7, 3), best_to(3, 8), is(10, '+'(2, 8))]).
-% step 85
-step(is(10, max(10, 9)), builtin, [], []).
-% step 86
-step(best_to(7, 10), rule(15), ['='('I', 7), '='('Best', 10), '='('$anonymous12', 3), '='('Take', 10), '='('Skip', 9)], ['>'(7, 0), alternatives(7, 3, 10, 9), is(10, max(10, 9))]).
-% step 87
-step('<'(1, 8), builtin, [], []).
-% step 88
-step('=<'(4, 8), builtin, [], []).
-% step 89
-step(compatible_before(8, 1), rule(10), ['='('I', 8), '='('Start', 8), '='('$anonymous1', 11), '='('$anonymous2', 4), '='('J', 1), '='('$anonymous3', 1), '='('Finish', 4), '='('$anonymous4', 5)], [interval(8, 8, 11, 4), interval(1, 1, 4, 5), '<'(1, 8), '=<'(4, 8)]).
-% step 90
-step('<'(2, 8), builtin, [], []).
-% step 91
-step('=<'(5, 8), builtin, [], []).
-% step 92
-step(compatible_before(8, 2), rule(10), ['='('I', 8), '='('Start', 8), '='('$anonymous1', 11), '='('$anonymous2', 4), '='('J', 2), '='('$anonymous3', 3), '='('Finish', 5), '='('$anonymous4', 1)], [interval(8, 8, 11, 4), interval(2, 3, 5, 1), '<'(2, 8), '=<'(5, 8)]).
-% step 93
-step('<'(3, 8), builtin, [], []).
-% step 94
-step('=<'(6, 8), builtin, [], []).
-% step 95
-step(compatible_before(8, 3), rule(10), ['='('I', 8), '='('Start', 8), '='('$anonymous1', 11), '='('$anonymous2', 4), '='('J', 3), '='('$anonymous3', 0), '='('Finish', 6), '='('$anonymous4', 8)], [interval(8, 8, 11, 4), interval(3, 0, 6, 8), '<'(3, 8), '=<'(6, 8)]).
-% step 96
-step('<'(4, 8), builtin, [], []).
-% step 97
-step('=<'(7, 8), builtin, [], []).
-% step 98
-step(compatible_before(8, 4), rule(10), ['='('I', 8), '='('Start', 8), '='('$anonymous1', 11), '='('$anonymous2', 4), '='('J', 4), '='('$anonymous3', 4), '='('Finish', 7), '='('$anonymous4', 4)], [interval(8, 8, 11, 4), interval(4, 4, 7, 4), '<'(4, 8), '=<'(7, 8)]).
-% step 99
-step(aggregate_all(max(V0), [compatible_before(8, V0)], 4), collected, [], [[compatible_before(8, 1)], [compatible_before(8, 2)], [compatible_before(8, 3)], [compatible_before(8, 4)]]).
-% step 100
-step(previous_compatible(8, 4), rule(12), ['='('I', 8), '='('J', 4), '='('$anonymous6', 8), '='('$anonymous7', 11), '='('$anonymous8', 4)], [interval(8, 8, 11, 4), aggregate_all(max(V0), [compatible_before(8, V0)], 4)]).
-% step 101
-step(is(13, '+'(4, 9)), builtin, [], []).
-% step 102
-step(alternatives(8, 4, 13, 10), rule(16), ['='('I', 8), '='('Compatible', 4), '='('Take', 13), '='('Skip', 10), '='('$anonymous13', 8), '='('$anonymous14', 11), '='('Value', 4), '='('Previous', 7), '='('Prefix', 9)], [interval(8, 8, 11, 4), is(7, '-'(8, 1)), best_to(7, 10), previous_compatible(8, 4), best_to(4, 9), is(13, '+'(4, 9))]).
-% step 103
-step(is(13, max(13, 10)), builtin, [], []).
-% step 104
-step(best_to(8, 13), rule(15), ['='('I', 8), '='('Best', 13), '='('$anonymous12', 4), '='('Take', 13), '='('Skip', 10)], ['>'(8, 0), alternatives(8, 4, 13, 10), is(13, max(13, 10))]).
-% step 105
-step('>='(13, 10), builtin, [], []).
-% step 106
-step('>='(9, 8), builtin, [], []).
-% step 107
-step('>='(5, 0), builtin, [], []).
-% step 108
-step(chosen_to(0, []), fact(17), [], []).
-% step 109
-step(append([], [1], [1]), fact(20), ['='('Right', [1])], []).
-% step 110
-step(chosen_to(1, [1]), rule(18), ['='('I', 1), '='('Chosen', [1]), '='('Compatible', 0), '='('Take', 5), '='('Skip', 0), '='('Prefix', [])], ['>'(1, 0), alternatives(1, 0, 5, 0), '>='(5, 0), chosen_to(0, []), append([], [1], [1])]).
-% step 111
-step(append([], [4], [4]), fact(20), ['='('Right', [4])], []).
-% step 112
-step(append([1], [4], [1, 4]), rule(21), ['='('Head', 1), '='('Rest', []), '='('Right', [4]), '='('Joined', [4])], [append([], [4], [4])]).
-% step 113
-step(chosen_to(4, [1, 4]), rule(18), ['='('I', 4), '='('Chosen', [1, 4]), '='('Compatible', 1), '='('Take', 9), '='('Skip', 8), '='('Prefix', [1])], ['>'(4, 0), alternatives(4, 1, 9, 8), '>='(9, 8), chosen_to(1, [1]), append([1], [4], [1, 4])]).
-% step 114
-step(append([], [8], [8]), fact(20), ['='('Right', [8])], []).
-% step 115
-step(append([4], [8], [4, 8]), rule(21), ['='('Head', 4), '='('Rest', []), '='('Right', [8]), '='('Joined', [8])], [append([], [8], [8])]).
-% step 116
-step(append([1, 4], [8], [1, 4, 8]), rule(21), ['='('Head', 1), '='('Rest', [4]), '='('Right', [8]), '='('Joined', [4, 8])], [append([4], [8], [4, 8])]).
-% step 117
-step(chosen_to(8, [1, 4, 8]), rule(18), ['='('I', 8), '='('Chosen', [1, 4, 8]), '='('Compatible', 4), '='('Take', 13), '='('Skip', 10), '='('Prefix', [1, 4])], ['>'(8, 0), alternatives(8, 4, 13, 10), '>='(13, 10), chosen_to(4, [1, 4]), append([1, 4], [8], [1, 4, 8])]).
-% step 118
-step(optimal_schedule([1, 4, 8], 13), rule(24), ['='('Last', 8), '='('Value', 13), '='('Ids', [1, 4, 8])], [last_interval(8), best_to(8, 13), chosen_to(8, [1, 4, 8])]).
+?- check(previous_compatible(1, 0)).
+true.
 
-% Check
-check passed: optimal_schedule([1, 4, 8], 13).
+?- check(previous_compatible(4, 1)).
+true.
 
-check passed: previous_compatible(1, 0).
+?- check(previous_compatible(8, 4)).
+true.
 
-check passed: previous_compatible(4, 1).
+?- check(weighted_interval_answer(candidate_count, 8)).
+true.
 
-check passed: previous_compatible(8, 4).
+?- check(aggregate_all(count, (chosen_interval(I)), 3)).
+true.
 
-check passed: weighted_interval_answer(candidate_count, 8).
+?- check(\+ (chosen_interval(5))).
+true.
 
-check passed: aggregate_all(count, (chosen_interval(I)), 3).
-
-check passed: \+ (chosen_interval(5)).
-
-check passed: best_to(0, 0).
-
-condition('C1', resolution, ok, 55).
-condition('C2', well_founded, ok, 118).
-condition('C3', justification, ok, 118).
-condition('C4', coverage, ok, 160).
-condition('C5', re_decision, ok, 59).
-condition('C6', boundary_consistency, ok, 8).
-condition('C7', relevance, ok, 119).
-obligation(absent, theory_scoped, '\\+'(has_compatible(1))).
-obligation(absent, theory_scoped, '\\+'(has_compatible(2))).
-obligation(absent, theory_scoped, '\\+'(has_compatible(3))).
-obligation(collected, collection_completeness, aggregate_all(max(var('V0')), [compatible_before(4, var('V0'))], 1)).
-obligation(absent, theory_scoped, '\\+'(has_compatible(5))).
-obligation(collected, collection_completeness, aggregate_all(max(var('V0')), [compatible_before(6, var('V0'))], 2)).
-obligation(collected, collection_completeness, aggregate_all(max(var('V0')), [compatible_before(7, var('V0'))], 3)).
-obligation(collected, collection_completeness, aggregate_all(max(var('V0')), [compatible_before(8, var('V0'))], 4)).
-steps(118).
-verified(55).
-recomputed(59).
-trusted(8).
-claims(1).
-verdict(checked_with_obligations).
+?- check(best_to(0, 0)).
+true.

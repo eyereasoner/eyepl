@@ -1,4 +1,3 @@
-% Answer
 ?- pell_answer(Kind, Value).
 Kind = solution_5, Value = solution(3363, 2378).
 Kind = solution_8, Value = solution(665857, 470832).
@@ -6,186 +5,104 @@ Kind = check_8, Value = true.
 Kind = solution_50, Value = solution(94741125149636933417873079920900017937, 66992092050551637663438906713182313772).
 Kind = y_sum_1_to_8, Value = 568344.
 
-% Reason
-certificate(eyeon, 1).
+?- pell(8, X, Y).
+X = 665857, Y = 470832.
 
-claim(query(2), [pell(8, 665857, 470832)]).
+?- why.
+wheye-proof 1
+% Rule 3: pell(N, X, Y) :- N > 0, N1 is '-'(N, 1), pell(N1, X0, Y0), Ax is '*'(3, X0), By is '*'(4, Y0), X is '+'(Ax, By), Cx is '*'(2, X0), Dy is '*'(3, Y0), Y is '+'(Cx, Dy).
+step 1 source 1 : pell(0, 1, 0).
+step 2 builtin : '>'(1, 0).
+step 3 builtin : is(0, '-'(1, 1)).
+step 4 builtin : is(3, '*'(3, 1)).
+step 5 builtin : is(0, '*'(4, 0)).
+step 6 builtin : is(3, '+'(3, 0)).
+step 7 builtin : is(2, '*'(2, 1)).
+step 8 builtin : is(0, '*'(3, 0)).
+step 9 builtin : is(2, '+'(2, 0)).
+step 10 builtin : '>'(2, 0).
+step 11 builtin : is(1, '-'(2, 1)).
+step 12 builtin : is(9, '*'(3, 3)).
+step 13 builtin : is(8, '*'(4, 2)).
+step 14 builtin : is(17, '+'(9, 8)).
+step 15 builtin : is(6, '*'(2, 3)).
+step 16 builtin : is(6, '*'(3, 2)).
+step 17 builtin : is(12, '+'(6, 6)).
+step 18 builtin : '>'(3, 0).
+step 19 builtin : is(2, '-'(3, 1)).
+step 20 builtin : is(51, '*'(3, 17)).
+step 21 builtin : is(48, '*'(4, 12)).
+step 22 builtin : is(99, '+'(51, 48)).
+step 23 builtin : is(34, '*'(2, 17)).
+step 24 builtin : is(36, '*'(3, 12)).
+step 25 builtin : is(70, '+'(34, 36)).
+step 26 builtin : '>'(4, 0).
+step 27 builtin : is(3, '-'(4, 1)).
+step 28 builtin : is(297, '*'(3, 99)).
+step 29 builtin : is(280, '*'(4, 70)).
+step 30 builtin : is(577, '+'(297, 280)).
+step 31 builtin : is(198, '*'(2, 99)).
+step 32 builtin : is(210, '*'(3, 70)).
+step 33 builtin : is(408, '+'(198, 210)).
+step 34 builtin : '>'(5, 0).
+step 35 builtin : is(4, '-'(5, 1)).
+step 36 builtin : is(1731, '*'(3, 577)).
+step 37 builtin : is(1632, '*'(4, 408)).
+step 38 builtin : is(3363, '+'(1731, 1632)).
+step 39 builtin : is(1154, '*'(2, 577)).
+step 40 builtin : is(1224, '*'(3, 408)).
+step 41 builtin : is(2378, '+'(1154, 1224)).
+step 42 builtin : '>'(6, 0).
+step 43 builtin : is(5, '-'(6, 1)).
+step 44 builtin : is(10089, '*'(3, 3363)).
+step 45 builtin : is(9512, '*'(4, 2378)).
+step 46 builtin : is(19601, '+'(10089, 9512)).
+step 47 builtin : is(6726, '*'(2, 3363)).
+step 48 builtin : is(7134, '*'(3, 2378)).
+step 49 builtin : is(13860, '+'(6726, 7134)).
+step 50 builtin : '>'(7, 0).
+step 51 builtin : is(6, '-'(7, 1)).
+step 52 builtin : is(58803, '*'(3, 19601)).
+step 53 builtin : is(55440, '*'(4, 13860)).
+step 54 builtin : is(114243, '+'(58803, 55440)).
+step 55 builtin : is(39202, '*'(2, 19601)).
+step 56 builtin : is(41580, '*'(3, 13860)).
+step 57 builtin : is(80782, '+'(39202, 41580)).
+step 58 builtin : '>'(8, 0).
+step 59 builtin : is(7, '-'(8, 1)).
+step 60 builtin : is(342729, '*'(3, 114243)).
+step 61 builtin : is(323128, '*'(4, 80782)).
+step 62 builtin : is(665857, '+'(342729, 323128)).
+step 63 builtin : is(228486, '*'(2, 114243)).
+step 64 builtin : is(242346, '*'(3, 80782)).
+step 65 builtin : is(470832, '+'(228486, 242346)).
+step 66 rule 3 [2,3,1,4,5,6,7,8,9] : pell(1, 3, 2).
+step 67 rule 3 [10,11,66,12,13,14,15,16,17] : pell(2, 17, 12).
+step 68 rule 3 [18,19,67,20,21,22,23,24,25] : pell(3, 99, 70).
+step 69 rule 3 [26,27,68,28,29,30,31,32,33] : pell(4, 577, 408).
+step 70 rule 3 [34,35,69,36,37,38,39,40,41] : pell(5, 3363, 2378).
+step 71 rule 3 [42,43,70,44,45,46,47,48,49] : pell(6, 19601, 13860).
+step 72 rule 3 [50,51,71,52,53,54,55,56,57] : pell(7, 114243, 80782).
+step 73 rule 3 [58,59,72,60,61,62,63,64,65] : pell(8, 665857, 470832).
+answer 2 [73]
 
-clause(3, pell(0, 1, 0), []).
-clause(4, pell(var('N'), var('X'), var('Y')), ['>'(var('N'), 0), is(var('N1'), '-'(var('N'), 1)), pell(var('N1'), var('X0'), var('Y0')), is(var('Ax'), '*'(3, var('X0'))), is(var('By'), '*'(4, var('Y0'))), is(var('X'), '+'(var('Ax'), var('By'))), is(var('Cx'), '*'(2, var('X0'))), is(var('Dy'), '*'(3, var('Y0'))), is(var('Y'), '+'(var('Cx'), var('Dy')))]).
+?- check(pell(0, 1, 0)).
+true.
 
-% step 1
-step('>'(8, 0), builtin, [], []).
-% step 2
-step(is(7, '-'(8, 1)), builtin, [], []).
-% step 3
-step('>'(7, 0), builtin, [], []).
-% step 4
-step(is(6, '-'(7, 1)), builtin, [], []).
-% step 5
-step('>'(6, 0), builtin, [], []).
-% step 6
-step(is(5, '-'(6, 1)), builtin, [], []).
-% step 7
-step('>'(5, 0), builtin, [], []).
-% step 8
-step(is(4, '-'(5, 1)), builtin, [], []).
-% step 9
-step('>'(4, 0), builtin, [], []).
-% step 10
-step(is(3, '-'(4, 1)), builtin, [], []).
-% step 11
-step('>'(3, 0), builtin, [], []).
-% step 12
-step(is(2, '-'(3, 1)), builtin, [], []).
-% step 13
-step('>'(2, 0), builtin, [], []).
-% step 14
-step(is(1, '-'(2, 1)), builtin, [], []).
-% step 15
-step('>'(1, 0), builtin, [], []).
-% step 16
-step(is(0, '-'(1, 1)), builtin, [], []).
-% step 17
-step(pell(0, 1, 0), fact(3), [], []).
-% step 18
-step(is(3, '*'(3, 1)), builtin, [], []).
-% step 19
-step(is(0, '*'(4, 0)), builtin, [], []).
-% step 20
-step(is(3, '+'(3, 0)), builtin, [], []).
-% step 21
-step(is(2, '*'(2, 1)), builtin, [], []).
-% step 22
-step(is(0, '*'(3, 0)), builtin, [], []).
-% step 23
-step(is(2, '+'(2, 0)), builtin, [], []).
-% step 24
-step(pell(1, 3, 2), rule(4), ['='('N', 1), '='('X', 3), '='('Y', 2), '='('N1', 0), '='('X0', 1), '='('Y0', 0), '='('Ax', 3), '='('By', 0), '='('Cx', 2), '='('Dy', 0)], ['>'(1, 0), is(0, '-'(1, 1)), pell(0, 1, 0), is(3, '*'(3, 1)), is(0, '*'(4, 0)), is(3, '+'(3, 0)), is(2, '*'(2, 1)), is(0, '*'(3, 0)), is(2, '+'(2, 0))]).
-% step 25
-step(is(9, '*'(3, 3)), builtin, [], []).
-% step 26
-step(is(8, '*'(4, 2)), builtin, [], []).
-% step 27
-step(is(17, '+'(9, 8)), builtin, [], []).
-% step 28
-step(is(6, '*'(2, 3)), builtin, [], []).
-% step 29
-step(is(6, '*'(3, 2)), builtin, [], []).
-% step 30
-step(is(12, '+'(6, 6)), builtin, [], []).
-% step 31
-step(pell(2, 17, 12), rule(4), ['='('N', 2), '='('X', 17), '='('Y', 12), '='('N1', 1), '='('X0', 3), '='('Y0', 2), '='('Ax', 9), '='('By', 8), '='('Cx', 6), '='('Dy', 6)], ['>'(2, 0), is(1, '-'(2, 1)), pell(1, 3, 2), is(9, '*'(3, 3)), is(8, '*'(4, 2)), is(17, '+'(9, 8)), is(6, '*'(2, 3)), is(6, '*'(3, 2)), is(12, '+'(6, 6))]).
-% step 32
-step(is(51, '*'(3, 17)), builtin, [], []).
-% step 33
-step(is(48, '*'(4, 12)), builtin, [], []).
-% step 34
-step(is(99, '+'(51, 48)), builtin, [], []).
-% step 35
-step(is(34, '*'(2, 17)), builtin, [], []).
-% step 36
-step(is(36, '*'(3, 12)), builtin, [], []).
-% step 37
-step(is(70, '+'(34, 36)), builtin, [], []).
-% step 38
-step(pell(3, 99, 70), rule(4), ['='('N', 3), '='('X', 99), '='('Y', 70), '='('N1', 2), '='('X0', 17), '='('Y0', 12), '='('Ax', 51), '='('By', 48), '='('Cx', 34), '='('Dy', 36)], ['>'(3, 0), is(2, '-'(3, 1)), pell(2, 17, 12), is(51, '*'(3, 17)), is(48, '*'(4, 12)), is(99, '+'(51, 48)), is(34, '*'(2, 17)), is(36, '*'(3, 12)), is(70, '+'(34, 36))]).
-% step 39
-step(is(297, '*'(3, 99)), builtin, [], []).
-% step 40
-step(is(280, '*'(4, 70)), builtin, [], []).
-% step 41
-step(is(577, '+'(297, 280)), builtin, [], []).
-% step 42
-step(is(198, '*'(2, 99)), builtin, [], []).
-% step 43
-step(is(210, '*'(3, 70)), builtin, [], []).
-% step 44
-step(is(408, '+'(198, 210)), builtin, [], []).
-% step 45
-step(pell(4, 577, 408), rule(4), ['='('N', 4), '='('X', 577), '='('Y', 408), '='('N1', 3), '='('X0', 99), '='('Y0', 70), '='('Ax', 297), '='('By', 280), '='('Cx', 198), '='('Dy', 210)], ['>'(4, 0), is(3, '-'(4, 1)), pell(3, 99, 70), is(297, '*'(3, 99)), is(280, '*'(4, 70)), is(577, '+'(297, 280)), is(198, '*'(2, 99)), is(210, '*'(3, 70)), is(408, '+'(198, 210))]).
-% step 46
-step(is(1731, '*'(3, 577)), builtin, [], []).
-% step 47
-step(is(1632, '*'(4, 408)), builtin, [], []).
-% step 48
-step(is(3363, '+'(1731, 1632)), builtin, [], []).
-% step 49
-step(is(1154, '*'(2, 577)), builtin, [], []).
-% step 50
-step(is(1224, '*'(3, 408)), builtin, [], []).
-% step 51
-step(is(2378, '+'(1154, 1224)), builtin, [], []).
-% step 52
-step(pell(5, 3363, 2378), rule(4), ['='('N', 5), '='('X', 3363), '='('Y', 2378), '='('N1', 4), '='('X0', 577), '='('Y0', 408), '='('Ax', 1731), '='('By', 1632), '='('Cx', 1154), '='('Dy', 1224)], ['>'(5, 0), is(4, '-'(5, 1)), pell(4, 577, 408), is(1731, '*'(3, 577)), is(1632, '*'(4, 408)), is(3363, '+'(1731, 1632)), is(1154, '*'(2, 577)), is(1224, '*'(3, 408)), is(2378, '+'(1154, 1224))]).
-% step 53
-step(is(10089, '*'(3, 3363)), builtin, [], []).
-% step 54
-step(is(9512, '*'(4, 2378)), builtin, [], []).
-% step 55
-step(is(19601, '+'(10089, 9512)), builtin, [], []).
-% step 56
-step(is(6726, '*'(2, 3363)), builtin, [], []).
-% step 57
-step(is(7134, '*'(3, 2378)), builtin, [], []).
-% step 58
-step(is(13860, '+'(6726, 7134)), builtin, [], []).
-% step 59
-step(pell(6, 19601, 13860), rule(4), ['='('N', 6), '='('X', 19601), '='('Y', 13860), '='('N1', 5), '='('X0', 3363), '='('Y0', 2378), '='('Ax', 10089), '='('By', 9512), '='('Cx', 6726), '='('Dy', 7134)], ['>'(6, 0), is(5, '-'(6, 1)), pell(5, 3363, 2378), is(10089, '*'(3, 3363)), is(9512, '*'(4, 2378)), is(19601, '+'(10089, 9512)), is(6726, '*'(2, 3363)), is(7134, '*'(3, 2378)), is(13860, '+'(6726, 7134))]).
-% step 60
-step(is(58803, '*'(3, 19601)), builtin, [], []).
-% step 61
-step(is(55440, '*'(4, 13860)), builtin, [], []).
-% step 62
-step(is(114243, '+'(58803, 55440)), builtin, [], []).
-% step 63
-step(is(39202, '*'(2, 19601)), builtin, [], []).
-% step 64
-step(is(41580, '*'(3, 13860)), builtin, [], []).
-% step 65
-step(is(80782, '+'(39202, 41580)), builtin, [], []).
-% step 66
-step(pell(7, 114243, 80782), rule(4), ['='('N', 7), '='('X', 114243), '='('Y', 80782), '='('N1', 6), '='('X0', 19601), '='('Y0', 13860), '='('Ax', 58803), '='('By', 55440), '='('Cx', 39202), '='('Dy', 41580)], ['>'(7, 0), is(6, '-'(7, 1)), pell(6, 19601, 13860), is(58803, '*'(3, 19601)), is(55440, '*'(4, 13860)), is(114243, '+'(58803, 55440)), is(39202, '*'(2, 19601)), is(41580, '*'(3, 13860)), is(80782, '+'(39202, 41580))]).
-% step 67
-step(is(342729, '*'(3, 114243)), builtin, [], []).
-% step 68
-step(is(323128, '*'(4, 80782)), builtin, [], []).
-% step 69
-step(is(665857, '+'(342729, 323128)), builtin, [], []).
-% step 70
-step(is(228486, '*'(2, 114243)), builtin, [], []).
-% step 71
-step(is(242346, '*'(3, 80782)), builtin, [], []).
-% step 72
-step(is(470832, '+'(228486, 242346)), builtin, [], []).
-% step 73
-step(pell(8, 665857, 470832), rule(4), ['='('N', 8), '='('X', 665857), '='('Y', 470832), '='('N1', 7), '='('X0', 114243), '='('Y0', 80782), '='('Ax', 342729), '='('By', 323128), '='('Cx', 228486), '='('Dy', 242346)], ['>'(8, 0), is(7, '-'(8, 1)), pell(7, 114243, 80782), is(342729, '*'(3, 114243)), is(323128, '*'(4, 80782)), is(665857, '+'(342729, 323128)), is(228486, '*'(2, 114243)), is(242346, '*'(3, 80782)), is(470832, '+'(228486, 242346))]).
+?- check(pell(5, 3363, 2378)).
+true.
 
-% Check
-check passed: pell(0, 1, 0).
+?- check(pell(8, 665857, 470832)).
+true.
 
-check passed: pell(5, 3363, 2378).
+?- check(pell(50, 94741125149636933417873079920900017937, 66992092050551637663438906713182313772)).
+true.
 
-check passed: pell(8, 665857, 470832).
+?- check(pell_holds(50, true)).
+true.
 
-check passed: pell(50, 94741125149636933417873079920900017937, 66992092050551637663438906713182313772).
+?- check(\+ (pell(-1, 1, 0))).
+true.
 
-check passed: pell_holds(50, true).
-
-check passed: \+ (pell(-1, 1, 0)).
-
-check passed: aggregate_all(count, (between(0, 12, N), pell_holds(N, true)), 13).
-
-condition('C1', resolution, ok, 9).
-condition('C2', well_founded, ok, 73).
-condition('C3', justification, ok, 73).
-condition('C4', coverage, ok, 73).
-condition('C5', re_decision, ok, 64).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 74).
-steps(73).
-verified(9).
-recomputed(64).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check(aggregate_all(count, (between(0, 12, N), pell_holds(N, true)), 13)).
+true.

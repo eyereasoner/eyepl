@@ -1,11 +1,44 @@
 #!/usr/bin/env bash
-set -euo pipefail
+# Run every check, with its purpose, individual test timings, and an overall time.
+set -uo pipefail
 cd "$(dirname "$0")/.."
-cargo fmt --check
-cargo test --release --locked
-cargo clippy --release --all-targets --locked -- -D warnings
-cargo doc --no-deps --locked
-node scripts/generate-taxonomy.mjs --check
-node tests/playground.mjs
-node tests/pages.mjs
-node tests/release.mjs
+
+export CARGO_BUILD_JOBS=${CARGO_BUILD_JOBS:-2}
+started=$EPOCHREALTIME
+checks=0
+failed=0
+elapsed() { awk -v s="$1" -v e="$EPOCHREALTIME" 'BEGIN { printf "%.2f", e-s }'; }
+run_check() {
+  local name=$1 description=$2 begin=$EPOCHREALTIME status=0
+  shift 2
+  printf '\n=== %s ===\n# %s\n' "$name" "$description"
+  "$@" || status=$?
+  checks=$((checks + 1))
+  if [[ $status -eq 0 ]]; then
+    printf 'PASS %s · %s s\n' "$name" "$(elapsed "$begin")"
+  else
+    failed=$((failed + 1))
+    printf 'FAIL %s · exit %s · %s s\n' "$name" "$status" "$(elapsed "$begin")"
+  fi
+}
+
+# Check source formatting before running the behavior and proof regressions.
+run_check 'Formatting' 'Rust source follows the repository format.' cargo fmt --check
+# Build once and time each native test, including every example and its golden.
+run_check 'Native tests and goldens' 'Language, CLI, C1–C9, forged proofs, graph oracles, and all example outputs.' node scripts/test-rust.mjs
+# Rustdoc examples remain separate from native test executables.
+run_check 'API examples' 'Compile and run the examples in the public Rust API documentation.' cargo test --release --locked --doc
+# Check production code, tests, and benchmarks for warnings.
+run_check 'Native clippy' 'Lint every native target; warnings fail the check.' cargo clippy --release --all-targets --locked -- -D warnings
+# Build the public API reference without dependency documentation.
+run_check 'API documentation' 'Generate the public library reference.' cargo doc --no-deps --locked
+# Check generated deep examples before testing their browser packaging.
+run_check 'Generated taxonomies' 'Packaged classification chains match their generator.' node scripts/generate-taxonomy.mjs --check
+# These Node suites print a duration beside each individual test.
+run_check 'Playground' 'Worker execution, example restoration, sharing, Gists, and run status.' node tests/playground.mjs
+run_check 'Pages and Wasm' 'Rendered routes, versions, browser package, and small Wasm smoke tests.' node tests/pages.mjs
+run_check 'Release tooling' 'Publication success and recovery in temporary repositories; no real publication.' node tests/release.mjs
+run_check 'Test runner' 'A failed check is reported and later checks still run.' node tests/test-runner.mjs
+
+printf '\nChecks: %s passed, %s failed · %s s total\n' "$((checks-failed))" "$failed" "$(elapsed "$started")"
+[[ $failed -eq 0 ]]

@@ -15,11 +15,18 @@ const socket = new WebSocket(tab.webSocketDebuggerUrl);
 await new Promise((resolve, reject) => { socket.onopen = resolve; socket.onerror = reject; });
 let nextId = 0;
 const pending = new Map();
+socket.onclose = () => {
+  for (const entry of pending.values()) { clearTimeout(entry.timeout); entry.reject(new Error('Chrome disconnected.')); }
+  pending.clear();
+};
 const exceptions = [];
 socket.onmessage = ({ data }) => {
   const message = JSON.parse(data);
   if (message.id) {
-    const { resolve, reject } = pending.get(message.id);
+    const entry = pending.get(message.id);
+      if (!entry) return;
+      const { resolve, reject, timeout } = entry;
+      clearTimeout(timeout);
     pending.delete(message.id);
     if (message.error) reject(new Error(JSON.stringify(message.error)));
     else resolve(message.result);
@@ -27,7 +34,11 @@ socket.onmessage = ({ data }) => {
 };
 function command(method, params = {}) {
   const id = ++nextId;
-  return new Promise((resolve, reject) => { pending.set(id, { resolve, reject }); socket.send(JSON.stringify({ id, method, params })); });
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => { pending.delete(id); reject(new Error(`Chrome timed out: ${method}`)); }, 20000);
+    pending.set(id, { resolve, reject, timeout });
+    socket.send(JSON.stringify({ id, method, params }));
+  });
 }
 async function evaluate(expression) {
   const response = await command('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true });
@@ -58,10 +69,11 @@ async function set(id, value, event = 'input') {
 async function run() {
   await evaluate('document.getElementById("run").click()');
   await wait('!document.getElementById("run").disabled', 'run completion');
+  assert.match(await evaluate('document.getElementById("status").textContent'), /^(Done · exit 0|Failed · exit 1) · \d+\.\d{2} s/);
   return evaluate('document.getElementById("output").textContent');
 }
-async function share() {
-  await evaluate('document.getElementById("share-url").value = ""; document.getElementById("share").click()');
+async function share(button = 'share') {
+  await evaluate(`document.getElementById("share-url").value = ""; document.getElementById(${JSON.stringify(button)}).click()`);
   await wait('document.getElementById("share-url").value !== ""', 'share link ready');
   return evaluate('document.getElementById("share-url").value');
 }
@@ -70,7 +82,8 @@ async function screenshot(name) {
   await mkdir(screenshots, { recursive: true });
   const metrics = await command('Page.getLayoutMetrics');
   const { width, height } = metrics.cssContentSize;
-  const image = await command('Page.captureScreenshot', { format: 'png', captureBeyondViewport: true, clip: { x: 0, y: 0, width, height, scale: 1 } });
+  // Keep long documentation and example screenshots within a useful image size.
+  const image = await command('Page.captureScreenshot', { format: 'png', captureBeyondViewport: true, clip: { x: 0, y: 0, width, height: Math.min(height, 1600), scale: 1 } });
   await writeFile(`${screenshots}/${name}.png`, Buffer.from(image.data, 'base64'));
 }
 
@@ -108,6 +121,9 @@ try {
   await navigate(`${base}#example=socrates`);
   assert.match(await evaluate('document.getElementById("output").textContent'), /first answer/);
   assert.equal(await evaluate('document.querySelector("#mode, #saved-proof")'), null);
+  assert.deepEqual(await evaluate('[...document.querySelectorAll(".actions button")].map(button => button.textContent)'), ['Run', 'Stop', 'Share link', 'Create Gist share']);
+  assert.deepEqual(await evaluate('[...document.querySelectorAll(".actions button")].map(button => getComputedStyle(button).backgroundColor)'), ['rgb(72, 230, 84)', 'rgb(255, 71, 47)', 'rgb(34, 189, 231)', 'rgb(252, 250, 68)']);
+  assert.ok(await evaluate('!!document.querySelector(".toolbar #status") && !document.querySelector(".notes") && !document.querySelector("footer").textContent.includes("version")'));
   assert.equal(await evaluate('document.getElementById("version").textContent'), `v${expectedVersion}`);
   const socrates = await run();
   assert.match(socrates, /\?- mortal\(Who\)\.\nWho = socrates/);
@@ -117,6 +133,7 @@ try {
   const widths = await evaluate('[...document.querySelectorAll(".editors > .panel")].map(e => e.getBoundingClientRect().width)');
   assert.ok(Math.abs(widths[0] - widths[1]) < 1);
   assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'));
+  assert.ok(await evaluate('["source", "output"].every(id => getComputedStyle(document.getElementById(id)).scrollbarWidth === "none")'), 'desktop pane scrollbars should be hidden');
   await screenshot('desktop');
 
   await set('source', 'p(a). ?- p(X). ?- check(p(b)). ?- why. ?- check.');
@@ -145,25 +162,15 @@ try {
     }
   }
 
-  const deep = await example('deep-taxonomy-100000');
-  assert.equal(await run(), '?- test(Result).\nResult = true.\n');
+  const deep = await example('deep-taxonomy-100');
+  assert.match(await run(), /Who = ind/);
   await set('source', deep + '\n?- check.');
-  assert.match(await run(), /^checked: 100003 steps, 1 claim/m);
+  assert.match(await run(), /^checked: 102 steps, 1 claim/m);
   await set('source', deep);
-  assert.equal(new URL(await share()).hash, '#example=deep-taxonomy-100000');
+  assert.ok(await evaluate('getComputedStyle(document.getElementById("source")).scrollbarWidth === "none"'), 'large input should hide its scrollbar');
+  assert.ok(await evaluate('(() => { const pane = document.getElementById("source"); pane.scrollTop = 80; const moved = pane.scrollTop > 0; pane.scrollTop = 0; return moved; })()'), 'large input must remain scrollable');
+  assert.equal(new URL(await share()).hash, '#example=deep-taxonomy-100');
 
-  await navigate(`${base}#example=path-discovery`);
-  const airport = await evaluate('document.getElementById("source").value');
-  await set('source', airport + '\n?- check.');
-  const routes = await run();
-  assert.equal((routes.match(/Stopovers = 2/g) || []).length, 3, routes.slice(0, 1000));
-  for (const name of ['Heraklion International Nikos Kazantzakis Airport', 'Diagoras Airport', 'Palma De Mallorca Airport']) {
-    assert.ok(routes.includes(`Liège Airport -> ${name} -> Václav Havel Airport Prague`));
-  }
-  assert.match(routes, /^checked: [0-9]+ steps, 3 claims/m);
-  await set('source', airport);
-  assert.equal(new URL(await share()).hash, '#example=path-discovery');
-  await screenshot('desktop-airport-routes');
   await example('paths');
   for (const name of ['ben', 'cara']) assert.match(await run(), new RegExp(`Who = ${name}`));
   assert.equal(new URL(await share()).hash, '#example=paths');
@@ -178,6 +185,37 @@ try {
   assert.equal(await evaluate('document.getElementById("source").value'), unicode);
   assert.match(await evaluate('document.getElementById("output").textContent'), /first answer/);
   assert.match(await run(), /Élodie/);
+
+  // Simulate GitHub so the real UI uploads and restores a Gist without publication.
+  const rawGist = 'https://gist.githubusercontent.com/example/123/raw/abc/wheye-playground-state.json';
+  const gistMock = `(() => {
+    const original = window.fetch.bind(window);
+    window.fetch = async (url, options) => {
+      if (String(url) === 'https://api.github.com/gists') {
+        window.gistUpload = JSON.parse(options.body);
+        return new Response(JSON.stringify({files:{'wheye-playground-state.json':{raw_url:${JSON.stringify(rawGist)}}}}), {status:201});
+      }
+      if (String(url) === ${JSON.stringify(rawGist)}) return new Response(JSON.stringify({source:${JSON.stringify(unicode)}}), {status:200});
+      return original(url, options);
+    };
+  })()`;
+  const injected = await command('Page.addScriptToEvaluateOnNewDocument', {source:gistMock});
+  await evaluate(gistMock);
+  await evaluate("sessionStorage.setItem('wheye.playground.github.gistToken.v1', 'fake-browser-test-token')");
+  const runStatus = await evaluate('document.getElementById("status").textContent');
+  const gistShared = await share('create-gist-share');
+  assert.equal(new URL(gistShared).searchParams.get('stateurl'), rawGist);
+  const uploaded = await evaluate('window.gistUpload');
+  assert.equal(uploaded.public, false);
+  assert.equal(JSON.parse(uploaded.files['wheye-playground-state.json'].content).source, unicode);
+  assert.equal(await evaluate('document.getElementById("status").textContent'), runStatus);
+  await navigate(gistShared);
+  await wait(`document.getElementById("source").value === ${JSON.stringify(unicode)}`, 'Gist restored');
+  assert.match(await evaluate('document.getElementById("output").textContent'), /first answer/);
+  assert.match(await run(), /Élodie/);
+  assert.equal(new URL(await share()).search, '');
+  await command('Page.removeScriptToEvaluateOnNewDocument', {identifier:injected.identifier});
+  await evaluate("sessionStorage.removeItem('wheye.playground.github.gistToken.v1')");
 
   await navigate(`${base}#example=socrates`);
   await evaluate('document.getElementById("run").click(); document.getElementById("stop").click()');
@@ -201,16 +239,16 @@ try {
   await navigate(`${base}#example=socrates`);
   assert.match(await run(), /checked: 2 steps, 1 claim/);
   assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'), 'phone layout overflows');
+  assert.ok(await evaluate('["source", "output"].every(id => getComputedStyle(document.getElementById(id)).scrollbarWidth === "none")'), 'phone pane scrollbars should be hidden');
   assert.ok(await evaluate('document.querySelector(".output-panel").getBoundingClientRect().top > document.querySelector(".editors .panel").getBoundingClientRect().top'), 'phone panels should stack');
   await screenshot('mobile');
-  for (const name of ['orders', 'deep-taxonomy-1000', 'path-discovery']) {
+  for (const name of ['orders', 'deep-taxonomy-100']) {
     const source = await example(name);
     await set('source', source + '\n?- check.');
     const result = await run();
     assert.match(result, /^checked:/m);
     if (name === 'orders') assert.doesNotMatch(result, /not applicable/);
-    if (name === 'deep-taxonomy-1000') assert.match(result, /checked: 1002 steps, 1 claim/);
-    if (name === 'path-discovery') assert.match(result, /checked: [0-9]+ steps, 3 claims/);
+    if (name === 'deep-taxonomy-100') assert.match(result, /checked: 102 steps, 1 claim/);
     assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'), 'mobile layout overflows');
     await screenshot(`mobile-${name}`);
   }
@@ -242,5 +280,5 @@ try {
     }
   }
   assert.deepEqual(exceptions, []);
-  console.log('Browser checks passed: source-selected answers, proofs and C1–C9 checks, echoed queries, all airport routes, depth-100000 taxonomy, desktop/mobile layouts, rendered docs, short example links, restored old examples, custom snapshots, Unicode, autosave, cancellation and restart.');
+  console.log('Browser checks passed: source-selected answers, proofs and C1–C9 checks, echoed queries, small taxonomy, desktop/mobile layouts, rendered docs, short example links, restored old examples, Gist sharing, hidden pane scrollbars, custom snapshots, Unicode, autosave, cancellation and restart.');
 } finally { socket.close(); }

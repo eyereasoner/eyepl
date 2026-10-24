@@ -1,35 +1,30 @@
-% Answer
 ?- mortal(Who).
 Who = socrates.
 
-% Reason
-certificate(eyeon, 1).
+?- why.
+wheye-proof 1
+% Rule 1: mortal(Person) :- human(Person).
+step 1 source 1 : human(socrates).
+step 2 rule 1 [1] : mortal(socrates).
+answer 1 [2]
 
-claim(query(1), [mortal(socrates)]).
+?- check.
+checked: 2 steps, 1 claim
+1 source fact; 1 rule application
+Conditions:
+  C1 resolution: 2 checked, 0 failed
+  C2 well-foundedness: 1 checked, 0 failed
+  C3 justification: 3 checked, 0 failed
+  C4 coverage: 5 checked, 0 failed
+  C5 re-decision: 0 checked, 0 failed
+  C6 boundary consistency: 0 checked, 0 failed
+  C7 relevance: 2 checked, 0 failed
+  C8 witness integrity: not applicable (program uses no fresh witnesses)
+  C9 query isolation: 1 checked, 0 failed
+Source facts and rules are assumed. Answer completeness is not checked.
 
-clause(1, human(socrates), []).
-clause(2, mortal(var('Person')), [human(var('Person'))]).
+?- check(mortal(socrates)).
+true.
 
-% step 1
-step(human(socrates), fact(1), [], []).
-% step 2
-step(mortal(socrates), rule(2), ['='('Person', socrates)], [human(socrates)]).
-
-% Check
-check passed: mortal(socrates).
-
-check passed: aggregate_all(count, (mortal(Person)), 1).
-
-condition('C1', resolution, ok, 2).
-condition('C2', well_founded, ok, 2).
-condition('C3', justification, ok, 2).
-condition('C4', coverage, ok, 2).
-condition('C5', re_decision, ok, 0).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 3).
-steps(2).
-verified(2).
-recomputed(0).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check(aggregate_all(count, (mortal(Person)), 1)).
+true.

@@ -1,8 +1,51 @@
-% Answer
 ?- pick_list(Order, Items).
 Order = alpha, Items = [item(bolts, 4), item(nuts, 4), item(bolts, 4)].
 Order = beta, Items = [item(washers, 12)].
 Order = empty, Items = [].
+
+?- why.
+wheye-proof 1
+% Rule 1: pick_list(Order, Items) :- order(Order), aggregate_all(list(item(Product, Quantity)), (line(Order, Line, Product, Quantity)), Items).
+% Rule 3: occurrences(_, [], 0) :- .
+% Rule 4: occurrences(Item, [Item | Rest], Count) :- occurrences(Item, Rest, Before), Count is '+'(Before, 1).
+% Rule 5: occurrences(Item, [Other | Rest], Count) :- Item \= Other, occurrences(Item, Rest, Count).
+step 1 source 1 : order(alpha).
+step 2 source 2 : order(beta).
+step 3 source 3 : order(empty).
+step 4 source 4 : line(alpha, 1, bolts, 4).
+step 5 source 5 : line(alpha, 2, nuts, 4).
+step 6 source 6 : line(alpha, 3, bolts, 4).
+step 7 source 8 : line(beta, 1, washers, 12).
+step 8 rule 3 [] : occurrences(item(bolts, 4), [], 0).
+step 9 builtin : is(1, '+'(0, 1)).
+step 10 builtin : '\\='(item(bolts, 4), item(nuts, 4)).
+step 11 builtin : is(2, '+'(1, 1)).
+step 12 rule 3 [] : occurrences(item(nuts, 4), [], 0).
+step 13 builtin : '\\='(item(nuts, 4), item(bolts, 4)).
+step 14 rule 4 [8,9] : occurrences(item(bolts, 4), [item(bolts, 4)], 1).
+step 15 rule 5 [13,12] : occurrences(item(nuts, 4), [item(bolts, 4)], 0).
+step 16 rule 5 [10,14] : occurrences(item(bolts, 4), [item(nuts, 4), item(bolts, 4)], 1).
+step 17 rule 4 [15,9] : occurrences(item(nuts, 4), [item(nuts, 4), item(bolts, 4)], 1).
+step 18 rule 4 [16,11] : occurrences(item(bolts, 4), [item(bolts, 4), item(nuts, 4), item(bolts, 4)], 2).
+step 19 rule 5 [13,17] : occurrences(item(nuts, 4), [item(bolts, 4), item(nuts, 4), item(bolts, 4)], 1).
+step 20 aggregate r1 2 1 : '$aggregate:r1:2'([binding('Order', alpha)], [item(bolts, 4), item(nuts, 4), item(bolts, 4)]).
+step 21 aggregate r1 2 1 : '$aggregate:r1:2'([binding('Order', beta)], [item(washers, 12)]).
+step 22 aggregate r1 2 1 : '$aggregate:r1:2'([binding('Order', empty)], []).
+step 23 rule 1 [1,20] : pick_list(alpha, [item(bolts, 4), item(nuts, 4), item(bolts, 4)]).
+step 24 rule 1 [2,21] : pick_list(beta, [item(washers, 12)]).
+step 25 rule 1 [3,22] : pick_list(empty, []).
+boundary 1 level 0 [1,2,3,4,5,6,7,8,12,14,15,16,17,18,19]
+demand 1 : occurrences(item(bolts, 4), [], _WheyeCall0).
+demand 1 : occurrences(item(bolts, 4), [item(bolts, 4), item(nuts, 4), item(bolts, 4)], 2).
+demand 1 : occurrences(item(bolts, 4), [item(bolts, 4)], _WheyeCall0).
+demand 1 : occurrences(item(bolts, 4), [item(nuts, 4), item(bolts, 4)], _WheyeCall0).
+demand 1 : occurrences(item(nuts, 4), [], _WheyeCall0).
+demand 1 : occurrences(item(nuts, 4), [item(bolts, 4), item(nuts, 4), item(bolts, 4)], 1).
+demand 1 : occurrences(item(nuts, 4), [item(bolts, 4)], _WheyeCall0).
+demand 1 : occurrences(item(nuts, 4), [item(nuts, 4), item(bolts, 4)], 1).
+answer 1 [23]
+answer 1 [24]
+answer 1 [25]
 
 ?- aggregate_all(list(Quantity), (line(alpha, Line, Product, Quantity)), Quantities).
 Quantities = [4, 4, 4].
@@ -12,75 +55,20 @@ Order = alpha, Items = [].
 Order = beta, Items = [item(washers, 12)].
 Order = empty, Items = [].
 
-% Reason
-certificate(eyeon, 1).
+?- check((pick_list(alpha, Items), occurrences(item(bolts, 4), Items, 2), occurrences(item(nuts, 4), Items, 1))).
+true.
 
-claim(query(1), [pick_list(alpha, [item(bolts, 4), item(nuts, 4), item(bolts, 4)])]).
-claim(query(1), [pick_list(beta, [item(washers, 12)])]).
-claim(query(1), [pick_list(empty, [])]).
+?- check(pick_list(beta, [item(washers, 12)])).
+true.
 
-clause(1, order(alpha), []).
-clause(2, order(beta), []).
-clause(3, order(empty), []).
-clause(4, line(alpha, 1, bolts, 4), []).
-clause(5, line(alpha, 2, nuts, 4), []).
-clause(7, line(alpha, 3, bolts, 4), []).
-clause(8, line(beta, 1, washers, 12), []).
-clause(9, pick_list(var('Order'), var('Items')), [order(var('Order')), aggregate_all(list(item(var('Product'), var('Quantity'))), [line(var('Order'), var('Line'), var('Product'), var('Quantity'))], var('Items'))]).
+?- check(pick_list(empty, [])).
+true.
 
-% step 1
-step(order(alpha), fact(1), [], []).
-% step 2
-step(line(alpha, 1, bolts, 4), fact(4), [], []).
-% step 3
-step(line(alpha, 2, nuts, 4), fact(5), [], []).
-% step 4
-step(line(alpha, 3, bolts, 4), fact(7), [], []).
-% step 5
-step(aggregate_all(list(item(V0, V1)), [line(alpha, V2, V0, V1)], [item(bolts, 4), item(nuts, 4), item(bolts, 4)]), collected, [], [[line(alpha, 1, bolts, 4)], [line(alpha, 2, nuts, 4)], [line(alpha, 3, bolts, 4)]]).
-% step 6
-step(pick_list(alpha, [item(bolts, 4), item(nuts, 4), item(bolts, 4)]), rule(9), ['='('Order', alpha), '='('Items', [item(bolts, 4), item(nuts, 4), item(bolts, 4)])], [order(alpha), aggregate_all(list(item(V0, V1)), [line(alpha, V2, V0, V1)], [item(bolts, 4), item(nuts, 4), item(bolts, 4)])]).
-% step 7
-step(order(beta), fact(2), [], []).
-% step 8
-step(line(beta, 1, washers, 12), fact(8), [], []).
-% step 9
-step(aggregate_all(list(item(V0, V1)), [line(beta, V2, V0, V1)], [item(washers, 12)]), collected, [], [[line(beta, 1, washers, 12)]]).
-% step 10
-step(pick_list(beta, [item(washers, 12)]), rule(9), ['='('Order', beta), '='('Items', [item(washers, 12)])], [order(beta), aggregate_all(list(item(V0, V1)), [line(beta, V2, V0, V1)], [item(washers, 12)])]).
-% step 11
-step(order(empty), fact(3), [], []).
-% step 12
-step(aggregate_all(list(item(V0, V1)), [line(empty, V2, V0, V1)], []), collected, [], []).
-% step 13
-step(pick_list(empty, []), rule(9), ['='('Order', empty), '='('Items', [])], [order(empty), aggregate_all(list(item(V0, V1)), [line(empty, V2, V0, V1)], [])]).
+?- check(aggregate_all(list(Quantity), (line(alpha, Line, Product, Quantity)), [4, 4, 4])).
+true.
 
-% Check
-check passed: pick_list(alpha, Items), occurrences(item(bolts, 4), Items, 2), occurrences(item(nuts, 4), Items, 1).
+?- check(bulk_list(alpha, [])).
+true.
 
-check passed: pick_list(beta, [item(washers, 12)]).
-
-check passed: pick_list(empty, []).
-
-check passed: aggregate_all(list(Quantity), (line(alpha, Line, Product, Quantity)), [4, 4, 4]).
-
-check passed: bulk_list(alpha, []).
-
-check passed: bulk_list(beta, [item(washers, 12)]).
-
-condition('C1', resolution, ok, 10).
-condition('C2', well_founded, ok, 13).
-condition('C3', justification, ok, 13).
-condition('C4', coverage, ok, 13).
-condition('C5', re_decision, ok, 3).
-condition('C6', boundary_consistency, ok, 3).
-condition('C7', relevance, ok, 16).
-obligation(collected, collection_completeness, aggregate_all(list(item(var('V0'), var('V1'))), [line(alpha, var('V2'), var('V0'), var('V1'))], [item(bolts, 4), item(nuts, 4), item(bolts, 4)])).
-obligation(collected, collection_completeness, aggregate_all(list(item(var('V0'), var('V1'))), [line(beta, var('V2'), var('V0'), var('V1'))], [item(washers, 12)])).
-obligation(collected, collection_completeness, aggregate_all(list(item(var('V0'), var('V1'))), [line(empty, var('V2'), var('V0'), var('V1'))], [])).
-steps(13).
-verified(10).
-recomputed(3).
-trusted(3).
-claims(3).
-verdict(checked_with_obligations).
+?- check(bulk_list(beta, [item(washers, 12)])).
+true.

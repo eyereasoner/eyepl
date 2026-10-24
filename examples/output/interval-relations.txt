@@ -1,49 +1,69 @@
-% Answer
 ?- relation(I, Relation, J).
+I = a, Relation = equals, J = a.
 I = a, Relation = before, J = b.
 I = a, Relation = meets, J = c.
-I = d, Relation = meets, J = b.
-I = e, Relation = before, J = b.
-I = e, Relation = meets, J = c.
-I = f, Relation = before, J = b.
-I = f, Relation = before, J = c.
-I = f, Relation = meets, J = d.
-I = f, Relation = meets, J = g.
-I = g, Relation = before, J = b.
-I = g, Relation = meets, J = c.
-I = a, Relation = equals, J = a.
-I = b, Relation = after, J = a.
-I = c, Relation = met_by, J = a.
+I = a, Relation = overlaps, J = d.
 I = a, Relation = equals, J = e.
 I = a, Relation = during, J = h.
+I = e, Relation = equals, J = a.
+I = f, Relation = starts, J = a.
+I = g, Relation = finishes, J = a.
 I = b, Relation = equals, J = b.
 I = b, Relation = during, J = h.
+I = c, Relation = overlaps, J = b.
+I = d, Relation = meets, J = b.
+I = e, Relation = before, J = b.
+I = f, Relation = before, J = b.
+I = g, Relation = before, J = b.
 I = c, Relation = equals, J = c.
 I = c, Relation = during, J = h.
-I = b, Relation = met_by, J = d.
+I = d, Relation = overlaps, J = c.
+I = e, Relation = meets, J = c.
+I = f, Relation = before, J = c.
+I = g, Relation = meets, J = c.
 I = d, Relation = equals, J = d.
 I = d, Relation = during, J = h.
-I = e, Relation = equals, J = a.
-I = b, Relation = after, J = e.
-I = c, Relation = met_by, J = e.
+I = e, Relation = overlaps, J = d.
+I = f, Relation = meets, J = d.
+I = g, Relation = starts, J = d.
 I = e, Relation = equals, J = e.
 I = e, Relation = during, J = h.
-I = f, Relation = starts, J = a.
-I = b, Relation = after, J = f.
-I = c, Relation = after, J = f.
-I = d, Relation = met_by, J = f.
 I = f, Relation = starts, J = e.
-I = f, Relation = equals, J = f.
-I = g, Relation = met_by, J = f.
-I = f, Relation = during, J = h.
-I = g, Relation = finishes, J = a.
-I = b, Relation = after, J = g.
-I = c, Relation = met_by, J = g.
-I = g, Relation = starts, J = d.
 I = g, Relation = finishes, J = e.
+I = f, Relation = equals, J = f.
+I = f, Relation = meets, J = g.
+I = f, Relation = during, J = h.
 I = g, Relation = equals, J = g.
 I = g, Relation = during, J = h.
 I = h, Relation = equals, J = h.
+I = b, Relation = after, J = a.
+I = c, Relation = met_by, J = a.
+I = d, Relation = overlapped_by, J = a.
+I = h, Relation = contains, J = a.
+I = a, Relation = started_by, J = f.
+I = a, Relation = finished_by, J = g.
+I = h, Relation = contains, J = b.
+I = b, Relation = overlapped_by, J = c.
+I = b, Relation = met_by, J = d.
+I = b, Relation = after, J = e.
+I = b, Relation = after, J = f.
+I = b, Relation = after, J = g.
+I = h, Relation = contains, J = c.
+I = c, Relation = overlapped_by, J = d.
+I = c, Relation = met_by, J = e.
+I = c, Relation = after, J = f.
+I = c, Relation = met_by, J = g.
+I = h, Relation = contains, J = d.
+I = d, Relation = overlapped_by, J = e.
+I = d, Relation = met_by, J = f.
+I = d, Relation = started_by, J = g.
+I = h, Relation = contains, J = e.
+I = e, Relation = started_by, J = f.
+I = e, Relation = finished_by, J = g.
+I = g, Relation = met_by, J = f.
+I = h, Relation = contains, J = f.
+I = h, Relation = contains, J = g.
+I = i, Relation = equals, J = i.
 I = a, Relation = before, J = i.
 I = b, Relation = before, J = i.
 I = c, Relation = before, J = i.
@@ -52,6 +72,9 @@ I = e, Relation = before, J = i.
 I = f, Relation = before, J = i.
 I = g, Relation = before, J = i.
 I = h, Relation = meets, J = i.
+I = j, Relation = meets, J = i.
+I = j, Relation = finishes, J = h.
+I = j, Relation = equals, J = j.
 I = a, Relation = before, J = j.
 I = b, Relation = meets, J = j.
 I = c, Relation = before, J = j.
@@ -59,22 +82,6 @@ I = d, Relation = before, J = j.
 I = e, Relation = before, J = j.
 I = f, Relation = before, J = j.
 I = g, Relation = before, J = j.
-I = a, Relation = overlaps, J = d.
-I = h, Relation = contains, J = a.
-I = h, Relation = contains, J = b.
-I = c, Relation = overlaps, J = b.
-I = h, Relation = contains, J = c.
-I = d, Relation = overlaps, J = c.
-I = h, Relation = contains, J = d.
-I = e, Relation = overlaps, J = d.
-I = h, Relation = contains, J = e.
-I = a, Relation = started_by, J = f.
-I = e, Relation = started_by, J = f.
-I = h, Relation = contains, J = f.
-I = a, Relation = finished_by, J = g.
-I = d, Relation = started_by, J = g.
-I = e, Relation = finished_by, J = g.
-I = h, Relation = contains, J = g.
 I = i, Relation = after, J = a.
 I = i, Relation = after, J = b.
 I = i, Relation = after, J = c.
@@ -83,7 +90,8 @@ I = i, Relation = after, J = e.
 I = i, Relation = after, J = f.
 I = i, Relation = after, J = g.
 I = i, Relation = met_by, J = h.
-I = j, Relation = meets, J = i.
+I = i, Relation = met_by, J = j.
+I = h, Relation = finished_by, J = j.
 I = j, Relation = after, J = a.
 I = j, Relation = met_by, J = b.
 I = j, Relation = after, J = c.
@@ -91,95 +99,75 @@ I = j, Relation = after, J = d.
 I = j, Relation = after, J = e.
 I = j, Relation = after, J = f.
 I = j, Relation = after, J = g.
-I = d, Relation = overlapped_by, J = a.
-I = b, Relation = overlapped_by, J = c.
-I = c, Relation = overlapped_by, J = d.
-I = d, Relation = overlapped_by, J = e.
-I = i, Relation = equals, J = i.
-I = j, Relation = finishes, J = h.
-I = i, Relation = met_by, J = j.
-I = j, Relation = equals, J = j.
-I = h, Relation = finished_by, J = j.
 
-% Reason
-certificate(eyeon, 1).
+?- relation(a, overlaps, d).
+true.
 
-claim(query(2), [relation(a, overlaps, d)]).
+?- why.
+wheye-proof 1
+% Rule 3: valid_interval(I, S, E) :- interval(I, S, E), S < E.
+% Rule 4: pair(I, J, SI, EI, SJ, EJ) :- valid_interval(I, SI, EI), valid_interval(J, SJ, EJ).
+% Rule 7: relation(I, overlaps, J) :- pair(I, J, SI, EI, SJ, EJ), SI < SJ, SJ < EI, EI < EJ.
+step 1 source 1 : interval(a, 600, 720).
+step 2 source 4 : interval(d, 660, 780).
+step 3 builtin : '<'(600, 720).
+step 4 rule 3 [1,3] : valid_interval(a, 600, 720).
+step 5 builtin : '<'(660, 780).
+step 6 rule 3 [2,5] : valid_interval(d, 660, 780).
+step 7 builtin : '<'(600, 660).
+step 8 builtin : '<'(660, 720).
+step 9 rule 4 [4,6] : pair(a, d, 600, 720, 660, 780).
+step 10 builtin : '<'(720, 780).
+step 11 rule 7 [9,7,8,10] : relation(a, overlaps, d).
+answer 2 [11]
 
-clause(1, interval(a, 600, 720), []).
-clause(4, interval(d, 660, 780), []).
-clause(13, valid_interval(var('I'), var('S'), var('E')), [interval(var('I'), var('S'), var('E')), '<'(var('S'), var('E'))]).
-clause(14, pair(var('I'), var('J'), var('SI'), var('EI'), var('SJ'), var('EJ')), [valid_interval(var('I'), var('SI'), var('EI')), valid_interval(var('J'), var('SJ'), var('EJ'))]).
-clause(17, relation(var('I'), overlaps, var('J')), [pair(var('I'), var('J'), var('SI'), var('EI'), var('SJ'), var('EJ')), '<'(var('SI'), var('SJ')), '<'(var('SJ'), var('EI')), '<'(var('EI'), var('EJ'))]).
+?- check(relation(a, before, b)).
+true.
 
-% step 1
-step(interval(a, 600, 720), fact(1), [], []).
-% step 2
-step('<'(600, 720), builtin, [], []).
-% step 3
-step(valid_interval(a, 600, 720), rule(13), ['='('I', a), '='('S', 600), '='('E', 720)], [interval(a, 600, 720), '<'(600, 720)]).
-% step 4
-step(interval(d, 660, 780), fact(4), [], []).
-% step 5
-step('<'(660, 780), builtin, [], []).
-% step 6
-step(valid_interval(d, 660, 780), rule(13), ['='('I', d), '='('S', 660), '='('E', 780)], [interval(d, 660, 780), '<'(660, 780)]).
-% step 7
-step(pair(a, d, 600, 720, 660, 780), rule(14), ['='('I', a), '='('SI', 600), '='('EI', 720), '='('J', d), '='('SJ', 660), '='('EJ', 780)], [valid_interval(a, 600, 720), valid_interval(d, 660, 780)]).
-% step 8
-step('<'(600, 660), builtin, [], []).
-% step 9
-step('<'(660, 720), builtin, [], []).
-% step 10
-step('<'(720, 780), builtin, [], []).
-% step 11
-step(relation(a, overlaps, d), rule(17), ['='('I', a), '='('J', d), '='('SI', 600), '='('EI', 720), '='('SJ', 660), '='('EJ', 780)], [pair(a, d, 600, 720, 660, 780), '<'(600, 660), '<'(660, 720), '<'(720, 780)]).
+?- check(relation(b, after, a)).
+true.
 
-% Check
-check passed: relation(a, before, b).
+?- check(relation(a, meets, c)).
+true.
 
-check passed: relation(b, after, a).
+?- check(relation(c, met_by, a)).
+true.
 
-check passed: relation(a, meets, c).
+?- check(relation(a, overlaps, d)).
+true.
 
-check passed: relation(c, met_by, a).
+?- check(relation(d, overlapped_by, a)).
+true.
 
-check passed: relation(a, overlaps, d).
+?- check(relation(f, starts, a)).
+true.
 
-check passed: relation(d, overlapped_by, a).
+?- check(relation(a, started_by, f)).
+true.
 
-check passed: relation(f, starts, a).
+?- check(relation(a, during, h)).
+true.
 
-check passed: relation(a, started_by, f).
+?- check(relation(h, contains, a)).
+true.
 
-check passed: relation(a, during, h).
+?- check(relation(g, finishes, a)).
+true.
 
-check passed: relation(h, contains, a).
+?- check(relation(a, finished_by, g)).
+true.
 
-check passed: relation(g, finishes, a).
+?- check(relation(a, equals, e)).
+true.
 
-check passed: relation(a, finished_by, g).
+?- check(interval(i, 960, 1080)).
+true.
 
-check passed: relation(a, equals, e).
+?- check(interval(j, 900, 960)).
+true.
 
-check passed: interval(i, 960, 1080).
+?- check(aggregate_all(count, (interval(I, S, E)), 10)).
+true.
 
-check passed: interval(j, 900, 960).
-
-check passed: aggregate_all(count, (interval(I, S, E)), 10).
-
-check passed: aggregate_all(count, (relation(I, Relation, J)), 100).
-
-condition('C1', resolution, ok, 6).
-condition('C2', well_founded, ok, 11).
-condition('C3', justification, ok, 11).
-condition('C4', coverage, ok, 11).
-condition('C5', re_decision, ok, 5).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 12).
-steps(11).
-verified(6).
-recomputed(5).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check(aggregate_all(count, (relation(I, Relation, J)), 100)).
+true.

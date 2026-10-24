@@ -1,4 +1,3 @@
-% Answer
 ?- count(scores, Count).
 Count = 8.
 
@@ -11,187 +10,106 @@ Variance = 4.0.
 ?- populationStddev(scores, Stddev).
 Stddev = 2.0.
 
-% Reason
-certificate(eyeon, 1).
+?- why.
+wheye-proof 1
+% Rule 1: sum([X | Xs], Total) :- sum(Xs, Rest), Total is '+'(X, Rest).
+% Rule 2: mean(Name, Mean) :- sample(Name, Values), sum(Values, Total), length(Values, Count), Mean is '/'(Total, Count).
+% Rule 3: squared_error_sum([], _mean, 0.0) :- .
+% Rule 4: squared_error_sum([X | Xs], Mean, Total) :- Delta is '-'(X, Mean), Squared is '**'(Delta, 2.0), squared_error_sum(Xs, Mean, Rest), Total is '+'(Squared, Rest).
+% Rule 5: population_variance(Name, Variance) :- sample(Name, Values), mean(Name, Mean), squared_error_sum(Values, Mean, Sumsquarederrors), length(Values, Count), Variance is '/'(Sumsquarederrors, Count).
+% Rule 6: population_stddev(Name, Stddev) :- population_variance(Name, Variance), Stddev is '**'(Variance, 0.5).
+% Rule 9: populationStddev(Name, Stddev) :- population_stddev(Name, Stddev).
+% Rule 10: length([_ | Rest], Count) :- length(Rest, Previous), Count is '+'(Previous, 1).
+step 1 source 1 : sample(scores, [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]).
+step 2 source 2 : sum([], 0.0).
+step 3 source 3 : length([], 0).
+step 4 builtin : is(9.0, '+'(9.0, 0.0)).
+step 5 builtin : is(1, '+'(0, 1)).
+step 6 builtin : is(16.0, '+'(7.0, 9.0)).
+step 7 builtin : is(2, '+'(1, 1)).
+step 8 builtin : is(21.0, '+'(5.0, 16.0)).
+step 9 builtin : is(3, '+'(2, 1)).
+step 10 builtin : is(26.0, '+'(5.0, 21.0)).
+step 11 builtin : is(4, '+'(3, 1)).
+step 12 builtin : is(30.0, '+'(4.0, 26.0)).
+step 13 builtin : is(5, '+'(4, 1)).
+step 14 builtin : is(34.0, '+'(4.0, 30.0)).
+step 15 builtin : is(6, '+'(5, 1)).
+step 16 builtin : is(38.0, '+'(4.0, 34.0)).
+step 17 builtin : is(7, '+'(6, 1)).
+step 18 builtin : is(40.0, '+'(2.0, 38.0)).
+step 19 builtin : is(8, '+'(7, 1)).
+step 20 builtin : is(5.0, '/'(40.0, 8)).
+step 21 rule 3 [] : squared_error_sum([], 5.0, 0.0).
+step 22 builtin : is(4.0, '-'(9.0, 5.0)).
+step 23 builtin : is(16.0, '**'(4.0, 2.0)).
+step 24 builtin : is(16.0, '+'(16.0, 0.0)).
+step 25 builtin : is(2.0, '-'(7.0, 5.0)).
+step 26 builtin : is(4.0, '**'(2.0, 2.0)).
+step 27 builtin : is(20.0, '+'(4.0, 16.0)).
+step 28 builtin : is(0.0, '-'(5.0, 5.0)).
+step 29 builtin : is(0.0, '**'(0.0, 2.0)).
+step 30 builtin : is(20.0, '+'(0.0, 20.0)).
+step 31 builtin : is(-1.0, '-'(4.0, 5.0)).
+step 32 builtin : is(1.0, '**'(-1.0, 2.0)).
+step 33 builtin : is(21.0, '+'(1.0, 20.0)).
+step 34 builtin : is(22.0, '+'(1.0, 21.0)).
+step 35 builtin : is(23.0, '+'(1.0, 22.0)).
+step 36 builtin : is(-3.0, '-'(2.0, 5.0)).
+step 37 builtin : is(9.0, '**'(-3.0, 2.0)).
+step 38 builtin : is(32.0, '+'(9.0, 23.0)).
+step 39 builtin : is(4.0, '/'(32.0, 8)).
+step 40 builtin : is(2.0, '**'(4.0, 0.5)).
+step 41 rule 1 [2,4] : sum([9.0], 9.0).
+step 42 rule 10 [3,5] : length([9.0], 1).
+step 43 rule 4 [22,23,21,24] : squared_error_sum([9.0], 5.0, 16.0).
+step 44 rule 1 [41,6] : sum([7.0, 9.0], 16.0).
+step 45 rule 10 [42,7] : length([7.0, 9.0], 2).
+step 46 rule 4 [25,26,43,27] : squared_error_sum([7.0, 9.0], 5.0, 20.0).
+step 47 rule 1 [44,8] : sum([5.0, 7.0, 9.0], 21.0).
+step 48 rule 10 [45,9] : length([5.0, 7.0, 9.0], 3).
+step 49 rule 4 [28,29,46,30] : squared_error_sum([5.0, 7.0, 9.0], 5.0, 20.0).
+step 50 rule 1 [47,10] : sum([5.0, 5.0, 7.0, 9.0], 26.0).
+step 51 rule 10 [48,11] : length([5.0, 5.0, 7.0, 9.0], 4).
+step 52 rule 4 [28,29,49,30] : squared_error_sum([5.0, 5.0, 7.0, 9.0], 5.0, 20.0).
+step 53 rule 1 [50,12] : sum([4.0, 5.0, 5.0, 7.0, 9.0], 30.0).
+step 54 rule 10 [51,13] : length([4.0, 5.0, 5.0, 7.0, 9.0], 5).
+step 55 rule 4 [31,32,52,33] : squared_error_sum([4.0, 5.0, 5.0, 7.0, 9.0], 5.0, 21.0).
+step 56 rule 1 [53,14] : sum([4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 34.0).
+step 57 rule 10 [54,15] : length([4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 6).
+step 58 rule 4 [31,32,55,34] : squared_error_sum([4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 5.0, 22.0).
+step 59 rule 1 [56,16] : sum([4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 38.0).
+step 60 rule 10 [57,17] : length([4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 7).
+step 61 rule 4 [31,32,58,35] : squared_error_sum([4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 5.0, 23.0).
+step 62 rule 1 [59,18] : sum([2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 40.0).
+step 63 rule 10 [60,19] : length([2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 8).
+step 64 rule 4 [36,37,61,38] : squared_error_sum([2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 5.0, 32.0).
+step 65 rule 2 [1,62,63,20] : mean(scores, 5.0).
+step 66 rule 5 [1,65,64,63,39] : population_variance(scores, 4.0).
+step 67 rule 6 [66,40] : population_stddev(scores, 2.0).
+step 68 rule 9 [67] : populationStddev(scores, 2.0).
+answer 4 [68]
 
-claim(query(4), [populationStddev(scores, 2.0)]).
+?- check(count(scores, 8)).
+true.
 
-clause(1, sample(scores, [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]), []).
-clause(2, sum([], 0.0), []).
-clause(3, sum(list([var('X')], var('Xs')), var('Total')), [sum(var('Xs'), var('Rest')), is(var('Total'), '+'(var('X'), var('Rest')))]).
-clause(4, mean(var('Name'), var('Mean')), [sample(var('Name'), var('Values')), sum(var('Values'), var('Total')), length(var('Values'), var('Count')), is(var('Mean'), '/'(var('Total'), var('Count')))]).
-clause(5, squared_error_sum([], var('_mean'), 0.0), []).
-clause(6, squared_error_sum(list([var('X')], var('Xs')), var('Mean'), var('Total')), [is(var('Delta'), '-'(var('X'), var('Mean'))), is(var('Squared'), '**'(var('Delta'), 2.0)), squared_error_sum(var('Xs'), var('Mean'), var('Rest')), is(var('Total'), '+'(var('Squared'), var('Rest')))]).
-clause(7, population_variance(var('Name'), var('Variance')), [sample(var('Name'), var('Values')), mean(var('Name'), var('Mean')), squared_error_sum(var('Values'), var('Mean'), var('Sumsquarederrors')), length(var('Values'), var('Count')), is(var('Variance'), '/'(var('Sumsquarederrors'), var('Count')))]).
-clause(8, population_stddev(var('Name'), var('Stddev')), [population_variance(var('Name'), var('Variance')), is(var('Stddev'), '**'(var('Variance'), 0.5))]).
-clause(11, populationStddev(var('Name'), var('Stddev')), [population_stddev(var('Name'), var('Stddev'))]).
-clause(12, length([], 0), []).
-clause(13, length(list([var('$anonymous1')], var('Rest')), var('Count')), [length(var('Rest'), var('Previous')), is(var('Count'), '+'(var('Previous'), 1))]).
+?- check(mean(scores, 5.0)).
+true.
 
-% step 1
-step(sample(scores, [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]), fact(1), [], []).
-% step 2
-step(sum([], 0.0), fact(2), [], []).
-% step 3
-step(is(9.0, '+'(9.0, 0.0)), builtin, [], []).
-% step 4
-step(sum([9.0], 9.0), rule(3), ['='('X', 9.0), '='('Xs', []), '='('Total', 9.0), '='('Rest', 0.0)], [sum([], 0.0), is(9.0, '+'(9.0, 0.0))]).
-% step 5
-step(is(16.0, '+'(7.0, 9.0)), builtin, [], []).
-% step 6
-step(sum([7.0, 9.0], 16.0), rule(3), ['='('X', 7.0), '='('Xs', [9.0]), '='('Total', 16.0), '='('Rest', 9.0)], [sum([9.0], 9.0), is(16.0, '+'(7.0, 9.0))]).
-% step 7
-step(is(21.0, '+'(5.0, 16.0)), builtin, [], []).
-% step 8
-step(sum([5.0, 7.0, 9.0], 21.0), rule(3), ['='('X', 5.0), '='('Xs', [7.0, 9.0]), '='('Total', 21.0), '='('Rest', 16.0)], [sum([7.0, 9.0], 16.0), is(21.0, '+'(5.0, 16.0))]).
-% step 9
-step(is(26.0, '+'(5.0, 21.0)), builtin, [], []).
-% step 10
-step(sum([5.0, 5.0, 7.0, 9.0], 26.0), rule(3), ['='('X', 5.0), '='('Xs', [5.0, 7.0, 9.0]), '='('Total', 26.0), '='('Rest', 21.0)], [sum([5.0, 7.0, 9.0], 21.0), is(26.0, '+'(5.0, 21.0))]).
-% step 11
-step(is(30.0, '+'(4.0, 26.0)), builtin, [], []).
-% step 12
-step(sum([4.0, 5.0, 5.0, 7.0, 9.0], 30.0), rule(3), ['='('X', 4.0), '='('Xs', [5.0, 5.0, 7.0, 9.0]), '='('Total', 30.0), '='('Rest', 26.0)], [sum([5.0, 5.0, 7.0, 9.0], 26.0), is(30.0, '+'(4.0, 26.0))]).
-% step 13
-step(is(34.0, '+'(4.0, 30.0)), builtin, [], []).
-% step 14
-step(sum([4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 34.0), rule(3), ['='('X', 4.0), '='('Xs', [4.0, 5.0, 5.0, 7.0, 9.0]), '='('Total', 34.0), '='('Rest', 30.0)], [sum([4.0, 5.0, 5.0, 7.0, 9.0], 30.0), is(34.0, '+'(4.0, 30.0))]).
-% step 15
-step(is(38.0, '+'(4.0, 34.0)), builtin, [], []).
-% step 16
-step(sum([4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 38.0), rule(3), ['='('X', 4.0), '='('Xs', [4.0, 4.0, 5.0, 5.0, 7.0, 9.0]), '='('Total', 38.0), '='('Rest', 34.0)], [sum([4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 34.0), is(38.0, '+'(4.0, 34.0))]).
-% step 17
-step(is(40.0, '+'(2.0, 38.0)), builtin, [], []).
-% step 18
-step(sum([2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 40.0), rule(3), ['='('X', 2.0), '='('Xs', [4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]), '='('Total', 40.0), '='('Rest', 38.0)], [sum([4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 38.0), is(40.0, '+'(2.0, 38.0))]).
-% step 19
-step(length([], 0), fact(12), [], []).
-% step 20
-step(is(1, '+'(0, 1)), builtin, [], []).
-% step 21
-step(length([9.0], 1), rule(13), ['='('$anonymous1', 9.0), '='('Rest', []), '='('Count', 1), '='('Previous', 0)], [length([], 0), is(1, '+'(0, 1))]).
-% step 22
-step(is(2, '+'(1, 1)), builtin, [], []).
-% step 23
-step(length([7.0, 9.0], 2), rule(13), ['='('$anonymous1', 7.0), '='('Rest', [9.0]), '='('Count', 2), '='('Previous', 1)], [length([9.0], 1), is(2, '+'(1, 1))]).
-% step 24
-step(is(3, '+'(2, 1)), builtin, [], []).
-% step 25
-step(length([5.0, 7.0, 9.0], 3), rule(13), ['='('$anonymous1', 5.0), '='('Rest', [7.0, 9.0]), '='('Count', 3), '='('Previous', 2)], [length([7.0, 9.0], 2), is(3, '+'(2, 1))]).
-% step 26
-step(is(4, '+'(3, 1)), builtin, [], []).
-% step 27
-step(length([5.0, 5.0, 7.0, 9.0], 4), rule(13), ['='('$anonymous1', 5.0), '='('Rest', [5.0, 7.0, 9.0]), '='('Count', 4), '='('Previous', 3)], [length([5.0, 7.0, 9.0], 3), is(4, '+'(3, 1))]).
-% step 28
-step(is(5, '+'(4, 1)), builtin, [], []).
-% step 29
-step(length([4.0, 5.0, 5.0, 7.0, 9.0], 5), rule(13), ['='('$anonymous1', 4.0), '='('Rest', [5.0, 5.0, 7.0, 9.0]), '='('Count', 5), '='('Previous', 4)], [length([5.0, 5.0, 7.0, 9.0], 4), is(5, '+'(4, 1))]).
-% step 30
-step(is(6, '+'(5, 1)), builtin, [], []).
-% step 31
-step(length([4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 6), rule(13), ['='('$anonymous1', 4.0), '='('Rest', [4.0, 5.0, 5.0, 7.0, 9.0]), '='('Count', 6), '='('Previous', 5)], [length([4.0, 5.0, 5.0, 7.0, 9.0], 5), is(6, '+'(5, 1))]).
-% step 32
-step(is(7, '+'(6, 1)), builtin, [], []).
-% step 33
-step(length([4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 7), rule(13), ['='('$anonymous1', 4.0), '='('Rest', [4.0, 4.0, 5.0, 5.0, 7.0, 9.0]), '='('Count', 7), '='('Previous', 6)], [length([4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 6), is(7, '+'(6, 1))]).
-% step 34
-step(is(8, '+'(7, 1)), builtin, [], []).
-% step 35
-step(length([2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 8), rule(13), ['='('$anonymous1', 2.0), '='('Rest', [4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]), '='('Count', 8), '='('Previous', 7)], [length([4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 7), is(8, '+'(7, 1))]).
-% step 36
-step(is(5.0, '/'(40.0, 8)), builtin, [], []).
-% step 37
-step(mean(scores, 5.0), rule(4), ['='('Name', scores), '='('Values', [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]), '='('Total', 40.0), '='('Count', 8), '='('Mean', 5.0)], [sample(scores, [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]), sum([2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 40.0), length([2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 8), is(5.0, '/'(40.0, 8))]).
-% step 38
-step(is(-3.0, '-'(2.0, 5.0)), builtin, [], []).
-% step 39
-step(is(9.0, '**'(-3.0, 2.0)), builtin, [], []).
-% step 40
-step(is(-1.0, '-'(4.0, 5.0)), builtin, [], []).
-% step 41
-step(is(1.0, '**'(-1.0, 2.0)), builtin, [], []).
-% step 42
-step(is(0.0, '-'(5.0, 5.0)), builtin, [], []).
-% step 43
-step(is(0.0, '**'(0.0, 2.0)), builtin, [], []).
-% step 44
-step(is(2.0, '-'(7.0, 5.0)), builtin, [], []).
-% step 45
-step(is(4.0, '**'(2.0, 2.0)), builtin, [], []).
-% step 46
-step(is(4.0, '-'(9.0, 5.0)), builtin, [], []).
-% step 47
-step(is(16.0, '**'(4.0, 2.0)), builtin, [], []).
-% step 48
-step(squared_error_sum([], 5.0, 0.0), fact(5), ['='('_mean', 5.0)], []).
-% step 49
-step(is(16.0, '+'(16.0, 0.0)), builtin, [], []).
-% step 50
-step(squared_error_sum([9.0], 5.0, 16.0), rule(6), ['='('X', 9.0), '='('Xs', []), '='('Mean', 5.0), '='('Total', 16.0), '='('Delta', 4.0), '='('Squared', 16.0), '='('Rest', 0.0)], [is(4.0, '-'(9.0, 5.0)), is(16.0, '**'(4.0, 2.0)), squared_error_sum([], 5.0, 0.0), is(16.0, '+'(16.0, 0.0))]).
-% step 51
-step(is(20.0, '+'(4.0, 16.0)), builtin, [], []).
-% step 52
-step(squared_error_sum([7.0, 9.0], 5.0, 20.0), rule(6), ['='('X', 7.0), '='('Xs', [9.0]), '='('Mean', 5.0), '='('Total', 20.0), '='('Delta', 2.0), '='('Squared', 4.0), '='('Rest', 16.0)], [is(2.0, '-'(7.0, 5.0)), is(4.0, '**'(2.0, 2.0)), squared_error_sum([9.0], 5.0, 16.0), is(20.0, '+'(4.0, 16.0))]).
-% step 53
-step(is(20.0, '+'(0.0, 20.0)), builtin, [], []).
-% step 54
-step(squared_error_sum([5.0, 7.0, 9.0], 5.0, 20.0), rule(6), ['='('X', 5.0), '='('Xs', [7.0, 9.0]), '='('Mean', 5.0), '='('Total', 20.0), '='('Delta', 0.0), '='('Squared', 0.0), '='('Rest', 20.0)], [is(0.0, '-'(5.0, 5.0)), is(0.0, '**'(0.0, 2.0)), squared_error_sum([7.0, 9.0], 5.0, 20.0), is(20.0, '+'(0.0, 20.0))]).
-% step 55
-step(squared_error_sum([5.0, 5.0, 7.0, 9.0], 5.0, 20.0), rule(6), ['='('X', 5.0), '='('Xs', [5.0, 7.0, 9.0]), '='('Mean', 5.0), '='('Total', 20.0), '='('Delta', 0.0), '='('Squared', 0.0), '='('Rest', 20.0)], [is(0.0, '-'(5.0, 5.0)), is(0.0, '**'(0.0, 2.0)), squared_error_sum([5.0, 7.0, 9.0], 5.0, 20.0), is(20.0, '+'(0.0, 20.0))]).
-% step 56
-step(is(21.0, '+'(1.0, 20.0)), builtin, [], []).
-% step 57
-step(squared_error_sum([4.0, 5.0, 5.0, 7.0, 9.0], 5.0, 21.0), rule(6), ['='('X', 4.0), '='('Xs', [5.0, 5.0, 7.0, 9.0]), '='('Mean', 5.0), '='('Total', 21.0), '='('Delta', -1.0), '='('Squared', 1.0), '='('Rest', 20.0)], [is(-1.0, '-'(4.0, 5.0)), is(1.0, '**'(-1.0, 2.0)), squared_error_sum([5.0, 5.0, 7.0, 9.0], 5.0, 20.0), is(21.0, '+'(1.0, 20.0))]).
-% step 58
-step(is(22.0, '+'(1.0, 21.0)), builtin, [], []).
-% step 59
-step(squared_error_sum([4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 5.0, 22.0), rule(6), ['='('X', 4.0), '='('Xs', [4.0, 5.0, 5.0, 7.0, 9.0]), '='('Mean', 5.0), '='('Total', 22.0), '='('Delta', -1.0), '='('Squared', 1.0), '='('Rest', 21.0)], [is(-1.0, '-'(4.0, 5.0)), is(1.0, '**'(-1.0, 2.0)), squared_error_sum([4.0, 5.0, 5.0, 7.0, 9.0], 5.0, 21.0), is(22.0, '+'(1.0, 21.0))]).
-% step 60
-step(is(23.0, '+'(1.0, 22.0)), builtin, [], []).
-% step 61
-step(squared_error_sum([4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 5.0, 23.0), rule(6), ['='('X', 4.0), '='('Xs', [4.0, 4.0, 5.0, 5.0, 7.0, 9.0]), '='('Mean', 5.0), '='('Total', 23.0), '='('Delta', -1.0), '='('Squared', 1.0), '='('Rest', 22.0)], [is(-1.0, '-'(4.0, 5.0)), is(1.0, '**'(-1.0, 2.0)), squared_error_sum([4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 5.0, 22.0), is(23.0, '+'(1.0, 22.0))]).
-% step 62
-step(is(32.0, '+'(9.0, 23.0)), builtin, [], []).
-% step 63
-step(squared_error_sum([2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 5.0, 32.0), rule(6), ['='('X', 2.0), '='('Xs', [4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]), '='('Mean', 5.0), '='('Total', 32.0), '='('Delta', -3.0), '='('Squared', 9.0), '='('Rest', 23.0)], [is(-3.0, '-'(2.0, 5.0)), is(9.0, '**'(-3.0, 2.0)), squared_error_sum([4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 5.0, 23.0), is(32.0, '+'(9.0, 23.0))]).
-% step 64
-step(is(4.0, '/'(32.0, 8)), builtin, [], []).
-% step 65
-step(population_variance(scores, 4.0), rule(7), ['='('Name', scores), '='('Values', [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]), '='('Mean', 5.0), '='('Sumsquarederrors', 32.0), '='('Count', 8), '='('Variance', 4.0)], [sample(scores, [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]), mean(scores, 5.0), squared_error_sum([2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 5.0, 32.0), length([2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0], 8), is(4.0, '/'(32.0, 8))]).
-% step 66
-step(is(2.0, '**'(4.0, 0.5)), builtin, [], []).
-% step 67
-step(population_stddev(scores, 2.0), rule(8), ['='('Name', scores), '='('Variance', 4.0), '='('Stddev', 2.0)], [population_variance(scores, 4.0), is(2.0, '**'(4.0, 0.5))]).
-% step 68
-step(populationStddev(scores, 2.0), rule(11), ['='('Name', scores), '='('Stddev', 2.0)], [population_stddev(scores, 2.0)]).
+?- check(populationVariance(scores, 4.0)).
+true.
 
-% Check
-check passed: count(scores, 8).
+?- check(populationStddev(scores, 2.0)).
+true.
 
-check passed: mean(scores, 5.0).
+?- check((sample(scores, Values), sum(Values, 40.0))).
+true.
 
-check passed: populationVariance(scores, 4.0).
+?- check((sample(scores, Values), squared_error_sum(Values, 5.0, 32.0))).
+true.
 
-check passed: populationStddev(scores, 2.0).
+?- check(sum([], 0.0)).
+true.
 
-check passed: sample(scores, Values), sum(Values, 40.0).
-
-check passed: sample(scores, Values), squared_error_sum(Values, 5.0, 32.0).
-
-check passed: sum([], 0.0).
-
-check passed: length([], 0).
-
-condition('C1', resolution, ok, 32).
-condition('C2', well_founded, ok, 68).
-condition('C3', justification, ok, 68).
-condition('C4', coverage, ok, 77).
-condition('C5', re_decision, ok, 36).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 69).
-steps(68).
-verified(32).
-recomputed(36).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check(length([], 0)).
+true.

@@ -1,91 +1,64 @@
-% Answer
 ?- needs_maintenance(Turbine, Reason).
-Turbine = t456, Reason = problem_based_maintenance.
-Turbine = t789, Reason = problem_based_maintenance.
 Turbine = t456, Reason = time_based_maintenance.
-Turbine = t456, Reason = performance_based_maintenance.
-Turbine = t101, Reason = performance_based_maintenance.
 Turbine = t456, Reason = age_based_maintenance.
+Turbine = t456, Reason = problem_based_maintenance.
+Turbine = t456, Reason = performance_based_maintenance.
+Turbine = t789, Reason = problem_based_maintenance.
+Turbine = t101, Reason = performance_based_maintenance.
+
+?- why.
+wheye-proof 1
+% Rule 1: needs_maintenance(Turbine, time_based_maintenance) :- turbine(Turbine, _, LastMaint, _, _), LastMaint >= 12.
+% Rule 2: needs_maintenance(Turbine, age_based_maintenance) :- turbine(Turbine, Age, LastMaint, _, _), Age > 10, LastMaint >= 6.
+% Rule 3: needs_maintenance(Turbine, problem_based_maintenance) :- turbine(Turbine, _, _, [_ | _], _).
+% Rule 4: needs_maintenance(Turbine, performance_based_maintenance) :- turbine(Turbine, _, _, _, Efficiency), Efficiency < 80.
+step 1 source 2 : turbine(t456, 12, 15, [vibration], 78).
+step 2 source 3 : turbine(t789, 8, 7, [noise], 85).
+step 3 source 4 : turbine(t101, 15, 5, [], 65).
+step 4 builtin : '>='(15, 12).
+step 5 rule 1 [1,4] : needs_maintenance(t456, time_based_maintenance).
+step 6 builtin : '>'(12, 10).
+step 7 builtin : '>='(15, 6).
+step 8 rule 2 [1,6,7] : needs_maintenance(t456, age_based_maintenance).
+step 9 rule 3 [1] : needs_maintenance(t456, problem_based_maintenance).
+step 10 builtin : '<'(78, 80).
+step 11 rule 4 [1,10] : needs_maintenance(t456, performance_based_maintenance).
+step 12 rule 3 [2] : needs_maintenance(t789, problem_based_maintenance).
+step 13 builtin : '<'(65, 80).
+step 14 rule 4 [3,13] : needs_maintenance(t101, performance_based_maintenance).
+answer 1 [5]
+answer 1 [8]
+answer 1 [9]
+answer 1 [11]
+answer 1 [12]
+answer 1 [14]
 
 ?- needs_maintenance(t123, Reason).
 false.
 
-% Reason
-certificate(eyeon, 1).
+?- check(needs_maintenance(t456, time_based_maintenance)).
+true.
 
-claim(query(1), [needs_maintenance(t456, problem_based_maintenance)]).
-claim(query(1), [needs_maintenance(t789, problem_based_maintenance)]).
-claim(query(1), [needs_maintenance(t456, time_based_maintenance)]).
-claim(query(1), [needs_maintenance(t456, performance_based_maintenance)]).
-claim(query(1), [needs_maintenance(t101, performance_based_maintenance)]).
-claim(query(1), [needs_maintenance(t456, age_based_maintenance)]).
+?- check(needs_maintenance(t456, age_based_maintenance)).
+true.
 
-clause(2, turbine(t456, 12, 15, [vibration], 78), []).
-clause(3, turbine(t789, 8, 7, [noise], 85), []).
-clause(4, turbine(t101, 15, 5, [], 65), []).
-clause(5, needs_maintenance(var('Turbine'), time_based_maintenance), [turbine(var('Turbine'), var('$anonymous1'), var('LastMaint'), var('$anonymous2'), var('$anonymous3')), '>='(var('LastMaint'), 12)]).
-clause(6, needs_maintenance(var('Turbine'), age_based_maintenance), [turbine(var('Turbine'), var('Age'), var('LastMaint'), var('$anonymous4'), var('$anonymous5')), '>'(var('Age'), 10), '>='(var('LastMaint'), 6)]).
-clause(7, needs_maintenance(var('Turbine'), problem_based_maintenance), [turbine(var('Turbine'), var('$anonymous6'), var('$anonymous7'), list([var('$anonymous8')], var('$anonymous9')), var('$anonymous10'))]).
-clause(8, needs_maintenance(var('Turbine'), performance_based_maintenance), [turbine(var('Turbine'), var('$anonymous11'), var('$anonymous12'), var('$anonymous13'), var('Efficiency')), '<'(var('Efficiency'), 80)]).
+?- check(needs_maintenance(t456, problem_based_maintenance)).
+true.
 
-% step 1
-step(turbine(t456, 12, 15, [vibration], 78), fact(2), [], []).
-% step 2
-step(needs_maintenance(t456, problem_based_maintenance), rule(7), ['='('Turbine', t456), '='('$anonymous6', 12), '='('$anonymous7', 15), '='('$anonymous8', vibration), '='('$anonymous9', []), '='('$anonymous10', 78)], [turbine(t456, 12, 15, [vibration], 78)]).
-% step 3
-step(turbine(t789, 8, 7, [noise], 85), fact(3), [], []).
-% step 4
-step(needs_maintenance(t789, problem_based_maintenance), rule(7), ['='('Turbine', t789), '='('$anonymous6', 8), '='('$anonymous7', 7), '='('$anonymous8', noise), '='('$anonymous9', []), '='('$anonymous10', 85)], [turbine(t789, 8, 7, [noise], 85)]).
-% step 5
-step('>='(15, 12), builtin, [], []).
-% step 6
-step(needs_maintenance(t456, time_based_maintenance), rule(5), ['='('Turbine', t456), '='('$anonymous1', 12), '='('LastMaint', 15), '='('$anonymous2', [vibration]), '='('$anonymous3', 78)], [turbine(t456, 12, 15, [vibration], 78), '>='(15, 12)]).
-% step 7
-step('<'(78, 80), builtin, [], []).
-% step 8
-step(needs_maintenance(t456, performance_based_maintenance), rule(8), ['='('Turbine', t456), '='('$anonymous11', 12), '='('$anonymous12', 15), '='('$anonymous13', [vibration]), '='('Efficiency', 78)], [turbine(t456, 12, 15, [vibration], 78), '<'(78, 80)]).
-% step 9
-step(turbine(t101, 15, 5, [], 65), fact(4), [], []).
-% step 10
-step('<'(65, 80), builtin, [], []).
-% step 11
-step(needs_maintenance(t101, performance_based_maintenance), rule(8), ['='('Turbine', t101), '='('$anonymous11', 15), '='('$anonymous12', 5), '='('$anonymous13', []), '='('Efficiency', 65)], [turbine(t101, 15, 5, [], 65), '<'(65, 80)]).
-% step 12
-step('>'(12, 10), builtin, [], []).
-% step 13
-step('>='(15, 6), builtin, [], []).
-% step 14
-step(needs_maintenance(t456, age_based_maintenance), rule(6), ['='('Turbine', t456), '='('Age', 12), '='('LastMaint', 15), '='('$anonymous4', [vibration]), '='('$anonymous5', 78)], [turbine(t456, 12, 15, [vibration], 78), '>'(12, 10), '>='(15, 6)]).
+?- check(needs_maintenance(t456, performance_based_maintenance)).
+true.
 
-% Check
-check passed: needs_maintenance(t456, time_based_maintenance).
+?- check(needs_maintenance(t789, problem_based_maintenance)).
+true.
 
-check passed: needs_maintenance(t456, age_based_maintenance).
+?- check(needs_maintenance(t101, performance_based_maintenance)).
+true.
 
-check passed: needs_maintenance(t456, problem_based_maintenance).
+?- check(aggregate_all(count, (needs_maintenance(Turbine, Reason)), 6)).
+true.
 
-check passed: needs_maintenance(t456, performance_based_maintenance).
+?- check(aggregate_all(count, (needs_maintenance(t123, Reason)), 0)).
+true.
 
-check passed: needs_maintenance(t789, problem_based_maintenance).
-
-check passed: needs_maintenance(t101, performance_based_maintenance).
-
-check passed: aggregate_all(count, (needs_maintenance(Turbine, Reason)), 6).
-
-check passed: aggregate_all(count, (needs_maintenance(t123, Reason)), 0).
-
-check passed: \+ (needs_maintenance(t101, age_based_maintenance)).
-
-condition('C1', resolution, ok, 9).
-condition('C2', well_founded, ok, 14).
-condition('C3', justification, ok, 14).
-condition('C4', coverage, ok, 17).
-condition('C5', re_decision, ok, 5).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 20).
-steps(14).
-verified(9).
-recomputed(5).
-trusted(0).
-claims(6).
-verdict(checked).
+?- check(\+ (needs_maintenance(t101, age_based_maintenance))).
+true.

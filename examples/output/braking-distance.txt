@@ -1,9 +1,56 @@
-% Answer
 ?- gap_status(Name, Status).
 Name = city_dry, Status = sufficient_in_model.
 Name = highway_short_gap, Status = insufficient_in_model.
 Name = city_wet, Status = sufficient_in_model.
 Name = city_ice, Status = insufficient_in_model.
+
+?- why.
+wheye-proof 1
+% Rule 1: distance(Name, Reaction, Braking, Total) :- scenario(Name, Speed, Mu, _), gravity(G), reaction_time(T), Speed >= 0, Mu > 0, Mu =< 1, G > 0, T >= 0, Reaction is '*'(Speed, T), Braking is '/'('*'(Speed, Speed), '*'('*'(2, Mu), G)), Total is '+'(Reaction, Braking).
+% Rule 2: gap_status(Name, sufficient_in_model) :- distance(Name, _, _, Total), scenario(Name, _, _, Available), Total =< Available.
+% Rule 3: gap_status(Name, insufficient_in_model) :- distance(Name, _, _, Total), scenario(Name, _, _, Available), Total > Available.
+step 1 source 1 : gravity(9.8).
+step 2 source 2 : reaction_time(1.0).
+step 3 source 3 : scenario(city_dry, 13.9, 0.8, 40.0).
+step 4 source 4 : scenario(highway_short_gap, 27.8, 0.8, 60.0).
+step 5 source 5 : scenario(city_wet, 13.9, 0.4, 40.0).
+step 6 source 6 : scenario(city_ice, 13.9, 0.2, 30.0).
+step 7 builtin : '>='(13.9, 0).
+step 8 builtin : '>'(0.8, 0).
+step 9 builtin : '=<'(0.8, 1).
+step 10 builtin : '>'(9.8, 0).
+step 11 builtin : '>='(1.0, 0).
+step 12 builtin : is(13.9, '*'(13.9, 1.0)).
+step 13 builtin : is(12.322066326530612, '/'('*'(13.9, 13.9), '*'('*'(2, 0.8), 9.8))).
+step 14 builtin : is(26.222066326530612, '+'(13.9, 12.322066326530612)).
+step 15 rule 1 [3,1,2,7,8,9,10,11,12,13,14] : distance(city_dry, 13.9, 12.322066326530612, 26.222066326530612).
+step 16 builtin : '>='(27.8, 0).
+step 17 builtin : is(27.8, '*'(27.8, 1.0)).
+step 18 builtin : is(49.28826530612245, '/'('*'(27.8, 27.8), '*'('*'(2, 0.8), 9.8))).
+step 19 builtin : is(77.08826530612245, '+'(27.8, 49.28826530612245)).
+step 20 rule 1 [4,1,2,16,8,9,10,11,17,18,19] : distance(highway_short_gap, 27.8, 49.28826530612245, 77.08826530612245).
+step 21 builtin : '>'(0.4, 0).
+step 22 builtin : '=<'(0.4, 1).
+step 23 builtin : is(24.644132653061224, '/'('*'(13.9, 13.9), '*'('*'(2, 0.4), 9.8))).
+step 24 builtin : is(38.544132653061226, '+'(13.9, 24.644132653061224)).
+step 25 rule 1 [5,1,2,7,21,22,10,11,12,23,24] : distance(city_wet, 13.9, 24.644132653061224, 38.544132653061226).
+step 26 builtin : '>'(0.2, 0).
+step 27 builtin : '=<'(0.2, 1).
+step 28 builtin : is(49.28826530612245, '/'('*'(13.9, 13.9), '*'('*'(2, 0.2), 9.8))).
+step 29 builtin : is(63.188265306122446, '+'(13.9, 49.28826530612245)).
+step 30 rule 1 [6,1,2,7,26,27,10,11,12,28,29] : distance(city_ice, 13.9, 49.28826530612245, 63.188265306122446).
+step 31 builtin : '=<'(26.222066326530612, 40.0).
+step 32 rule 2 [15,3,31] : gap_status(city_dry, sufficient_in_model).
+step 33 builtin : '>'(77.08826530612245, 60.0).
+step 34 rule 3 [20,4,33] : gap_status(highway_short_gap, insufficient_in_model).
+step 35 builtin : '=<'(38.544132653061226, 40.0).
+step 36 rule 2 [25,5,35] : gap_status(city_wet, sufficient_in_model).
+step 37 builtin : '>'(63.188265306122446, 30.0).
+step 38 rule 3 [30,6,37] : gap_status(city_ice, insufficient_in_model).
+answer 1 [32]
+answer 1 [34]
+answer 1 [36]
+answer 1 [38]
 
 ?- stopping_distance_m(Name, Distance).
 Name = city_dry, Distance = 26.222066.
@@ -11,124 +58,20 @@ Name = highway_short_gap, Distance = 77.088265.
 Name = city_wet, Distance = 38.544133.
 Name = city_ice, Distance = 63.188265.
 
-% Reason
-certificate(eyeon, 1).
+?- check(gap_status(city_dry, sufficient_in_model)).
+true.
 
-claim(query(1), [gap_status(city_dry, sufficient_in_model)]).
-claim(query(1), [gap_status(highway_short_gap, insufficient_in_model)]).
-claim(query(1), [gap_status(city_wet, sufficient_in_model)]).
-claim(query(1), [gap_status(city_ice, insufficient_in_model)]).
+?- check(gap_status(city_wet, sufficient_in_model)).
+true.
 
-clause(1, gravity(9.8), []).
-clause(2, reaction_time(1.0), []).
-clause(3, scenario(city_dry, 13.9, 0.8, 40.0), []).
-clause(4, scenario(highway_short_gap, 27.8, 0.8, 60.0), []).
-clause(5, scenario(city_wet, 13.9, 0.4, 40.0), []).
-clause(6, scenario(city_ice, 13.9, 0.2, 30.0), []).
-clause(7, distance(var('Name'), var('Reaction'), var('Braking'), var('Total')), [scenario(var('Name'), var('Speed'), var('Mu'), var('$anonymous1')), gravity(var('G')), reaction_time(var('T')), '>='(var('Speed'), 0), '>'(var('Mu'), 0), '=<'(var('Mu'), 1), '>'(var('G'), 0), '>='(var('T'), 0), is(var('Reaction'), '*'(var('Speed'), var('T'))), is(var('Braking'), '/'('*'(var('Speed'), var('Speed')), '*'('*'(2, var('Mu')), var('G')))), is(var('Total'), '+'(var('Reaction'), var('Braking')))]).
-clause(8, gap_status(var('Name'), sufficient_in_model), [distance(var('Name'), var('$anonymous2'), var('$anonymous3'), var('Total')), scenario(var('Name'), var('$anonymous4'), var('$anonymous5'), var('Available')), '=<'(var('Total'), var('Available'))]).
-clause(9, gap_status(var('Name'), insufficient_in_model), [distance(var('Name'), var('$anonymous6'), var('$anonymous7'), var('Total')), scenario(var('Name'), var('$anonymous8'), var('$anonymous9'), var('Available')), '>'(var('Total'), var('Available'))]).
+?- check(gap_status(highway_short_gap, insufficient_in_model)).
+true.
 
-% step 1
-step(scenario(city_dry, 13.9, 0.8, 40.0), fact(3), [], []).
-% step 2
-step(gravity(9.8), fact(1), [], []).
-% step 3
-step(reaction_time(1.0), fact(2), [], []).
-% step 4
-step('>='(13.9, 0), builtin, [], []).
-% step 5
-step('>'(0.8, 0), builtin, [], []).
-% step 6
-step('=<'(0.8, 1), builtin, [], []).
-% step 7
-step('>'(9.8, 0), builtin, [], []).
-% step 8
-step('>='(1.0, 0), builtin, [], []).
-% step 9
-step(is(13.9, '*'(13.9, 1.0)), builtin, [], []).
-% step 10
-step(is(12.322066326530612, '/'('*'(13.9, 13.9), '*'('*'(2, 0.8), 9.8))), builtin, [], []).
-% step 11
-step(is(26.222066326530612, '+'(13.9, 12.322066326530612)), builtin, [], []).
-% step 12
-step(distance(city_dry, 13.9, 12.322066326530612, 26.222066326530612), rule(7), ['='('Name', city_dry), '='('Speed', 13.9), '='('Mu', 0.8), '='('$anonymous1', 40.0), '='('G', 9.8), '='('T', 1.0), '='('Reaction', 13.9), '='('Braking', 12.322066326530612), '='('Total', 26.222066326530612)], [scenario(city_dry, 13.9, 0.8, 40.0), gravity(9.8), reaction_time(1.0), '>='(13.9, 0), '>'(0.8, 0), '=<'(0.8, 1), '>'(9.8, 0), '>='(1.0, 0), is(13.9, '*'(13.9, 1.0)), is(12.322066326530612, '/'('*'(13.9, 13.9), '*'('*'(2, 0.8), 9.8))), is(26.222066326530612, '+'(13.9, 12.322066326530612))]).
-% step 13
-step('=<'(26.222066326530612, 40.0), builtin, [], []).
-% step 14
-step(gap_status(city_dry, sufficient_in_model), rule(8), ['='('Name', city_dry), '='('$anonymous2', 13.9), '='('$anonymous3', 12.322066326530612), '='('Total', 26.222066326530612), '='('$anonymous4', 13.9), '='('$anonymous5', 0.8), '='('Available', 40.0)], [distance(city_dry, 13.9, 12.322066326530612, 26.222066326530612), scenario(city_dry, 13.9, 0.8, 40.0), '=<'(26.222066326530612, 40.0)]).
-% step 15
-step(scenario(highway_short_gap, 27.8, 0.8, 60.0), fact(4), [], []).
-% step 16
-step('>='(27.8, 0), builtin, [], []).
-% step 17
-step(is(27.8, '*'(27.8, 1.0)), builtin, [], []).
-% step 18
-step(is(49.28826530612245, '/'('*'(27.8, 27.8), '*'('*'(2, 0.8), 9.8))), builtin, [], []).
-% step 19
-step(is(77.08826530612245, '+'(27.8, 49.28826530612245)), builtin, [], []).
-% step 20
-step(distance(highway_short_gap, 27.8, 49.28826530612245, 77.08826530612245), rule(7), ['='('Name', highway_short_gap), '='('Speed', 27.8), '='('Mu', 0.8), '='('$anonymous1', 60.0), '='('G', 9.8), '='('T', 1.0), '='('Reaction', 27.8), '='('Braking', 49.28826530612245), '='('Total', 77.08826530612245)], [scenario(highway_short_gap, 27.8, 0.8, 60.0), gravity(9.8), reaction_time(1.0), '>='(27.8, 0), '>'(0.8, 0), '=<'(0.8, 1), '>'(9.8, 0), '>='(1.0, 0), is(27.8, '*'(27.8, 1.0)), is(49.28826530612245, '/'('*'(27.8, 27.8), '*'('*'(2, 0.8), 9.8))), is(77.08826530612245, '+'(27.8, 49.28826530612245))]).
-% step 21
-step('>'(77.08826530612245, 60.0), builtin, [], []).
-% step 22
-step(gap_status(highway_short_gap, insufficient_in_model), rule(9), ['='('Name', highway_short_gap), '='('$anonymous6', 27.8), '='('$anonymous7', 49.28826530612245), '='('Total', 77.08826530612245), '='('$anonymous8', 27.8), '='('$anonymous9', 0.8), '='('Available', 60.0)], [distance(highway_short_gap, 27.8, 49.28826530612245, 77.08826530612245), scenario(highway_short_gap, 27.8, 0.8, 60.0), '>'(77.08826530612245, 60.0)]).
-% step 23
-step(scenario(city_wet, 13.9, 0.4, 40.0), fact(5), [], []).
-% step 24
-step('>'(0.4, 0), builtin, [], []).
-% step 25
-step('=<'(0.4, 1), builtin, [], []).
-% step 26
-step(is(24.644132653061224, '/'('*'(13.9, 13.9), '*'('*'(2, 0.4), 9.8))), builtin, [], []).
-% step 27
-step(is(38.544132653061226, '+'(13.9, 24.644132653061224)), builtin, [], []).
-% step 28
-step(distance(city_wet, 13.9, 24.644132653061224, 38.544132653061226), rule(7), ['='('Name', city_wet), '='('Speed', 13.9), '='('Mu', 0.4), '='('$anonymous1', 40.0), '='('G', 9.8), '='('T', 1.0), '='('Reaction', 13.9), '='('Braking', 24.644132653061224), '='('Total', 38.544132653061226)], [scenario(city_wet, 13.9, 0.4, 40.0), gravity(9.8), reaction_time(1.0), '>='(13.9, 0), '>'(0.4, 0), '=<'(0.4, 1), '>'(9.8, 0), '>='(1.0, 0), is(13.9, '*'(13.9, 1.0)), is(24.644132653061224, '/'('*'(13.9, 13.9), '*'('*'(2, 0.4), 9.8))), is(38.544132653061226, '+'(13.9, 24.644132653061224))]).
-% step 29
-step('=<'(38.544132653061226, 40.0), builtin, [], []).
-% step 30
-step(gap_status(city_wet, sufficient_in_model), rule(8), ['='('Name', city_wet), '='('$anonymous2', 13.9), '='('$anonymous3', 24.644132653061224), '='('Total', 38.544132653061226), '='('$anonymous4', 13.9), '='('$anonymous5', 0.4), '='('Available', 40.0)], [distance(city_wet, 13.9, 24.644132653061224, 38.544132653061226), scenario(city_wet, 13.9, 0.4, 40.0), '=<'(38.544132653061226, 40.0)]).
-% step 31
-step(scenario(city_ice, 13.9, 0.2, 30.0), fact(6), [], []).
-% step 32
-step('>'(0.2, 0), builtin, [], []).
-% step 33
-step('=<'(0.2, 1), builtin, [], []).
-% step 34
-step(is(49.28826530612245, '/'('*'(13.9, 13.9), '*'('*'(2, 0.2), 9.8))), builtin, [], []).
-% step 35
-step(is(63.188265306122446, '+'(13.9, 49.28826530612245)), builtin, [], []).
-% step 36
-step(distance(city_ice, 13.9, 49.28826530612245, 63.188265306122446), rule(7), ['='('Name', city_ice), '='('Speed', 13.9), '='('Mu', 0.2), '='('$anonymous1', 30.0), '='('G', 9.8), '='('T', 1.0), '='('Reaction', 13.9), '='('Braking', 49.28826530612245), '='('Total', 63.188265306122446)], [scenario(city_ice, 13.9, 0.2, 30.0), gravity(9.8), reaction_time(1.0), '>='(13.9, 0), '>'(0.2, 0), '=<'(0.2, 1), '>'(9.8, 0), '>='(1.0, 0), is(13.9, '*'(13.9, 1.0)), is(49.28826530612245, '/'('*'(13.9, 13.9), '*'('*'(2, 0.2), 9.8))), is(63.188265306122446, '+'(13.9, 49.28826530612245))]).
-% step 37
-step('>'(63.188265306122446, 30.0), builtin, [], []).
-% step 38
-step(gap_status(city_ice, insufficient_in_model), rule(9), ['='('Name', city_ice), '='('$anonymous6', 13.9), '='('$anonymous7', 49.28826530612245), '='('Total', 63.188265306122446), '='('$anonymous8', 13.9), '='('$anonymous9', 0.2), '='('Available', 30.0)], [distance(city_ice, 13.9, 49.28826530612245, 63.188265306122446), scenario(city_ice, 13.9, 0.2, 30.0), '>'(63.188265306122446, 30.0)]).
+?- check(gap_status(city_ice, insufficient_in_model)).
+true.
 
-% Check
-check passed: gap_status(city_dry, sufficient_in_model).
+?- check((distance(city_dry, _, _, Dry), distance(city_wet, _, _, Wet), distance(city_ice, _, _, Ice), Dry < Wet, Wet < Ice)).
+true.
 
-check passed: gap_status(city_wet, sufficient_in_model).
-
-check passed: gap_status(highway_short_gap, insufficient_in_model).
-
-check passed: gap_status(city_ice, insufficient_in_model).
-
-check passed: distance(city_dry, _, _, Dry), distance(city_wet, _, _, Wet), distance(city_ice, _, _, Ice), Dry < Wet, Wet < Ice.
-
-check passed: distance(city_dry, R, B, D), abs(((D - R) - B)) < 1e-12.
-
-condition('C1', resolution, ok, 14).
-condition('C2', well_founded, ok, 38).
-condition('C3', justification, ok, 38).
-condition('C4', coverage, ok, 60).
-condition('C5', re_decision, ok, 24).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 42).
-steps(38).
-verified(14).
-recomputed(24).
-trusted(0).
-claims(4).
-verdict(checked).
+?- check((distance(city_dry, R, B, D), abs('-'('-'(D, R), B)) < 1e-12)).
+true.

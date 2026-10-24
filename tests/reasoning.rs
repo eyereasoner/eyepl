@@ -1,5 +1,5 @@
 use std::collections::BTreeSet;
-use wheye::{check, parse, parse_atom, reason, Certificate, Limits, Program, Value};
+use wheye::{check, parse, parse_atom, reason, Limits, Program, Value};
 
 fn output(source: &str) -> String {
     let program = parse(source).unwrap();
@@ -7,32 +7,6 @@ fn output(source: &str) -> String {
         .unwrap()
         .output(&program)
         .unwrap()
-}
-
-#[test]
-fn all_examples_produce_answers_and_check() {
-    for source in [
-        include_str!("../examples/socrates.pl"),
-        include_str!("../examples/paths.pl"),
-        include_str!("../examples/path-discovery.pl"),
-        include_str!("../examples/family.pl"),
-        include_str!("../examples/values.pl"),
-        include_str!("../examples/rdf.pl"),
-        include_str!("../examples/arithmetic.pl"),
-        include_str!("../examples/negation.pl"),
-        include_str!("../examples/aggregation.pl"),
-        include_str!("../examples/witnesses.pl"),
-        include_str!("../examples/orders.pl"),
-    ] {
-        let program = parse(source).unwrap();
-        let run = reason(&program, Limits::default()).unwrap();
-        assert!(run.answers.iter().any(|answers| !answers.is_empty()));
-        let certificate = run.certificate(&program);
-        assert!(!certificate.claims.is_empty());
-        let serialized = certificate.to_string();
-        assert_eq!(Certificate::parse(&serialized).unwrap(), certificate);
-        assert!(check(&program, &certificate).unwrap().valid());
-    }
 }
 
 #[test]

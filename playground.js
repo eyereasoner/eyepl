@@ -1,6 +1,8 @@
 const $ = id => document.getElementById(id);
 const examples = new Set(['abstract-interpretation', 'access-control-policy', 'ackermann', 'age', 'aggregation', 'animals', 'arithmetic', 'battery-dispatch', 'bayes-diagnosis', 'beam-deflection', 'binomial-vandermonde', 'braking-distance', 'buck-converter-design', 'collatz', 'complex', 'control-system', 'critical-path-schedule', 'data-quality-audit', 'deep-taxonomy-10', 'deep-taxonomy-100', 'deep-taxonomy-1000', 'deep-taxonomy-10000', 'deep-taxonomy-100000', 'delfour', 'dijkstra', 'dog-license', 'easter', 'electrical-rc-filter', 'explainable-ev-depot-configuration', 'expression-eval', 'family', 'family-cousins', 'fft8-numeric', 'fibonacci', 'field-nitrogen-balance', 'flute-puzzle', 'french-cities', 'friends', 'good-cobbler', 'gps', 'gray-code-counter', 'hamming-code', 'hanoi', 'interval-relations', 'inventory', 'job-shop-scheduling', 'knapsack-optimization', 'lagrange-cosets', 'least-squares-regression', 'list-collection', 'lists', 'matrix-multiplication', 'modular-exponentiation', 'negation', 'newton-raphson', 'observability-log-correlation', 'orbital-transfer-design', 'orders', 'padovan', 'paraconsistent-animals', 'path-discovery', 'paths', 'peano', 'peasant', 'pell-equation', 'permissions', 'policy-risk', 'polynomial', 'queens', 'radioactive-decay', 'rdf', 'research-portal', 'sbom-vulnerability-response', 'schema-inference', 'service-outage-recovery', 'shortest-path', 'sieve', 'socrates', 'state-transitions', 'statistics-summary', 'symbolic-derivative', 'term-structure', 'text-processing', 'turing', 'type-inference', 'unification', 'values', 'vector-similarity', 'weighted-interval-scheduling', 'wind-turbine', 'witnesses']);
 const storageKey = 'wheye.playground.v1';
+const gistTokenKey = 'wheye.playground.github.gistToken.v1';
+const gistFile = 'wheye-playground-state.json';
 let worker = null;
 let ready = null;
 let sequence = 0;
@@ -10,6 +12,8 @@ let saveTimer;
 let cancelReady = null;
 let runningState = null;
 let exampleIndex = null;
+let sharing = false;
+let runStarted = 0;
 
 async function identifyExample(source) {
   if (!globalThis.crypto?.subtle) return null;
@@ -50,6 +54,20 @@ function working(value) {
   busy = value;
   $('run').disabled = value;
   $('stop').disabled = !value;
+  shareButtons();
+}
+function shareButtons() {
+  $('share').disabled = $('create-gist-share').disabled = busy || sharing;
+}
+function shareStatus(message, error = false) {
+  $('share-status').hidden = false;
+  $('share-status').textContent = message;
+  $('share-status').classList.toggle('error', error);
+}
+function finished(ok) {
+  const elapsed = ((performance.now() - runStarted) / 1000).toFixed(2);
+  const edited = JSON.stringify(snapshot()) === runningState ? '' : ' · Source edited; run again to use your changes.';
+  status(`${ok ? 'Done' : 'Failed'} · exit ${ok ? 0 : 1} · ${elapsed} s${edited}`, !ok);
 }
 function snapshot() {
   return { source: $('source').value };
@@ -65,6 +83,10 @@ function restore(state) {
   $('source').value = state.source;
   $('example').value = '';
   return true;
+}
+function clearShare() {
+  $('share-box').hidden = true;
+  $('share-status').hidden = true;
 }
 function ensureWorker() {
   if (ready) return ready;
@@ -85,10 +107,10 @@ function ensureWorker() {
         working(false);
         if (data.kind === 'result') {
           $('output').textContent = data.output || 'No new facts were derived.';
-          status(JSON.stringify(snapshot()) === runningState ? 'Complete.' : 'Complete for the program at Run. Run again to use your edits.');
+          finished(true);
         } else {
           $('output').textContent = data.message;
-          status('The program could not complete.', true);
+          finished(false);
         }
       }
     };
@@ -97,7 +119,7 @@ function ensureWorker() {
       const error = new Error(event.message || 'The reasoning worker could not start. Serve this page over HTTP.');
       reject(error);
       current.terminate(); worker = null; ready = null;
-      if (busy) { working(false); $('output').textContent = error.message; status('Worker error.', true); }
+      if (busy) { working(false); $('output').textContent = error.message; finished(false); }
     };
     current.postMessage({ kind: 'init' });
   });
@@ -116,6 +138,7 @@ $('run').addEventListener('click', async () => {
   const id = ++sequence;
   const state = snapshot();
   runningState = JSON.stringify(state);
+  runStarted = performance.now();
   working(true); status('Running…');
   $('output').textContent = 'Following the rules…';
   try {
@@ -123,17 +146,18 @@ $('run').addEventListener('click', async () => {
     if (id === sequence) current.postMessage({ kind: 'run', id, ...state });
   } catch (error) {
     if (id !== sequence) return;
-    working(false); $('output').textContent = error.message; status('Unable to run.', true);
+    working(false); $('output').textContent = error.message; finished(false);
   }
 });
 $('stop').addEventListener('click', stop);
-$('source').addEventListener('input', () => { $('example').value = ''; save(); });
+$('source').addEventListener('input', () => { $('example').value = ''; clearShare(); save(); });
 $('source').addEventListener('keydown', event => {
   if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') { event.preventDefault(); if (!busy) $('run').click(); }
 });
 async function loadExample(name) {
   if (!examples.has(name)) return;
   if (busy) stop();
+  clearShare();
   $('source').disabled = true; $('example').disabled = true; $('run').disabled = true;
   try {
     const response = await fetch(new URL(`./examples/${name}.pl`, import.meta.url), { cache: 'no-cache' });
@@ -154,9 +178,57 @@ $('copy').addEventListener('click', async () => {
   try { await navigator.clipboard.writeText($('output').textContent); status('Result copied.'); }
   catch { status('Select the result text to copy it.'); }
 });
-$('share').addEventListener('click', async () => {
-  const state = snapshot();
+function shareBaseUrl() {
   const url = new URL(location.href);
+  url.search = '';
+  url.hash = '';
+  return url;
+}
+function gistSourceUrl(raw) {
+  const url = new URL(raw);
+  if (url.protocol !== 'https:' || url.hostname !== 'gist.githubusercontent.com' || url.username || url.password || url.port) {
+    throw new Error('Use a raw GitHub Gist URL for shared state.');
+  }
+  return url;
+}
+async function gistRequest(url, options = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20000);
+  try {
+    return await fetch(url, { credentials: 'omit', cache: 'no-store', referrerPolicy: 'no-referrer', ...options, signal: controller.signal })
+      .then(async response => ({ response, payload: await response.json() }));
+  } catch (error) {
+    if (error.name === 'AbortError') throw new Error('GitHub Gist request timed out.');
+    throw error;
+  } finally { clearTimeout(timeout); }
+}
+async function createGistUrl(state, token) {
+  const { response, payload } = await gistRequest('https://api.github.com/gists', {
+    method: 'POST',
+    headers: { Accept: 'application/vnd.github+json', 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ description: 'Wheye playground shared program', public: false,
+      files: { [gistFile]: { content: JSON.stringify(state, null, 2) + '\n' } } }),
+  });
+  if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      try { sessionStorage.removeItem(gistTokenKey); } catch { /* Storage can be unavailable. */ }
+    }
+    throw new Error(`GitHub Gist HTTP ${response.status}: ${payload?.message || 'Could not create the Gist.'}`);
+  }
+  const raw = payload?.files?.[gistFile]?.raw_url;
+  if (typeof raw !== 'string') throw new Error('GitHub did not return the Gist state URL.');
+  const url = shareBaseUrl();
+  url.searchParams.set('stateurl', gistSourceUrl(raw).href);
+  return url.href;
+}
+async function readGistState(raw) {
+  const { response, payload } = await gistRequest(gistSourceUrl(raw));
+  if (!response.ok) throw new Error(`Cannot load shared Gist: HTTP ${response.status}.`);
+  if (typeof payload?.source !== 'string') throw new Error('The shared Gist needs a program source.');
+  return payload.source;
+}
+async function sourceShareUrl(state) {
+  const url = shareBaseUrl();
   const params = new URLSearchParams();
   const name = exampleSource && state.source === exampleSource.source
     ? exampleSource.name : await identifyExample(state.source);
@@ -166,20 +238,44 @@ $('share').addEventListener('click', async () => {
     params.set('code', state.source);
   }
   url.hash = params.toString();
-  $('share-url').value = url.href;
-  $('share-box').hidden = false;
-  try { await navigator.clipboard.writeText(url.href); status('Share link copied.'); }
-  catch { $('share-url').focus(); $('share-url').select(); status('Copy the share link above.'); }
-});
+  return url.href;
+}
+async function share(useGist) {
+  if (busy || sharing) return;
+  const state = snapshot();
+  let token = '';
+  if (useGist) {
+    try { token = sessionStorage.getItem(gistTokenKey) || ''; } catch { /* Storage can be unavailable. */ }
+    if (!token) token = prompt('Enter a GitHub token with gist permission to upload your program to an unlisted Gist. Anyone with its link can read it. The token stays in this tab for this session only.', '') || '';
+    token = token.trim().replace(/^(?:Bearer|token)\s+/i, '').replace(/^['"]|['"]$/g, '').trim();
+    if (!token) { shareStatus('Gist sharing cancelled.'); return; }
+    try { sessionStorage.setItem(gistTokenKey, token); } catch { /* Storage can be unavailable. */ }
+  }
+  sharing = true; shareButtons();
+  $('share-box').hidden = true;
+  shareStatus(useGist ? 'Creating an unlisted GitHub Gist…' : 'Creating share link…');
+  try {
+    const url = useGist ? await createGistUrl(state, token) : await sourceShareUrl(state);
+    $('share-url').value = url;
+    $('share-box').hidden = false;
+    try { await navigator.clipboard.writeText(url); shareStatus(useGist ? 'Gist share link copied.' : 'Share link copied.'); }
+    catch { $('share-url').focus(); $('share-url').select(); shareStatus('Copy the share link above.'); }
+  } catch (error) { shareStatus(`Could not share: ${error.message}`, true); }
+  finally { sharing = false; shareButtons(); }
+}
+$('share').addEventListener('click', () => share(false));
+$('create-gist-share').addEventListener('click', () => share(true));
 $('close-share').addEventListener('click', () => { $('share-box').hidden = true; });
 
 async function initialise() {
   if (busy) stop();
   clearTimeout(saveTimer);
+  clearShare();
   $('source').disabled = true; $('example').disabled = true; $('run').disabled = true;
   $('output').textContent = 'Your first answer is one click away.\n\nPress Run to follow your facts and rules.';
   try {
     const params = new URLSearchParams(location.hash.slice(1));
+    const stateUrl = new URL(location.href).searchParams.get('stateurl');
     if (params.has('code')) {
       const name = await restoreSource(params.get('code'));
       if (name) {
@@ -188,6 +284,7 @@ async function initialise() {
         history.replaceState(null, '', url);
       }
     }
+    else if (stateUrl) await restoreSource(await readGistState(stateUrl));
     else if (params.has('example')) {
       if (!examples.has(params.get('example'))) throw new Error('Unknown shared example. Choose an example above.');
       await loadExample(params.get('example'));

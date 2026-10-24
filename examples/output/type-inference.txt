@@ -1,4 +1,3 @@
-% Answer
 ?- type_answer(Name, Type).
 Name = id, Type = fun(t0, t0).
 Name = first_of_pair, Type = bool.
@@ -7,95 +6,71 @@ Name = apply_id, Type = int.
 Name = branch, Type = int.
 Name = compose, Type = fun(fun(t1, t2), fun(fun(t0, t1), fun(t0, t2))).
 
+?- type_answer(compose, Type).
+Type = fun(fun(t1, t2), fun(fun(t0, t1), fun(t0, t2))).
+
+?- why.
+wheye-proof 1
+% Rule 1: lookup(Name, [[Name, Type] | _], Type) :- .
+% Rule 2: lookup(Name, [[Other, _] | Rest], Type) :- Name \= Other, lookup(Name, Rest, Type).
+% Rule 5: type_expr(Env, var(Name), Type) :- lookup(Name, Env, Type).
+% Rule 6: type_expr(Env, lam(Name, Arg_type, Body), fun(Arg_type, Body_type)) :- type_expr([[Name, Arg_type] | Env], Body, Body_type).
+% Rule 7: type_expr(Env, app(Fn, Arg), Result_type) :- type_expr(Env, Fn, fun(Arg_type, Result_type)), type_expr(Env, Arg, Arg_type).
+% Rule 13: type_answer(Name, Type) :- program(Name, Expr), type_expr([], Expr, Type).
+step 1 source 4 : program(compose, lam(f, fun(t1, t2), lam(g, fun(t0, t1), lam(x, t0, app(var(f), app(var(g), var(x))))))).
+step 2 rule 1 [] : lookup(f, [[f, fun(t1, t2)]], fun(t1, t2)).
+step 3 builtin : '\\='(f, g).
+step 4 builtin : '\\='(f, x).
+step 5 rule 1 [] : lookup(g, [[g, fun(t0, t1)], [f, fun(t1, t2)]], fun(t0, t1)).
+step 6 builtin : '\\='(g, x).
+step 7 rule 1 [] : lookup(x, [[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], t0).
+step 8 rule 2 [3,2] : lookup(f, [[g, fun(t0, t1)], [f, fun(t1, t2)]], fun(t1, t2)).
+step 9 rule 2 [6,5] : lookup(g, [[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], fun(t0, t1)).
+step 10 rule 5 [7] : type_expr([[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], var(x), t0).
+step 11 rule 2 [4,8] : lookup(f, [[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], fun(t1, t2)).
+step 12 rule 5 [9] : type_expr([[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], var(g), fun(t0, t1)).
+step 13 rule 5 [11] : type_expr([[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], var(f), fun(t1, t2)).
+step 14 rule 7 [12,10] : type_expr([[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], app(var(g), var(x)), t1).
+step 15 rule 7 [13,14] : type_expr([[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], app(var(f), app(var(g), var(x))), t2).
+step 16 rule 6 [15] : type_expr([[g, fun(t0, t1)], [f, fun(t1, t2)]], lam(x, t0, app(var(f), app(var(g), var(x)))), fun(t0, t2)).
+step 17 rule 6 [16] : type_expr([[f, fun(t1, t2)]], lam(g, fun(t0, t1), lam(x, t0, app(var(f), app(var(g), var(x))))), fun(fun(t0, t1), fun(t0, t2))).
+step 18 rule 6 [17] : type_expr([], lam(f, fun(t1, t2), lam(g, fun(t0, t1), lam(x, t0, app(var(f), app(var(g), var(x)))))), fun(fun(t1, t2), fun(fun(t0, t1), fun(t0, t2)))).
+step 19 rule 13 [1,18] : type_answer(compose, fun(fun(t1, t2), fun(fun(t0, t1), fun(t0, t2)))).
+answer 2 [19]
+
 ?- type_reason(Name, Reason).
 Name = apply_id, Reason = "the identity function's parameter type is unified with int".
 Name = compose, Reason = "application unifies f with t1 -> t2 and g with t0 -> t1".
 
-% Reason
-certificate(eyeon, 1).
+?- check(type_answer(id, fun(t0, t0))).
+true.
 
-claim(query(2), [type_answer(compose, fun(fun(t1, t2), fun(fun(t0, t1), fun(t0, t2))))]).
+?- check(type_answer(const, fun(t0, fun(t1, t0)))).
+true.
 
-clause(4, program(compose, lam(f, fun(t1, t2), lam(g, fun(t0, t1), lam(x, t0, app(var(f), app(var(g), var(x))))))), []).
-clause(7, lookup(var('Name'), list([[var('Name'), var('Type')]], var('$anonymous1')), var('Type')), []).
-clause(8, lookup(var('Name'), list([[var('Other'), var('$anonymous2')]], var('Rest')), var('Type')), ['\\='(var('Name'), var('Other')), lookup(var('Name'), var('Rest'), var('Type'))]).
-clause(11, type_expr(var('Env'), var(var('Name')), var('Type')), [lookup(var('Name'), var('Env'), var('Type'))]).
-clause(12, type_expr(var('Env'), lam(var('Name'), var('Arg_type'), var('Body')), fun(var('Arg_type'), var('Body_type'))), [type_expr(list([[var('Name'), var('Arg_type')]], var('Env')), var('Body'), var('Body_type'))]).
-clause(13, type_expr(var('Env'), app(var('Fn'), var('Arg')), var('Result_type')), [type_expr(var('Env'), var('Fn'), fun(var('Arg_type'), var('Result_type'))), type_expr(var('Env'), var('Arg'), var('Arg_type'))]).
-clause(19, type_answer(var('Name'), var('Type')), [program(var('Name'), var('Expr')), type_expr([], var('Expr'), var('Type'))]).
+?- check(type_answer(apply_id, int)).
+true.
 
-% step 1
-step(program(compose, lam(f, fun(t1, t2), lam(g, fun(t0, t1), lam(x, t0, app(var(f), app(var(g), var(x))))))), fact(4), [], []).
-% step 2
-step('\\='(f, x), builtin, [], []).
-% step 3
-step('\\='(f, g), builtin, [], []).
-% step 4
-step(lookup(f, [[f, fun(t1, t2)]], fun(t1, t2)), fact(7), ['='('Name', f), '='('Type', fun(t1, t2)), '='('$anonymous1', [])], []).
-% step 5
-step(lookup(f, [[g, fun(t0, t1)], [f, fun(t1, t2)]], fun(t1, t2)), rule(8), ['='('Name', f), '='('Other', g), '='('$anonymous2', fun(t0, t1)), '='('Rest', [[f, fun(t1, t2)]]), '='('Type', fun(t1, t2))], ['\\='(f, g), lookup(f, [[f, fun(t1, t2)]], fun(t1, t2))]).
-% step 6
-step(lookup(f, [[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], fun(t1, t2)), rule(8), ['='('Name', f), '='('Other', x), '='('$anonymous2', t0), '='('Rest', [[g, fun(t0, t1)], [f, fun(t1, t2)]]), '='('Type', fun(t1, t2))], ['\\='(f, x), lookup(f, [[g, fun(t0, t1)], [f, fun(t1, t2)]], fun(t1, t2))]).
-% step 7
-step(type_expr([[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], var(f), fun(t1, t2)), rule(11), ['='('Env', [[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]]), '='('Name', f), '='('Type', fun(t1, t2))], [lookup(f, [[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], fun(t1, t2))]).
-% step 8
-step('\\='(g, x), builtin, [], []).
-% step 9
-step(lookup(g, [[g, fun(t0, t1)], [f, fun(t1, t2)]], fun(t0, t1)), fact(7), ['='('Name', g), '='('Type', fun(t0, t1)), '='('$anonymous1', [[f, fun(t1, t2)]])], []).
-% step 10
-step(lookup(g, [[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], fun(t0, t1)), rule(8), ['='('Name', g), '='('Other', x), '='('$anonymous2', t0), '='('Rest', [[g, fun(t0, t1)], [f, fun(t1, t2)]]), '='('Type', fun(t0, t1))], ['\\='(g, x), lookup(g, [[g, fun(t0, t1)], [f, fun(t1, t2)]], fun(t0, t1))]).
-% step 11
-step(type_expr([[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], var(g), fun(t0, t1)), rule(11), ['='('Env', [[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]]), '='('Name', g), '='('Type', fun(t0, t1))], [lookup(g, [[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], fun(t0, t1))]).
-% step 12
-step(lookup(x, [[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], t0), fact(7), ['='('Name', x), '='('Type', t0), '='('$anonymous1', [[g, fun(t0, t1)], [f, fun(t1, t2)]])], []).
-% step 13
-step(type_expr([[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], var(x), t0), rule(11), ['='('Env', [[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]]), '='('Name', x), '='('Type', t0)], [lookup(x, [[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], t0)]).
-% step 14
-step(type_expr([[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], app(var(g), var(x)), t1), rule(13), ['='('Env', [[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]]), '='('Fn', var(g)), '='('Arg', var(x)), '='('Result_type', t1), '='('Arg_type', t0)], [type_expr([[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], var(g), fun(t0, t1)), type_expr([[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], var(x), t0)]).
-% step 15
-step(type_expr([[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], app(var(f), app(var(g), var(x))), t2), rule(13), ['='('Env', [[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]]), '='('Fn', var(f)), '='('Arg', app(var(g), var(x))), '='('Result_type', t2), '='('Arg_type', t1)], [type_expr([[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], var(f), fun(t1, t2)), type_expr([[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], app(var(g), var(x)), t1)]).
-% step 16
-step(type_expr([[g, fun(t0, t1)], [f, fun(t1, t2)]], lam(x, t0, app(var(f), app(var(g), var(x)))), fun(t0, t2)), rule(12), ['='('Env', [[g, fun(t0, t1)], [f, fun(t1, t2)]]), '='('Name', x), '='('Arg_type', t0), '='('Body', app(var(f), app(var(g), var(x)))), '='('Body_type', t2)], [type_expr([[x, t0], [g, fun(t0, t1)], [f, fun(t1, t2)]], app(var(f), app(var(g), var(x))), t2)]).
-% step 17
-step(type_expr([[f, fun(t1, t2)]], lam(g, fun(t0, t1), lam(x, t0, app(var(f), app(var(g), var(x))))), fun(fun(t0, t1), fun(t0, t2))), rule(12), ['='('Env', [[f, fun(t1, t2)]]), '='('Name', g), '='('Arg_type', fun(t0, t1)), '='('Body', lam(x, t0, app(var(f), app(var(g), var(x))))), '='('Body_type', fun(t0, t2))], [type_expr([[g, fun(t0, t1)], [f, fun(t1, t2)]], lam(x, t0, app(var(f), app(var(g), var(x)))), fun(t0, t2))]).
-% step 18
-step(type_expr([], lam(f, fun(t1, t2), lam(g, fun(t0, t1), lam(x, t0, app(var(f), app(var(g), var(x)))))), fun(fun(t1, t2), fun(fun(t0, t1), fun(t0, t2)))), rule(12), ['='('Env', []), '='('Name', f), '='('Arg_type', fun(t1, t2)), '='('Body', lam(g, fun(t0, t1), lam(x, t0, app(var(f), app(var(g), var(x)))))), '='('Body_type', fun(fun(t0, t1), fun(t0, t2)))], [type_expr([[f, fun(t1, t2)]], lam(g, fun(t0, t1), lam(x, t0, app(var(f), app(var(g), var(x))))), fun(fun(t0, t1), fun(t0, t2)))]).
-% step 19
-step(type_answer(compose, fun(fun(t1, t2), fun(fun(t0, t1), fun(t0, t2)))), rule(19), ['='('Name', compose), '='('Expr', lam(f, fun(t1, t2), lam(g, fun(t0, t1), lam(x, t0, app(var(f), app(var(g), var(x))))))), '='('Type', fun(fun(t1, t2), fun(fun(t0, t1), fun(t0, t2))))], [program(compose, lam(f, fun(t1, t2), lam(g, fun(t0, t1), lam(x, t0, app(var(f), app(var(g), var(x))))))), type_expr([], lam(f, fun(t1, t2), lam(g, fun(t0, t1), lam(x, t0, app(var(f), app(var(g), var(x)))))), fun(fun(t1, t2), fun(fun(t0, t1), fun(t0, t2))))]).
+?- check(type_answer(compose, fun(fun(t1, t2), fun(fun(t0, t1), fun(t0, t2))))).
+true.
 
-% Check
-check passed: type_answer(id, fun(t0, t0)).
+?- check(type_answer(branch, int)).
+true.
 
-check passed: type_answer(const, fun(t0, fun(t1, t0))).
+?- check(type_answer(first_of_pair, bool)).
+true.
 
-check passed: type_answer(apply_id, int).
+?- check(aggregate_all(count, (type_answer(Name, Type)), 6)).
+true.
 
-check passed: type_answer(compose, fun(fun(t1, t2), fun(fun(t0, t1), fun(t0, t2)))).
+?- check(\+ (type_expr([], add(bool_lit(true), int_lit(1)), int))).
+true.
 
-check passed: type_answer(branch, int).
+?- check(\+ (type_expr([], if(bool_lit(true), int_lit(1), bool_lit(false)), int))).
+true.
 
-check passed: type_answer(first_of_pair, bool).
+?- check(type_expr([[x, bool], [x, int]], var(x), bool)).
+true.
 
-check passed: aggregate_all(count, (type_answer(Name, Type)), 6).
-
-check passed: \+ (type_expr([], add(bool_lit(true), int_lit(1)), int)).
-
-check passed: \+ (type_expr([], if(bool_lit(true), int_lit(1), bool_lit(false)), int)).
-
-check passed: type_expr([[x, bool], [x, int]], var(x), bool).
-
-check passed: \+ (type_expr([[x, bool], [x, int]], var(x), int)).
-
-condition('C1', resolution, ok, 16).
-condition('C2', well_founded, ok, 19).
-condition('C3', justification, ok, 19).
-condition('C4', coverage, ok, 19).
-condition('C5', re_decision, ok, 3).
-condition('C6', boundary_consistency, ok, 0).
-condition('C7', relevance, ok, 20).
-steps(19).
-verified(16).
-recomputed(3).
-trusted(0).
-claims(1).
-verdict(checked).
+?- check(\+ (type_expr([[x, bool], [x, int]], var(x), int))).
+true.
