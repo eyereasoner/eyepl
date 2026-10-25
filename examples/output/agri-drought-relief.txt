@@ -1,0 +1,71 @@
+?- status(Application, Status).
+Application = dr01, Status = submitted.
+Application = dr01, Status = approved.
+
+?- issued_payment(Application, Payment).
+Application = dr01, Payment = ~"r5:g2:{\"App\": Symbol(\"dr01\")}".
+
+?- why.
+wheye-proof 1
+% Rule 1: qualifies(Area, Rain, Baseline, Current) :- Area >= 5, Rain < 20, Drop is '-'(Baseline, Current), Drop >= 30.
+% Rule 2: eligible(App, true) :- application(App, drought_relief, Farm), farm(Farm, Area, Rain, Baseline, Current), qualifies(Area, Rain, Baseline, Current).
+% Rule 3: status(App, approved) :- eligible(App, true), status(App, submitted).
+% Rule 5: issued_payment(App, Payment) :- status(App, approved), fresh(Payment).
+step 1 source 1 : application(dr01, drought_relief, alpha).
+step 2 source 2 : status(dr01, submitted).
+step 3 source 6 : farm(alpha, 8, 12, 100, 60).
+step 4 builtin : '>='(8, 5).
+step 5 builtin : '<'(12, 20).
+step 6 builtin : is(40, '-'(100, 60)).
+step 7 builtin : '>='(40, 30).
+step 8 fresh 5 2 : '$fresh:r5:2'(dr01, ~"r5:g2:{\"App\": Symbol(\"dr01\")}").
+step 9 rule 1 [4,5,6,7] : qualifies(8, 12, 100, 60).
+step 10 rule 2 [1,3,9] : eligible(dr01, true).
+step 11 rule 3 [10,2] : status(dr01, approved).
+step 12 rule 5 [11,8] : issued_payment(dr01, ~"r5:g2:{\"App\": Symbol(\"dr01\")}").
+answer 2 [12]
+
+?- check.
+checked: 12 steps, 1 claim
+3 source facts; 4 rule applications
+Conditions:
+  C1 resolution: 7 checked, 0 failed
+  C2 well-foundedness: 4 checked, 0 failed
+  C3 justification: 13 checked, 0 failed
+  C4 coverage: 22 checked, 0 failed
+  C5 re-decision: 4 checked, 0 failed
+  C6 boundary consistency: 0 checked, 0 failed
+  C7 relevance: 12 checked, 0 failed
+  C8 witness integrity: 3 checked, 0 failed
+  C9 query isolation: 1 checked, 0 failed
+Source facts and rules are assumed. Answer completeness is not checked.
+
+?- check(eligible(dr01, true)).
+true.
+
+?- check(status(dr01, approved)).
+true.
+
+?- check(status(dr01, submitted)).
+true.
+
+?- check(aggregate_all(count, (issued_payment(dr01, Payment)), 1)).
+true.
+
+?- check(aggregate_all(count, (evidence(dr01, Kind)), 3)).
+true.
+
+?- check(qualifies(5, 19, 100, 70)).
+true.
+
+?- check(\+ (qualifies(4, 12, 100, 60))).
+true.
+
+?- check(\+ (qualifies(8, 20, 100, 60))).
+true.
+
+?- check(\+ (qualifies(8, 12, 100, 71))).
+true.
+
+?- check(\+ (status(dr01, rejected))).
+true.

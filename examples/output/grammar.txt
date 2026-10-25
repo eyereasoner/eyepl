@@ -1,0 +1,48 @@
+?- sentence([open, door], Command, []).
+Command = command(open, door).
+
+?- sentence([close, window, please], Command, Rest).
+Command = command(close, window), Rest = [please].
+
+?- sentence([open, door], Command, []).
+Command = command(open, door).
+
+?- why.
+wheye-proof 1
+% Rule 1: verb([open | Rest], open, Rest) :- .
+% Rule 3: noun([door | Rest], door, Rest) :- .
+% Rule 5: sentence(Input, command(Verb, Object), Rest) :- verb(Input, Verb, Middle), noun(Middle, Object, Rest).
+step 1 rule 1 [] : verb([open, door], open, [door]).
+step 2 rule 3 [] : noun([door], door, []).
+step 3 rule 5 [1,2] : sentence([open, door], command(open, door), []).
+answer 3 [3]
+
+?- check.
+checked: 3 steps, 1 claim
+0 source facts; 3 rule applications
+Conditions:
+  C1 resolution: 3 checked, 0 failed
+  C2 well-foundedness: 3 checked, 0 failed
+  C3 justification: 4 checked, 0 failed
+  C4 coverage: 7 checked, 0 failed
+  C5 re-decision: not applicable (program uses no built-ins or aggregates)
+  C6 boundary consistency: 0 checked, 0 failed
+  C7 relevance: 3 checked, 0 failed
+  C8 witness integrity: not applicable (program uses no fresh witnesses)
+  C9 query isolation: 1 checked, 0 failed
+Source facts and rules are assumed. Answer completeness is not checked.
+
+?- check(sentence([close, door], command(close, door), [])).
+true.
+
+?- check(sentence([open, window], command(open, window), [])).
+true.
+
+?- check(\+ (sentence([open, door, please], command(open, door), []))).
+true.
+
+?- check(\+ (sentence([paint, door], command(paint, door), []))).
+true.
+
+?- check(\+ (sentence([open], command(open, door), []))).
+true.

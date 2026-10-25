@@ -1,6 +1,6 @@
 # Wheye guide
 
-Version **0.1.19**. Run a Prolog subset in the native CLI or browser, get
+Version **0.1.20**. Run a Prolog subset in the native CLI or browser, get
 answers, and inspect their independently checkable proofs. The
 [specification](https://eyereasoner.github.io/wheye/SPEC/) defines the language
 and the [C1–C9 contract](https://eyereasoner.github.io/wheye/SPEC/#8-verification).
@@ -69,6 +69,10 @@ suite compares them exactly and independently checks the certificates under C1�
 | [Inventory](https://github.com/eyereasoner/wheye/blob/main/examples/inventory.pl) | Arithmetic followed by aggregation |
 | [Airport paths](https://github.com/eyereasoner/wheye/blob/main/examples/path-discovery.pl) | Three routes across the full supplied airport graph |
 | [Customer vouchers](https://github.com/eyereasoner/wheye/blob/main/examples/orders.pl) | All nine proof conditions, including witnesses |
+| [Bézout identity](https://github.com/eyereasoner/wheye/blob/main/examples/gcd-bezout-identity.pl) | Exact coefficients from the extended Euclidean algorithm |
+| [Command grammar](https://github.com/eyereasoner/wheye/blob/main/examples/grammar.pl) | List parsing with structured results and unconsumed input |
+| [Drought relief](https://github.com/eyereasoner/wheye/blob/main/examples/agri-drought-relief.pl) | Explicit eligibility, recorded statuses, and fresh payment identities |
+| [River crossing](https://github.com/eyereasoner/wheye/blob/main/examples/wolf-goat-cabbage.pl) | Safe state transitions and minimum-cost plans |
 
 The airport example has 7,698 airports and 37,274 directed flight links. It
 finds three routes from Ostend to Prague with at most two intermediate stops.

@@ -1,0 +1,466 @@
+?- solution(Moves, Cost).
+Moves = [goat, nothing, wolf, goat, cabbage, nothing, goat], Cost = 7.
+Moves = [goat, nothing, cabbage, goat, wolf, nothing, goat], Cost = 7.
+
+?- solution([goat, nothing, wolf, goat, cabbage, nothing, goat], 7).
+true.
+
+?- why.
+wheye-proof 1
+% Rule 1: unsafe(state(Person, Wolf, Goat, Cabbage)) :- side(Person), side(Wolf), side(Goat), side(Cabbage), Wolf = Goat, Person \= Goat.
+% Rule 2: unsafe(state(Person, Wolf, Goat, Cabbage)) :- side(Person), side(Wolf), side(Goat), side(Cabbage), Goat = Cabbage, Person \= Goat.
+% Rule 3: safe(state(Person, Wolf, Goat, Cabbage)) :- side(Person), side(Wolf), side(Goat), side(Cabbage), \+ (unsafe(state(Person, Wolf, Goat, Cabbage))).
+% Rule 4: move(state(X, X, G, C), wolf, state(Y, Y, G, C)) :- change(X, Y).
+% Rule 5: move(state(X, W, X, C), goat, state(Y, W, Y, C)) :- change(X, Y).
+% Rule 6: move(state(X, W, G, X), cabbage, state(Y, W, G, Y)) :- change(X, Y).
+% Rule 7: move(state(X, W, G, C), nothing, state(Y, W, G, C)) :- change(X, Y).
+% Rule 8: crossing(From, Item, To) :- safe(From), move(From, Item, To), safe(To).
+% Rule 9: member(X, [X | _]) :- .
+% Rule 10: member(X, [_ | Rest]) :- member(X, Rest).
+% Rule 11: crossings(Goal, Goal, _, [Goal], [], 0) :- .
+% Rule 12: crossings(State, Goal, Visited, [State | States], [Item | Moves], Cost) :- State \= Goal, crossing(State, Item, Next), \+ (member(Next, Visited)), crossings(Next, Goal, [Next | Visited], States, Moves, Before), Cost is '+'(Before, 1).
+% Rule 13: route(States, Moves, Cost) :- crossings(state(west, west, west, west), state(east, east, east, east), [state(west, west, west, west)], States, Moves, Cost).
+% Rule 14: solution(Moves, Cost) :- aggregate_all(min(Value), (route(States, Items, Value)), Cost), route(Path, Moves, Cost).
+step 1 source 1 : side(west).
+step 2 source 2 : side(east).
+step 3 source 3 : change(west, east).
+step 4 source 4 : change(east, west).
+step 5 builtin : '='(east, east).
+step 6 builtin : '\\='(west, east).
+step 7 builtin : '='(west, west).
+step 8 builtin : '\\='(east, west).
+step 9 rule 9 [] : member(state(west, west, west, west), [state(west, west, west, west)]).
+step 10 rule 9 [] : member(state(east, west, east, west), [state(east, west, east, west), state(west, west, west, west)]).
+step 11 rule 9 [] : member(state(west, west, east, west), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 12 rule 9 [] : member(state(east, east, east, west), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 13 rule 9 [] : member(state(east, west, east, east), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 14 rule 9 [] : member(state(west, east, west, west), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 15 rule 9 [] : member(state(west, west, west, east), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 16 rule 9 [] : member(state(east, east, west, east), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 17 rule 9 [] : member(state(east, east, west, east), [state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 18 rule 11 [] : crossings(state(east, east, east, east), state(east, east, east, east), [state(east, east, east, east), state(west, east, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], [state(east, east, east, east)], [], 0).
+step 19 rule 11 [] : crossings(state(east, east, east, east), state(east, east, east, east), [state(east, east, east, east), state(west, east, west, east), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], [state(east, east, east, east)], [], 0).
+step 20 builtin : '\\='(state(west, east, west, east), state(east, east, east, east)).
+step 21 builtin : is(1, '+'(0, 1)).
+step 22 rule 9 [] : member(state(west, west, west, east), [state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 23 rule 9 [] : member(state(west, east, west, west), [state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 24 builtin : '\\='(state(east, east, west, east), state(east, east, east, east)).
+step 25 builtin : is(2, '+'(1, 1)).
+step 26 builtin : '\\='(state(west, east, west, west), state(east, east, east, east)).
+step 27 builtin : is(3, '+'(2, 1)).
+step 28 builtin : '\\='(state(west, west, west, east), state(east, east, east, east)).
+step 29 builtin : '\\='(state(east, east, east, west), state(east, east, east, east)).
+step 30 builtin : is(4, '+'(3, 1)).
+step 31 builtin : '\\='(state(east, west, east, east), state(east, east, east, east)).
+step 32 builtin : '\\='(state(west, west, east, west), state(east, east, east, east)).
+step 33 builtin : is(5, '+'(4, 1)).
+step 34 builtin : '\\='(state(east, west, east, west), state(east, east, east, east)).
+step 35 builtin : is(6, '+'(5, 1)).
+step 36 builtin : '\\='(state(west, west, west, west), state(east, east, east, east)).
+step 37 builtin : is(7, '+'(6, 1)).
+step 38 rule 4 [3] : move(state(west, west, west, west), wolf, state(east, east, west, west)).
+step 39 rule 5 [3] : move(state(west, west, west, west), goat, state(east, west, east, west)).
+step 40 rule 6 [3] : move(state(west, west, west, west), cabbage, state(east, west, west, east)).
+step 41 rule 7 [3] : move(state(west, west, west, west), nothing, state(east, west, west, west)).
+step 42 rule 4 [3] : move(state(west, west, west, east), wolf, state(east, east, west, east)).
+step 43 rule 5 [3] : move(state(west, west, west, east), goat, state(east, west, east, east)).
+step 44 rule 7 [3] : move(state(west, west, west, east), nothing, state(east, west, west, east)).
+step 45 rule 4 [3] : move(state(west, west, east, west), wolf, state(east, east, east, west)).
+step 46 rule 6 [3] : move(state(west, west, east, west), cabbage, state(east, west, east, east)).
+step 47 rule 7 [3] : move(state(west, west, east, west), nothing, state(east, west, east, west)).
+step 48 rule 5 [3] : move(state(west, east, west, west), goat, state(east, east, east, west)).
+step 49 rule 6 [3] : move(state(west, east, west, west), cabbage, state(east, east, west, east)).
+step 50 rule 7 [3] : move(state(west, east, west, west), nothing, state(east, east, west, west)).
+step 51 rule 5 [3] : move(state(west, east, west, east), goat, state(east, east, east, east)).
+step 52 rule 7 [3] : move(state(west, east, west, east), nothing, state(east, east, west, east)).
+step 53 rule 5 [4] : move(state(east, west, east, west), goat, state(west, west, west, west)).
+step 54 rule 7 [4] : move(state(east, west, east, west), nothing, state(west, west, east, west)).
+step 55 rule 5 [4] : move(state(east, west, east, east), goat, state(west, west, west, east)).
+step 56 rule 6 [4] : move(state(east, west, east, east), cabbage, state(west, west, east, west)).
+step 57 rule 7 [4] : move(state(east, west, east, east), nothing, state(west, west, east, east)).
+step 58 rule 4 [4] : move(state(east, east, west, east), wolf, state(west, west, west, east)).
+step 59 rule 6 [4] : move(state(east, east, west, east), cabbage, state(west, east, west, west)).
+step 60 rule 7 [4] : move(state(east, east, west, east), nothing, state(west, east, west, east)).
+step 61 rule 4 [4] : move(state(east, east, east, west), wolf, state(west, west, east, west)).
+step 62 rule 5 [4] : move(state(east, east, east, west), goat, state(west, east, west, west)).
+step 63 rule 7 [4] : move(state(east, east, east, west), nothing, state(west, east, east, west)).
+step 64 rule 4 [4] : move(state(east, east, east, east), wolf, state(west, west, east, east)).
+step 65 rule 5 [4] : move(state(east, east, east, east), goat, state(west, east, west, east)).
+step 66 rule 6 [4] : move(state(east, east, east, east), cabbage, state(west, east, east, west)).
+step 67 rule 7 [4] : move(state(east, east, east, east), nothing, state(west, east, east, east)).
+step 68 rule 1 [1,2,2,1,5,6] : unsafe(state(west, east, east, west)).
+step 69 rule 1 [1,2,2,2,5,6] : unsafe(state(west, east, east, east)).
+step 70 rule 2 [1,1,2,2,5,6] : unsafe(state(west, west, east, east)).
+step 71 rule 1 [2,1,1,1,7,8] : unsafe(state(east, west, west, west)).
+step 72 rule 1 [2,1,1,2,7,8] : unsafe(state(east, west, west, east)).
+step 73 rule 2 [2,2,1,1,7,8] : unsafe(state(east, east, west, west)).
+step 74 rule 10 [9] : member(state(west, west, west, west), [state(east, west, east, west), state(west, west, west, west)]).
+step 75 rule 10 [10] : member(state(east, west, east, west), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 76 rule 10 [11] : member(state(west, west, east, west), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 77 rule 10 [11] : member(state(west, west, east, west), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 78 rule 10 [12] : member(state(east, east, east, west), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 79 rule 10 [13] : member(state(east, west, east, east), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 80 rule 10 [14] : member(state(west, east, west, west), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 81 rule 10 [15] : member(state(west, west, west, east), [state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 82 rule 10 [16] : member(state(east, east, west, east), [state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 83 rule 10 [16] : member(state(east, east, west, east), [state(west, east, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 84 rule 10 [17] : member(state(east, east, west, east), [state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 85 rule 10 [17] : member(state(east, east, west, east), [state(west, east, west, east), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 86 rule 10 [22] : member(state(west, west, west, east), [state(east, west, east, east), state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 87 rule 10 [23] : member(state(west, east, west, west), [state(east, east, east, west), state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 88 rule 10 [76] : member(state(west, west, east, west), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 89 rule 10 [77] : member(state(west, west, east, west), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 90 rule 10 [88] : member(state(west, west, east, west), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 91 rule 10 [89] : member(state(west, west, east, west), [state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 92 rule 10 [90] : member(state(west, west, east, west), [state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 93 rule 10 [91] : member(state(west, west, east, west), [state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 94 rule 10 [92] : member(state(west, west, east, west), [state(east, west, east, east), state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 95 rule 10 [93] : member(state(west, west, east, west), [state(east, east, east, west), state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 96 absent 1 : unsafe(state(west, west, west, west)).
+step 97 absent 1 : unsafe(state(west, west, west, east)).
+step 98 absent 1 : unsafe(state(west, west, east, west)).
+step 99 absent 1 : unsafe(state(west, east, west, west)).
+step 100 absent 1 : unsafe(state(west, east, west, east)).
+step 101 absent 1 : unsafe(state(east, west, east, west)).
+step 102 absent 1 : unsafe(state(east, west, east, east)).
+step 103 absent 1 : unsafe(state(east, east, west, east)).
+step 104 absent 1 : unsafe(state(east, east, east, west)).
+step 105 absent 1 : unsafe(state(east, east, east, east)).
+step 106 absent 1 : member(state(east, east, east, east), [state(west, east, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 107 absent 1 : member(state(east, east, east, east), [state(west, east, west, east), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 108 absent 1 : member(state(west, east, west, east), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 109 absent 1 : member(state(west, east, west, east), [state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 110 absent 1 : member(state(east, east, west, east), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 111 absent 1 : member(state(east, east, west, east), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 112 absent 1 : member(state(west, east, west, west), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 113 absent 1 : member(state(west, west, west, east), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 114 absent 1 : member(state(east, east, east, west), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 115 absent 1 : member(state(east, west, east, east), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+step 116 absent 1 : member(state(west, west, east, west), [state(east, west, east, west), state(west, west, west, west)]).
+step 117 absent 1 : member(state(east, west, east, west), [state(west, west, west, west)]).
+step 118 rule 3 [1,1,1,1,96] : safe(state(west, west, west, west)).
+step 119 rule 3 [1,1,1,2,97] : safe(state(west, west, west, east)).
+step 120 rule 3 [1,1,2,1,98] : safe(state(west, west, east, west)).
+step 121 rule 3 [1,2,1,1,99] : safe(state(west, east, west, west)).
+step 122 rule 3 [1,2,1,2,100] : safe(state(west, east, west, east)).
+step 123 rule 3 [2,1,2,1,101] : safe(state(east, west, east, west)).
+step 124 rule 3 [2,1,2,2,102] : safe(state(east, west, east, east)).
+step 125 rule 3 [2,2,1,2,103] : safe(state(east, east, west, east)).
+step 126 rule 3 [2,2,2,1,104] : safe(state(east, east, east, west)).
+step 127 rule 3 [2,2,2,2,105] : safe(state(east, east, east, east)).
+step 128 rule 8 [118,39,123] : crossing(state(west, west, west, west), goat, state(east, west, east, west)).
+step 129 rule 8 [120,47,123] : crossing(state(west, west, east, west), nothing, state(east, west, east, west)).
+step 130 rule 8 [123,53,118] : crossing(state(east, west, east, west), goat, state(west, west, west, west)).
+step 131 rule 8 [123,54,120] : crossing(state(east, west, east, west), nothing, state(west, west, east, west)).
+step 132 rule 8 [119,43,124] : crossing(state(west, west, west, east), goat, state(east, west, east, east)).
+step 133 rule 8 [120,46,124] : crossing(state(west, west, east, west), cabbage, state(east, west, east, east)).
+step 134 rule 8 [124,55,119] : crossing(state(east, west, east, east), goat, state(west, west, west, east)).
+step 135 rule 8 [124,56,120] : crossing(state(east, west, east, east), cabbage, state(west, west, east, west)).
+step 136 rule 8 [119,42,125] : crossing(state(west, west, west, east), wolf, state(east, east, west, east)).
+step 137 rule 8 [121,49,125] : crossing(state(west, east, west, west), cabbage, state(east, east, west, east)).
+step 138 rule 8 [122,52,125] : crossing(state(west, east, west, east), nothing, state(east, east, west, east)).
+step 139 rule 8 [125,58,119] : crossing(state(east, east, west, east), wolf, state(west, west, west, east)).
+step 140 rule 8 [125,59,121] : crossing(state(east, east, west, east), cabbage, state(west, east, west, west)).
+step 141 rule 8 [125,60,122] : crossing(state(east, east, west, east), nothing, state(west, east, west, east)).
+step 142 rule 8 [120,45,126] : crossing(state(west, west, east, west), wolf, state(east, east, east, west)).
+step 143 rule 8 [121,48,126] : crossing(state(west, east, west, west), goat, state(east, east, east, west)).
+step 144 rule 8 [126,61,120] : crossing(state(east, east, east, west), wolf, state(west, west, east, west)).
+step 145 rule 8 [126,62,121] : crossing(state(east, east, east, west), goat, state(west, east, west, west)).
+step 146 rule 8 [122,51,127] : crossing(state(west, east, west, east), goat, state(east, east, east, east)).
+step 147 rule 8 [127,65,122] : crossing(state(east, east, east, east), goat, state(west, east, west, east)).
+step 148 rule 12 [20,146,106,18,21] : crossings(state(west, east, west, east), state(east, east, east, east), [state(west, east, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], [state(west, east, west, east), state(east, east, east, east)], [goat], 1).
+step 149 rule 12 [20,146,107,19,21] : crossings(state(west, east, west, east), state(east, east, east, east), [state(west, east, west, east), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], [state(west, east, west, east), state(east, east, east, east)], [goat], 1).
+step 150 rule 12 [24,141,108,148,25] : crossings(state(east, east, west, east), state(east, east, east, east), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], [state(east, east, west, east), state(west, east, west, east), state(east, east, east, east)], [nothing, goat], 2).
+step 151 rule 12 [24,141,109,149,25] : crossings(state(east, east, west, east), state(east, east, east, east), [state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], [state(east, east, west, east), state(west, east, west, east), state(east, east, east, east)], [nothing, goat], 2).
+step 152 rule 12 [26,137,110,150,27] : crossings(state(west, east, west, west), state(east, east, east, east), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], [state(west, east, west, west), state(east, east, west, east), state(west, east, west, east), state(east, east, east, east)], [cabbage, nothing, goat], 3).
+step 153 rule 12 [28,136,111,151,27] : crossings(state(west, west, west, east), state(east, east, east, east), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], [state(west, west, west, east), state(east, east, west, east), state(west, east, west, east), state(east, east, east, east)], [wolf, nothing, goat], 3).
+step 154 rule 12 [29,145,112,152,30] : crossings(state(east, east, east, west), state(east, east, east, east), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], [state(east, east, east, west), state(west, east, west, west), state(east, east, west, east), state(west, east, west, east), state(east, east, east, east)], [goat, cabbage, nothing, goat], 4).
+step 155 rule 12 [31,134,113,153,30] : crossings(state(east, west, east, east), state(east, east, east, east), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], [state(east, west, east, east), state(west, west, west, east), state(east, east, west, east), state(west, east, west, east), state(east, east, east, east)], [goat, wolf, nothing, goat], 4).
+step 156 rule 12 [32,142,114,154,33] : crossings(state(west, west, east, west), state(east, east, east, east), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], [state(west, west, east, west), state(east, east, east, west), state(west, east, west, west), state(east, east, west, east), state(west, east, west, east), state(east, east, east, east)], [wolf, goat, cabbage, nothing, goat], 5).
+step 157 rule 12 [32,133,115,155,33] : crossings(state(west, west, east, west), state(east, east, east, east), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], [state(west, west, east, west), state(east, west, east, east), state(west, west, west, east), state(east, east, west, east), state(west, east, west, east), state(east, east, east, east)], [cabbage, goat, wolf, nothing, goat], 5).
+step 158 rule 12 [34,131,116,156,35] : crossings(state(east, west, east, west), state(east, east, east, east), [state(east, west, east, west), state(west, west, west, west)], [state(east, west, east, west), state(west, west, east, west), state(east, east, east, west), state(west, east, west, west), state(east, east, west, east), state(west, east, west, east), state(east, east, east, east)], [nothing, wolf, goat, cabbage, nothing, goat], 6).
+step 159 rule 12 [34,131,116,157,35] : crossings(state(east, west, east, west), state(east, east, east, east), [state(east, west, east, west), state(west, west, west, west)], [state(east, west, east, west), state(west, west, east, west), state(east, west, east, east), state(west, west, west, east), state(east, east, west, east), state(west, east, west, east), state(east, east, east, east)], [nothing, cabbage, goat, wolf, nothing, goat], 6).
+step 160 rule 12 [36,128,117,158,37] : crossings(state(west, west, west, west), state(east, east, east, east), [state(west, west, west, west)], [state(west, west, west, west), state(east, west, east, west), state(west, west, east, west), state(east, east, east, west), state(west, east, west, west), state(east, east, west, east), state(west, east, west, east), state(east, east, east, east)], [goat, nothing, wolf, goat, cabbage, nothing, goat], 7).
+step 161 rule 12 [36,128,117,159,37] : crossings(state(west, west, west, west), state(east, east, east, east), [state(west, west, west, west)], [state(west, west, west, west), state(east, west, east, west), state(west, west, east, west), state(east, west, east, east), state(west, west, west, east), state(east, east, west, east), state(west, east, west, east), state(east, east, east, east)], [goat, nothing, cabbage, goat, wolf, nothing, goat], 7).
+step 162 rule 13 [160] : route([state(west, west, west, west), state(east, west, east, west), state(west, west, east, west), state(east, east, east, west), state(west, east, west, west), state(east, east, west, east), state(west, east, west, east), state(east, east, east, east)], [goat, nothing, wolf, goat, cabbage, nothing, goat], 7).
+step 163 rule 13 [161] : route([state(west, west, west, west), state(east, west, east, west), state(west, west, east, west), state(east, west, east, east), state(west, west, west, east), state(east, east, west, east), state(west, east, west, east), state(east, east, east, east)], [goat, nothing, cabbage, goat, wolf, nothing, goat], 7).
+step 164 aggregate r14 1 2 : '$aggregate:r14:1'([], 7).
+step 165 rule 14 [164,162] : solution([goat, nothing, wolf, goat, cabbage, nothing, goat], 7).
+boundary 1 level 0 [1,2,3,4,9,10,11,12,13,14,15,16,17,18,19,22,23,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95]
+demand 1 : member(state(east, east, east, east), []).
+demand 1 : member(state(east, east, east, east), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, east, east), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, east, east), [state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, east, east), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, east, east), [state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, east, east), [state(west, east, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, east, east), [state(west, east, west, east), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, east, east), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, east, east), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, east, east), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, east, east), [state(west, west, west, west)]).
+demand 1 : member(state(east, east, east, west), []).
+demand 1 : member(state(east, east, east, west), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, east, west), [state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, east, west), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, east, west), [state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, east, west), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, east, west), [state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, east, west), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, east, west), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, east, west), [state(west, west, west, west)]).
+demand 1 : member(state(east, east, west, east), []).
+demand 1 : member(state(east, east, west, east), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, west, east), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, west, east), [state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, west, east), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, west, east), [state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, west, east), [state(west, east, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, west, east), [state(west, east, west, east), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, west, east), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, west, east), [state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, west, east), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, west, east), [state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, west, east), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, east, west, east), [state(west, west, west, west)]).
+demand 1 : member(state(east, west, east, east), []).
+demand 1 : member(state(east, west, east, east), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, west, east, east), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, west, east, east), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, west, east, east), [state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, west, east, east), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, west, east, east), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, west, east, east), [state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, west, east, east), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, west, east, east), [state(west, west, west, west)]).
+demand 1 : member(state(east, west, east, west), []).
+demand 1 : member(state(east, west, east, west), [state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, west, east, west), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(east, west, east, west), [state(west, west, west, west)]).
+demand 1 : member(state(west, east, west, east), []).
+demand 1 : member(state(west, east, west, east), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, east, west, east), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, east, west, east), [state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, east, west, east), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, east, west, east), [state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, east, west, east), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, east, west, east), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, east, west, east), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, east, west, east), [state(west, west, west, west)]).
+demand 1 : member(state(west, east, west, west), []).
+demand 1 : member(state(west, east, west, west), [state(east, east, east, west), state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, east, west, west), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, east, west, west), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, east, west, west), [state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, east, west, west), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, east, west, west), [state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, east, west, west), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, east, west, west), [state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, east, west, west), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, east, west, west), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, east, west, west), [state(west, west, west, west)]).
+demand 1 : member(state(west, west, east, west), []).
+demand 1 : member(state(west, west, east, west), [state(east, east, east, west), state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, east, west), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, east, west), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, east, west), [state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, east, west), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, east, west), [state(east, west, east, east), state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, east, west), [state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, east, west), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, east, west), [state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, east, west), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, east, west), [state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, east, west), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, east, west), [state(west, west, west, west)]).
+demand 1 : member(state(west, west, west, east), []).
+demand 1 : member(state(west, west, west, east), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, west, east), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, west, east), [state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, west, east), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, west, east), [state(east, west, east, east), state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, west, east), [state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, west, east), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, west, east), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, west, east), [state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, west, east), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, west, east), [state(west, west, west, west)]).
+demand 1 : member(state(west, west, west, west), []).
+demand 1 : member(state(west, west, west, west), [state(east, west, east, west), state(west, west, west, west)]).
+demand 1 : member(state(west, west, west, west), [state(west, west, west, west)]).
+demand 1 : move(state(east, east, east, east), _WheyeCall0, _WheyeCall1).
+demand 1 : move(state(east, east, east, west), _WheyeCall0, _WheyeCall1).
+demand 1 : move(state(east, east, west, east), _WheyeCall0, _WheyeCall1).
+demand 1 : move(state(east, west, east, east), _WheyeCall0, _WheyeCall1).
+demand 1 : move(state(east, west, east, west), _WheyeCall0, _WheyeCall1).
+demand 1 : move(state(west, east, west, east), _WheyeCall0, _WheyeCall1).
+demand 1 : move(state(west, east, west, west), _WheyeCall0, _WheyeCall1).
+demand 1 : move(state(west, west, east, west), _WheyeCall0, _WheyeCall1).
+demand 1 : move(state(west, west, west, east), _WheyeCall0, _WheyeCall1).
+demand 1 : move(state(west, west, west, west), _WheyeCall0, _WheyeCall1).
+boundary 2 level 1 [1,2,3,4,9,10,11,12,13,14,15,16,17,18,19,22,23,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163]
+demand 2 : crossings(state(east, east, east, east), state(east, east, east, east), [state(east, east, east, east), state(west, east, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
+demand 2 : crossings(state(east, east, east, east), state(east, east, east, east), [state(east, east, east, east), state(west, east, west, east), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
+demand 2 : crossings(state(east, east, east, west), state(east, east, east, east), [state(east, east, east, west), state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
+demand 2 : crossings(state(east, east, east, west), state(east, east, east, east), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
+demand 2 : crossings(state(east, east, west, east), state(east, east, east, east), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
+demand 2 : crossings(state(east, east, west, east), state(east, east, east, east), [state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
+demand 2 : crossings(state(east, west, east, east), state(east, east, east, east), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
+demand 2 : crossings(state(east, west, east, east), state(east, east, east, east), [state(east, west, east, east), state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
+demand 2 : crossings(state(east, west, east, west), state(east, east, east, east), [state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
+demand 2 : crossings(state(west, east, west, east), state(east, east, east, east), [state(west, east, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
+demand 2 : crossings(state(west, east, west, east), state(east, east, east, east), [state(west, east, west, east), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
+demand 2 : crossings(state(west, east, west, west), state(east, east, east, east), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
+demand 2 : crossings(state(west, east, west, west), state(east, east, east, east), [state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
+demand 2 : crossings(state(west, west, east, west), state(east, east, east, east), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
+demand 2 : crossings(state(west, west, west, east), state(east, east, east, east), [state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
+demand 2 : crossings(state(west, west, west, east), state(east, east, east, east), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
+demand 2 : crossings(state(west, west, west, west), state(east, east, east, east), [state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
+demand 2 : member(state(east, east, east, east), []).
+demand 2 : member(state(east, east, east, east), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, east, east), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, east, east), [state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, east, east), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, east, east), [state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, east, east), [state(west, east, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, east, east), [state(west, east, west, east), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, east, east), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, east, east), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, east, east), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, east, east), [state(west, west, west, west)]).
+demand 2 : member(state(east, east, east, west), []).
+demand 2 : member(state(east, east, east, west), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, east, west), [state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, east, west), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, east, west), [state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, east, west), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, east, west), [state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, east, west), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, east, west), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, east, west), [state(west, west, west, west)]).
+demand 2 : member(state(east, east, west, east), []).
+demand 2 : member(state(east, east, west, east), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, west, east), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, west, east), [state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, west, east), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, west, east), [state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, west, east), [state(west, east, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, west, east), [state(west, east, west, east), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, west, east), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, west, east), [state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, west, east), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, west, east), [state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, west, east), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, east, west, east), [state(west, west, west, west)]).
+demand 2 : member(state(east, west, east, east), []).
+demand 2 : member(state(east, west, east, east), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, west, east, east), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, west, east, east), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, west, east, east), [state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, west, east, east), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, west, east, east), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, west, east, east), [state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, west, east, east), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, west, east, east), [state(west, west, west, west)]).
+demand 2 : member(state(east, west, east, west), []).
+demand 2 : member(state(east, west, east, west), [state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, west, east, west), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(east, west, east, west), [state(west, west, west, west)]).
+demand 2 : member(state(west, east, west, east), []).
+demand 2 : member(state(west, east, west, east), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, east, west, east), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, east, west, east), [state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, east, west, east), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, east, west, east), [state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, east, west, east), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, east, west, east), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, east, west, east), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, east, west, east), [state(west, west, west, west)]).
+demand 2 : member(state(west, east, west, west), []).
+demand 2 : member(state(west, east, west, west), [state(east, east, east, west), state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, east, west, west), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, east, west, west), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, east, west, west), [state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, east, west, west), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, east, west, west), [state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, east, west, west), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, east, west, west), [state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, east, west, west), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, east, west, west), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, east, west, west), [state(west, west, west, west)]).
+demand 2 : member(state(west, west, east, west), []).
+demand 2 : member(state(west, west, east, west), [state(east, east, east, west), state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, east, west), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, east, west), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, east, west), [state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, east, west), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, east, west), [state(east, west, east, east), state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, east, west), [state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, east, west), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, east, west), [state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, east, west), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, east, west), [state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, east, west), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, east, west), [state(west, west, west, west)]).
+demand 2 : member(state(west, west, west, east), []).
+demand 2 : member(state(west, west, west, east), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, west, east), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, west, east), [state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, west, east), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, west, east), [state(east, west, east, east), state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, west, east), [state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, west, east), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, west, east), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, west, east), [state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, west, east), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, west, east), [state(west, west, west, west)]).
+demand 2 : member(state(west, west, west, west), []).
+demand 2 : member(state(west, west, west, west), [state(east, west, east, west), state(west, west, west, west)]).
+demand 2 : member(state(west, west, west, west), [state(west, west, west, west)]).
+demand 2 : move(state(east, east, east, east), _WheyeCall0, _WheyeCall1).
+demand 2 : move(state(east, east, east, west), _WheyeCall0, _WheyeCall1).
+demand 2 : move(state(east, east, west, east), _WheyeCall0, _WheyeCall1).
+demand 2 : move(state(east, west, east, east), _WheyeCall0, _WheyeCall1).
+demand 2 : move(state(east, west, east, west), _WheyeCall0, _WheyeCall1).
+demand 2 : move(state(west, east, west, east), _WheyeCall0, _WheyeCall1).
+demand 2 : move(state(west, east, west, west), _WheyeCall0, _WheyeCall1).
+demand 2 : move(state(west, west, east, west), _WheyeCall0, _WheyeCall1).
+demand 2 : move(state(west, west, west, east), _WheyeCall0, _WheyeCall1).
+demand 2 : move(state(west, west, west, west), _WheyeCall0, _WheyeCall1).
+answer 2 [165]
+
+?- check.
+checked: 165 steps, 1 claim
+4 source facts; 118 rule applications
+Conditions:
+  C1 resolution: 122 checked, 0 failed
+  C2 well-foundedness: 141 checked, 0 failed
+  C3 justification: 168 checked, 0 failed
+  C4 coverage: 617 checked, 0 failed
+  C5 re-decision: 21 checked, 0 failed
+  C6 boundary consistency: 25 checked, 0 failed
+  C7 relevance: 167 checked, 0 failed
+  C8 witness integrity: not applicable (program uses no fresh witnesses)
+  C9 query isolation: 1 checked, 0 failed
+Source facts and rules are assumed. Answer completeness is not checked.
+
+?- check(solution([goat, nothing, wolf, goat, cabbage, nothing, goat], 7)).
+true.
+
+?- check(solution([goat, nothing, cabbage, goat, wolf, nothing, goat], 7)).
+true.
+
+?- check(aggregate_all(count, (solution(Moves, Cost)), 2)).
+true.
+
+?- check(aggregate_all(count, (safe(State)), 10)).
+true.
+
+?- check(\+ (safe(state(east, west, west, east)))).
+true.
+
+?- check(\+ (safe(state(east, east, west, west)))).
+true.
+
+?- check(\+ (crossing(state(west, west, west, west), nothing, state(east, west, west, west)))).
+true.

@@ -142,7 +142,7 @@ dependencies = [
 
 [[package]]
 name = "wheye"
-version = "0.1.19"
+version = "0.1.20"
 dependencies = [
  "num-bigint",
  "num-integer",

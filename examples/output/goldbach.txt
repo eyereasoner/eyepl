@@ -1,0 +1,156 @@
+?- partition(N, P, Q).
+N = 4, P = 2, Q = 2.
+N = 6, P = 3, Q = 3.
+N = 8, P = 3, Q = 5.
+N = 10, P = 3, Q = 7.
+N = 10, P = 5, Q = 5.
+N = 12, P = 5, Q = 7.
+N = 20, P = 3, Q = 17.
+N = 20, P = 7, Q = 13.
+N = 50, P = 3, Q = 47.
+N = 28, P = 5, Q = 23.
+N = 50, P = 7, Q = 43.
+N = 28, P = 11, Q = 17.
+N = 50, P = 13, Q = 37.
+N = 50, P = 19, Q = 31.
+
+?- partition(50, 19, 31).
+true.
+
+?- why.
+wheye-proof 1
+% Rule 1: in_range(Low, High, Low) :- Low =< High.
+% Rule 2: in_range(Low, High, Value) :- Low < High, Next is '+'(Low, 1), in_range(Next, High, Value).
+% Rule 3: no_factor(N, Divisor) :- '*'(Divisor, Divisor) > N.
+% Rule 4: no_factor(N, Divisor) :- '*'(Divisor, Divisor) =< N, mod(N, Divisor) =\= 0, Next is '+'(Divisor, 1), no_factor(N, Next).
+% Rule 5: prime(N) :- N > 1, no_factor(N, 2).
+% Rule 6: partition(N, P, Q) :- even(N), Half is div(N, 2), in_range(2, Half, P), Q is '-'(N, P), prime(P), prime(Q).
+step 1 source 8 : even(50).
+step 2 builtin : is(3, '+'(2, 1)).
+step 3 builtin : '<'(2, 25).
+step 4 builtin : is(4, '+'(3, 1)).
+step 5 builtin : '<'(3, 25).
+step 6 builtin : is(5, '+'(4, 1)).
+step 7 builtin : '<'(4, 25).
+step 8 builtin : is(6, '+'(5, 1)).
+step 9 builtin : '<'(5, 25).
+step 10 builtin : is(7, '+'(6, 1)).
+step 11 builtin : '<'(6, 25).
+step 12 builtin : is(8, '+'(7, 1)).
+step 13 builtin : '<'(7, 25).
+step 14 builtin : is(9, '+'(8, 1)).
+step 15 builtin : '<'(8, 25).
+step 16 builtin : is(10, '+'(9, 1)).
+step 17 builtin : '<'(9, 25).
+step 18 builtin : is(11, '+'(10, 1)).
+step 19 builtin : '<'(10, 25).
+step 20 builtin : is(12, '+'(11, 1)).
+step 21 builtin : '<'(11, 25).
+step 22 builtin : is(13, '+'(12, 1)).
+step 23 builtin : '<'(12, 25).
+step 24 builtin : is(14, '+'(13, 1)).
+step 25 builtin : '<'(13, 25).
+step 26 builtin : '<'(14, 25).
+step 27 builtin : is(15, '+'(14, 1)).
+step 28 builtin : '<'(15, 25).
+step 29 builtin : is(16, '+'(15, 1)).
+step 30 builtin : '<'(16, 25).
+step 31 builtin : is(17, '+'(16, 1)).
+step 32 builtin : '<'(17, 25).
+step 33 builtin : is(18, '+'(17, 1)).
+step 34 builtin : '=<'(19, 25).
+step 35 builtin : '<'(18, 25).
+step 36 builtin : is(19, '+'(18, 1)).
+step 37 builtin : is(25, div(50, 2)).
+step 38 builtin : '>'('*'(5, 5), 19).
+step 39 builtin : '=<'('*'(4, 4), 19).
+step 40 builtin : '=\\='(mod(19, 4), 0).
+step 41 builtin : '=<'('*'(3, 3), 19).
+step 42 builtin : '=\\='(mod(19, 3), 0).
+step 43 builtin : '=<'('*'(2, 2), 19).
+step 44 builtin : '=\\='(mod(19, 2), 0).
+step 45 builtin : '>'(19, 1).
+step 46 builtin : '>'('*'(6, 6), 31).
+step 47 builtin : '=<'('*'(5, 5), 31).
+step 48 builtin : '=\\='(mod(31, 5), 0).
+step 49 builtin : '=<'('*'(4, 4), 31).
+step 50 builtin : '=\\='(mod(31, 4), 0).
+step 51 builtin : '=<'('*'(3, 3), 31).
+step 52 builtin : '=\\='(mod(31, 3), 0).
+step 53 builtin : '=<'('*'(2, 2), 31).
+step 54 builtin : '=\\='(mod(31, 2), 0).
+step 55 builtin : '>'(31, 1).
+step 56 builtin : is(31, '-'(50, 19)).
+step 57 rule 1 [34] : in_range(19, 25, 19).
+step 58 rule 3 [38] : no_factor(19, 5).
+step 59 rule 3 [46] : no_factor(31, 6).
+step 60 rule 2 [35,36,57] : in_range(18, 25, 19).
+step 61 rule 4 [39,40,6,58] : no_factor(19, 4).
+step 62 rule 4 [47,48,8,59] : no_factor(31, 5).
+step 63 rule 2 [32,33,60] : in_range(17, 25, 19).
+step 64 rule 4 [41,42,4,61] : no_factor(19, 3).
+step 65 rule 4 [49,50,6,62] : no_factor(31, 4).
+step 66 rule 2 [30,31,63] : in_range(16, 25, 19).
+step 67 rule 4 [43,44,2,64] : no_factor(19, 2).
+step 68 rule 4 [51,52,4,65] : no_factor(31, 3).
+step 69 rule 2 [28,29,66] : in_range(15, 25, 19).
+step 70 rule 5 [45,67] : prime(19).
+step 71 rule 4 [53,54,2,68] : no_factor(31, 2).
+step 72 rule 2 [26,27,69] : in_range(14, 25, 19).
+step 73 rule 5 [55,71] : prime(31).
+step 74 rule 2 [25,24,72] : in_range(13, 25, 19).
+step 75 rule 2 [23,22,74] : in_range(12, 25, 19).
+step 76 rule 2 [21,20,75] : in_range(11, 25, 19).
+step 77 rule 2 [19,18,76] : in_range(10, 25, 19).
+step 78 rule 2 [17,16,77] : in_range(9, 25, 19).
+step 79 rule 2 [15,14,78] : in_range(8, 25, 19).
+step 80 rule 2 [13,12,79] : in_range(7, 25, 19).
+step 81 rule 2 [11,10,80] : in_range(6, 25, 19).
+step 82 rule 2 [9,8,81] : in_range(5, 25, 19).
+step 83 rule 2 [7,6,82] : in_range(4, 25, 19).
+step 84 rule 2 [5,4,83] : in_range(3, 25, 19).
+step 85 rule 2 [3,2,84] : in_range(2, 25, 19).
+step 86 rule 6 [1,37,85,56,70,73] : partition(50, 19, 31).
+answer 2 [86]
+
+?- check.
+checked: 86 steps, 1 claim
+1 source fact; 30 rule applications
+Conditions:
+  C1 resolution: 31 checked, 0 failed
+  C2 well-foundedness: 30 checked, 0 failed
+  C3 justification: 87 checked, 0 failed
+  C4 coverage: 125 checked, 0 failed
+  C5 re-decision: 55 checked, 0 failed
+  C6 boundary consistency: 0 checked, 0 failed
+  C7 relevance: 86 checked, 0 failed
+  C8 witness integrity: not applicable (program uses no fresh witnesses)
+  C9 query isolation: 1 checked, 0 failed
+Source facts and rules are assumed. Answer completeness is not checked.
+
+?- check(partition(4, 2, 2)).
+true.
+
+?- check(partition(28, 5, 23)).
+true.
+
+?- check(partition(50, 3, 47)).
+true.
+
+?- check(aggregate_all(count, (partition(50, P, Q)), 4)).
+true.
+
+?- check(prime(2)).
+true.
+
+?- check(prime(47)).
+true.
+
+?- check(\+ (prime(1))).
+true.
+
+?- check(\+ (prime(49))).
+true.
+
+?- check(\+ (partition(10, 7, 3))).
+true.
