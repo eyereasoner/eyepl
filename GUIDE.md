@@ -5,6 +5,41 @@ answers, and inspect their independently checkable proofs. The
 [specification](https://eyereasoner.github.io/wheye/SPEC/) defines the language
 and the [C1–C9 contract](https://eyereasoner.github.io/wheye/SPEC/#8-verification).
 
+## Why a Prolog subset?
+
+A restricted language can be a useful language in its own right. Datalog is a
+well-established example: restricting logic programs gives recursive queries
+a precise declarative meaning and makes specialized evaluation possible.
+Wheye follows that principle, choosing a Prolog subset for recursive reasoning
+with independently checkable evidence.
+
+The implemented choices work together:
+
+- **Set semantics:** a fact or answer tuple contributes once, regardless of how
+  many derivations reach it. For terminating positive programs whose calls
+  supply the required inputs, clause order does not change the answer set.
+- **Tabled recursion:** repeated calls share work, and recursive consumers
+  resume as answers arrive. Finite positive recursion can reach a fixed point
+  without relying on Prolog's depth-first search order.
+- **Stratified negation and aggregation:** producers complete before their
+  absence or collected results are used. Their certificates include the closed
+  boundaries needed to check those decisions.
+- **Explicit proof obligations:** the checker verifies recorded rule
+  applications, re-decides pure built-ins, and checks the supplied boundaries
+  without invoking the evaluator or filling gaps in the evidence.
+
+This scope keeps the relationship between a program, its answers, and its
+evidence small enough to specify and inspect. Features such as cut, mutable
+predicates, and procedural I/O would need additional semantics and evidence
+rules before they could fit that contract. A full Prolog system can support
+proofs too; wheye's current C1–C9 contract covers the language specified here.
+
+Wheye extends beyond classical function-free Datalog with structural terms,
+lists, arithmetic, and fresh witnesses. Term construction and arithmetic can
+create infinite computations, so the subset does not guarantee termination.
+Certificate acceptance establishes the recorded claims relative to the source
+assumptions; it does not establish answer completeness or external-world truth.
+
 ## Run your first program
 
 With Rust and Cargo installed:
