@@ -1,6 +1,6 @@
 # Wheye specification
 
-Version **0.1.20**. Implemented Prolog subset and independently checked proof
+Version **0.1.21**. Implemented Prolog subset and independently checked proof
 certificate contract. This specification does not claim full ISO Prolog conformance.
 
 Uppercase MUST, MUST NOT, SHOULD, and MAY express requirement levels under

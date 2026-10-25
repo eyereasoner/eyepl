@@ -1,0 +1,82 @@
+?- metric(Pack, Metric, Value).
+Pack = bp1, Metric = thermal_margin_c, Value = -18.0.
+Pack = bp1, Metric = resistive_heating_w, Value = 16.0.
+
+?- diagnosis(Pack, Diagnosis).
+Pack = bp1, Diagnosis = thermal_runaway_precursor.
+
+?- action(Pack, Action).
+Pack = bp1, Action = isolate_and_cool.
+
+?- action(bp1, isolate_and_cool).
+true.
+
+?- why.
+wheye-proof 1
+% Rule 2: metric(Pack, resistive_heating_w, Heating) :- telemetry(Pack, current_a, Current), telemetry(Pack, internal_resistance_ohm, Resistance), CurrentSquared is '*'(Current, Current), Heating is '*'(CurrentSquared, Resistance).
+% Rule 3: over_temperature(Pack) :- telemetry(Pack, temperature_c, Temperature), safety_limit(max_safe_temperature_c, Maximum), Temperature > Maximum.
+% Rule 4: rapid_heating(Pack) :- telemetry(Pack, temperature_rise_c_per_min, Rate), safety_limit(max_temperature_rise_c_per_min, Maximum), Rate > Maximum.
+% Rule 5: cell_imbalance(Pack) :- telemetry(Pack, cell_delta_v, Delta), safety_limit(max_cell_delta_v, Maximum), Delta > Maximum.
+% Rule 6: heating_exceeds_cooling(Pack) :- metric(Pack, resistive_heating_w, Heating), cooling_capacity_w(Pack, Capacity), Heating > Capacity.
+% Rule 7: corroborated_over_temperature(Pack) :- telemetry(Pack, temperature_c, Primary), redundant_telemetry(Pack, temperature_c, Redundant), safety_limit(max_safe_temperature_c, Maximum), Primary > Maximum, Redundant > Maximum.
+% Rule 8: diagnosis(Pack, thermal_runaway_precursor) :- over_temperature(Pack), rapid_heating(Pack), cell_imbalance(Pack), heating_exceeds_cooling(Pack).
+% Rule 9: action(Pack, isolate_and_cool) :- diagnosis(Pack, thermal_runaway_precursor), corroborated_over_temperature(Pack).
+step 1 source 1 : telemetry(bp1, temperature_c, 78.0).
+step 2 source 2 : telemetry(bp1, temperature_rise_c_per_min, 4.2).
+step 3 source 3 : telemetry(bp1, current_a, 32.0).
+step 4 source 4 : telemetry(bp1, internal_resistance_ohm, 0.015625).
+step 5 source 5 : telemetry(bp1, cell_delta_v, 0.19).
+step 6 source 6 : redundant_telemetry(bp1, temperature_c, 76.0).
+step 7 source 7 : safety_limit(max_safe_temperature_c, 60.0).
+step 8 source 8 : safety_limit(max_temperature_rise_c_per_min, 1.5).
+step 9 source 9 : safety_limit(max_cell_delta_v, 0.08).
+step 10 source 10 : cooling_capacity_w(bp1, 12.0).
+step 11 builtin : '>'(78.0, 60.0).
+step 12 rule 3 [1,7,11] : over_temperature(bp1).
+step 13 builtin : '>'(76.0, 60.0).
+step 14 rule 7 [1,6,7,11,13] : corroborated_over_temperature(bp1).
+step 15 builtin : '>'(4.2, 1.5).
+step 16 rule 4 [2,8,15] : rapid_heating(bp1).
+step 17 builtin : is(1024.0, '*'(32.0, 32.0)).
+step 18 builtin : is(16.0, '*'(1024.0, 0.015625)).
+step 19 rule 2 [3,4,17,18] : metric(bp1, resistive_heating_w, 16.0).
+step 20 builtin : '>'(0.19, 0.08).
+step 21 rule 5 [5,9,20] : cell_imbalance(bp1).
+step 22 builtin : '>'(16.0, 12.0).
+step 23 rule 6 [19,10,22] : heating_exceeds_cooling(bp1).
+step 24 rule 8 [12,16,21,23] : diagnosis(bp1, thermal_runaway_precursor).
+step 25 rule 9 [24,14] : action(bp1, isolate_and_cool).
+answer 4 [25]
+
+?- check.
+checked: 25 steps, 1 claim
+10 source facts; 8 rule applications
+Conditions:
+  C1 resolution: 18 checked, 0 failed
+  C2 well-foundedness: 8 checked, 0 failed
+  C3 justification: 26 checked, 0 failed
+  C4 coverage: 47 checked, 0 failed
+  C5 re-decision: 7 checked, 0 failed
+  C6 boundary consistency: 0 checked, 0 failed
+  C7 relevance: 25 checked, 0 failed
+  C8 witness integrity: not applicable (program uses no fresh witnesses)
+  C9 query isolation: 1 checked, 0 failed
+Source facts and rules are assumed. Answer completeness is not checked.
+
+?- check(metric(bp1, thermal_margin_c, -18.0)).
+true.
+
+?- check(metric(bp1, resistive_heating_w, 16.0)).
+true.
+
+?- check(corroborated_over_temperature(bp1)).
+true.
+
+?- check(diagnosis(bp1, thermal_runaway_precursor)).
+true.
+
+?- check(action(bp1, isolate_and_cool)).
+true.
+
+?- check(aggregate_all(count, (diagnosis(Pack, Diagnosis)), 1)).
+true.

@@ -1,6 +1,6 @@
 # Wheye guide
 
-Version **0.1.20**. Run a Prolog subset in the native CLI or browser, get
+Version **0.1.21**. Run a Prolog subset in the native CLI or browser, get
 answers, and inspect their independently checkable proofs. The
 [specification](https://eyereasoner.github.io/wheye/SPEC/) defines the language
 and the [C1â€“C9 contract](https://eyereasoner.github.io/wheye/SPEC/#8-verification).
@@ -73,6 +73,10 @@ suite compares them exactly and independently checks the certificates under C1â€
 | [Command grammar](https://github.com/eyereasoner/wheye/blob/main/examples/grammar.pl) | List parsing with structured results and unconsumed input |
 | [Drought relief](https://github.com/eyereasoner/wheye/blob/main/examples/agri-drought-relief.pl) | Explicit eligibility, recorded statuses, and fresh payment identities |
 | [River crossing](https://github.com/eyereasoner/wheye/blob/main/examples/wolf-goat-cabbage.pl) | Safe state transitions and minimum-cost plans |
+| [Catalan numbers](https://github.com/eyereasoner/wheye/blob/main/examples/catalan-convolution.pl) | Tabled convolution with an explicit recursive sum |
+| [Pointer analysis](https://github.com/eyereasoner/wheye/blob/main/examples/pointer-analysis.pl) | A finite fixed point for possible memory targets |
+| [Consumable resources](https://github.com/eyereasoner/wheye/blob/main/examples/linear-logic-resources.pl) | Resource lists prevent spending one token twice |
+| [Constructive logic](https://github.com/eyereasoner/wheye/blob/main/examples/intuitionistic-logic-kripke.pl) | Formula terms evaluated in a finite information-growth model |
 
 The airport example has 7,698 airports and 37,274 directed flight links. It
 finds three routes from Ostend to Prague with at most two intermediate stops.

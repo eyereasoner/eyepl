@@ -1,0 +1,62 @@
+?- end_to_end_latency(Path, Milliseconds).
+Path = edge_path, Milliseconds = 47.0.
+
+?- status(Path, Status).
+Path = edge_path, Status = sla_compliant.
+
+?- sla_compliant(edge_path).
+true.
+
+?- why.
+wheye-proof 1
+% Rule 1: latency_sum([Link | Links], Total) :- link_latency(Link, Linklatency), latency_sum(Links, Rest), Total is '+'(Linklatency, Rest).
+% Rule 2: end_to_end_latency(Path, Latency) :- path(Path, Links), latency_sum(Links, Linklatency), jitter(Path, Jitter), Latency is '+'(Linklatency, Jitter).
+% Rule 3: sla_compliant(Path) :- end_to_end_latency(Path, Latency), sla(Path, maximum_latency_ms, Maximum), Latency < Maximum.
+step 1 source 1 : path(edge_path, [link_a, link_b, link_c]).
+step 2 source 2 : link_latency(link_a, 12.0).
+step 3 source 3 : link_latency(link_b, 18.0).
+step 4 source 4 : link_latency(link_c, 9.0).
+step 5 source 5 : jitter(edge_path, 8.0).
+step 6 source 6 : sla(edge_path, maximum_latency_ms, 50.0).
+step 7 source 7 : latency_sum([], 0.0).
+step 8 builtin : is(9.0, '+'(9.0, 0.0)).
+step 9 builtin : is(27.0, '+'(18.0, 9.0)).
+step 10 builtin : is(39.0, '+'(12.0, 27.0)).
+step 11 builtin : is(47.0, '+'(39.0, 8.0)).
+step 12 builtin : '<'(47.0, 50.0).
+step 13 rule 1 [4,7,8] : latency_sum([link_c], 9.0).
+step 14 rule 1 [3,13,9] : latency_sum([link_b, link_c], 27.0).
+step 15 rule 1 [2,14,10] : latency_sum([link_a, link_b, link_c], 39.0).
+step 16 rule 2 [1,15,5,11] : end_to_end_latency(edge_path, 47.0).
+step 17 rule 3 [16,6,12] : sla_compliant(edge_path).
+answer 3 [17]
+
+?- check.
+checked: 17 steps, 1 claim
+7 source facts; 5 rule applications
+Conditions:
+  C1 resolution: 12 checked, 0 failed
+  C2 well-foundedness: 5 checked, 0 failed
+  C3 justification: 18 checked, 0 failed
+  C4 coverage: 30 checked, 0 failed
+  C5 re-decision: 5 checked, 0 failed
+  C6 boundary consistency: 0 checked, 0 failed
+  C7 relevance: 17 checked, 0 failed
+  C8 witness integrity: not applicable (program uses no fresh witnesses)
+  C9 query isolation: 1 checked, 0 failed
+Source facts and rules are assumed. Answer completeness is not checked.
+
+?- check(latency_sum([], 0.0)).
+true.
+
+?- check(latency_sum([link_a, link_b, link_c], 39.0)).
+true.
+
+?- check(end_to_end_latency(edge_path, 47.0)).
+true.
+
+?- check(sla_compliant(edge_path)).
+true.
+
+?- check(aggregate_all(count, (status(Path, Status)), 1)).
+true.

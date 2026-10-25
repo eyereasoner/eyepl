@@ -1,0 +1,96 @@
+?- aggregate_all(count, (hamiltonian_path(Path)), Count).
+Count = 120.
+
+?- hamiltonian_path([v5, v1, v2, v3, v6, Last]).
+Last = v4.
+
+?- hamiltonian_path([v5, v1, v2, v3, v6, v4]).
+true.
+
+?- why.
+wheye-proof 1
+% Rule 1: not_member(_, []) :- .
+% Rule 2: not_member(X, [Y | Rest]) :- X \= Y, not_member(X, Rest).
+% Rule 3: adjacent(V, U) :- edge(V, U).
+% Rule 4: adjacent(V, U) :- edge(U, V).
+% Rule 5: hamiltonian_path([A, B, C, D, E, F]) :- vertex(A), vertex(B), adjacent(A, B), not_member(B, [A]), vertex(C), adjacent(B, C), not_member(C, [A, B]), vertex(D), adjacent(C, D), not_member(D, [A, B, C]), vertex(E), adjacent(D, E), not_member(E, [A, B, C, D]), vertex(F), adjacent(E, F), not_member(F, [A, B, C, D, E]).
+step 1 source 1 : edge(v1, v2).
+step 2 source 3 : edge(v1, v5).
+step 3 source 5 : edge(v2, v3).
+step 4 source 9 : edge(v3, v6).
+step 5 source 11 : edge(v4, v6).
+step 6 source 12 : vertex(v1).
+step 7 source 13 : vertex(v2).
+step 8 source 14 : vertex(v3).
+step 9 source 15 : vertex(v4).
+step 10 source 16 : vertex(v5).
+step 11 source 17 : vertex(v6).
+step 12 rule 1 [] : not_member(v2, []).
+step 13 rule 1 [] : not_member(v3, []).
+step 14 rule 1 [] : not_member(v6, []).
+step 15 rule 1 [] : not_member(v1, []).
+step 16 rule 1 [] : not_member(v4, []).
+step 17 builtin : '\\='(v2, v1).
+step 18 builtin : '\\='(v3, v1).
+step 19 builtin : '\\='(v3, v2).
+step 20 builtin : '\\='(v6, v1).
+step 21 builtin : '\\='(v6, v2).
+step 22 builtin : '\\='(v6, v3).
+step 23 builtin : '\\='(v1, v5).
+step 24 builtin : '\\='(v4, v2).
+step 25 builtin : '\\='(v4, v3).
+step 26 builtin : '\\='(v4, v5).
+step 27 builtin : '\\='(v4, v6).
+step 28 builtin : '\\='(v4, v1).
+step 29 builtin : '\\='(v2, v5).
+step 30 builtin : '\\='(v3, v5).
+step 31 builtin : '\\='(v6, v5).
+step 32 rule 3 [1] : adjacent(v1, v2).
+step 33 rule 4 [2] : adjacent(v5, v1).
+step 34 rule 3 [3] : adjacent(v2, v3).
+step 35 rule 3 [4] : adjacent(v3, v6).
+step 36 rule 4 [5] : adjacent(v6, v4).
+step 37 rule 2 [17,12] : not_member(v2, [v1]).
+step 38 rule 2 [19,13] : not_member(v3, [v2]).
+step 39 rule 2 [22,14] : not_member(v6, [v3]).
+step 40 rule 2 [23,15] : not_member(v1, [v5]).
+step 41 rule 2 [27,16] : not_member(v4, [v6]).
+step 42 rule 2 [29,37] : not_member(v2, [v5, v1]).
+step 43 rule 2 [18,38] : not_member(v3, [v1, v2]).
+step 44 rule 2 [21,39] : not_member(v6, [v2, v3]).
+step 45 rule 2 [25,41] : not_member(v4, [v3, v6]).
+step 46 rule 2 [30,43] : not_member(v3, [v5, v1, v2]).
+step 47 rule 2 [20,44] : not_member(v6, [v1, v2, v3]).
+step 48 rule 2 [24,45] : not_member(v4, [v2, v3, v6]).
+step 49 rule 2 [31,47] : not_member(v6, [v5, v1, v2, v3]).
+step 50 rule 2 [28,48] : not_member(v4, [v1, v2, v3, v6]).
+step 51 rule 2 [26,50] : not_member(v4, [v5, v1, v2, v3, v6]).
+step 52 rule 5 [10,6,33,40,7,32,42,8,34,46,11,35,49,9,36,51] : hamiltonian_path([v5, v1, v2, v3, v6, v4]).
+answer 3 [52]
+
+?- check.
+checked: 52 steps, 1 claim
+11 source facts; 26 rule applications
+Conditions:
+  C1 resolution: 37 checked, 0 failed
+  C2 well-foundedness: 26 checked, 0 failed
+  C3 justification: 53 checked, 0 failed
+  C4 coverage: 90 checked, 0 failed
+  C5 re-decision: 15 checked, 0 failed
+  C6 boundary consistency: 0 checked, 0 failed
+  C7 relevance: 52 checked, 0 failed
+  C8 witness integrity: not applicable (program uses no fresh witnesses)
+  C9 query isolation: 1 checked, 0 failed
+Source facts and rules are assumed. Answer completeness is not checked.
+
+?- check(aggregate_all(count, (hamiltonian_path(Path)), 120)).
+true.
+
+?- check(hamiltonian_path([v5, v1, v2, v3, v6, v4])).
+true.
+
+?- check(\+ (hamiltonian_path([v1, v2, v3, v4, v5, v1]))).
+true.
+
+?- check(\+ (hamiltonian_path([v1, v2, v3, v4, v6, v5]))).
+true.

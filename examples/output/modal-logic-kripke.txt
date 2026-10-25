@@ -1,0 +1,96 @@
+?- modal_result(Name, World, Formula, Value).
+Name = all_accessible_worlds_clear, World = w0, Formula = box(atom(clear)), Value = true.
+Name = repair_is_possible, World = w0, Formula = diamond(atom(repaired)), Value = true.
+Name = repair_not_necessary, World = w0, Formula = box(atom(repaired)), Value = false.
+Name = nested_possibility, World = w1, Formula = diamond(and(atom(clear), atom(clear))), Value = true.
+
+?- evaluate(w0, box(atom(clear)), true).
+true.
+
+?- why.
+wheye-proof 1
+% Rule 1: atomic_value(W, P, true) :- true_at(W, P).
+% Rule 3: successors(W, Worlds) :- world(W), aggregate_all(list(Next), (accessible(W, Next)), Worlds).
+% Rule 5: evaluate(W, atom(P), Value) :- atomic_value(W, P, Value).
+% Rule 7: evaluate(W, box(F), Value) :- successors(W, Worlds), all_worlds(Worlds, F, Value).
+% Rule 9: all_worlds([], _, true) :- .
+% Rule 10: all_worlds([W | Rest], F, Value) :- evaluate(W, F, Head), all_worlds(Rest, F, Tail), bool_and(Head, Tail, Value).
+% Rule 11: some_world([], _, false) :- .
+step 1 source 1 : world(w0).
+step 2 source 2 : world(w1).
+step 3 source 3 : world(w2).
+step 4 source 4 : world(w3).
+step 5 source 5 : proposition(clear).
+step 6 source 6 : proposition(repaired).
+step 7 source 7 : accessible(w0, w1).
+step 8 source 8 : accessible(w0, w2).
+step 9 source 9 : accessible(w1, w1).
+step 10 source 10 : accessible(w1, w3).
+step 11 source 11 : accessible(w2, w2).
+step 12 source 12 : accessible(w3, w3).
+step 13 source 13 : true_at(w1, clear).
+step 14 source 14 : true_at(w2, clear).
+step 15 source 15 : true_at(w3, clear).
+step 16 source 16 : true_at(w2, repaired).
+step 17 source 17 : bool_and(true, true, true).
+step 18 source 18 : bool_and(true, false, false).
+step 19 source 19 : bool_and(false, true, false).
+step 20 source 20 : bool_and(false, false, false).
+step 21 source 21 : bool_or(true, true, true).
+step 22 source 22 : bool_or(true, false, true).
+step 23 source 23 : bool_or(false, true, true).
+step 24 source 24 : bool_or(false, false, false).
+step 25 source 25 : formula(all_accessible_worlds_clear, w0, box(atom(clear))).
+step 26 source 26 : formula(repair_is_possible, w0, diamond(atom(repaired))).
+step 27 source 27 : formula(nested_possibility, w1, diamond(and(atom(clear), atom(clear)))).
+step 28 source 28 : formula(repair_not_necessary, w0, box(atom(repaired))).
+step 29 rule 9 [] : all_worlds([], atom(clear), true).
+step 30 rule 11 [] : some_world([], atom(repaired), false).
+step 31 rule 9 [] : all_worlds([], atom(repaired), true).
+step 32 rule 11 [] : some_world([], and(atom(clear), atom(clear)), false).
+step 33 rule 1 [13] : atomic_value(w1, clear, true).
+step 34 rule 1 [14] : atomic_value(w2, clear, true).
+step 35 rule 1 [15] : atomic_value(w3, clear, true).
+step 36 rule 1 [16] : atomic_value(w2, repaired, true).
+step 37 rule 5 [33] : evaluate(w1, atom(clear), true).
+step 38 rule 5 [34] : evaluate(w2, atom(clear), true).
+step 39 aggregate r3 2 1 : '$aggregate:r3:2'([binding('W', w0)], [w1, w2]).
+step 40 rule 10 [38,29,17] : all_worlds([w2], atom(clear), true).
+step 41 rule 3 [1,39] : successors(w0, [w1, w2]).
+step 42 rule 10 [37,40,17] : all_worlds([w1, w2], atom(clear), true).
+step 43 rule 7 [41,42] : evaluate(w0, box(atom(clear)), true).
+boundary 1 level 0 [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36]
+answer 2 [43]
+
+?- check.
+checked: 43 steps, 1 claim
+28 source facts; 14 rule applications
+Conditions:
+  C1 resolution: 42 checked, 0 failed
+  C2 well-foundedness: 15 checked, 0 failed
+  C3 justification: 45 checked, 0 failed
+  C4 coverage: 99 checked, 0 failed
+  C5 re-decision: 1 checked, 0 failed
+  C6 boundary consistency: 2 checked, 0 failed
+  C7 relevance: 44 checked, 0 failed
+  C8 witness integrity: not applicable (program uses no fresh witnesses)
+  C9 query isolation: 1 checked, 0 failed
+Source facts and rules are assumed. Answer completeness is not checked.
+
+?- check(evaluate(w0, box(atom(clear)), true)).
+true.
+
+?- check(evaluate(w0, diamond(atom(repaired)), true)).
+true.
+
+?- check(evaluate(w0, box(atom(repaired)), false)).
+true.
+
+?- check(evaluate(w1, diamond(and(atom(clear), atom(clear))), true)).
+true.
+
+?- check(aggregate_all(count, (modal_result(Name, W, F, true)), 3)).
+true.
+
+?- check(aggregate_all(count, (modal_result(Name, W, F, false)), 1)).
+true.

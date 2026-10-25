@@ -1,0 +1,78 @@
+?- discriminant(Case, Discriminant).
+Case = eq1, Discriminant = 1.0.
+Case = eq2, Discriminant = 64.0.
+
+?- root(Case, Root).
+Case = eq1, Root = 3.0.
+Case = eq1, Root = 2.0.
+Case = eq2, Root = 3.0.
+Case = eq2, Root = -1.0.
+
+?- root(eq1, 2.0).
+true.
+
+?- why.
+wheye-proof 1
+% Rule 1: discriminant(Case, D) :- equation(Case, A, B, C), B2 is '**'(B, 2.0), Foura is '*'(4.0, A), Fourac is '*'(Foura, C), D is '-'(B2, Fourac).
+% Rule 2: sqrt_discriminant(Case, S) :- discriminant(Case, D), D >= 0.0, S is '**'(D, 0.5).
+% Rule 3: negative_b(Case, Nb) :- equation(Case, _a, B, _c), Nb is '-'(B).
+% Rule 4: denominator(Case, Den) :- equation(Case, A, _b, _c), Den is '*'(2.0, A).
+% Rule 6: root_minus(Case, Root) :- negative_b(Case, Nb), sqrt_discriminant(Case, S), denominator(Case, Den), Numerator is '-'(Nb, S), Root is '/'(Numerator, Den).
+% Rule 8: root(Case, Root) :- root_minus(Case, Root).
+step 1 source 1 : equation(eq1, 1.0, -5.0, 6.0).
+step 2 builtin : is(25.0, '**'(-5.0, 2.0)).
+step 3 builtin : is(4.0, '*'(4.0, 1.0)).
+step 4 builtin : is(24.0, '*'(4.0, 6.0)).
+step 5 builtin : is(1.0, '-'(25.0, 24.0)).
+step 6 rule 1 [1,2,3,4,5] : discriminant(eq1, 1.0).
+step 7 builtin : is(5.0, '-'(-5.0)).
+step 8 rule 3 [1,7] : negative_b(eq1, 5.0).
+step 9 builtin : is(2.0, '*'(2.0, 1.0)).
+step 10 rule 4 [1,9] : denominator(eq1, 2.0).
+step 11 builtin : '>='(1.0, 0.0).
+step 12 builtin : is(1.0, '**'(1.0, 0.5)).
+step 13 rule 2 [6,11,12] : sqrt_discriminant(eq1, 1.0).
+step 14 builtin : is(4.0, '-'(5.0, 1.0)).
+step 15 builtin : is(2.0, '/'(4.0, 2.0)).
+step 16 rule 6 [8,13,10,14,15] : root_minus(eq1, 2.0).
+step 17 rule 8 [16] : root(eq1, 2.0).
+answer 3 [17]
+
+?- check.
+checked: 17 steps, 1 claim
+1 source fact; 6 rule applications
+Conditions:
+  C1 resolution: 7 checked, 0 failed
+  C2 well-foundedness: 6 checked, 0 failed
+  C3 justification: 18 checked, 0 failed
+  C4 coverage: 27 checked, 0 failed
+  C5 re-decision: 10 checked, 0 failed
+  C6 boundary consistency: 0 checked, 0 failed
+  C7 relevance: 17 checked, 0 failed
+  C8 witness integrity: not applicable (program uses no fresh witnesses)
+  C9 query isolation: 1 checked, 0 failed
+Source facts and rules are assumed. Answer completeness is not checked.
+
+?- check(discriminant(eq1, 1.0)).
+true.
+
+?- check(discriminant(eq2, 64.0)).
+true.
+
+?- check(root(eq1, 2.0)).
+true.
+
+?- check(root(eq1, 3.0)).
+true.
+
+?- check(root(eq2, -1.0)).
+true.
+
+?- check(root(eq2, 3.0)).
+true.
+
+?- check(aggregate_all(count, (root_satisfies(Case, X)), 4)).
+true.
+
+?- check(\+ (root(eq1, 0.0))).
+true.

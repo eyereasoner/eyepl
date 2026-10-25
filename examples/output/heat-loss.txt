@@ -1,0 +1,60 @@
+?- temperature_difference(Wall, Kelvin).
+Wall = wall1, Kelvin = 25.0.
+
+?- thermal_resistance(Wall, KelvinPerWatt).
+Wall = wall1, KelvinPerWatt = 0.020833333333333332.
+
+?- heat_loss(Wall, Watts).
+Wall = wall1, Watts = 1200.0.
+
+?- status(Wall, Status).
+Wall = wall1, Status = high_heat_loss.
+
+?- status(wall1, high_heat_loss).
+true.
+
+?- why.
+wheye-proof 1
+% Rule 1: temperature_difference(Wall, Deltat) :- wall(Wall, indoor_C, Indoor), wall(Wall, outdoor_C, Outdoor), Deltat is '-'(Indoor, Outdoor).
+% Rule 2: thermal_resistance(Wall, Resistance) :- wall(Wall, thickness_m, Thickness), wall(Wall, conductivity_W_mK, Conductivity), wall(Wall, area_m2, Area), Conductance is '*'(Conductivity, Area), Resistance is '/'(Thickness, Conductance).
+% Rule 3: heat_loss(Wall, Heatloss) :- temperature_difference(Wall, Deltat), thermal_resistance(Wall, Resistance), Heatloss is '/'(Deltat, Resistance).
+% Rule 8: status(Wall, high_heat_loss) :- heat_loss(Wall, Heatloss), Heatloss > 1000.0.
+step 1 source 1 : wall(wall1, conductivity_W_mK, 0.8).
+step 2 source 2 : wall(wall1, area_m2, 12.0).
+step 3 source 3 : wall(wall1, thickness_m, 0.2).
+step 4 source 4 : wall(wall1, indoor_C, 21.0).
+step 5 source 5 : wall(wall1, outdoor_C, -4.0).
+step 6 builtin : is(9.600000000000001, '*'(0.8, 12.0)).
+step 7 builtin : is(0.020833333333333332, '/'(0.2, 9.600000000000001)).
+step 8 rule 2 [3,1,2,6,7] : thermal_resistance(wall1, 0.020833333333333332).
+step 9 builtin : is(25.0, '-'(21.0, -4.0)).
+step 10 rule 1 [4,5,9] : temperature_difference(wall1, 25.0).
+step 11 builtin : is(1200.0, '/'(25.0, 0.020833333333333332)).
+step 12 rule 3 [10,8,11] : heat_loss(wall1, 1200.0).
+step 13 builtin : '>'(1200.0, 1000.0).
+step 14 rule 8 [12,13] : status(wall1, high_heat_loss).
+answer 5 [14]
+
+?- check.
+checked: 14 steps, 1 claim
+5 source facts; 4 rule applications
+Conditions:
+  C1 resolution: 9 checked, 0 failed
+  C2 well-foundedness: 4 checked, 0 failed
+  C3 justification: 15 checked, 0 failed
+  C4 coverage: 24 checked, 0 failed
+  C5 re-decision: 5 checked, 0 failed
+  C6 boundary consistency: not applicable (program uses no negation or aggregation)
+  C7 relevance: 14 checked, 0 failed
+  C8 witness integrity: not applicable (program uses no fresh witnesses)
+  C9 query isolation: 1 checked, 0 failed
+Source facts and rules are assumed. Answer completeness is not checked.
+
+?- check(temperature_difference(wall1, 25.0)).
+true.
+
+?- check((heat_loss(wall1, W), abs('-'(W, 1200)) < 1e-9)).
+true.
+
+?- check((thermal_resistance(wall1, R), abs('-'('*'(R, 48), 1)) < 1e-12)).
+true.

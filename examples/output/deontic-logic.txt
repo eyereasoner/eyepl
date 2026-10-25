@@ -1,0 +1,60 @@
+?- violation(Actor, Violation).
+Actor = alice, Violation = missed_obligation(obtain_consent).
+Actor = alice, Violation = prohibited_action(share_record).
+
+?- compensation(Actor, Compensation).
+Actor = alice, Compensation = compensation(share_record, notify_dpo).
+
+?- status(Actor, Status).
+Actor = alice, Status = requires_review.
+
+?- status(alice, requires_review).
+true.
+
+?- why.
+wheye-proof 1
+% Rule 1: violation(Actor, missed_obligation(Action)) :- obliged(Actor, Action), not_performed(Actor, Action).
+% Rule 4: uncompensated_violation(Actor, missed_obligation(Action)) :- violation(Actor, missed_obligation(Action)).
+% Rule 7: status(Actor, requires_review) :- uncompensated_violation(Actor, _violation).
+step 1 source 4 : obliged(alice, obtain_consent).
+step 2 source 9 : not_performed(alice, obtain_consent).
+step 3 rule 1 [1,2] : violation(alice, missed_obligation(obtain_consent)).
+step 4 rule 4 [3] : uncompensated_violation(alice, missed_obligation(obtain_consent)).
+step 5 rule 7 [4] : status(alice, requires_review).
+answer 4 [5]
+
+?- check.
+checked: 5 steps, 1 claim
+2 source facts; 3 rule applications
+Conditions:
+  C1 resolution: 5 checked, 0 failed
+  C2 well-foundedness: 3 checked, 0 failed
+  C3 justification: 6 checked, 0 failed
+  C4 coverage: 11 checked, 0 failed
+  C5 re-decision: 0 checked, 0 failed
+  C6 boundary consistency: 0 checked, 0 failed
+  C7 relevance: 5 checked, 0 failed
+  C8 witness integrity: not applicable (program uses no fresh witnesses)
+  C9 query isolation: 1 checked, 0 failed
+Source facts and rules are assumed. Answer completeness is not checked.
+
+?- check(violation(alice, missed_obligation(obtain_consent))).
+true.
+
+?- check(violation(alice, prohibited_action(share_record))).
+true.
+
+?- check(compensation(alice, compensation(share_record, notify_dpo))).
+true.
+
+?- check(\+ (uncompensated_violation(alice, prohibited_action(share_record)))).
+true.
+
+?- check(uncompensated_violation(alice, missed_obligation(obtain_consent))).
+true.
+
+?- check(\+ (violation(alice, missed_obligation(delete_unneeded_copy)))).
+true.
+
+?- check(aggregate_all(count, (violation(Actor, Violation)), 2)).
+true.

@@ -1,0 +1,97 @@
+?- factorsSmallest(Case, Factors).
+Case = case, Factors = [3, 3, 7, 829, 3881].
+
+?- factorsLargest(Case, Factors).
+Case = case, Factors = [3881, 829, 7, 3, 3].
+
+?- product(Case, Product).
+Case = case, Product = 202692987.
+
+?- distinctPrimeCount(Case, Count).
+Case = case, Count = 4.
+
+?- factor_smallest(49, [7, 7]).
+true.
+
+?- why.
+wheye-proof 1
+% Rule 1: smallest_divisor_from(N, D, N) :- '*'(D, D) > N.
+% Rule 2: smallest_divisor_from(N, D, D) :- '*'(D, D) =< N, mod(N, D) =:= 0.
+% Rule 3: smallest_divisor_from(N, D, Factor) :- '*'(D, D) =< N, mod(N, D) =\= 0, Next is '+'(D, 1), smallest_divisor_from(N, Next, Factor).
+% Rule 4: append([], Ys, Ys) :- .
+% Rule 5: append([X | Xs], Ys, [X | Rest]) :- append(Xs, Ys, Rest).
+% Rule 14: factor_smallest(N, [N]) :- N >= 2, smallest_divisor_from(N, 2, N).
+% Rule 15: factor_smallest(N, Factors) :- N >= 2, smallest_divisor_from(N, 2, D), D \= N, Q is '//'(N, D), factor_smallest(D, Left), factor_smallest(Q, Right), append(Left, Right, Factors).
+step 1 builtin : '>'('*'(3, 3), 7).
+step 2 builtin : '=<'('*'(2, 2), 7).
+step 3 builtin : '=\\='(mod(7, 2), 0).
+step 4 builtin : is(3, '+'(2, 1)).
+step 5 builtin : is(7, '+'(6, 1)).
+step 6 builtin : is(6, '+'(5, 1)).
+step 7 builtin : is(5, '+'(4, 1)).
+step 8 builtin : is(4, '+'(3, 1)).
+step 9 builtin : '>='(7, 2).
+step 10 builtin : '=<'('*'(7, 7), 49).
+step 11 builtin : '=:='(mod(49, 7), 0).
+step 12 builtin : '=<'('*'(6, 6), 49).
+step 13 builtin : '=\\='(mod(49, 6), 0).
+step 14 builtin : '=<'('*'(5, 5), 49).
+step 15 builtin : '=\\='(mod(49, 5), 0).
+step 16 builtin : '=<'('*'(4, 4), 49).
+step 17 builtin : '=\\='(mod(49, 4), 0).
+step 18 builtin : '=<'('*'(3, 3), 49).
+step 19 builtin : '=\\='(mod(49, 3), 0).
+step 20 builtin : '=<'('*'(2, 2), 49).
+step 21 builtin : '=\\='(mod(49, 2), 0).
+step 22 rule 4 [] : append([], [7], [7]).
+step 23 builtin : '>='(49, 2).
+step 24 builtin : '\\='(7, 49).
+step 25 builtin : is(7, '//'(49, 7)).
+step 26 rule 1 [1] : smallest_divisor_from(7, 3, 7).
+step 27 rule 2 [10,11] : smallest_divisor_from(49, 7, 7).
+step 28 rule 5 [22] : append([7], [7], [7, 7]).
+step 29 rule 3 [2,3,4,26] : smallest_divisor_from(7, 2, 7).
+step 30 rule 3 [12,13,5,27] : smallest_divisor_from(49, 6, 7).
+step 31 rule 14 [9,29] : factor_smallest(7, [7]).
+step 32 rule 3 [14,15,6,30] : smallest_divisor_from(49, 5, 7).
+step 33 rule 3 [16,17,7,32] : smallest_divisor_from(49, 4, 7).
+step 34 rule 3 [18,19,8,33] : smallest_divisor_from(49, 3, 7).
+step 35 rule 3 [20,21,4,34] : smallest_divisor_from(49, 2, 7).
+step 36 rule 15 [23,35,24,25,31,31,28] : factor_smallest(49, [7, 7]).
+answer 5 [36]
+
+?- check.
+checked: 36 steps, 1 claim
+0 source facts; 12 rule applications
+Conditions:
+  C1 resolution: 12 checked, 0 failed
+  C2 well-foundedness: 12 checked, 0 failed
+  C3 justification: 37 checked, 0 failed
+  C4 coverage: 51 checked, 0 failed
+  C5 re-decision: 24 checked, 0 failed
+  C6 boundary consistency: 0 checked, 0 failed
+  C7 relevance: 36 checked, 0 failed
+  C8 witness integrity: not applicable (program uses no fresh witnesses)
+  C9 query isolation: 1 checked, 0 failed
+Source facts and rules are assumed. Answer completeness is not checked.
+
+?- check(expectedFactorsMatched(case, true)).
+true.
+
+?- check(productReconstructsInput(case, true)).
+true.
+
+?- check(distinctPrimeCount(case, 4)).
+true.
+
+?- check(all_expected_primes(true)).
+true.
+
+?- check(factor_smallest(1, [])).
+true.
+
+?- check(factor_smallest(49, [7, 7])).
+true.
+
+?- check(factor_smallest(13, [13])).
+true.

@@ -2,7 +2,7 @@
 
 A Prolog subset in Rust with tabled recursion and independently checked proof certificates.
 
-**Version 0.1.20**
+**Version 0.1.21**
 
 ```prolog
 human(socrates).

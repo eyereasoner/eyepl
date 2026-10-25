@@ -1,0 +1,69 @@
+?- cpk(Run, Index).
+Run = line7_shift_a, Index = 0.6666666666666673.
+Run = line8_shift_b, Index = 1.6666666666666607.
+
+?- status(Run, Status).
+Run = line7_shift_a, Status = needs_process_adjustment.
+Run = line8_shift_b, Status = capable_process.
+
+?- status(line8_shift_b, capable_process).
+true.
+
+?- why.
+wheye-proof 1
+% Rule 1: upper_margin_mm(Run, Margin) :- spec(Run, upper_mm, Upper), summary(Run, mean_mm, Mean), Margin is '-'(Upper, Mean).
+% Rule 2: lower_margin_mm(Run, Margin) :- summary(Run, mean_mm, Mean), spec(Run, lower_mm, Lower), Margin is '-'(Mean, Lower).
+% Rule 3: nearest_spec_margin_mm(Run, Margin) :- upper_margin_mm(Run, Uppermargin), lower_margin_mm(Run, Lowermargin), Margin is min(Uppermargin, Lowermargin).
+% Rule 4: three_sigma_mm(Run, Threesigma) :- summary(Run, sigma_mm, Sigma), Threesigma is '*'(3.0, Sigma).
+% Rule 5: cpk(Run, Cpk) :- nearest_spec_margin_mm(Run, Margin), three_sigma_mm(Run, Threesigma), Cpk is '/'(Margin, Threesigma).
+% Rule 6: capable(Run) :- cpk(Run, Cpk), capability_threshold(cpk, Threshold), Cpk >= Threshold.
+% Rule 8: status(Run, capable_process) :- capable(Run).
+step 1 source 7 : spec(line8_shift_b, lower_mm, 10.0).
+step 2 source 8 : spec(line8_shift_b, upper_mm, 10.2).
+step 3 source 9 : summary(line8_shift_b, mean_mm, 10.1).
+step 4 source 10 : summary(line8_shift_b, sigma_mm, 0.02).
+step 5 source 11 : capability_threshold(cpk, 1.33).
+step 6 builtin : is(0.09999999999999964, '-'(10.1, 10.0)).
+step 7 rule 2 [3,1,6] : lower_margin_mm(line8_shift_b, 0.09999999999999964).
+step 8 builtin : is(0.09999999999999964, '-'(10.2, 10.1)).
+step 9 rule 1 [2,3,8] : upper_margin_mm(line8_shift_b, 0.09999999999999964).
+step 10 builtin : is(0.06, '*'(3.0, 0.02)).
+step 11 rule 4 [4,10] : three_sigma_mm(line8_shift_b, 0.06).
+step 12 builtin : is(0.09999999999999964, min(0.09999999999999964, 0.09999999999999964)).
+step 13 rule 3 [9,7,12] : nearest_spec_margin_mm(line8_shift_b, 0.09999999999999964).
+step 14 builtin : is(1.6666666666666607, '/'(0.09999999999999964, 0.06)).
+step 15 rule 5 [13,11,14] : cpk(line8_shift_b, 1.6666666666666607).
+step 16 builtin : '>='(1.6666666666666607, 1.33).
+step 17 rule 6 [15,5,16] : capable(line8_shift_b).
+step 18 rule 8 [17] : status(line8_shift_b, capable_process).
+answer 3 [18]
+
+?- check.
+checked: 18 steps, 1 claim
+5 source facts; 7 rule applications
+Conditions:
+  C1 resolution: 12 checked, 0 failed
+  C2 well-foundedness: 7 checked, 0 failed
+  C3 justification: 19 checked, 0 failed
+  C4 coverage: 32 checked, 0 failed
+  C5 re-decision: 6 checked, 0 failed
+  C6 boundary consistency: 0 checked, 0 failed
+  C7 relevance: 18 checked, 0 failed
+  C8 witness integrity: not applicable (program uses no fresh witnesses)
+  C9 query isolation: 1 checked, 0 failed
+Source facts and rules are assumed. Answer completeness is not checked.
+
+?- check(status(line7_shift_a, needs_process_adjustment)).
+true.
+
+?- check(status(line8_shift_b, capable_process)).
+true.
+
+?- check((cpk(line7_shift_a, C), abs('-'(C, '/'(2, 3))) < 1e-12)).
+true.
+
+?- check((cpk(line8_shift_b, C), abs('-'(C, '/'(5, 3))) < 1e-12)).
+true.
+
+?- check(aggregate_all(count, (status(Run, Status)), 2)).
+true.

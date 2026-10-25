@@ -1,0 +1,74 @@
+?- polygon_area(Polygon, Area).
+Polygon = sample, Area = 7.5.
+
+?- why.
+wheye-proof 1
+% Rule 1: area([_point], 0) :- .
+% Rule 2: area([[A, B], [C, D] | Rest], Total) :- area([[C, D] | Rest], Subtotal), Ad is '*'(A, D), Bc is '*'(B, C), Cross is '-'(Ad, Bc), Half is '/'(Cross, 2.0), Total is '+'(Half, Subtotal).
+% Rule 3: polygon_area(sample, Area) :- sample_polygon(Points), area(Points, Area).
+step 1 source 1 : sample_polygon([[3, 2], [6, 2], [7, 6], [4, 6], [5, 5], [5, 3], [3, 2]]).
+step 2 rule 1 [] : area([[3, 2]], 0).
+step 3 builtin : is(10, '*'(5, 2)).
+step 4 builtin : is(9, '*'(3, 3)).
+step 5 builtin : is(1, '-'(10, 9)).
+step 6 builtin : is(0.5, '/'(1, 2.0)).
+step 7 builtin : is(0.5, '+'(0.5, 0)).
+step 8 builtin : is(15, '*'(5, 3)).
+step 9 builtin : is(25, '*'(5, 5)).
+step 10 builtin : is(-10, '-'(15, 25)).
+step 11 builtin : is(-5.0, '/'(-10, 2.0)).
+step 12 builtin : is(-4.5, '+'(-5.0, 0.5)).
+step 13 builtin : is(20, '*'(4, 5)).
+step 14 builtin : is(30, '*'(6, 5)).
+step 15 builtin : is(-10, '-'(20, 30)).
+step 16 builtin : is(-9.5, '+'(-5.0, -4.5)).
+step 17 builtin : is(42, '*'(7, 6)).
+step 18 builtin : is(24, '*'(6, 4)).
+step 19 builtin : is(18, '-'(42, 24)).
+step 20 builtin : is(9.0, '/'(18, 2.0)).
+step 21 builtin : is(-0.5, '+'(9.0, -9.5)).
+step 22 builtin : is(36, '*'(6, 6)).
+step 23 builtin : is(14, '*'(2, 7)).
+step 24 builtin : is(22, '-'(36, 14)).
+step 25 builtin : is(11.0, '/'(22, 2.0)).
+step 26 builtin : is(10.5, '+'(11.0, -0.5)).
+step 27 builtin : is(6, '*'(3, 2)).
+step 28 builtin : is(12, '*'(2, 6)).
+step 29 builtin : is(-6, '-'(6, 12)).
+step 30 builtin : is(-3.0, '/'(-6, 2.0)).
+step 31 builtin : is(7.5, '+'(-3.0, 10.5)).
+step 32 rule 2 [2,3,4,5,6,7] : area([[5, 3], [3, 2]], 0.5).
+step 33 rule 2 [32,8,9,10,11,12] : area([[5, 5], [5, 3], [3, 2]], -4.5).
+step 34 rule 2 [33,13,14,15,11,16] : area([[4, 6], [5, 5], [5, 3], [3, 2]], -9.5).
+step 35 rule 2 [34,17,18,19,20,21] : area([[7, 6], [4, 6], [5, 5], [5, 3], [3, 2]], -0.5).
+step 36 rule 2 [35,22,23,24,25,26] : area([[6, 2], [7, 6], [4, 6], [5, 5], [5, 3], [3, 2]], 10.5).
+step 37 rule 2 [36,27,28,29,30,31] : area([[3, 2], [6, 2], [7, 6], [4, 6], [5, 5], [5, 3], [3, 2]], 7.5).
+step 38 rule 3 [1,37] : polygon_area(sample, 7.5).
+answer 1 [38]
+
+?- check.
+checked: 38 steps, 1 claim
+1 source fact; 8 rule applications
+Conditions:
+  C1 resolution: 9 checked, 0 failed
+  C2 well-foundedness: 8 checked, 0 failed
+  C3 justification: 39 checked, 0 failed
+  C4 coverage: 49 checked, 0 failed
+  C5 re-decision: 29 checked, 0 failed
+  C6 boundary consistency: not applicable (program uses no negation or aggregation)
+  C7 relevance: 38 checked, 0 failed
+  C8 witness integrity: not applicable (program uses no fresh witnesses)
+  C9 query isolation: 1 checked, 0 failed
+Source facts and rules are assumed. Answer completeness is not checked.
+
+?- check(polygon_area(sample, 7.5)).
+true.
+
+?- check(area([[3, 2]], 0)).
+true.
+
+?- check(area([[3, 2], [5, 3], [5, 5], [4, 6], [7, 6], [6, 2], [3, 2]], -7.5)).
+true.
+
+?- check(area([[0, 0], [2, 0], [0, 2], [0, 0]], 2.0)).
+true.
