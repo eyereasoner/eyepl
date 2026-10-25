@@ -1,3 +1,5 @@
+% Following the Collatz sequence
+%
 % Generate Collatz sequences for the starting integers 1 through 20. Halve an
 % even number; replace an odd number by three times that number plus one.
 % Each sequence ends when it reaches 1. The checks verify these starting
@@ -26,8 +28,10 @@ in_range(Low, High, N) :-
     Next is Low + 1,
     in_range(Next, High, N).
 
-% Answer and Reason
+% Answer
 ?- in_range(1, 20, N), trajectory(N, Values).
+
+% Reason
 ?- why.
 
 % Check

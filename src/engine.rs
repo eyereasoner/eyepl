@@ -1,9 +1,8 @@
 use crate::language::{plan, Plan, Relation};
-use crate::proof::context_goal;
+use crate::proof::witness_goal;
 use crate::semantics::{aggregate, bind, builtin, witness, Budget};
 use crate::{
-    Atom, Boundary, Certificate, Error, Goal, Justification, Literal, Owner, Program, Step, Term,
-    Value,
+    Atom, Boundary, Error, Goal, Justification, Literal, Owner, Program, Step, Term, Value,
 };
 use std::collections::{BTreeMap, HashMap, HashSet};
 
@@ -147,7 +146,12 @@ impl Store {
             .steps
             .iter()
             .enumerate()
-            .filter(|(_, s)| s.justification.ordinary() && plan.step_level(s) <= level)
+            .filter(|(_, step)| {
+                step.justification.ordinary()
+                    && plan
+                        .step_level(step)
+                        .is_some_and(|producer| producer <= level)
+            })
             .map(|(i, _)| i + 1)
             .collect();
         self.boundaries.push(Boundary {
@@ -406,7 +410,7 @@ impl Join<'_> {
             Literal::Fresh(term) => {
                 budget.tick()?;
                 let Owner::Rule(rule) = self.owner else {
-                    return Err(Error::new("@fresh needs a rule context."));
+                    return Err(Error::new("fresh/1 needs a rule context."));
                 };
                 let mut bindings = current.bindings.clone();
                 if bind(
@@ -414,7 +418,7 @@ impl Join<'_> {
                     witness(rule, at + 1, &current.bindings),
                     &mut bindings,
                 ) {
-                    let goal = context_goal(self.program, self.owner, at + 1)
+                    let goal = witness_goal(self.program, self.owner, at + 1)
                         .ok_or_else(|| Error::new("Invalid witness source context."))?;
                     let atom = instantiate(&goal, &bindings)
                         .ok_or_else(|| Error::new("Unbound witness firing variable."))?;
@@ -593,133 +597,6 @@ pub fn reason(program: &Program, limits: Limits) -> Result<Run, Error> {
         matches: budget.used,
         boundaries: store.boundaries,
     })
-}
-impl Run {
-    fn query_output(&self, program: &Program, index: usize) -> String {
-        let query = &program.queries[index];
-        let mut text = format!(
-            "?- {}.\n",
-            query
-                .goals
-                .iter()
-                .map(ToString::to_string)
-                .collect::<Vec<_>>()
-                .join(", ")
-        );
-        if self.answers[index].is_empty() {
-            text.push_str("false.\n");
-        }
-        for answer in &self.answers[index] {
-            if query.variables.is_empty() {
-                text.push_str("true.\n");
-            } else {
-                text.push_str(
-                    &query
-                        .variables
-                        .iter()
-                        .zip(&answer.values)
-                        .map(|(name, value)| format!("{name} = {value}"))
-                        .collect::<Vec<_>>()
-                        .join(", "),
-                );
-                text.push_str(".\n");
-            }
-        }
-        text
-    }
-    pub fn output(&self, program: &Program) -> Result<String, Error> {
-        self.output_with_limits(program, Limits::default())
-    }
-    pub(crate) fn output_with_limits(
-        &self,
-        program: &Program,
-        limits: Limits,
-    ) -> Result<String, Error> {
-        if program.requests.is_empty() {
-            return Ok(if program.queries.is_empty() {
-                self.steps
-                    .iter()
-                    .filter(|step| matches!(step.justification, Justification::Rule { .. }))
-                    .map(|step| format!("{}.\n", step.atom))
-                    .collect()
-            } else {
-                (0..program.queries.len())
-                    .map(|i| self.query_output(program, i))
-                    .collect::<Vec<_>>()
-                    .join("\n")
-            });
-        }
-        let mut previous = None;
-        let mut blocks = Vec::new();
-        for request in &program.requests {
-            match *request {
-                crate::Request::Answer(index) => {
-                    previous = Some(index);
-                    blocks.push(self.query_output(program, index));
-                }
-                crate::Request::Result(index) => {
-                    let mut goals = program.queries[index]
-                        .goals
-                        .iter()
-                        .map(ToString::to_string)
-                        .collect::<Vec<_>>()
-                        .join(", ");
-                    if program.queries[index].goals.len() > 1 {
-                        goals = format!("({goals})");
-                    }
-                    let result = if self.answers[index].is_empty() {
-                        "false"
-                    } else {
-                        "true"
-                    };
-                    blocks.push(format!("?- check({goals}).\n{result}.\n"));
-                }
-                crate::Request::Proof | crate::Request::Check => {
-                    let index = previous.ok_or_else(|| {
-                        Error::new("why and check need a preceding ordinary query.")
-                    })?;
-                    let certificate = Certificate::from_run_for(program, self, Some(index));
-                    if matches!(request, crate::Request::Proof) {
-                        blocks.push(format!(
-                            "?- why.\n{}",
-                            Self::format_proof(program, &certificate)
-                        ));
-                    } else {
-                        blocks.push(format!(
-                            "?- check.\n{}",
-                            crate::check_with_limits(program, &certificate, limits)?
-                                .require_valid()?
-                        ));
-                    }
-                }
-            }
-        }
-        Ok(blocks.join("\n"))
-    }
-    /// The single, readable proof format, accepted by `Certificate::parse`.
-    pub fn proof(&self, program: &Program) -> String {
-        Self::format_proof(program, &self.certificate(program))
-    }
-    fn format_proof(program: &Program, certificate: &Certificate) -> String {
-        let mut used = vec![false; program.rules.len()];
-        for step in &certificate.steps {
-            if let Justification::Rule { rule, .. } = step.justification {
-                used[rule - 1] = true;
-            }
-        }
-        let mut text = String::from("wheye-proof 1\n");
-        for (index, rule) in program.rules.iter().enumerate() {
-            if used[index] {
-                text.push_str(&format!("% Rule {}: {}\n", index + 1, rule));
-            }
-        }
-        let serialized = certificate.to_string();
-        text.push_str(serialized.split_once('\n').unwrap().1);
-        text
-    }
-    pub fn certificate(&self, program: &Program) -> Certificate {
-        Certificate::from_run(program, self)
-    }
 }
 
 #[derive(Clone)]
@@ -1031,7 +908,7 @@ impl Tabled<'_> {
                     witness(rule, a.position + 1, &bindings),
                     &mut bindings,
                 ) {
-                    let goal = context_goal(self.program, a.owner, a.position + 1)
+                    let goal = witness_goal(self.program, a.owner, a.position + 1)
                         .ok_or_else(|| Error::new("Invalid fresh context."))?;
                     let atom = instantiate(&goal, &bindings)
                         .ok_or_else(|| Error::new("Unbound fresh context."))?;
@@ -1101,7 +978,13 @@ impl Tabled<'_> {
             .store
             .steps
             .iter()
-            .filter(|s| s.justification.ordinary() && self.plan.step_level(s) <= level)
+            .filter(|step| {
+                step.justification.ordinary()
+                    && self
+                        .plan
+                        .step_level(step)
+                        .is_some_and(|producer| producer <= level)
+            })
             .map(|s| s.atom.clone())
             .collect::<Vec<_>>();
         if let Some(result) = aggregate_value(

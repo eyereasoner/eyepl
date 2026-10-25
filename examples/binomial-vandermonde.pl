@@ -1,3 +1,5 @@
+% Counting combinations in two ways
+%
 % Count how many ways K items can be chosen from N items, without regard to
 % order. The result is the binomial coefficient C(N,K).
 %
@@ -31,8 +33,10 @@ binomial_answer(symmetry_24_7, true) :- symmetric(24, 7).
 binomial_answer(vandermonde_12_10_8, Sum) :- vandermonde(12, 10, 8, Sum).
 binomial_answer(row_12_sum, Sum) :- aggregate_all(sum(C), (between(0, 12, K), choose(12, K, C)), Sum).
 
-% Answer and Reason
+% Answer
 ?- binomial_answer(Kind, Value).
+
+% Reason
 ?- why(vandermonde(12, 10, 8, Sum)).
 
 % Check

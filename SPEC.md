@@ -1,6 +1,6 @@
 # Wheye specification
 
-Version **0.1.18**. Implemented Prolog subset and independently checked proof
+Version **0.1.19**. Implemented Prolog subset and independently checked proof
 certificate contract. This specification does not claim full ISO Prolog conformance.
 
 Uppercase MUST, MUST NOT, SHOULD, and MAY express requirement levels under
@@ -406,7 +406,7 @@ A goal check MUST NOT replace the preceding ordinary query for `why` or `check`.
 Both bare requests MUST report an error if no ordinary query precedes them,
 including across merged files. `?- why(Goal).` is shorthand for an ordinary
 query followed by `?- why.`. Requests MUST NOT become inference evidence.
-Only table directives are supported; `:- assertion(Goal).` MUST be rejected.
+Only table directives are supported; other directives MUST be rejected.
 Without queries or requests, output lists newly derived ordinary facts,
 excluding source facts and auxiliary evidence.
 
@@ -415,7 +415,6 @@ The CLI supports only `-h` (help) and `-v` (version); source requests select
 output in both the CLI and playground. There is no separate output selector.
 
 ## 7. Proof Certificates
-
 
 ### 7.1 Envelope and Ordering
 
@@ -502,10 +501,9 @@ providers. Query-owned aggregate evidence MUST NOT satisfy a rule-owned aggregat
 For a source `why` or bare `check` request, the generator selects the preceding
 ordinary query's answers, excluding goal-check queries. The library
 `Run::certificate` selects all ordinary queries. The generator keeps their
-transitive dependencies and complete
-boundaries they require, then renumbers them. It marks dependencies iteratively and
-scans retained IDs in order, so a deep proof chain does not require recursive traversal
-or sorting. Boundaries can make proofs considerably larger than proofs of positive rules
+transitive dependencies and required complete boundaries, then renumbers them.
+It marks dependencies iteratively and scans retained IDs in order, so a deep
+proof chain does not require recursive traversal or sorting. Boundaries can make proofs considerably larger than proofs of positive rules
 alone: completeness requires all members of the relevant stratum prefix.
 
 ## 8. Verification

@@ -1,3 +1,5 @@
+% Moving a stack in the Towers of Hanoi puzzle
+%
 % Solve the Towers of Hanoi puzzle for three disks. Move the stack between
 % two pegs using a spare peg, moving one disk at a time and never placing a
 % larger disk on a smaller one. Recursive rules construct the ordered list of
@@ -17,8 +19,10 @@ moves(N, From, To, Spare, Moves) :-
     moves(Smaller, Spare, To, From, Last),
     append(First, [move(From, To) | Last], Moves).
 
-% Answer and Reason
+% Answer
 ?- moves(3, left, right, center, Moves).
+
+% Reason
 ?- why.
 
 % Check

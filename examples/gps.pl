@@ -1,3 +1,5 @@
+% Comparing routes by several criteria
+%
 % Compare two supplied routes from Gent to Oostende using travel time, cost,
 % belief, and comfort scores. Road connections are one-way; time is in
 % seconds, and the remaining values are illustrative scores.
@@ -109,7 +111,7 @@ outcome(trip, Label) :-
     'recommended-route'(trip, Route),
     label(Route, Label).
 
-% Answer and Reason
+% Answer
 ?- route(trip, What).
 ?- is_a(Who, 'available-route').
 ?- duration(direct, What).
@@ -122,6 +124,8 @@ outcome(trip, Label) :-
 ?- comfort('via-kortrijk', What).
 ?- 'recommended-route'(trip, What).
 ?- outcome(trip, What).
+
+% Reason
 ?- why.
 
 % Check

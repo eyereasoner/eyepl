@@ -1,3 +1,5 @@
+% Following an account balance through an event log
+%
 % Calculate an account's balance after each event in an ordered log. Events
 % have consecutive numbers: the balance after event N uses the balance after
 % event N-1 and the event's deposit or withdrawal. Earlier states remain
@@ -33,10 +35,16 @@ balance(N, Amount) :-
     balance(Before, Previous),
     Amount is Previous - Value.
 
-% Answer and Reason
+% Answer
 ?- balance(3, Amount).
+
+% Reason
 ?- why.
+
+% Answer
 ?- between(0, 3, N), balance(N, Amount).
+
+% Reason
 ?- why.
 
 % Check

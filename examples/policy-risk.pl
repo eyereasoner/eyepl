@@ -1,3 +1,5 @@
+% Scoring findings in a policy rulebook
+%
 % Score findings in six illustrative policy clauses, attach reasons and
 % suggested changes, and rank findings by the number of distinct higher
 % scores. The checks cover missing safeguards, short notice, sharing without
@@ -44,8 +46,10 @@ report(Rank, Clause, Score, Severity, Why, Fix) :-
     score(Clause, Score), finding(Clause, Raw, Why, Fix), severity(Score, Severity),
     aggregate_all(count, higher(Score, Other), Count), Rank is Count + 1.
 
-% Answer and Reason
+% Answer
 ?- report(Rank, Clause, Score, Severity, Why, Fix).
+
+% Reason
 ?- why.
 
 % Check

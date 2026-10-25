@@ -1,3 +1,5 @@
+% Solving a puzzle about occupations and instruments
+%
 % Find who plays the flute by assigning distinct occupations and instruments
 % to Chris, Sandy, and Pat. The occupations are doctor, lawyer, and engineer;
 % the instruments are piano, violin, and flute.
@@ -32,9 +34,10 @@ uniq_people(A, B, C) :-
     A \= C,
     B \= C.
 
-% query
-% Answer and Reason
+% Answer
 ?- solution(Flute).
+
+% Reason
 ?- why.
 
 % Check

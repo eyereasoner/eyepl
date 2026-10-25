@@ -66,6 +66,13 @@ fn c4_checks_boundary_members_owners_and_goal_positions_without_panicking() {
         let mut c = original.clone();
         c.boundaries[0].steps.push(id);
         rejects(&p, &c, Condition::C4);
+
+        let mut c = original.clone();
+        c.steps[0].justification = Justification::Rule {
+            rule: id,
+            premises: vec![],
+        };
+        rejects(&p, &c, Condition::C4);
     }
     for replacement in [
         Justification::Aggregate {

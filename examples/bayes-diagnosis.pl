@@ -1,3 +1,5 @@
+% Updating probabilities from observations
+%
 % Update the probabilities of four possible conditions using observed
 % symptoms. This is an illustrative Bayesian model with invented
 % probabilities.
@@ -122,13 +124,15 @@ is_a(Case, 'normalized-case') :-
     _Calc1 is abs((Total - 1)),
     _Calc1 =< 1e-12.
 
-% Answer and Reason
+% Answer
 ?- scores(case, What).
 ?- 'evidence-total'(case, What).
 ?- posterior([covid19, case], What).
 ?- posterior([influenza, case], What).
 ?- posterior(['allergic-rhinitis', case], What).
 ?- posterior(['bacterial-pneumonia', case], What).
+
+% Reason
 ?- why.
 
 % Check

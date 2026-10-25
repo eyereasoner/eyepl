@@ -1,3 +1,5 @@
+% Checking an ideal voltage converter
+%
 % Calculate the current and voltage ripple in an ideal buck converter, which
 % reduces a DC supply voltage. Ripple is the variation between minimum and
 % maximum current or voltage during a switching cycle.
@@ -30,9 +32,13 @@ ripple_report(Name, Duty, CurrentPP, VoltagePP) :-
   CurrentPP is round(I*100000000)/100000000,
   VoltagePP is round(V*100000000)/100000000.
 
-% Answer and Reason
+% Answer
 ?- ripple_report(Name, Duty, CurrentPP, VoltagePP).
+
+% Reason
 ?- why.
+
+% Answer
 ?- within_ripple_limits(Name).
 
 % Check

@@ -1,3 +1,5 @@
+% Estimating how far a beam bends
+%
 % Estimate how far a beam bends when it is fixed at one end and a force is
 % applied at the free end. Compare that displacement with a stated limit.
 %
@@ -17,9 +19,13 @@ within_limit(Beam) :-
   deflection_mm(Beam, Delta), beam(Beam, _, _, _, _, Limit),
   Delta =< Limit.
 
-% Answer and Reason
+% Answer
 ?- deflection_mm(Beam, Delta).
+
+% Reason
 ?- why.
+
+% Answer
 ?- within_limit(Beam).
 
 % Check

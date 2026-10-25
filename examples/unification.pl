@@ -1,3 +1,5 @@
+% Constraining answers by matching structure
+%
 % Use matching term structure and repeated variables to constrain answers.
 % The append rules split the complete list [a, b] into every prefix and
 % suffix, including empty lists. The pair(X, X) pattern requires both entries
@@ -13,13 +15,23 @@ append([X | Xs], Ys, [X | Zs]) :-
 matching_pair(pair(X, X)).
 head_tail([Head | Tail], Head, Tail).
 
-% Answer and Reason
+% Answer
 ?- append(Prefix, Suffix, [a, b]).
+
+% Reason
 ?- why.
+
+% Answer
 ?- matching_pair(pair(same, same)).
+
+% Reason
 ?- why.
+
+% Answer
 ?- matching_pair(pair(a, b)).
 ?- head_tail([a, b, c], Head, Tail).
+
+% Reason
 ?- why.
 
 % Check

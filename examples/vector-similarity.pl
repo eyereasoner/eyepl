@@ -1,3 +1,5 @@
+% Comparing numeric vectors
+%
 % Compare two numeric vectors by their dot product, lengths, and cosine
 % similarity. The dot product adds matching-coordinate products; a vector's
 % Euclidean length is the square root of the sum of its squared coordinates.
@@ -55,11 +57,13 @@ normB(Case, Normb) :-
 cosineSimilarity(Case, Similarity) :-
   cosine_similarity(Case, Similarity).
 
-% Answer and Reason
+% Answer
 ?- dotProduct(pair1, Dot).
 ?- normA(pair1, Norm).
 ?- normB(pair1, Norm).
 ?- cosineSimilarity(pair1, Similarity).
+
+% Reason
 ?- why.
 
 % Check

@@ -1,3 +1,5 @@
+% Scheduling jobs on shared machines
+%
 % Schedule three jobs that each need a mill operation and a lathe operation.
 % Operations must follow each job's stated order, and a machine can handle
 % only one operation at a time.
@@ -51,8 +53,10 @@ job_shop_answer(best_makespan, Makespan) :- best_schedule(Makespan, _).
 job_shop_answer(best_schedule, Schedule) :- best_schedule(_, Schedule).
 job_shop_answer(feasible_schedule_count, Count) :- aggregate_all(count, feasible_schedule(Time, Schedule), Count).
 
-% Answer and Reason
+% Answer
 ?- job_shop_answer(Kind, Value).
+
+% Reason
 ?- why(job_shop_answer(best_makespan, Makespan)).
 
 % Check

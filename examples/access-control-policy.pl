@@ -1,3 +1,5 @@
+% Checking an access policy
+%
 % Check whether the sample request satisfies a policy with three kinds of
 % condition: all required attributes, at least one alternative attribute, and
 % none of the forbidden attributes. The queries show both the overall
@@ -47,10 +49,13 @@ accepted(Policy) :-
     pass(Policy, anyOfTest),
     pass(Policy, noneOfTest).
 
-% query
-% Answer and Reason
+% Answer
 ?- accepted(Policy).
+
+% Reason
 ?- why.
+
+% Answer
 ?- pass('PolicyX', Test).
 
 % Check

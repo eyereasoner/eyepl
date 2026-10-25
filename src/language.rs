@@ -78,10 +78,12 @@ impl Plan {
             .max()
             .unwrap_or(0)
     }
-    pub fn step_level(&self, step: &crate::Step) -> usize {
+    pub fn step_level(&self, step: &crate::Step) -> Option<usize> {
         match step.justification {
-            crate::Justification::Rule { rule, .. } => self.rules[rule - 1],
-            _ => 0,
+            crate::Justification::Rule { rule, .. } => {
+                self.rules.get(rule.checked_sub(1)?).copied()
+            }
+            _ => Some(0),
         }
     }
     pub fn boundary(&self, literal: &Literal) -> usize {
@@ -96,16 +98,21 @@ impl Plan {
 
 /// Built-ins have explicit input modes; arithmetic relations never enumerate an
 /// unbounded domain. The optional final argument is a deterministic output.
-pub(crate) fn builtin_inputs(goal: &Goal) -> Result<usize, Error> {
+pub(crate) fn fixed_builtin_inputs(goal: &Goal) -> Result<usize, Error> {
     let (arity, inputs) = match goal.predicate.as_str() {
         "add" | "sub" | "mul" | "div" | "mod" | "concat" => (3, 2),
         "abs" | "strlen" => (2, 1),
         "eq" | "neq" | "lt" | "le" | "gt" | "ge" => (2, 2),
-        name => return Err(Error::new(format!("Unknown built-in @{name}."))),
+        name => {
+            return Err(Error::new(format!(
+                "Unknown built-in {name}/{}.",
+                goal.terms.len()
+            )))
+        }
     };
     if goal.terms.len() != arity {
         return Err(Error::new(format!(
-            "@{} needs {arity} arguments.",
+            "{} needs {arity} arguments.",
             goal.predicate
         )));
     }
@@ -210,10 +217,10 @@ pub(crate) fn bound_after(
                     bound.extend(vars);
                     continue;
                 }
-                let inputs = builtin_inputs(g)?;
+                let inputs = fixed_builtin_inputs(g)?;
                 if !term_variables(&g.terms[..inputs]).is_subset(&bound) {
                     return Err(Error::new(format!(
-                        "@{} inputs must be bound by earlier goals.",
+                        "{} inputs must be bound by earlier goals.",
                         g.predicate
                     )));
                 }
@@ -252,15 +259,15 @@ pub(crate) fn bound_after(
             Literal::Fresh(t) => {
                 if !fresh || nested || position + 1 != body.len() {
                     return Err(Error::new(
-                        "@fresh is allowed only as the final goal of a rule.",
+                        "fresh/1 is allowed only as the final goal of a rule.",
                     ));
                 }
                 let Term::Variable(name) = t else {
-                    return Err(Error::new("@fresh needs a new output variable."));
+                    return Err(Error::new("fresh/1 needs a new output variable."));
                 };
                 if bound.contains(name) {
                     return Err(Error::new(
-                        "@fresh needs a variable not bound by an earlier goal.",
+                        "fresh/1 needs a variable not bound by an earlier goal.",
                     ));
                 }
                 bound.insert(name.clone());
@@ -434,7 +441,9 @@ pub(crate) fn plan(program: &Program) -> Result<Plan, Error> {
             let (a, b) = (component[source], component[target]);
             if a == b {
                 if strict {
-                    return Err(Error::new("Negation and aggregation must be stratified: a dependency cycle crosses a negative or aggregate goal."));
+                    return Err(Error::new(
+                        "Negation and aggregation must be stratified: a dependency cycle crosses a negative or aggregate goal.",
+                    ));
                 }
             } else {
                 edges[a].push((b, strict));

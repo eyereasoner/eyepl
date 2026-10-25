@@ -1,3 +1,5 @@
+% Building and processing lists
+%
 % Join two lists, square each number in a list, and add a list's numbers.
 % Each operation is defined by a case for the empty list and a recursive case
 % for the first item and remaining items. Supply finite input lists; table
@@ -20,12 +22,22 @@ sum([X | Xs], Total) :-
     sum(Xs, Rest),
     Total is X + Rest.
 
-% Answer and Reason
+% Answer
 ?- append([a, b], [c, d], Joined).
+
+% Reason
 ?- why.
+
+% Answer
 ?- squares([1, 2, 3, 4], Squared).
+
+% Reason
 ?- why.
+
+% Answer
 ?- sum([1, 2, 3, 4], Total).
+
+% Reason
 ?- why.
 
 % Check

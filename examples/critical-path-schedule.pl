@@ -1,3 +1,5 @@
+% Finding the tasks that determine a project's duration
+%
 % Calculate when each project task can start and finish, given its duration
 % and the tasks that must finish first. Trace the critical tasks that
 % determine the project's earliest completion time.
@@ -57,8 +59,10 @@ critical_path_answer(critical_task, Task) :- critical_task(Task).
 critical_path_answer(schedule, task(Task, Start, Finish)) :-
   task(Task, _, _), earliest_start(Task, Start), finish_time(Task, Finish).
 
-% Answer and Reason
+% Answer
 ?- critical_path_answer(Kind, Value).
+
+% Reason
 ?- why(critical_task(launch)).
 ?- why(earliest_start(integration, Start)).
 

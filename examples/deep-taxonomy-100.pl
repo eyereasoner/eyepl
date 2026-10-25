@@ -1,8 +1,10 @@
-% Follow a chain of 100 classification steps from n0 through n100. The
-% individual ind starts with label n0 and acquires the next n label plus two
-% side labels, i and j, at each step. The final n label implies a2.
+% Following a classification chain 100 levels deep
 %
-% The query asks which individual has label a2, and the explanation traces
+% Follow 100 classification steps from n0 through n100. The individual
+% ind starts with label n0 and acquires the next n label plus two side
+% labels, i and j, at each step. The final n label implies a2.
+%
+% The query asks which individual has label a2, and the proof traces
 % the supporting chain. Longer versions produce larger proofs.
 
 is_a(ind, n0).
@@ -610,8 +612,10 @@ is_a(Entity, i100) :-
 is_a(Entity, j100) :-
     is_a(Entity, n99).
 
-% Answer and Reason
+% Answer
 ?- is_a(Who, a2).
+
+% Reason
 ?- why.
 
 % Check

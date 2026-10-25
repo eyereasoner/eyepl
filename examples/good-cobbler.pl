@@ -1,3 +1,5 @@
+% Keeping a description tied to a trade
+%
 % Extract a person's trade from a structured description such as [good,
 % cobbler]. Joe is good at cobbling and Jane at carpentry in the supplied
 % data. Keeping the trade in the description avoids treating "good" as a
@@ -12,10 +14,16 @@ good_at(Person, Trade) :-
 classified_as(Person, Trade) :-
     description(Person, [good, Trade]).
 
-% Answer and Reason
+% Answer
 ?- good_at(Person, Trade).
+
+% Reason
 ?- why.
+
+% Answer
 ?- classified_as(Person, Trade).
+
+% Reason
 ?- why.
 
 % Check

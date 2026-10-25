@@ -1,3 +1,5 @@
+% Finding complex roots of small polynomials
+%
 % Find approximate complex roots of polynomials of degree one through four.
 % Supply coefficients in descending power order, using c(Real, Imaginary) for
 % each complex number and a nonzero leading coefficient.
@@ -113,9 +115,13 @@ rounded([c(R, I)|Rest], [c(RR, RI)|Tail]) :-
   RI is round(I*1000000000)/1000000000, rounded(Rest, Tail).
 solution(Name, Roots) :- polynomial(Name, Coefficients), roots(Coefficients, Raw), rounded(Raw, Roots).
 
-% Answer and Reason
+% Answer
 ?- solution(real_quartic, Roots).
+
+% Reason
 ?- why.
+
+% Answer
 ?- solution(complex_quartic, Roots).
 ?- solution(repeated, Roots).
 

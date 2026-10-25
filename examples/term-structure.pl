@@ -1,3 +1,5 @@
+% Inspecting records and constructing receipts
+%
 % Check whether each record has an expected name and number of arguments,
 % then construct a receipt for accepted records. For example,
 % temperature(room, 21) matches the temperature schema, which expects two
@@ -37,10 +39,14 @@ receipt(Record, Receipt) :-
   Record =.. [Name | Arguments],
   Receipt =.. [accepted_record, Name, Arguments].
 
-% Answer and Reason
+% Answer
 ?- record_shape(Record, Name, Arity).
 ?- rejected(Record, Name, Arity).
+
+% Reason
 ?- why.
+
+% Answer
 ?- receipt(Record, Receipt).
 
 % Check

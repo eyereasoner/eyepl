@@ -1,3 +1,5 @@
+% Simulating a counter that changes one bit at a time
+%
 % Simulate a three-bit Gray-code counter, whose successive count states
 % differ in one bit. Logic-gate truth tables calculate the next state.
 %
@@ -53,10 +55,13 @@ or(1, 1, 1).
 inv(0, 1).
 inv(1, 0).
 
-% query
-% Answer and Reason
+% Answer
 ?- gcc([1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0], States).
+
+% Reason
 ?- why.
+
+% Answer
 ?- gcc([0, 1, 0], [0, 0, 0], States).
 
 % Check

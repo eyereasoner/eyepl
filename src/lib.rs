@@ -18,6 +18,7 @@ mod arithmetic;
 mod engine;
 mod language;
 mod model;
+mod output;
 mod parser;
 mod proof;
 mod semantics;
@@ -37,7 +38,7 @@ pub use proof::{
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-/// Run the same small interface in the CLI and browser.
+/// Evaluate source and render its answer, certificate, and verification requests.
 pub fn execute(source: &str, limits: Limits) -> Result<String, Error> {
     let program = parse(source)?;
     reason(&program, limits)?.output_with_limits(&program, limits)

@@ -1,3 +1,5 @@
+% Multiplying two small matrices
+%
 % Multiply two 2-by-2 matrices using exact integer arithmetic. The term m(A,
 % B, C, D) stores the rows [A, B] and [C, D].
 %
@@ -23,9 +25,13 @@ commutator(A, B, m(I, J, K, L)) :-
 product(Left, Right, Product) :-
   matrix(Left, A), matrix(Right, B), multiply(A, B, Product).
 
-% Answer and Reason
+% Answer
 ?- product(a, b, Product).
+
+% Reason
 ?- why.
+
+% Answer
 ?- product(b, a, Product).
 ?- matrix(a, A), matrix(b, B), commutator(A, B, Difference).
 

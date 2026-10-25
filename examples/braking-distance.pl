@@ -1,3 +1,5 @@
+% Comparing stopping distances with available gaps
+%
 % Calculate a stopping distance as the distance traveled while reacting plus
 % the distance needed to brake. Compare it with the available gap in four
 % illustrative road scenarios.
@@ -34,9 +36,13 @@ stopping_distance_m(Name, Rounded) :-
   distance(Name, _, _, Total),
   Rounded is round(Total*1000000)/1000000.
 
-% Answer and Reason
+% Answer
 ?- gap_status(Name, Status).
+
+% Reason
 ?- why.
+
+% Answer
 ?- stopping_distance_m(Name, Distance).
 
 % Check

@@ -1,3 +1,5 @@
+% Collecting each order's items into a list
+%
 % Build a pick list for each order by collecting item(Product, Quantity)
 % terms with aggregate_all(list(Term), Goal, List). A second report includes
 % only lines requesting at least ten units.
@@ -32,9 +34,13 @@ occurrences(Item, [Item|Rest], Count) :-
 occurrences(Item, [Other|Rest], Count) :-
   Item \= Other, occurrences(Item, Rest, Count).
 
-% Answer and Reason
+% Answer
 ?- pick_list(Order, Items).
+
+% Reason
 ?- why.
+
+% Answer
 ?- aggregate_all(list(Quantity), line(alpha, Line, Product, Quantity), Quantities).
 ?- bulk_list(Order, Items).
 

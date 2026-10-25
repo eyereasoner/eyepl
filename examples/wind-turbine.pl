@@ -1,3 +1,5 @@
+% Finding reasons for turbine maintenance
+%
 % List maintenance reasons for four illustrative wind turbines. Separate
 % rules check elapsed time since maintenance, turbine age, reported issues,
 % and efficiency. A turbine can receive more than one reason.
@@ -29,10 +31,13 @@ needs_maintenance(Turbine, performance_based_maintenance) :-
     turbine(Turbine, _, _, _, Efficiency),
     Efficiency < 80.    % Rule 4: Performance-based maintenance
 
-% query
-% Answer and Reason
+% Answer
 ?- needs_maintenance(Turbine, Reason).
+
+% Reason
 ?- why.
+
+% Answer
 ?- needs_maintenance(t123, Reason).
 
 % Check

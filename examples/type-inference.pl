@@ -1,3 +1,5 @@
+% Checking types in a small expression language
+%
 % Determine the result types of expressions in a small language with
 % functions, function calls, arithmetic, conditionals, and pairs. Function
 % parameters carry explicit type labels, and rules check that their uses
@@ -57,9 +59,13 @@ type_reason(compose, "application unifies f with t1 -> t2 and g with t0 -> t1") 
 type_reason(apply_id, "the identity function's parameter type is unified with int") :-
   type_answer(apply_id, int).
 
-% Answer and Reason
+% Answer
 ?- type_answer(Name, Type).
+
+% Reason
 ?- why(type_answer(compose, Type)).
+
+% Answer
 ?- type_reason(Name, Reason).
 
 % Check

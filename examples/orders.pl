@@ -25,7 +25,11 @@ voucher(Customer, Voucher, Total) :-
     eligible(Customer, Total),
     fresh(Voucher).
 
+% Answer
 ?- voucher(Customer, Voucher, Total).
 
+% Reason
 ?- why.
+
+% Check
 ?- check.

@@ -1,3 +1,5 @@
+% Calculating activity after radioactive decay
+%
 % Calculate how much of a sample's initial activity remains after a given
 % time when its activity halves at a constant interval. The sample starts at
 % 80 becquerels and reaches 20 after two half-lives.
@@ -15,8 +17,10 @@ decay(Sample, HalfLives, Remaining, Decayed) :-
   Remaining is Initial*0.5**HalfLives,
   Decayed is Initial-Remaining.
 
-% Answer and Reason
+% Answer
 ?- decay(Sample, HalfLives, Remaining, Decayed).
+
+% Reason
 ?- why.
 
 % Check

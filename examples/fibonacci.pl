@@ -1,3 +1,5 @@
+% Generating Fibonacci numbers
+%
 % Generate Fibonacci numbers: start with 0 and 1, then add the previous two
 % numbers to obtain the next. Supply a nonnegative integer index.
 %
@@ -22,7 +24,7 @@ cassini(10000, _Calc1) :-
     fibonacci(9999, Previous),
     _Calc1 is ((Current * Earlier) - (Previous * Previous)).
 
-% Answer and Reason
+% Answer
 ?- fibonacci(0, What).
 ?- fibonacci(1, What).
 ?- fibonacci(2, What).
@@ -34,7 +36,11 @@ cassini(10000, _Calc1) :-
 ?- fibonacci(8, What).
 ?- fibonacci(9, What).
 ?- fibonacci(10, What).
+
+% Reason
 ?- why((fibonacci(5, 5))).
+
+% Answer
 ?- fibonacci(10000, What).
 
 % Check

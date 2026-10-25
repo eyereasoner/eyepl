@@ -1,3 +1,5 @@
+% Fitting a straight line to data
+%
 % Fit a straight line Y = Slope*X + Intercept to a list of point(X, Y)
 % values. Ordinary least squares chooses the line that minimizes the sum of
 % squared vertical errors. The program reports its slope, intercept, and R^2,
@@ -28,8 +30,10 @@ regression(Points, Slope, Intercept, R2) :-
 fit(Name, Slope, Intercept, R2) :-
   dataset(Name, Points), regression(Points, Slope, Intercept, R2).
 
-% Answer and Reason
+% Answer
 ?- fit(Name, Slope, Intercept, R2).
+
+% Reason
 ?- why.
 
 % Check

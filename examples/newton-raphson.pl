@@ -1,3 +1,5 @@
+% Approximating roots by repeated improvement
+%
 % Approximate roots of x^2-2, log(x)-1, and sin(x) using Newton-Raphson
 % iteration. Each step replaces a trial value x by x-f(x)/f'(x), using the
 % function and derivative selected by its number.
@@ -5,7 +7,7 @@
 % findRoot([Number, Start, Tolerance], Root) stops when abs(f(x)) is below
 % the tolerance. The supplied starts approach sqrt(2), e, and pi. Other
 % starts may fail or not converge; there is no iteration limit. Displayed
-% roots are rounded, and goal checks check unrounded values.
+% roots are rounded, and goal checks use unrounded values.
 %
 % See https://en.wikipedia.org/wiki/Newton%27s_method
 
@@ -37,10 +39,13 @@ rounded_root(Inputs, Root) :-
     findRoot(Inputs, Raw),
     Root is round(Raw * 100000000000000) / 100000000000000.
 
-% query
-% Answer and Reason
+% Answer
 ?- rounded_root([1, 1.0, 1.0e-15], Root).
+
+% Reason
 ?- why.
+
+% Answer
 ?- rounded_root([2, 2.0, 1.0e-15], Root).
 ?- rounded_root([3, 3.0, 1.0e-15], Root).
 

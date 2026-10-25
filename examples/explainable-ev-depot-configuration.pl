@@ -1,3 +1,5 @@
+% Choosing an electric-vehicle charger
+%
 % Choose a compatible electric-vehicle charger from a small depot catalog.
 % The program compares site power, charge rate, connector, and electrical
 % supply, then recommends the lowest-cost compatible option.
@@ -47,12 +49,18 @@ power_upgrade(Site, Product, ExtraKw) :-
   Needed > Available,
   ExtraKw is Needed - Available.
 
-% Answer and Reason
+% Answer
 ?- recommendation(Site, Product).
+
+% Reason
 ?- why.
+
+% Answer
 ?- blocker(Site, Product, Reason).
 ?- required_change(Site, Product, Change).
 ?- power_upgrade(Site, Product, ExtraKw).
+
+% Reason
 ?- why.
 
 % Check

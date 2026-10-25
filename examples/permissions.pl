@@ -1,3 +1,5 @@
+% Deriving permissions from roles and exclusions
+%
 % Derive read and write permissions from users' roles, then exclude suspended
 % users. Alice is an editor, Bob is a viewer, and Carol is a suspended
 % editor.
@@ -21,10 +23,16 @@ allowed(User, Action) :-
     candidate(User, Action),
     \+ suspended(User).
 
-% Answer and Reason
+% Answer
 ?- allowed(User, Action).
+
+% Reason
 ?- why.
+
+% Answer
 ?- candidate(carol, Action).
+
+% Reason
 ?- why.
 
 % Check

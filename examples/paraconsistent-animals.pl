@@ -1,3 +1,5 @@
+% Reasoning with conflicting animal observations
+%
 % Keep conflicting animal observations as separate facts. For each property,
 % the program distinguishes support for true, support for false, support for
 % both, and no evidence either way.
@@ -59,10 +61,14 @@ migrates(X, false) :- flight_status(X, false_only).
 moves_by(X, unknown) :- flight_status(X, both).
 migrates(X, undecided) :- flight_status(X, both).
 
-% Answer and Reason
+% Answer
 ?- flies_safely(Animal, Status).
 ?- wings_safely(Animal, Status).
+
+% Reason
 ?- why(wings_safely(batsy, undecided)).
+
+% Answer
 ?- needs_review(Animal, Property).
 ?- moves_by(Animal, Mode).
 

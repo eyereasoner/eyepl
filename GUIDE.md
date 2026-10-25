@@ -1,6 +1,6 @@
 # Wheye guide
 
-Version **0.1.18**. Run a Prolog subset in the native CLI or browser, get
+Version **0.1.19**. Run a Prolog subset in the native CLI or browser, get
 answers, and inspect their independently checkable proofs. The
 [specification](https://eyereasoner.github.io/wheye/SPEC/) defines the language
 and the [C1–C9 contract](https://eyereasoner.github.io/wheye/SPEC/#8-verification).
@@ -212,7 +212,7 @@ Only `-h` (help) and `-v` (version) are options. `-` reads source from stdin;
 multiple files form one program in the supplied order. Source requests select
 the output, with each request echoed before its result. Use `?- why.` for
 proofs and `?- check.` for verification. `?- check(Goal).` prints a boolean
-result; `:- assertion(Goal).` is no longer supported.
+result. Only `:- table Name/Arity.` directives are supported.
 
 Success returns status 0. Parse errors, incomplete runs, missing preceding
 queries for `why` or bare `check`, and invalid proof reports return status 1
@@ -242,6 +242,33 @@ it. `report.conditions` lists the nine conditions; `report.failures` gives
 specific diagnostics. `report.condition(wheye::Condition::C9)` selects one.
 Malformed input and resource exhaustion return errors.
 
+## Implementation
+
+`parse` builds the source model. `reason` validates its modes and dependencies,
+then evaluates forward rules and demand-driven tables. `Run::output` follows
+the source requests.
+
+The checker validates evidence steps, witness origins, claims, closed boundaries,
+and relevance. It consumes the supplied certificate and returns condition counts
+and failures; it never invokes `reason` or fills a missing boundary.
+
+| File | Responsibility |
+| --- | --- |
+| `src/model.rs` | Structural values, facts, clauses, and source requests |
+| `src/parser.rs` | The `.pl` program syntax |
+| `src/language.rs` | Safety, built-in modes, strata, and recursion restrictions |
+| `src/semantics.rs` | Unification, built-ins, aggregates, and finite-model matching |
+| `src/arithmetic.rs` | Exact integer operations and finite real arithmetic |
+| `src/engine.rs` | Indexed forward inference, demand-driven tables, and execution limits |
+| `src/output.rs` | Answers, certificates, and reports in source request order |
+| `src/proof.rs` | Certificate selection and serialization; independent C1–C9 verification |
+| `src/main.rs` | Native command line and file I/O |
+| `src/wasm.rs` | Browser bindings |
+| `playground*.js` | UI and cancellable worker |
+| `scripts/prepare-pages.mjs`, `scripts/pages-layout.html` | Pages staging and documentation layout |
+| `.github/workflows/pages.yml` | Website build and deployment |
+| `release`, `scripts/sync-version.mjs` | Version bump, browser rebuild, checks, and publication |
+
 ## Develop and verify
 
 Rust, Cargo, Node.js 22 or later, `wasm-pack`, and the
@@ -255,8 +282,11 @@ git diff --check
 ```
 
 `scripts/test-all` describes each check, times every native test and bundled
-example, and prints overall timing at the end. It continues after failures and
-returns a nonzero status if any check fails. Every example must have exactly one
+example, and prints overall timing at the end. Terminal output uses cyan headings,
+green passes, and red failures; redirected logs stay plain. Set `NO_COLOR=1` to
+disable colors or `FORCE_COLOR=1` to retain them in captured output. The script
+continues after failures and returns a nonzero status if any check fails.
+Every example must have exactly one
 golden in `examples/output/`; the suite also checks its saved certificate and
 its expected goal checks. Graph oracles, forged-certificate regressions, worker,
 Pages, Gist sharing, and release recovery tests remain covered. Browser and
@@ -283,7 +313,6 @@ URL. The committed `pkg/` must be rebuilt after Rust changes. Use the same
 source version for CLI, documentation, playground, and Wasm.
 
 ## Make a release
-
 
 From a reviewed checkout on `main`:
 
@@ -319,19 +348,6 @@ Open the published [guide](https://eyereasoner.github.io/wheye/), [specification
 `GUIDE.md` supplies the guide at the site root; `SPEC.md` supplies the specification.
 `node scripts/prepare-pages.mjs` prepares `_pages/` for the Jekyll build; `_site/` holds the rendered artifact. Both directories are ignored by Git. The Pages action supplies `PAGES_BASE_PATH`, so local links and assets work beneath `/wheye/` or a different configured prefix. The site uses the committed `pkg/`; changing the package version requires rebuilding it before publishing. The deployment check rejects a browser package whose exported version differs from `Cargo.toml`.
 
-| File | Responsibility |
-| --- | --- |
-| `src/model.rs` | Values, facts, rules, queries, and validation |
-| `src/parser.rs` | The `.pl` program syntax |
-| `src/language.rs` | Safety, built-in modes, strata, and recursion restrictions |
-| `src/semantics.rs` | Pure interpreted relations, aggregates, and finite-model matching |
-| `src/engine.rs` | Indexed joins, agenda, limits, and answer rendering |
-| `src/proof.rs` | Certificates and the separate checker |
-| `src/main.rs` | Native command line and file I/O |
-| `src/wasm.rs` | Browser bindings |
-| `playground*.js` | UI and cancellable worker |
-| `scripts/prepare-pages.mjs`, `scripts/pages-layout.html` | Pages staging and documentation layout |
-| `.github/workflows/pages.yml` | Website build and deployment |
-| `release`, `scripts/sync-version.mjs` | Version bump, browser rebuild, checks, and publication |
+
 
 MIT licensed.

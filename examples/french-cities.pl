@@ -1,3 +1,5 @@
+% Finding routes between French cities
+%
 % Find which French cities can reach one another through the supplied road
 % network. A connects(From, To) fact permits travel only in the written
 % direction. A route can use one road or several roads in sequence. The
@@ -22,12 +24,20 @@ reaches(From, To) :-
     connects(From, Via),
     reaches(Via, To).
 
-% Answer and Reason
+% Answer
 ?- reaches(Who, nantes).
 ?- reaches(paris, nantes).
+
+% Reason
 ?- why.
+
+% Answer
 ?- reaches(paris, tours).
+
+% Reason
 ?- why.
+
+% Answer
 ?- reaches(nantes, paris).
 
 % Check

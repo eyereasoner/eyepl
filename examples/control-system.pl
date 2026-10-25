@@ -1,3 +1,5 @@
+% Calculating actuator commands
+%
 % Calculate commands for two actuators from sample measurements and a target.
 % The first command scales a measured input and subtracts compensation for a
 % measured disturbance. The second combines the difference from the target
@@ -14,15 +16,15 @@ measurement3(input3, 56967).
 measurement3(disturbance1, 35766).
 measurement4(output2, 24).
 
-% observations
+% Observations
 observation1(state1, 80).
 observation2(state2, false).
 observation3(state3, 22).
 
-% targets
+% Targets
 target2(output2, 29).
 
-% rules
+% Rules
 control1(actuator1, C) :-
     measurement10(input1, M1),
     measurement2(input2, true),
@@ -52,10 +54,16 @@ measurement10(I, M1) :-
     measurement1(I, [M1, M2]),
     M1 >= M2.
 
-% Answer and Reason
+% Answer
 ?- control1(Actuator, Command).
+
+% Reason
 ?- why.
+
+% Answer
 ?- measurement10(disturbance2, Value).
+
+% Reason
 ?- why.
 
 % Check

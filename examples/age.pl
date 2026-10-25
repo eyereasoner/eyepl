@@ -1,3 +1,5 @@
+% Comparing an age with a threshold
+%
 % Check whether Pat is strictly older than a given number of years on a
 % specified date. The sample birthday is 21 August 1944, and the comparison
 % date is 12 October 2026; the program does not read the current date.
@@ -35,9 +37,11 @@ is_a(test, 'passed-check') :-
     'age-limit'(test, Years),
     'is-older-than'(Person, Years).
 
-% Answer and Reason
+% Answer
 ?- 'is-older-than'(Who, 80).
 ?- is_a(test, 'passed-check').
+
+% Reason
 ?- why.
 
 % Check

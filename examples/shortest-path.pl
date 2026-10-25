@@ -1,3 +1,5 @@
+% Selecting the cheapest route in a graph without cycles
+%
 % Calculate route costs in a directed graph with no cycles, then retain the
 % minimum cost for each reachable pair of nodes. Costs are sums of edge
 % weights. The queries compare all costs from a to d with the cheapest one.
@@ -24,9 +26,11 @@ shortest(X, Y, Cost) :-
     path(X, Y, Cost),
     \+ cheaper(X, Y, Cost).
 
-% Answer and Reason
+% Answer
 ?- path(a, d, Cost).
 ?- shortest(a, d, Cost).
+
+% Reason
 ?- why.
 
 % Check

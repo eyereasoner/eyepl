@@ -1,3 +1,5 @@
+% Selecting players with no recorded need for rest
+%
 % Select players who can join a game because the completed program has no
 % evidence that they need rest. Luna is listed as tired, so the rest rule
 % excludes Luna; Milo and Rex remain eligible.
@@ -21,14 +23,26 @@ is_a(Player, 'eager-player') :-
     is_a(Player, player),
     \+ (is_a(Player, 'tired-player')).
 
-% Answer and Reason
+% Answer
 ?- is_a(Who, 'ready-player').
+
+% Reason
 ?- why.
+
+% Answer
 ?- is_a(Who, 'eager-player').
 ?- \+ (needs(milo, rest)).
+
+% Reason
 ?- why.
+
+% Answer
 ?- \+ (needs(luna, rest)).
+
+% Reason
 ?- why.
+
+% Answer
 ?- aggregate_all(count, is_a(Subject, 'ready-player'), Result).
 
 % Check

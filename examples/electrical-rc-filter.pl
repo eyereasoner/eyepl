@@ -1,3 +1,5 @@
+% Calculating a resistor-capacitor filter's response
+%
 % Calculate the response time and cutoff frequency of a low-pass filter made
 % from a resistor (R) and capacitor (C). Its time constant is R*C seconds;
 % its cutoff frequency is 1/(2*pi*R*C) hertz.
@@ -17,9 +19,13 @@ cutoff_hz(Filter, Rounded) :-
   response(Filter, _, Raw),
   Rounded is round(Raw*100000000)/100000000.
 
-% Answer and Reason
+% Answer
 ?- cutoff_hz(Filter, Cutoff).
+
+% Reason
 ?- why.
+
+% Answer
 ?- response(Filter, Tau, _).
 
 % Check

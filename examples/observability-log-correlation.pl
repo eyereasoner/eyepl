@@ -1,3 +1,5 @@
+% Linking related events in service logs
+%
 % Read structured service-log lines and link events with the same user, IP
 % address, and trace identifier. The sample raises an alert when a failed
 % login and a denied payment share those fields. A health-check line has a
@@ -76,11 +78,15 @@ trace_alert(User, Traceid, Ip) :-
   parsed_event(Paymentlog, payment_denied, User, Ip, Traceid),
   Loginlog \= Paymentlog.
 
-% Answer and Reason
+% Answer
 ?- parsed_event(Log, Event, User, Ip, Trace).
 ?- captured_field(Log, Name, Value).
 ?- trace_alert(User, Trace, Ip).
+
+% Reason
 ?- why.
+
+% Answer
 ?- unparsed_log(Log).
 
 % Check

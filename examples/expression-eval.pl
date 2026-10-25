@@ -1,3 +1,5 @@
+% Evaluating an expression graph
+%
 % Evaluate an arithmetic expression stored as a graph of named nodes. Literal
 % nodes supply numbers; addition, subtraction, and multiplication nodes
 % combine the values of their children. The sample expression computes 2*3 +
@@ -31,8 +33,10 @@ result(Name, Value) :-
     root(Name, Node),
     value(Node, Value).
 
-% Answer and Reason
+% Answer
 ?- result(Name, Value).
+
+% Reason
 ?- why.
 
 % Check

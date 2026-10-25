@@ -1,3 +1,5 @@
+% Choosing the most valuable pack within a weight limit
+%
 % Choose an expedition pack with the greatest total value while staying
 % within a weight limit. Each listed item can be included once or left out;
 % this is the 0/1 knapsack problem.
@@ -57,8 +59,10 @@ knapsack_answer(total_weight, Weight) :- best_pack(_pack, Weight, _value).
 knapsack_answer(total_value, Value) :- best_pack(_pack, _weight, Value).
 knapsack_answer(feasible_pack_count, Count) :- aggregate_all(count, feasible_pack(_Pack, _Weight, _Value), Count).
 
-% Answer and Reason
+% Answer
 ?- knapsack_answer(Kind, Value).
+
+% Reason
 ?- why(best_pack(Pack, Weight, Value)).
 
 % Check

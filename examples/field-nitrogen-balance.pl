@@ -1,3 +1,5 @@
+% Comparing a crop's nitrogen supply and demand
+%
 % Compare nitrogen available to a crop with its demand over one season. The
 % model adds soil and fertilizer inputs, subtracts a fixed loss fraction, and
 % calculates any remaining deficit or surplus.
@@ -33,9 +35,13 @@ status(Field, over) :-
   balance(Field, _, _, Available, _, _, _), field(Field, _, _, _, Demand),
   Available > 1.1*Demand.
 
-% Answer and Reason
+% Answer
 ?- status(Field, Status).
+
+% Reason
 ?- why.
+
+% Answer
 ?- balance(Field, Total, Lost, Available, Deficit, Surplus, Index).
 
 % Check

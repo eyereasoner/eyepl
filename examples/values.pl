@@ -9,5 +9,6 @@ value(text_record, "42").
 value(number_record, 42).
 label('https://example.org/city/Brussels', "Bruxelles").
 
+% Answer
 ?- value(Record, "42").
 ?- value(Record, Value).

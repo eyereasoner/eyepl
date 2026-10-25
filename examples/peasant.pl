@@ -1,3 +1,5 @@
+% Multiplying by halving and doubling
+%
 % Multiply integers by repeatedly halving one operand and doubling the other,
 % adding the doubled values from rows where the halved operand is odd. The
 % related exponentiation rule squares the base and halves the exponent,
@@ -39,17 +41,25 @@ pow([X, Y], Z) :-
     pow([S, T], R),
     Z is R * X.
 
-% Answer and Reason
+% Answer
 ?- prod([3, 0], Product).
 ?- prod([5, 6], Product).
+
+% Reason
 ?- why.
+
+% Answer
 ?- prod([238, 13], Product).
 ?- prod([8367238, 27133], Product).
 ?- prod([62713345408367238, 40836723862713345], Product).
 ?- prod([4083672386271334562713345408367238, 4083672386271334562713345408367238], Product).
 ?- pow([3, 0], Power).
 ?- pow([5, 6], Power).
+
+% Reason
 ?- why.
+
+% Answer
 ?- pow([238, 13], Power).
 ?- pow([8367238, 2713], Power).
 

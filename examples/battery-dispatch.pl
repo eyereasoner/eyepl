@@ -1,3 +1,5 @@
+% Planning battery use
+%
 % Choose when to charge or discharge a battery to minimize grid energy cost
 % while keeping enough energy in reserve at the end.
 %
@@ -72,8 +74,10 @@ optimal_from(Time, Charge, [dispatch(Time, Power, Grid, NextCharge) | Rest], Cos
   optimal_from(NextTime, NextCharge, Rest, Future).
 dispatch_plan(Plan, Cost) :- initial_charge_kwh(Charge), optimal_from(1, Charge, Plan, Cost).
 
-% Answer and Reason
+% Answer
 ?- dispatch_plan(Plan, Cost).
+
+% Reason
 ?- why.
 
 % Check

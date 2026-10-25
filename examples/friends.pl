@@ -1,3 +1,5 @@
+% Deriving a friendship from a rule
+%
 % Infer that Milo is a friend from the facts that Milo likes Luna and Luna is
 % a cat. Here, "friend" has the program's specific meaning: someone who likes
 % a cat. No rule makes that relationship mutual.
@@ -9,10 +11,12 @@ is_a(Person, friend) :-
     likes(Person, Friend),
     is_a(Friend, cat).
 
-% Answer and Reason
+% Answer
 ?- is_a(Who, friend).
 ?- likes(Who, luna).
 ?- likes(milo, What).
+
+% Reason
 ?- why((is_a(milo, friend))).
 
 % Check

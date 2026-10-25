@@ -1,3 +1,5 @@
+% Finding the remainder of a large power
+%
 % Calculate the remainder when an integer power is divided by a positive
 % integer. Repeated squaring halves the exponent at each recursive step and
 % reduces intermediate results modulo the divisor. Supply a bound integer
@@ -21,9 +23,13 @@ pow_mod(Base, Exponent, Modulus, Result) :-
   pow_mod(Base, Half, Modulus, Value),
   Result is (Base*Value*Value) mod Modulus.
 
-% Answer and Reason
+% Answer
 ?- pow_mod(7, 560, 561, Result).
+
+% Reason
 ?- why.
+
+% Answer
 ?- pow_mod(2, 1000, 1009, Result).
 ?- pow_mod(12345678901234567890, 12345, 1000000007, Result).
 

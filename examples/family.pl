@@ -11,5 +11,6 @@ parent(eli, finn).
 
 grandparent(Older, Younger) :- parent(Older, Middle), parent(Middle, Younger).
 
+% Answer
 ?- grandparent(Who, Whom).
 ?- parent(ada, Child), parent(Child, Grandchild).

@@ -1,3 +1,5 @@
+% Counting dogs for a licensing rule
+%
 % Count each listed owner's dogs and apply the example's licensing rule: an
 % owner needs a license when the count is greater than four. Alice has five
 % dogs, Carol has exactly four, and Dana has none. The threshold is supplied
@@ -26,10 +28,16 @@ requires(Owner, dog_license) :-
     dog_count(Owner, N),
     N > 4.
 
-% Answer and Reason
+% Answer
 ?- dog_count(Owner, Count).
+
+% Reason
 ?- why.
+
+% Answer
 ?- requires(Owner, dog_license).
+
+% Reason
 ?- why.
 
 % Check

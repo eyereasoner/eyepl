@@ -1,3 +1,5 @@
+% Calculating with complex numbers
+%
 % Calculate powers and inverse trigonometric functions of complex numbers,
 % which have a real part and an imaginary part. The sample input for inverse
 % sine and cosine is 5.22, outside their real-valued input range.
@@ -220,7 +222,7 @@ is_a('i-to-i', 'checked-identity') :-
     _Calc3 is abs(ExpectedImaginary),
     _Calc3 =< 1e-12.
 
-% Answer and Reason
+% Answer
 ?- real('sqrt-minus-one', What).
 ?- imaginary('sqrt-minus-one', What).
 ?- real('e-to-i-pi', What).
@@ -233,6 +235,8 @@ is_a('i-to-i', 'checked-identity') :-
 ?- imaginary('asin-result', What).
 ?- real('acos-result', What).
 ?- imaginary('acos-result', What).
+
+% Reason
 ?- why.
 
 % Check

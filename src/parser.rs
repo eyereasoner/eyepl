@@ -237,7 +237,9 @@ fn tokenize(source: &str) -> Result<Vec<(Token, usize)>, Error> {
                         && !(*c == '/' && chars.get(at + 1) == Some(&'*'))
                 })
             {
-                return Err(Error::new(format!("Line {line}: Follow a statement period with whitespace, a comment, or end of input.")));
+                return Err(Error::new(format!(
+                    "Line {line}: Follow a statement period with whitespace, a comment, or end of input."
+                )));
             }
             Token::Symbol(op)
         };
@@ -486,7 +488,13 @@ impl Parser {
             if wrapped {
                 self.expect(")")?;
             }
-            return match g{Literal::Relation(g)=>Ok(Literal::Not(g)),Literal::Builtin(g)=>Ok(Literal::NotBuiltin(g)),_=>Err(self.error("Negate one ordinary goal or test; define a helper predicate for a conjunction."))};
+            return match g {
+                Literal::Relation(goal) => Ok(Literal::Not(goal)),
+                Literal::Builtin(goal) => Ok(Literal::NotBuiltin(goal)),
+                _ => Err(self.error(
+                    "Negate one ordinary goal or test; define a helper predicate for a conjunction.",
+                )),
+            };
         }
         if self.is("aggregate_all") && self.tokens[self.position + 1].0 == Token::Symbol("(".into())
         {

@@ -9,10 +9,13 @@ Keep diagnostics specific and user-facing text direct.
 - All Rust files live directly in `src/`: `model.rs` holds values and clauses; `arithmetic.rs` handles pure numeric evaluation;
   `parser.rs` parses `.pl`; `engine.rs` evaluates; `proof.rs` generates and
   checks certificates. `language.rs` validates modes and strata; `semantics.rs`
-  supplies pure built-ins, aggregates, and finite-model matching. `lib.rs` exposes
-  the API, `main.rs` the CLI, and `wasm.rs` the browser bridge.
+  supplies pure built-ins, aggregates, and finite-model matching. `output.rs` renders
+  requests; `lib.rs` exposes the API, `main.rs` the CLI, and `wasm.rs` the browser bridge.
 - `examples/*.pl`: runnable programs with clear header comments describing
   the situation, result, and language feature. Do not mention project provenance.
+  Start with a short title, a `%` separator, and an introduction for a wide audience.
+  Label request groups `% Answer`, `% Reason`, or `% Check`, with a blank line
+  before each heading; use only the sections the program actually requests.
   After editing them, run `node scripts/index-examples.mjs` to update fingerprints
   used for short share links and restoring older bundled examples.
   `examples/output/*.txt` are exact golden transcripts for every program;
@@ -90,7 +93,7 @@ limits. `node scripts/generate-taxonomy.mjs --check` verifies the generated
 examples. `./scripts/bench-taxonomy` measures each pipeline phase with three-run
 medians; run it on a quiet machine without concurrent builds. Regression tests
 bound counted work and proof size, never wall-clock time. Large certificates and
-explanations should be redirected to files rather than printed in full.
+results should be redirected to files rather than printed in full.
 
 ## Website
 

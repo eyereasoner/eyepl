@@ -1,3 +1,5 @@
+% Finding Easter Sunday
+%
 % Calculate Easter Sunday in the Gregorian calendar for every year from 2021
 % through 2050. Each answer is a [Month, Day] pair.
 %
@@ -28,8 +30,10 @@ easter(Year, Date) :-
     in_range(2021, 2050, Year),
     computus(Year, Date).
 
-% Answer and Reason
+% Answer
 ?- easter(Year, Date).
+
+% Reason
 ?- why(easter(2026, [4, 5])).
 
 % Check

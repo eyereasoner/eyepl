@@ -300013,5 +300013,5 @@ isa(X, n100000) :- isa(X, n099999).
 isa(X, i100000) :- isa(X, n099999).
 isa(X, j100000) :- isa(X, n099999).
 
-% Query
+% Answer
 ?- test(Result).

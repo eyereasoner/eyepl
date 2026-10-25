@@ -1,8 +1,10 @@
-% Follow a chain of 10000 classification steps from n0 through n10000. The
-% individual ind starts with label n0 and acquires the next n label plus two
-% side labels, i and j, at each step. The final n label implies a2.
+% Following a classification chain 10,000 levels deep
 %
-% The query asks which individual has label a2, and the explanation traces
+% Follow 10,000 classification steps from n0 through n10000. The individual
+% ind starts with label n0 and acquires the next n label plus two side
+% labels, i and j, at each step. The final n label implies a2.
+%
+% The query asks which individual has label a2, and the proof traces
 % the supporting chain. Longer versions produce larger proofs.
 
 is_a(ind, n0).
@@ -60010,8 +60012,10 @@ is_a(Entity, i10000) :-
 is_a(Entity, j10000) :-
     is_a(Entity, n9999).
 
-% Answer and Reason
+% Answer
 ?- is_a(Who, a2).
+
+% Reason
 ?- why.
 
 % Check

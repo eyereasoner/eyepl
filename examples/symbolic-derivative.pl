@@ -1,3 +1,5 @@
+% Differentiating structured expressions
+%
 % Differentiate expressions with respect to x using rules for constants,
 % variables, sums, products, powers, and logarithms. Expressions are
 % structured terms such as add(U, V) and mul(U, V), rather than text to be
@@ -40,8 +42,10 @@ derivative_result(Name, Derivative) :-
   expr(Name, Expr),
   d(Expr, x, Derivative).
 
-% Answer and Reason
+% Answer
 ?- derivative_result(Name, Derivative).
+
+% Reason
 ?- why(derivative_result(square, Derivative)).
 
 % Check

@@ -1,3 +1,5 @@
+% Finding problems in customer and order records
+%
 % Find problems in a batch of customer and order records: missing or empty
 % email fields, conflicting email values, unknown customers, negative
 % amounts, duplicate order keys, and unsupported record shapes.
@@ -52,9 +54,13 @@ finding(order(Id), duplicate_key(Row, Other)) :-
 audit_summary(customer_count, Count) :- aggregate_all(count, customer(Id), Count).
 audit_summary(finding_count, Count) :- aggregate_all(count, finding(Subject, Reason), Count).
 
-% Answer and Reason
+% Answer
 ?- finding(Subject, Reason).
+
+% Reason
 ?- why.
+
+% Answer
 ?- audit_summary(Kind, Count).
 
 % Check

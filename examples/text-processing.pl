@@ -1,3 +1,5 @@
+% Building names and reading numbers from text
+%
 % Convert names and text to lists of Unicode character codes, then use
 % ordinary list rules to build a sensor name and read an unsigned decimal
 % number. The sample "0042" gives the name sensor_0042 and the integer 42.
@@ -40,9 +42,13 @@ label_text(Name, Text) :-
   atom_codes(Atom, Codes),
   string_codes(Text, Codes).
 
-% Answer and Reason
+% Answer
 ?- sensor_record(Name, Value).
+
+% Reason
 ?- why.
+
+% Answer
 ?- label_text(Name, Text).
 ?- string_codes("café 😀", Codes).
 

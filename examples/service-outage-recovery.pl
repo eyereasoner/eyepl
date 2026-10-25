@@ -1,3 +1,5 @@
+% Choosing repairs that restore business functions
+%
 % Find which functions fail when services are unavailable, then choose the
 % least-cost repair plan that restores both required business functions.
 %
@@ -75,11 +77,15 @@ best_repair(Plan, Cost) :-
   aggregate_all(min(Value), feasible_repair(Candidate, Value), Cost), feasible_repair(Plan, Cost).
 restored(Node) :- best_repair(Plan, _), unavailable(Node), operating(Node, Plan).
 
-% Answer and Reason
+% Answer
 ?- potential_impact(Failed, Node).
 ?- affected_function(Function).
 ?- best_repair(Plan, Cost).
+
+% Reason
 ?- why.
+
+% Answer
 ?- restored(Node).
 
 % Check

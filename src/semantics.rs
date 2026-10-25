@@ -59,8 +59,8 @@ pub(crate) fn bind(term: &Term, v: Value, bindings: &mut Bindings) -> bool {
     unify(&crate::model::term_value(term), &v, bindings)
 }
 
-fn legacy_builtin(goal: &Goal, bindings: &Bindings) -> Option<(Atom, Bindings)> {
-    let inputs = crate::language::builtin_inputs(goal).ok()?;
+fn fixed_mode_builtin(goal: &Goal, bindings: &Bindings) -> Option<(Atom, Bindings)> {
+    let inputs = crate::language::fixed_builtin_inputs(goal).ok()?;
     let args: Vec<_> = goal.terms[..inputs]
         .iter()
         .map(|t| value(t, bindings))
@@ -113,7 +113,7 @@ fn items(v: &Value) -> Option<Vec<Value>> {
 pub(crate) fn builtin(goal: &Goal, bindings: &Bindings) -> Result<Option<(Atom, Bindings)>, Error> {
     use std::cmp::Ordering;
     if !crate::parser::builtin_name(&goal.predicate, goal.terms.len()) {
-        return Ok(legacy_builtin(goal, bindings));
+        return Ok(fixed_mode_builtin(goal, bindings));
     }
     let args: Vec<_> = goal
         .terms

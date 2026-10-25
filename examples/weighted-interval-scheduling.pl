@@ -1,3 +1,5 @@
+% Choosing the most valuable compatible intervals
+%
 % Choose a set of nonoverlapping intervals with the greatest total value. For
 % each interval, compare skipping it with taking it after the best earlier
 % compatible schedule. Previously calculated values are reused, and the
@@ -72,8 +74,10 @@ weighted_interval_answer(chosen_interval, interval(I, Start, Finish, Value)) :-
 weighted_interval_answer(candidate_count, Count) :-
   aggregate_all(count, interval(I, Start, Finish, Value), Count).
 
-% Answer and Reason
+% Answer
 ?- weighted_interval_answer(Kind, Value).
+
+% Reason
 ?- why(optimal_schedule(Ids, Value)).
 
 % Check

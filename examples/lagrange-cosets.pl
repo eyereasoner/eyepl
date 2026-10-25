@@ -1,3 +1,5 @@
+% Grouping the six rearrangements of three objects
+%
 % Explore S3, the group of six ways to rearrange three objects. A permutation
 % lists where 1, 2, and 3 go; product P*Q applies Q first and then P.
 %
@@ -43,11 +45,19 @@ lagrange(Order, SubgroupOrder, Index) :-
   aggregate_all(count, representative(P), Index),
   Order =:= SubgroupOrder * Index.
 
-% Answer and Reason
+% Answer
 ?- left_coset(Representative, Member).
+
+% Reason
 ?- why(left_coset(c123, Member)).
+
+% Answer
 ?- lagrange(Order, SubgroupOrder, Index).
+
+% Reason
 ?- why.
+
+% Answer
 ?- normality_counterexample(Permutation, Member).
 
 % Check

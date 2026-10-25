@@ -1,3 +1,5 @@
+% Turning eight samples into frequency components
+%
 % Convert eight real samples into eight complex frequency components using a
 % fast Fourier transform (FFT). The radix-2 method repeatedly splits the
 % samples into even and odd positions, then combines their smaller
@@ -47,9 +49,13 @@ rounded([c(R, I)|Rest], [c(RR, RI)|Tail]) :-
 spectrum(Name, Bins) :-
   wave(Name, Samples), fft8(Samples, Raw), rounded(Raw, Bins).
 
-% Answer and Reason
+% Answer
 ?- spectrum(ramp, Bins).
+
+% Reason
 ?- why.
+
+% Answer
 ?- spectrum(alternating, Bins).
 
 % Check

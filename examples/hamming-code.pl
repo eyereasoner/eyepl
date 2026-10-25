@@ -1,3 +1,5 @@
+% Correcting a single-bit error
+%
 % Correct a single flipped bit in a seven-bit Hamming(7,4) code word and
 % extract its four data bits. Positions 1, 2, and 4 hold parity bits, which
 % check whether selected groups contain an even number of ones.
@@ -34,8 +36,10 @@ correct_bit(Position, Syndrome, Bit, Bit) :-
 decoded(Name, Syndrome, Corrected, Payload) :-
   received(Name, Bits), decode(Bits, Syndrome, Corrected, Payload).
 
-% Answer and Reason
+% Answer
 ?- decoded(Name, Syndrome, Corrected, Payload).
+
+% Reason
 ?- why.
 
 % Check

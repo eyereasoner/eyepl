@@ -1,3 +1,5 @@
+% Extending classifications and relationships with a schema
+%
 % Infer additional classifications and relationships from a small schema.
 % Cats are mammals and mammals are animals, so Koko's cat classification also
 % implies both broader classifications.
@@ -34,12 +36,22 @@ type(O, Class) :-
     triple(_, P, O),
     range(P, Class).
 
-% Answer and Reason
+% Answer
 ?- type(Who, Class).
+
+% Reason
 ?- why(type(koko, animal)).
+
+% Answer
 ?- triple(Subject, Property, Object).
+
+% Reason
 ?- why(triple(alice, connected_to, bob)).
+
+% Answer
 ?- type(alice, person).
+
+% Reason
 ?- why.
 
 % Check

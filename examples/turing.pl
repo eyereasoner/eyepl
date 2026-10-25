@@ -1,3 +1,5 @@
+% Simulating a machine that increments a binary number
+%
 % Simulate a Turing machine that adds one to a binary number. A transition
 % table tells the machine which symbol to write, which state to enter, and
 % whether to move left, move right, or stay in place.
@@ -61,7 +63,7 @@ output(Case, Output) :-
 is_a(Case, 'finished-case') :-
     output(Case, Output).
 
-% Answer and Reason
+% Answer
 ?- input(case1, What).
 ?- input(case2, What).
 ?- input(case3, What).
@@ -70,7 +72,11 @@ is_a(Case, 'finished-case') :-
 ?- output(case2, What).
 ?- output(case3, What).
 ?- output(case4, What).
+
+% Reason
 ?- why.
+
+% Answer
 ?- is_a(Who, 'finished-case').
 
 % Check

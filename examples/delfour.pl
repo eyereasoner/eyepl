@@ -1,3 +1,5 @@
+% Choosing a lower-sugar shopping alternative
+%
 % Model a shopping assistant that suggests a lower-sugar product while
 % keeping the household's private condition out of the shared shopping
 % guidance.
@@ -179,11 +181,15 @@ scope(Case, [Device, Event]) :-
     device(Insight, Device),
     event(Insight, Event).
 
-% Answer and Reason
+% Answer
 ?- 'case-name'(delfour, What).
 ?- is_a(delfour, 'low-sugar-case').
 ?- 'derived-need'([delfour, 'sugar-insight'], What).
+
+% Reason
 ?- why.
+
+% Answer
 ?- outcome(delfour, What).
 ?- target(delfour, What).
 ?- metric('sugar-insight', What).

@@ -168,7 +168,8 @@ fn unsafe_modes_non_stratified_cycles_and_invalid_witnesses_are_rejected() {
         "p(W):-q(W),fresh(W).",
         "p(~\"forged\").",
     ] {
-        assert!(parse(source).is_err(), "accepted {source}");
+        let diagnostic = parse(source).unwrap_err().to_string();
+        assert!(!diagnostic.contains("@fresh"), "{diagnostic}");
     }
     for source in ["?- Y is X+1.", "?- \\+ p(X)."] {
         assert!(reason(&parse(source).unwrap(), Limits::default()).is_err());

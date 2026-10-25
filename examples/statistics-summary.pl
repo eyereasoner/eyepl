@@ -1,3 +1,5 @@
+% Summarizing a list of observations
+%
 % Calculate the count, mean, population variance, and population standard
 % deviation of the sample [2, 4, 4, 4, 5, 5, 7, 9]. Its mean is 5, variance
 % is 4, and standard deviation is 2.
@@ -57,11 +59,13 @@ length([_ | Rest], Count) :-
   length(Rest, Previous),
   Count is Previous + 1.
 
-% Answer and Reason
+% Answer
 ?- count(scores, Count).
 ?- mean(scores, Mean).
 ?- populationVariance(scores, Variance).
 ?- populationStddev(scores, Stddev).
+
+% Reason
 ?- why.
 
 % Check

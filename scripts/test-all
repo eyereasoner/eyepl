@@ -7,18 +7,24 @@ export CARGO_BUILD_JOBS=${CARGO_BUILD_JOBS:-2}
 started=$EPOCHREALTIME
 checks=0
 failed=0
+heading='' dim='' good='' bad='' reset=''
+export WHEYE_TEST_COLOR=0
+if [[ -z ${NO_COLOR+x} && ( -t 1 || ${FORCE_COLOR:-0} != 0 ) ]]; then
+  heading=$'\033[1;36m' dim=$'\033[2m' good=$'\033[32m' bad=$'\033[31m' reset=$'\033[0m'
+  export WHEYE_TEST_COLOR=1 CARGO_TERM_COLOR=always
+fi
 elapsed() { awk -v s="$1" -v e="$EPOCHREALTIME" 'BEGIN { printf "%.2f", e-s }'; }
 run_check() {
   local name=$1 description=$2 begin=$EPOCHREALTIME status=0
   shift 2
-  printf '\n=== %s ===\n# %s\n' "$name" "$description"
+  printf '\n%s=== %s ===%s\n%s# %s%s\n' "$heading" "$name" "$reset" "$dim" "$description" "$reset"
   "$@" || status=$?
   checks=$((checks + 1))
   if [[ $status -eq 0 ]]; then
-    printf 'PASS %s · %s s\n' "$name" "$(elapsed "$begin")"
+    printf '%sPASS%s %s · %s s\n' "$good" "$reset" "$name" "$(elapsed "$begin")"
   else
     failed=$((failed + 1))
-    printf 'FAIL %s · exit %s · %s s\n' "$name" "$status" "$(elapsed "$begin")"
+    printf '%sFAIL%s %s · exit %s · %s s\n' "$bad" "$reset" "$name" "$status" "$(elapsed "$begin")"
   fi
 }
 
@@ -40,5 +46,7 @@ run_check 'Pages and Wasm' 'Rendered routes, versions, browser package, and smal
 run_check 'Release tooling' 'Publication success and recovery in temporary repositories; no real publication.' node tests/release.mjs
 run_check 'Test runner' 'A failed check is reported and later checks still run.' node tests/test-runner.mjs
 
-printf '\nChecks: %s passed, %s failed · %s s total\n' "$((checks-failed))" "$failed" "$(elapsed "$started")"
+summary=$good
+if [[ $failed -ne 0 ]]; then summary=$bad; fi
+printf '\n%sChecks: %s passed, %s failed · %s s total%s\n' "$summary" "$((checks-failed))" "$failed" "$(elapsed "$started")" "$reset"
 [[ $failed -eq 0 ]]

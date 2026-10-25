@@ -1,9 +1,11 @@
+% Finding exact integer solutions to Pell's equation
+%
 % Generate nonnegative integer pairs satisfying x^2 - 2*y^2 = 1, known as
 % Pell's equation. Starting from (1, 0), each step computes x_next = 3*x +
 % 4*y and y_next = 2*x + 3*y.
 %
 % Supply a nonnegative integer step number. Calculations remain exact through
-% the fiftieth solution shown here. Assertions substitute the results into
+% the fiftieth solution shown here. Goal checks substitute the results into
 % the original equation as a separate check on the recurrence.
 
 :- table pell/3, pell_holds/2, between/3.
@@ -39,8 +41,10 @@ pell_answer(check_8, true) :- pell_holds(8, true).
 pell_answer(y_sum_1_to_8, Sum) :-
   aggregate_all(sum(Y), (between(1, 8, N), pell(N, X, Y)), Sum).
 
-% Answer and Reason
+% Answer
 ?- pell_answer(Kind, Value).
+
+% Reason
 ?- why(pell(8, X, Y)).
 
 % Check

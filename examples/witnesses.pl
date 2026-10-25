@@ -10,4 +10,5 @@ visitor(bea).
 ticket(Visitor, Ticket) :- visitor(Visitor), fresh(Ticket).
 admitted(Visitor, Ticket) :- ticket(Visitor, Ticket).
 
+% Answer
 ?- admitted(Visitor, Ticket).

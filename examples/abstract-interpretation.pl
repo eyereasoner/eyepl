@@ -1,3 +1,5 @@
+% Finding possible division by zero
+%
 % Find possible division by zero by tracking whether a value is negative,
 % zero, or positive, rather than tracking every possible integer.
 %
@@ -59,11 +61,17 @@ reachable_division(Program, Point) :- division(Program, Point), abs_state(Progra
 abs_warning(Program, possible_division_by_zero(Point)) :- division(Program, Point), zero_possible(Program, Point).
 nonzero_divisor(Program, Point) :- reachable_division(Program, Point), \+ zero_possible(Program, Point).
 
-% Answer and Reason
+% Answer
 ?- abs_state(Program, Point, Sign).
 ?- abs_warning(Program, Warning).
+
+% Reason
 ?- why.
+
+% Answer
 ?- nonzero_divisor(Program, Point).
+
+% Reason
 ?- why.
 
 % Check

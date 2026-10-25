@@ -1,10 +1,12 @@
+% Placing queens so that none attack one another
+%
 % Place N queens on an N-by-N chessboard so no two share a row, column, or
 % diagonal. An answer lists the column of each queen in row order, with both
 % rows and columns numbered from 1.
 %
 % Supply a nonnegative integer board size. The sample enumerates all 92
 % arrangements for eight queens, including arrangements related by rotation
-% or reflection, and explains one arrangement.
+% or reflection, and gives a proof for one arrangement.
 
 :- table queens/2, columns/3, select/3, place/3, safe/3.
 
@@ -22,9 +24,13 @@ safe(Column, [Other|Rest], Distance) :-
     Column =\= Other+Distance, Column =\= Other-Distance,
     Next is Distance+1, safe(Column, Rest, Next).
 
-% Answer and Reason
+% Answer
 ?- queens(8, Columns).
+
+% Reason
 ?- why(queens(8, [1, 5, 8, 6, 3, 7, 2, 4])).
+
+% Answer
 ?- aggregate_all(count, queens(8, Columns), Count).
 
 % Check

@@ -7,11 +7,13 @@ export const depths = [10, 100, 1000, 10000, 100000];
 export function taxonomy(depth) {
   if (!depths.includes(depth)) throw new Error('Choose a packaged taxonomy depth.');
   if (depth !== 100000) {
-    const lines = [`% Follow a chain of ${depth} classification steps from n0 through n${depth}. The
-% individual ind starts with label n0 and acquires the next n label plus two
-% side labels, i and j, at each step. The final n label implies a2.
+    const lines = [`% Following a classification chain ${depth.toLocaleString('en-US')} levels deep
 %
-% The query asks which individual has label a2, and the explanation traces
+% Follow ${depth.toLocaleString('en-US')} classification steps from n0 through n${depth}. The individual
+% ind starts with label n0 and acquires the next n label plus two side
+% labels, i and j, at each step. The final n label implies a2.
+%
+% The query asks which individual has label a2, and the proof traces
 % the supporting chain. Longer versions produce larger proofs.
 
 is_a(ind, n0).
@@ -23,8 +25,10 @@ is_a(Entity, a2) :-
       for (const prefix of ['n', 'i', 'j']) lines.push(`is_a(Entity, ${prefix}${level}) :-\n    is_a(Entity, n${level - 1}).\n`);
     }
     lines.push(`
-% Answer and Reason
+% Answer
 ?- is_a(Who, a2).
+
+% Reason
 ?- why.
 
 % Check
@@ -57,7 +61,7 @@ isa(X, a2) :- isa(X, ${label('n', depth)}).
       lines.push(`isa(X, ${label(prefix, level)}) :- isa(X, ${label('n', level - 1)}).\n`);
     }
   }
-  lines.push('\n% Query\n?- test(Result).\n');
+  lines.push('\n% Answer\n?- test(Result).\n');
   return lines.join('');
 }
 

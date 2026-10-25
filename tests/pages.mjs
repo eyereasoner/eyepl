@@ -7,6 +7,20 @@ import { preparePages } from '../scripts/prepare-pages.mjs';
 
 const root = new URL('../', import.meta.url);
 
+let browser;
+function browserEngine() {
+  browser ??= (async () => {
+    const engine = await import('../pkg/wheye.js');
+    engine.initSync({ module: await readFile(new URL('pkg/wheye_bg.wasm', root)) });
+    return engine;
+  })();
+  return browser;
+}
+
+async function exampleSource(name) {
+  return readFile(new URL(`examples/${name}.pl`, root), 'utf8');
+}
+
 test('website stages rendered documentation and every playground dependency', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'wheye-pages-'));
   try {
@@ -60,8 +74,7 @@ test('documentation and playground links honor root and nested Pages prefixes', 
 });
 
 test('committed browser package matches Cargo and performs C1–C9 checking', async () => {
-  const { initSync, runProgram, version } = await import('../pkg/wheye.js');
-  initSync({ module: await readFile(new URL('pkg/wheye_bg.wasm', root)) });
+  const { runProgram, version } = await browserEngine();
   const cargo = await readFile(new URL('Cargo.toml', root), 'utf8');
   const expectedVersion = /^version\s*=\s*"([^"]+)"/m.exec(cargo)[1];
   assert.equal(version(), expectedVersion);
@@ -74,7 +87,7 @@ test('committed browser package matches Cargo and performs C1–C9 checking', as
   assert.ok(spec.includes(`Version **${expectedVersion}**`));
   assert.ok(playground.includes(`id="version">v${expectedVersion}</span>`));
   assert.doesNotMatch(playground, /wheye · version|class="notes"/);
-  const source = await readFile(new URL('examples/socrates.pl', root), 'utf8');
+  const source = await exampleSource('socrates');
   const report = runProgram(source);
   assert.match(report, /^checked: 2 steps, 1 claim/m);
   for (let condition = 1; condition <= 9; condition++) assert.match(report, new RegExp(`C${condition} `));
@@ -82,25 +95,30 @@ test('committed browser package matches Cargo and performs C1–C9 checking', as
 
 
 test('browser engine checks all nine conditions on the voucher example', async () => {
-  const { initSync, runProgram }=await import('../pkg/wheye.js');
-  initSync({module:await readFile(new URL('pkg/wheye_bg.wasm',root))});
-  const output=runProgram(await readFile(new URL('examples/orders.pl',root),'utf8'));
-  assert.match(output,/^wheye-proof 1/m);assert.match(output,/^checked:/m);
-  assert.doesNotMatch(output,/not applicable/);
-  for(let i=1;i<=9;i++)assert.match(output,new RegExp(`C${i} [^\\n]+: [1-9][0-9]* checked, 0 failed`));
+  const { runProgram } = await browserEngine();
+  const output = runProgram(await exampleSource('orders'));
+  assert.match(output, /^wheye-proof 1/m);
+  assert.match(output, /^checked:/m);
+  assert.doesNotMatch(output, /not applicable/);
+  for (let condition = 1; condition <= 9; condition++) {
+    assert.match(output, new RegExp(`C${condition} [^\\n]+: [1-9][0-9]* checked, 0 failed`));
+  }
 });
-// Deep scaling and the full airport graph are checked natively; keep Wasm smoke tests small.
-test('browser engine checks a small taxonomy within default limits',async()=>{
-  const {initSync,runProgram}=await import('../pkg/wheye.js');
-  initSync({module:await readFile(new URL('pkg/wheye_bg.wasm',root))});
-  const source=await readFile(new URL('examples/deep-taxonomy-100.pl',root),'utf8');
-  const output=runProgram(source+'\n?- check.\n');
-  assert.match(output,/Who = ind/);
-  assert.match(output,/^checked: 102 steps, 1 claim/m);
-  assert.match(output,/C1 resolution: 102 checked, 0 failed/);
+
+// Deep scaling and the full airport graph are checked natively.
+test('browser engine checks a small taxonomy within default limits', async () => {
+  const { runProgram } = await browserEngine();
+  const source = await exampleSource('deep-taxonomy-100');
+  const output = runProgram(source + '\n?- check.\n');
+  assert.match(output, /Who = ind/);
+  assert.match(output, /^checked: 102 steps, 1 claim/m);
+  assert.match(output, /C1 resolution: 102 checked, 0 failed/);
 });
-test('browser engine executes explicit true and false result requests',async()=>{
-  const {initSync,runProgram}=await import('../pkg/wheye.js');
-  initSync({module:await readFile(new URL('pkg/wheye_bg.wasm',root))});
-  assert.equal(runProgram('p(a). ?- check(p(a)). ?- check(p(b)).'),'?- check(p(a)).\ntrue.\n\n?- check(p(b)).\nfalse.\n');
+
+test('browser engine executes explicit true and false result requests', async () => {
+  const { runProgram } = await browserEngine();
+  assert.equal(
+    runProgram('p(a). ?- check(p(a)). ?- check(p(b)).'),
+    '?- check(p(a)).\ntrue.\n\n?- check(p(b)).\nfalse.\n',
+  );
 });

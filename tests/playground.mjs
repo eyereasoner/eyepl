@@ -17,6 +17,27 @@ test('all examples are selectable and available to shared links', async () => {
     assert.match(await readFile(new URL(`examples/${name}.pl`, root), 'utf8'), /\?- /);
   }
 });
+
+test('example comments introduce the model and label each kind of request', async () => {
+  for (const file of await readdir(new URL('examples/', root))) {
+    if (!file.endsWith('.pl')) continue;
+    const source = await readFile(new URL(`examples/${file}`, root), 'utf8');
+    const lines = source.split('\n');
+    assert.match(source, /^% [^\n]+\n%\n% [^\n]+/, `${file}: title and introduction`);
+    let section;
+    for (const [index, line] of lines.entries()) {
+      const heading = /^% (Answer|Reason|Check)$/.exec(line);
+      if (heading) {
+        assert.equal(lines[index - 1], '', `${file}:${index + 1}: blank line before section`);
+        section = heading[1];
+      }
+      if (!line.startsWith('?-')) continue;
+      const expected = /^\?-\s*why\b/.test(line) ? 'Reason' : /^\?-\s*check\b/.test(line) ? 'Check' : 'Answer';
+      assert.equal(section, expected, `${file}:${index + 1}: request section`);
+    }
+  }
+});
+
 test('worker runs the engine off the UI thread and reports failures', async () => {
   const source = await readFile(new URL('playground-worker.js', root), 'utf8');
   const messages = [];
@@ -37,10 +58,10 @@ test('worker runs the engine off the UI thread and reports failures', async () =
 });
 
 test('the source is the only input to execution and sharing', async () => {
-  const html=await readFile(new URL('playground.html',root),'utf8');
-  const js=await readFile(new URL('playground.js',root),'utf8');
-  assert.doesNotMatch(html,/id="(?:mode|saved-proof)"/);
-  assert.doesNotMatch(js,/get\('mode'\)|get\('proof'\)|set\('mode'\)|set\('proof'\)/);
+  const html = await readFile(new URL('playground.html', root), 'utf8');
+  const js = await readFile(new URL('playground.js', root), 'utf8');
+  assert.doesNotMatch(html, /id="(?:mode|saved-proof)"/);
+  assert.doesNotMatch(js, /get\('mode'\)|get\('proof'\)|set\('mode'\)|set\('proof'\)/);
 });
 
 test('the example index recognizes every current source and the previous Socrates source', async () => {
@@ -61,7 +82,7 @@ test('the example index recognizes every current source and the previous Socrate
   assert.equal(index[createHash('sha256').update(legacy).digest('hex')], 'socrates');
 });
 
-async function playground({ source, hash = '', stateUrl, request, token = '', promptToken = '', output, error = false } = {}) {
+async function createPlayground({ source, hash = '', stateUrl, request, token = '', promptToken = '', output, error = false } = {}) {
   const elements = new Map();
   const timers = new Map();
   let nextTimer = 0;
@@ -91,7 +112,14 @@ async function playground({ source, hash = '', stateUrl, request, token = '', pr
     clearTimeout: id => timers.delete(id),
     Worker: class {
       constructor() { if (output === undefined) throw new Error('Restoring a program must not run it.'); }
-      postMessage(data) { this.onmessage({ data: data.kind === 'init' ? {kind:'ready',version:'0.1.16'} : {kind:error?'error':'result', id:data.id, output, message:output} }); }
+      postMessage(data) {
+        if (data.kind === 'init') {
+          this.onmessage({ data: { kind: 'ready', version: 'test' } });
+        } else {
+          const result = error ? { kind: 'error', message: output } : { kind: 'result', output };
+          this.onmessage({ data: { id: data.id, ...result } });
+        }
+      }
       terminate() {}
     },
     fetch: async (url, options) => {
@@ -120,13 +148,13 @@ async function playground({ source, hash = '', stateUrl, request, token = '', pr
 }
 
 test('fresh and restored unedited examples share short links', async () => {
-  const fresh = await playground();
+  const fresh = await createPlayground();
   assert.equal((await fresh.share()).hash, '#example=socrates');
   const source = fresh.element('source').value;
-  const restored = await playground({ source });
+  const restored = await createPlayground({ source });
   assert.equal(restored.element('example').value, 'socrates');
   assert.equal((await restored.share()).hash, '#example=socrates');
-  const code = await playground({ hash: `#${new URLSearchParams({ code: source })}` });
+  const code = await createPlayground({ hash: `#${new URLSearchParams({ code: source })}` });
   assert.equal(code.location.hash, '#example=socrates');
   assert.equal((await code.share()).hash, '#example=socrates');
 });
@@ -135,7 +163,7 @@ test('old bundled examples restore current syntax from autosave and full source 
   const legacy = await readFile(new URL('tests/fixtures/legacy-socrates.pl', root), 'utf8');
   const current = await readFile(new URL('examples/socrates.pl', root), 'utf8');
   for (const options of [{ source: legacy }, { hash: `#${new URLSearchParams({ code: legacy })}` }]) {
-    const page = await playground(options);
+    const page = await createPlayground(options);
     assert.equal(page.element('source').value, current);
     assert.equal(page.autosave(), options.source ? current : null);
     assert.equal((await page.share()).hash, '#example=socrates');
@@ -147,7 +175,7 @@ test('old bundled examples restore current syntax from autosave and full source 
 test('opening a shared example preserves an unrelated saved draft', async () => {
   const draft = "human('Élodie'). ?- human(Who).";
   const legacy = await readFile(new URL('tests/fixtures/legacy-socrates.pl', root), 'utf8');
-  const page = await playground({ source: draft, hash: `#${new URLSearchParams({ code: legacy })}` });
+  const page = await createPlayground({ source: draft, hash: `#${new URLSearchParams({ code: legacy })}` });
   assert.equal(page.element('example').value, 'socrates');
   assert.equal(page.autosave(), draft);
 });
@@ -155,41 +183,54 @@ test('opening a shared example preserves an unrelated saved draft', async () => 
 test('custom edits remain exact source snapshots, including obsolete syntax', async () => {
   const legacy = await readFile(new URL('tests/fixtures/legacy-socrates.pl', root), 'utf8');
   const source = legacy + '\n% My own changes: Élodie\n';
-  const page = await playground({ hash: `#${new URLSearchParams({ code: source })}` });
+  const page = await createPlayground({ hash: `#${new URLSearchParams({ code: source })}` });
   assert.equal(page.element('source').value, source);
   assert.equal(page.element('example').value, '');
   assert.equal(page.autosave(), null);
   page.element('source').listeners.input();
   assert.equal(page.autosave(), source);
   assert.equal(new URLSearchParams((await page.share()).hash.slice(1)).get('code'), source);
-  const restored = await playground({ source });
+  const restored = await createPlayground({ source });
   assert.equal(restored.element('source').value, source);
   assert.equal(new URLSearchParams((await restored.share()).hash.slice(1)).get('code'), source);
 });
 
+function jsonResponse(payload, status = 200) {
+  return { ok: status >= 200 && status < 300, status, json: async () => payload };
+}
+
 const rawGist = 'https://gist.githubusercontent.com/example/123/raw/abc/wheye-playground-state.json';
+
 test('Gist sharing uploads only the source, keeps its token in the session, and restores without running', async () => {
   const source = "human('Élodie'). ?- human(Who).";
   let uploaded;
-  const page = await playground({ source, promptToken: ' Bearer test-token ', request: async (url, options) => {
-    assert.equal(String(url), 'https://api.github.com/gists');
-    assert.equal(options.method, 'POST');
-    assert.equal(options.credentials, 'omit');
-    assert.equal(options.headers.Authorization, 'Bearer test-token');
-    uploaded = JSON.parse(options.body);
-    return {ok:true, json:async()=>({files:{'wheye-playground-state.json':{raw_url:rawGist}}})};
-  } });
+  const page = await createPlayground({
+    source,
+    promptToken: ' Bearer test-token ',
+    request: async (url, options) => {
+      assert.equal(String(url), 'https://api.github.com/gists');
+      assert.equal(options.method, 'POST');
+      assert.equal(options.credentials, 'omit');
+      assert.equal(options.headers.Authorization, 'Bearer test-token');
+      uploaded = JSON.parse(options.body);
+      return jsonResponse({ files: { 'wheye-playground-state.json': { raw_url: rawGist } } }, 201);
+    },
+  });
   const shared = new URL(await page.gist());
   assert.equal(uploaded.public, false);
-  assert.deepEqual(JSON.parse(uploaded.files['wheye-playground-state.json'].content), {source});
+  assert.deepEqual(JSON.parse(uploaded.files['wheye-playground-state.json'].content), { source });
   assert.equal(shared.searchParams.get('stateurl'), rawGist);
   assert.ok(!shared.href.includes('test-token'));
   assert.equal(page.session.get('wheye.playground.github.gistToken.v1'), 'test-token');
-  const restored = await playground({ stateUrl: rawGist, request: async (url, options) => {
-    assert.equal(String(url), rawGist);
-    assert.equal(options.headers, undefined, 'Reading a Gist must not send a token.');
-    return {ok:true, json:async()=>({source})};
-  } });
+
+  const restored = await createPlayground({
+    stateUrl: rawGist,
+    request: async (url, options) => {
+      assert.equal(String(url), rawGist);
+      assert.equal(options.headers, undefined, 'Reading a Gist must not send a token.');
+      return jsonResponse({ source });
+    },
+  });
   assert.equal(restored.element('source').value, source);
   assert.match(restored.element('output').textContent, /first answer/);
   const normal = await restored.share();
@@ -198,10 +239,14 @@ test('Gist sharing uploads only the source, keeps its token in the session, and 
 });
 
 test('Gist cancellation and authentication failures allow retry without retaining bad tokens', async () => {
-  const cancelled = await playground();
+  const cancelled = await createPlayground();
   await cancelled.gist();
   assert.equal(cancelled.element('share-status').textContent, 'Gist sharing cancelled.');
-  const denied = await playground({token:'expired',request:async()=>({ok:false,status:401,json:async()=>({message:'Bad credentials'})})});
+
+  const denied = await createPlayground({
+    token: 'expired',
+    request: async () => jsonResponse({ message: 'Bad credentials' }, 401),
+  });
   await denied.gist();
   assert.equal(denied.session.size, 0);
   assert.match(denied.element('share-status').textContent, /HTTP 401: Bad credentials/);
@@ -211,22 +256,24 @@ test('Gist cancellation and authentication failures allow retry without retainin
 });
 
 test('Gist state rejects unrelated hosts and missing source without executing content', async () => {
-  const unrelated = await playground({stateUrl:'https://example.test/state.json'});
-  assert.match(unrelated.element('status').textContent,/raw GitHub Gist URL/);
-  const malformed = await playground({stateUrl:rawGist,request:async()=>({ok:true,json:async()=>({})})});
-  assert.match(malformed.element('status').textContent,/needs a program source/);
-  assert.equal(malformed.element('run').disabled,false);
+  const unrelated = await createPlayground({ stateUrl: 'https://example.test/state.json' });
+  assert.match(unrelated.element('status').textContent, /raw GitHub Gist URL/);
+
+  const malformed = await createPlayground({ stateUrl: rawGist, request: async () => jsonResponse({}) });
+  assert.match(malformed.element('status').textContent, /needs a program source/);
+  assert.equal(malformed.element('run').disabled, false);
 });
 
 test('run status shows success or failure with exit code and elapsed seconds, and sharing preserves it', async () => {
-  const page = await playground({output:'Who = socrates.\n'});
+  const page = await createPlayground({ output: 'Who = socrates.\n' });
   await page.run();
   const done = page.element('status').textContent;
-  assert.match(done,/^Done · exit 0 · \d+\.\d{2} s$/);
+  assert.match(done, /^Done · exit 0 · \d+\.\d{2} s$/);
   await page.share();
-  assert.equal(page.element('status').textContent,done);
-  const failed = await playground({output:'Specific parse error',error:true});
+  assert.equal(page.element('status').textContent, done);
+
+  const failed = await createPlayground({ output: 'Specific parse error', error: true });
   await failed.run();
-  assert.match(failed.element('status').textContent,/^Failed · exit 1 · \d+\.\d{2} s$/);
-  assert.equal(failed.element('output').textContent,'Specific parse error');
+  assert.match(failed.element('status').textContent, /^Failed · exit 1 · \d+\.\d{2} s$/);
+  assert.equal(failed.element('output').textContent, 'Specific parse error');
 });

@@ -1,3 +1,5 @@
+% Generating a sequence and its neighboring-term ratios
+%
 % Generate the integer sequence starting with P(0)=0, P(1)=1, and P(2)=1,
 % then using P(n)=P(n-2)+P(n-3). This example uses that stated indexing of
 % the Padovan sequence and keeps even very large integer values exactly.
@@ -27,14 +29,17 @@ plastic_ratio(A, B) :-
     padovan(D, E),
     B is E/C.
 
-% query
-% Answer and Reason
+% Answer
 ?- padovan(1, Value).
 ?- padovan(2, Value).
 ?- padovan(3, Value).
 ?- padovan(4, Value).
 ?- padovan(5, Value).
+
+% Reason
 ?- why.
+
+% Answer
 ?- padovan(91, Value).
 ?- padovan(283, Value).
 ?- padovan(3674, Value).

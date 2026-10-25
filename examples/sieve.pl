@@ -1,8 +1,10 @@
+% Finding primes by removing multiples
+%
 % Find primes up to 100 with the sieve of Eratosthenes. Start with the
 % integers from 2 through the limit, keep the first remaining number, and
 % remove its multiples before continuing.
 %
-% The supplied limit keeps the explanation manageable. Each filtering step
+% The supplied limit keeps the proof manageable. Each filtering step
 % records its intermediate list so the result can be followed and checked.
 
 :- table primes/2, range/3, sift/2, remove/3.
@@ -31,8 +33,10 @@ remove(P, [I | Is], [I | Rest]) :-
     0 =\= I mod P,
     remove(P, Is, Rest).
 
-% Answer and Reason
+% Answer
 ?- primes(100, Primes).
+
+% Reason
 ?- why.
 
 % Check

@@ -1,3 +1,5 @@
+% Comparing two research-portal policy models
+%
 % Compare research-portal sessions under two modeled rulebooks. A session
 % must pass both a research-policy gate and a separate device-consent gate.
 % The queries show decisions, unmet conditions, planned duties,
@@ -342,13 +344,15 @@ is_a(Item, 'changed-outcome') :-
 is_a(Process, 'conflicting-process') :-
     'policy-conflict'(Process, Conflict).
 
-% Answer and Reason
+% Answer
 ?- assessment(Session, Result).
 ?- 'breach-plan'(Incident, Plan).
 ?- 'planned-duty'(Session, Duty).
 ?- 'policy-conflict'(Process, Conflict).
 ?- change(Item, Difference).
 ?- assessment(['omnibus-proposal', r1], What).
+
+% Reason
 ?- why.
 
 % Check

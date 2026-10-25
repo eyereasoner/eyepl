@@ -1,3 +1,5 @@
+% Finding a shortest route
+%
 % Find one shortest path through a finite directed graph using Dijkstra's
 % algorithm. Edges are edge(From, To, Weight) terms with nonnegative weights.
 %
@@ -59,9 +61,13 @@ insert(entry(C, N, P), [entry(D, M, Q)|Rest], [entry(D, M, Q)|Tail]) :-
 route(Start, Goal, Path, Cost) :-
   network(Edges), undirected(Edges, Arcs), dijkstra(Arcs, Start, Goal, Path, Cost).
 
-% Answer and Reason
+% Answer
 ?- route(a, f, Path, Cost).
+
+% Reason
 ?- why.
+
+% Answer
 ?- route(f, a, Path, Cost).
 ?- route(a, a, Path, Cost).
 

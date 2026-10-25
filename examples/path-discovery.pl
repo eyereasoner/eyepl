@@ -1,3 +1,5 @@
+% Finding routes through an airport network
+%
 % Find airport routes with at most a supplied number of intermediate stops.
 % Add route_request(FromLabel, ToLabel, MaxStopOvers) facts to request other
 % endpoints or stop limits. A visited-airport list prevents repeated
@@ -45026,8 +45028,10 @@ flight(res_airport_999, res_airport_4161).
 flight(res_airport_999, res_airport_897).
 flight(res_airport_999, res_airport_900).
 
-% Answer and Reason
+% Answer
 ?- airroute(From, To, Stopovers, Route).
+
+% Reason
 ?- why.
 
 % Check

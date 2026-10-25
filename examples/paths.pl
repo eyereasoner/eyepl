@@ -1,3 +1,5 @@
+% Following a restricted rule through a cycle
+%
 % Trace links among Ada, Ben, and Cara in a three-person cycle. Every follows
 % fact gives a direct reaches fact. The second rule extends a known route by
 % one link only when that link ends at Ada.
@@ -16,8 +18,10 @@ reaches(From, ada) :-
     reaches(From, Via),
     follows(Via, ada).
 
-% Answer and Reason
+% Answer
 ?- reaches(Who, ada).
+
+% Reason
 ?- why((reaches(ben, ada))).
 
 % Check

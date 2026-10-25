@@ -1,3 +1,5 @@
+% Calculating an invoice
+%
 % Calculate an invoice from three items. Each item fact supplies its name,
 % quantity, and unit price. The rules multiply quantity by price for each
 % line, then sum the completed line totals. Prices use the same unspecified
@@ -11,9 +13,13 @@ line_total(Name, Total) :-
     Total is Quantity * Price.
 invoice(Total) :- aggregate_all(sum(Amount), line_total(Name, Amount), Total).
 
-% Answer and Reason
+% Answer
 ?- invoice(Total).
+
+% Reason
 ?- why.
+
+% Answer
 ?- line_total(Item, Amount).
 
 % Check

@@ -1,3 +1,5 @@
+% Calculating a rapidly growing function
+%
 % Calculate the Ackermann function, whose values grow rapidly even for small
 % inputs. Supply a pair [M, N] of nonnegative integers to ask for A(M, N).
 %
@@ -41,7 +43,7 @@ ackermann([Level, Count, Base], Result) :-
     _Calc2 is (Level - 1),
     ackermann([_Calc2, Previous, Base], Result).
 
-% Answer and Reason
+% Answer
 ?- ackermann([0, 0], What).
 ?- ackermann([0, 6], What).
 ?- ackermann([1, 2], What).
@@ -53,8 +55,14 @@ ackermann([Level, Count, Base], Result) :-
 ?- ackermann([4, 0], What).
 ?- ackermann([4, 1], What).
 ?- ackermann([4, 2], What).
+
+% Reason
 ?- why.
+
+% Answer
 ?- ackermann([5, 0], What).
+
+% Reason
 ?- why.
 
 % Check

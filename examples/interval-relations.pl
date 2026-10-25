@@ -1,3 +1,5 @@
+% Comparing time intervals
+%
 % Describe how pairs of time intervals relate: before, meeting at an
 % endpoint, overlapping, containing one another, or sharing a start or
 % finish. The rules cover all thirteen of Allen's interval relations.
@@ -73,8 +75,10 @@ relation(J, contains, I) :-
 relation(J, finished_by, I) :-
     relation(I, finishes, J).
 
-% Answer and Reason
+% Answer
 ?- relation(I, Relation, J).
+
+% Reason
 ?- why(relation(a, overlaps, d)).
 
 % Check

@@ -11,4 +11,5 @@ triple(Thing, type, Superclass) :-
     triple(Thing, type, Class),
     triple(Class, subclass, Superclass).
 
+% Answer
 ?- triple(Who, type, 'https://example.org/Mortal').

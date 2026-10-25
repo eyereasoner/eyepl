@@ -1,3 +1,5 @@
+% Finding cousins in a labeled family tree
+%
 % Identify cousin pairs in a supplied family tree by comparing generation
 % numbers and inherited branch labels. In this model, people count as cousins
 % when they share a generation but belong to different labeled branches. This
@@ -33,9 +35,13 @@ cousin(X, Y) :-
     branch(Y, B),
     A \= B.
 
-% Answer and Reason
+% Answer
 ?- cousin(X, Y).
+
+% Reason
 ?- why(cousin(heidi, judy)).
+
+% Answer
 ?- generation(heidi, N).
 ?- branch(judy, Branch).
 

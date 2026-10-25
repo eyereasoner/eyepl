@@ -1,3 +1,5 @@
+% Calculating with integers and real numbers
+%
 % Compare exact integer arithmetic with approximate real-number calculations.
 % The queries cover division, rounding, bit operations, minimum and maximum,
 % greatest common divisors, pi, e, and a trigonometric calculation.
@@ -66,7 +68,7 @@ circumference(Circle, _Calc1) :-
     input(trigonometry, Number),
     _Calc1 is tan(atan(Number)).
 
-% Answer and Reason
+% Answer
 ?- absolute(magnitude, Value).
 ?- result(division, What).
 ?- result(rounding, What).
@@ -77,6 +79,8 @@ circumference(Circle, _Calc1) :-
 ?- circumference(circle, What).
 ?- 'round-trip'(trigonometry, What).
 ?- result(division, What).
+
+% Reason
 ?- why.
 
 % Check

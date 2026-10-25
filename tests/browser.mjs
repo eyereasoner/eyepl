@@ -26,9 +26,9 @@ socket.onmessage = ({ data }) => {
   const message = JSON.parse(data);
   if (message.id) {
     const entry = pending.get(message.id);
-      if (!entry) return;
-      const { resolve, reject, timeout } = entry;
-      clearTimeout(timeout);
+    if (!entry) return;
+    const { resolve, reject, timeout } = entry;
+    clearTimeout(timeout);
     pending.delete(message.id);
     if (message.error) reject(new Error(JSON.stringify(message.error)));
     else resolve(message.result);
@@ -116,38 +116,32 @@ async function checkPageScrolling() {
   await evaluate(`document.getElementById("example").value = ${JSON.stringify(original.example)}; document.getElementById("output").textContent = ${JSON.stringify(original.output)}; window.scrollTo(0, 0)`);
 }
 
-if (layoutOnly) {
-  try {
-    await command('Page.enable');
-    await command('Runtime.enable');
-    for (const fallback of [false, true]) {
-      const injected = await command('Page.addScriptToEvaluateOnNewDocument', {source:`
-        window.Worker = class { constructor() { throw new Error('Reasoning is disabled during layout checks.'); } };
-        const supports = CSS.supports.bind(CSS);
-        if (${fallback}) CSS.supports = (...args) => args[0] === 'field-sizing' ? false : supports(...args);
-      `});
-      for (const width of [1280, 390]) {
-        await command('Page.navigate', {url:'about:blank'});
-        await wait('location.href === "about:blank" && document.readyState === "complete"', 'fresh layout page');
-        await command('Emulation.setDeviceMetricsOverride', {width,height:844,deviceScaleFactor:1,mobile:width===390});
-        await navigate(`${base}#example=socrates`);
-        const expectedSource = await readFile(new URL('../examples/socrates.pl', import.meta.url), 'utf8');
-        await wait(`document.getElementById("source").value === ${JSON.stringify(expectedSource)}`, 'layout example ready');
-        await checkPageScrolling();
-        if (fallback) assert.match(await evaluate('document.getElementById("source").style.height'), /^\d+px$/, 'the fallback must size the editor');
-        assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'), 'page must not overflow horizontally');
-        await screenshot(`layout-${width}-${fallback ? 'fallback' : 'native'}`);
-      }
-      await command('Page.removeScriptToEvaluateOnNewDocument', {identifier:injected.identifier});
+async function checkLayout() {
+  for (const fallback of [false, true]) {
+    const injected = await command('Page.addScriptToEvaluateOnNewDocument', {source:`
+      window.Worker = class { constructor() { throw new Error('Reasoning is disabled during layout checks.'); } };
+      const supports = CSS.supports.bind(CSS);
+      if (${fallback}) CSS.supports = (...args) => args[0] === 'field-sizing' ? false : supports(...args);
+    `});
+    for (const width of [1280, 390]) {
+      await command('Page.navigate', {url:'about:blank'});
+      await wait('location.href === "about:blank" && document.readyState === "complete"', 'fresh layout page');
+      await command('Emulation.setDeviceMetricsOverride', {width,height:844,deviceScaleFactor:1,mobile:width===390});
+      await navigate(`${base}#example=socrates`);
+      const expectedSource = await readFile(new URL('../examples/socrates.pl', import.meta.url), 'utf8');
+      await wait(`document.getElementById("source").value === ${JSON.stringify(expectedSource)}`, 'layout example ready');
+      await checkPageScrolling();
+      if (fallback) assert.match(await evaluate('document.getElementById("source").style.height'), /^\d+px$/, 'the fallback must size the editor');
+      assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'), 'page must not overflow horizontally');
+      await screenshot(`layout-${width}-${fallback ? 'fallback' : 'native'}`);
     }
-    assert.deepEqual(exceptions, []);
-    console.log('Page scrolling passed at desktop and phone widths, with native sizing and the fallback; only a 200-line input and 240-line output were used, without running the reasoner.');
-  } finally { socket.close(); }
-} else {
+    await command('Page.removeScriptToEvaluateOnNewDocument', {identifier:injected.identifier});
+  }
+  assert.deepEqual(exceptions, []);
+  console.log('Page scrolling passed at desktop and phone widths, with native sizing and the fallback; only a 200-line input and 240-line output were used, without running the reasoner.');
+}
 
-try {
-  await command('Page.enable');
-  await command('Runtime.enable');
+async function checkPlayground() {
   await command('Page.navigate', { url: 'about:blank' });
   await wait('location.href === "about:blank" && document.readyState === "complete"', 'fresh page');
   await command('Emulation.setDeviceMetricsOverride', { width: 1280, height: 1000, deviceScaleFactor: 1, mobile: false });
@@ -338,6 +332,11 @@ try {
   }
   assert.deepEqual(exceptions, []);
   console.log('Browser checks passed: source-selected answers, proofs and C1–C9 checks, echoed queries, small taxonomy, desktop/mobile layouts, rendered docs, short example links, restored old examples, Gist sharing, one page scrollbar, custom snapshots, Unicode, autosave, cancellation and restart.');
-} finally { socket.close(); }
-
 }
+
+try {
+  await command('Page.enable');
+  await command('Runtime.enable');
+  if (layoutOnly) await checkLayout();
+  else await checkPlayground();
+} finally { socket.close(); }

@@ -1,3 +1,5 @@
+% Estimating a transfer between Earth and Mars orbits
+%
 % Estimate the speed changes and travel time for a Hohmann transfer: an
 % elliptical path joining two circular orbits around the Sun in the same
 % plane. The sample uses Earth and Mars orbital radii.
@@ -23,8 +25,10 @@ transfer_report(Name, TotalDV, Days) :-
   TotalDV is round((Departure+Arrival)*1000000)/1000000,
   Days is round(Time*1000000)/1000000.
 
-% Answer and Reason
+% Answer
 ?- transfer_report(Name, DeltaV, Days).
+
+% Reason
 ?- why.
 
 % Check
