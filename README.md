@@ -6,7 +6,7 @@ The subset is intentional: like Datalog, wheye specializes a rule language for
 declarative reasoning. Its scope keeps execution and the evidence required by
 the checker explicit. See [why a Prolog subset](https://eyereasoner.github.io/wheye/#why-a-prolog-subset).
 
-**Version 0.1.25**
+**Version 0.1.26**
 
 ```prolog
 human(socrates).

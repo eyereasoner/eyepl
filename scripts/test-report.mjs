@@ -102,7 +102,7 @@ export function formatReport(results, { version, generated, status }) {
   const { checks, suites, details, problems } = results;
   const labels = {
     cli: 'CLI', conformance: 'Conformance', examples: 'Examples',
-    extended_proofs: 'Extended proofs', extensions: 'Language extensions',
+    extended_proofs: 'Extended proofs', extensions: 'Built-ins and aggregates',
     path_discovery: 'Route discovery', prolog: 'Prolog semantics',
     proof_conditions: 'Proof conditions', proofs: 'Basic proofs',
     reasoning: 'Core reasoning', taxonomy: 'Taxonomy',

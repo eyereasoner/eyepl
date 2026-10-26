@@ -1,6 +1,6 @@
 # Wheye specification
 
-Version **0.1.25**. Implemented Prolog subset and independently checked proof
+Version **0.1.26**. Implemented Prolog subset and independently checked proof
 certificate contract. This specification does not claim full ISO Prolog conformance.
 
 Uppercase MUST, MUST NOT, SHOULD, and MAY express requirement levels under
@@ -28,6 +28,28 @@ variable scopes remain local to clauses and requests. Queries and goal checks
 MUST select output and MUST NOT become inference evidence. Only `table`
 directives are supported. `why/0`, `why/1`, `check/0`, and `check/1` have
 the top-level meanings given below.
+
+### 1.1 Source Syntax and Built-in Vocabulary
+
+Facts, clauses, queries, conjunctions, and predicate calls use Prolog notation:
+`Fact.`, `Head :- Body.`, `?- Goal.`, and `predicate(Arguments)`.
+The supported forms and their restrictions are defined in Sections 1–4.
+There is no separate syntax for forward rules or aggregate rules.
+
+Additional built-in predicates supply additional operations through ordinary
+Prolog calls. For example, `contains_text(Text, Part)`,
+`aggregate_all(count, Goal, Count)`, and `fresh(Witness)` use the same call
+notation as user predicates. Their interpretation and allowed contexts are
+specified separately from their notation. Section 4.5 groups these facilities
+and the additional requests and evaluation declarations.
+
+The lexical forms in Section 2 and the operator table in Section 4.1 define
+the implemented parser contract. The ISO subset tests cover selected shared
+cases; they do not establish strict ISO lexical conformance for every accepted
+source. In particular, the supported `\uXXXX` and `\UXXXXXXXX` escapes are
+additional lexical forms beyond ISO/IEC 13211-1:1995 and Corrigenda 1–3.
+The [WG17 syntax comparison](https://www.complang.tuwien.ac.at/ulrich/iso-prolog/conformity_testing#312)
+records this distinction for Unicode escapes.
 
 ## 2. Names and Values
 
@@ -107,27 +129,25 @@ ground; calls that leave output variables unresolved MUST raise an error.
 
 The following builtin predicates MAY appear in clause bodies, queries, and
 goal checks. Inputs described as bound MUST have their required values when the
-goal is reached. These predicates MUST NOT be redefined by facts or clauses.
+goal is reached. Additional predicates are grouped in Section 4.5. All built-in
+predicates MUST NOT be redefined by facts or clauses.
 
 | Predicate | Syntax and behavior |
 | --- | --- |
 | `true/0` | `true` always succeeds, without binding variables. |
-| `false/0` | `false` always fails. |
 | `=/2` | `Left = Right` unifies terms structurally, with an occurs check. Either operand may contain variables. |
 | `\=/2` | `Left \= Right` succeeds if the terms cannot unify at this point. Trial bindings MUST be discarded. It does not constrain later bindings: `X \= a` fails while `X` is free. |
 | `is/2` | `Value is Expression` evaluates the bound expression and unifies the numeric result with `Value`. A bound result must have the same numeric term type and value. |
 | `</2`, `=</2`, `>/2`, `>=/2` | Numeric less than, less than or equal, greater than, and greater than or equal. Both expressions are evaluated. |
 | `=:=/2`, `=\=/2` | Numeric equality and inequality. Both expressions are evaluated; `1 =:= 1.0` succeeds. |
 | `@</2`, `@=</2`, `@>/2`, `@>=/2` | Lexicographic less than, less than or equal, greater than, and greater than or equal. Both operands MUST be bound atoms, or both MUST be bound strings. Ordering compares UTF-16 code units; it does not perform locale collation or general term ordering. |
-| `contains_text/2` | `contains_text(Text, Part)` requires two bound strings. It lowercases both using Unicode default case conversion, then tests literal substring containment. No Unicode normalization is performed. An empty `Part` succeeds. |
 | `atom_codes/2` | `atom_codes(Atom, Codes)` relates an atom to its list of Unicode scalar values as integers. A bound atom produces codes; otherwise a bound proper list of codes produces an atom. |
-| `string_codes/2` | `string_codes(String, Codes)` provides the same conversion for strings, preserving their distinction from atoms. |
 | `=../2` | `Term =.. Parts` decomposes a nonvariable term into a list of its functor and arguments, or constructs a term from such a list. It does not evaluate or call the constructed term. |
-| `aggregate_all/3` | `aggregate_all(Template, Goal, Result)` computes `count`, `sum(Value)`, `min(Value)`, `max(Value)`, or `list(Term)` over completed, distinct producer tuples. See Section 4.3 for binding, scope, and empty-result rules. |
 
-For the two text conversions, a bound first argument MUST have the specified
-text type. Its codes are unified with the second argument, which MAY contain
-variables. If the first argument is a variable, the second MUST be a ground
+For `atom_codes/2` and `string_codes/2` (Section 4.5), a bound first argument
+MUST have the specified text type. Its codes are unified with the second
+argument, which MAY contain variables. If the first argument is a variable,
+the second MUST be a ground
 proper list of integers from 0 through 1114111, excluding surrogate values
 55296 through 57343. Text containing an unpaired surrogate MUST raise an
 error. Supplementary characters occupy one code; empty text corresponds to
@@ -147,16 +167,12 @@ restrictions in Section 2. Neither direction introduces cyclic terms, and
 displayed answers MUST still be ground. Missing inputs or invalid parts
 MUST raise an error; incompatible terms and parts fail by unification.
 
-The following special forms complete the language's built-in facilities;
-they are not additional ordinary predicates:
+The following special forms control negation and evaluation; they are not
+additional ordinary predicates. Output requests are grouped in Section 4.5.
 
 | Form | Context and meaning |
 | --- | --- |
 | `\+ Goal` | Negation of one goal, with the completion and binding requirements in Section 4.2. |
-| `?- why.` | Print the preceding ordinary query's proof certificate (Section 6). |
-| `?- why(Goal).` | Query and print the proof of `Goal`, which may be a conjunction (Section 6). |
-| `?- check.` | Independently verify the preceding ordinary query's certificate under C1–C9. |
-| `?- check(Goal).` | Print `true.` if `Goal` has a solution, otherwise `false.`. |
 | `:- table Name/Arity, ... .` | Declare ordinary predicates demand-driven and tabled (Section 4.2). |
 
 Conjunction with `,` and parenthesized goal groups are supported syntax.
@@ -227,10 +243,6 @@ MUST preserve an integer operand's exact value rather than first rounding both
 operands to binary64. Atoms, strings, and lists MUST NOT be coerced to numbers.
 Non-finite conversions, overflow, and real function domain errors MUST raise
 an error. Unsupported arithmetic functions MUST report their name and arity.
-
-The string predicates `string_concat/3` and `string_length/2` additionally
-compute a string concatenation from two bound strings and count Unicode scalar
-values in a bound string, respectively. They do not coerce atoms to strings.
 
 ### 4.2 Stratified Negation
 
@@ -332,11 +344,46 @@ values. Source facts MUST NOT supply witness constants. The certificate-only
 notation `~"identity"` distinguishes a witness from an atom or string.
 C8 checks both its type and binding to one source-rule firing.
 
+### 4.5 Additional Predicates and Requests
+
+This section groups additional operations by purpose. Predicate calls retain
+ordinary Prolog call notation; their meanings, input modes, and restrictions
+are Wheye's built-in contract. The group is not a separate rule syntax.
+
+| Predicate | Implemented behavior |
+| --- | --- |
+| `false/0` | Always fails. The printed query result `false.` is specified separately in Section 6. |
+| `contains_text/2` | Requires two bound strings, lowercases both using Unicode default case conversion, then tests literal substring containment. No Unicode normalization is performed. An empty substring succeeds. |
+| `string_codes/2` | Relates a string to a list of Unicode scalar values. The modes and errors follow the text-conversion rules in Section 4.1, preserving the distinction between strings and atoms. |
+| `string_concat/3` | Concatenates two bound strings and unifies the result with its third argument. Atoms are not coerced to strings. |
+| `string_length/2` | Counts Unicode scalar values in a bound string and unifies the integer count with its second argument. Atoms are not coerced to strings. |
+| `aggregate_all/3` | Computes `count`, `sum(Value)`, `min(Value)`, `max(Value)`, or `list(Term)` over completed, distinct producer tuples. Section 4.3 defines scope, input modes, and empty results. |
+| `fresh/1` | Creates a typed witness as the final goal of a forward rule, with the firing identity and restrictions in Section 4.4. |
+
+Arithmetic expressions additionally support `gcd/2` and the constant `e` with
+the meanings in Section 4.1. They are represented by ordinary compound and
+atomic terms; evaluation occurs through `is/2` or numeric comparisons.
+
+The following source forms select output or evaluation behavior:
+
+| Form | Implemented behavior |
+| --- | --- |
+| `?- why.` | Prints the preceding ordinary query's certificate. |
+| `?- why(Goal).` | Queries and prints the proof of `Goal`, which may be a conjunction. |
+| `?- check.` | Independently verifies the preceding ordinary query's certificate under C1–C9. |
+| `?- check(Goal).` | Prints `true.` if `Goal` has a solution, otherwise `false.`. |
+| `:- table Name/Arity, ... .` | Selects demand-driven, tabled evaluation as specified in Section 4.2. |
+
+Section 6 defines request ordering and output. Requests MUST NOT become
+inference evidence. The witness spelling `~"identity"` belongs only to
+certificates; source programs MUST NOT use it to supply a witness.
+
 ## 5. Meaning and Execution
 
 wheye MUST use
 [Herbrand semantics](https://logical.stanford.edu/intrologic/chapters/chapter_07.html)
-for ordinary predicates, with the interpreted builtins specified in Section 4.1.
+for ordinary predicates, with the interpreted builtins specified in
+Sections 4.1 and 4.5.
 Ground terms denote themselves:
 `socrates` denotes the atom `socrates`, and `point(2, 3)` denotes that compound
 term. A functor constructs data; it does not implicitly call a function.
