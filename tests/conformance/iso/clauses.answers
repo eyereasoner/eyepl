@@ -1,0 +1,4 @@
+Who = bea; Who = cy
+false
+Result = [a, b, c]
+Prefix = [], Suffix = [a, b]; Prefix = [a, b], Suffix = []; Prefix = [a], Suffix = [b]

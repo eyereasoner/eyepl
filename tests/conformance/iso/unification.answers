@@ -1,0 +1,13 @@
+X = a
+X = point(2, 3), Y = point(2, 3)
+false
+X = a, Y = b
+false
+false
+false
+false
+false
+true
+X = a
+X = a
+false

@@ -1,0 +1,7 @@
+Head = a, Tail = [b]
+true
+true
+X = a, Tail = [b], Y = b
+false
+false
+Head = [a], Tail = [point(b)]

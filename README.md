@@ -6,7 +6,7 @@ The subset is intentional: like Datalog, wheye specializes a rule language for
 declarative reasoning. Its scope keeps execution and the evidence required by
 the checker explicit. See [why a Prolog subset](https://eyereasoner.github.io/wheye/#why-a-prolog-subset).
 
-**Version 0.1.21**
+**Version 0.1.22**
 
 ```prolog
 human(socrates).
@@ -37,3 +37,4 @@ cargo run --release --locked -- examples/socrates.pl
 - Learn how to use wheye: [Guide](https://eyereasoner.github.io/wheye/).
 - Read the language and proof contract: [Specification](https://eyereasoner.github.io/wheye/SPEC/).
 - Explore runnable programs: [Examples](https://github.com/eyereasoner/wheye/tree/main/examples/).
+- Inspect the [conformance corpus](https://github.com/eyereasoner/wheye/tree/main/tests/conformance/) for the tested ISO Prolog subset and explicit differences.

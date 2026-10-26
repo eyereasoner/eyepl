@@ -1,0 +1,7 @@
+Codes = [97, 98, 99]
+Atom = abc
+Codes = []
+Atom = ''
+A = 97, B = 98
+false
+false

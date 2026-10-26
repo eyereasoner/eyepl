@@ -31,7 +31,7 @@ run_check() {
 # Check source formatting before running the behavior and proof regressions.
 run_check 'Formatting' 'Rust source follows the repository format.' cargo fmt --check
 # Build once and time each native test, including every example and its golden.
-run_check 'Native tests and goldens' 'Language, CLI, C1–C9, forged proofs, graph oracles, and all example outputs.' node scripts/test-rust.mjs
+run_check 'Native tests and goldens' 'ISO subset conformance, language, CLI, C1–C9, forged proofs, graph oracles, and all example outputs.' node scripts/test-rust.mjs
 # Rustdoc examples remain separate from native test executables.
 run_check 'API examples' 'Compile and run the examples in the public Rust API documentation.' cargo test --release --locked --doc
 # Check production code, tests, and benchmarks for warnings.

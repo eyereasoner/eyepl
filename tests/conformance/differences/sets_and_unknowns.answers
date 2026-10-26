@@ -1,0 +1,4 @@
+X = a; X = b
+true
+false
+true

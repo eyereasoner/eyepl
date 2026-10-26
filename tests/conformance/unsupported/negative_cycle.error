@@ -1,0 +1,1 @@
+parse: Negation and aggregation must be stratified: a dependency cycle crosses a negative or aggregate goal.

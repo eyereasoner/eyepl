@@ -1,0 +1,10 @@
+Parts = [point, 2, 3]
+Term = point(2, 3)
+Parts = [a]
+Parts = [42]
+Parts = [1.5]
+Parts = [[]]
+Parts = ['.', a, [b]]
+Term = [a]
+Term = point(a), X = a
+false
