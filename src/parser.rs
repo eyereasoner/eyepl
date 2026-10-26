@@ -17,6 +17,7 @@ struct Parser {
     position: usize,
     anonymous: usize,
     depth: usize,
+    recorded: bool,
 }
 fn tokenize(source: &str) -> Result<Vec<(Token, usize)>, Error> {
     let chars: Vec<_> = source.chars().collect();
@@ -300,6 +301,7 @@ impl Parser {
             position: 0,
             anonymous: 0,
             depth: 0,
+            recorded: false,
         })
     }
     fn peek(&self) -> &Token {
@@ -336,151 +338,243 @@ impl Parser {
             Err(self.error(format!("Expected {s}.")))
         }
     }
-    fn primary(&mut self) -> Result<(Value, u8), Error> {
-        self.depth += 1;
-        if self.depth > 256 {
-            return Err(self.error("Term nesting exceeds the parser limit (256)."));
-        }
-        let token = self.peek().clone();
-        self.position += 1;
-        let mut priority = u8::MAX;
-        let value = match token {
-            Token::Variable(name) if name == "_" => {
-                self.anonymous += 1;
-                Value::Variable(format!("_${}", self.anonymous))
-            }
-            Token::Variable(name) => Value::Variable(name),
-            Token::Text(s) => Value::Text(s),
-            Token::Number(s) => {
-                if s.contains(['.', 'e', 'E']) {
-                    crate::arithmetic::real(
-                        s.parse().map_err(|_| self.error("Invalid real number."))?,
-                    )?
-                } else {
-                    crate::arithmetic::integer(
-                        s.parse::<BigInt>()
-                            .map_err(|_| self.error("Invalid integer."))?,
-                    )
-                }
-            }
-            Token::Name(name) => {
-                if self.take("(") {
-                    let mut args = vec![self.expression(0)?];
-                    while self.take(",") {
-                        args.push(self.expression(0)?);
-                        if args.len() > 64 {
-                            return Err(self.error("A term supports at most 64 arguments."));
-                        }
-                    }
-                    self.expect(")")?;
-                    if name == "."
-                        && args.len() == 2
-                        && !matches!(
-                            args[1],
-                            Value::Nil | Value::Variable(_) | Value::Compound(_, _)
-                        )
-                    {
-                        return Err(self.error("A list tail must be a list or variable."));
-                    }
-                    Value::Compound(name, args)
-                } else {
-                    Value::Symbol(name)
-                }
-            }
-            Token::Symbol(s) if s == "(" => {
-                let v = self.expression(0)?;
-                self.expect(")")?;
-                v
-            }
-            Token::Symbol(s) if s == "[" => {
-                let mut args = Vec::new();
-                if !self.is("]") {
-                    args.push(self.expression(0)?);
-                    while self.take(",") {
-                        args.push(self.expression(0)?);
-                    }
-                }
-                let mut tail = if self.take("|") {
-                    self.expression(0)?
-                } else {
-                    Value::Nil
-                };
-                self.expect("]")?;
-                if !matches!(&tail, Value::Nil | Value::Variable(_))
-                    && !matches!(&tail,Value::Compound(n,a) if n=="." && a.len()==2)
-                {
-                    return Err(self.error("A list tail must be a list or variable."));
-                }
-                for arg in args.into_iter().rev() {
-                    tail = Value::Compound(".".into(), vec![arg, tail]);
-                }
-                tail
-            }
-            Token::Symbol(s) if matches!(s.as_str(), "-" | "+" | "\\") => {
-                let v = self.expression(5)?;
-                priority = 5;
-                if s == "-" {
-                    match v {
-                        Value::Integer(n) => {
-                            priority = u8::MAX;
-                            crate::arithmetic::integer(-BigInt::from(n))
-                        }
-                        Value::BigInteger(n) => {
-                            priority = u8::MAX;
-                            crate::arithmetic::integer(-n)
-                        }
-                        Value::Real(b) => {
-                            priority = u8::MAX;
-                            crate::arithmetic::real(-f64::from_bits(b))?
-                        }
-                        v => Value::Compound(s, vec![v]),
-                    }
-                } else {
-                    Value::Compound(s, vec![v])
-                }
-            }
-            Token::Symbol(s) if s == "~" => {
-                let Token::Text(s) = self.peek().clone() else {
-                    return Err(self.error("A witness needs a quoted identity."));
-                };
-                self.position += 1;
-                Value::Witness(s)
-            }
-            _ => {
-                return Err(
-                    self.error("Expected an atom, number, string, variable, compound, or list.")
-                )
-            }
-        };
-        self.depth -= 1;
-        Ok((value, priority))
-    }
     fn expression(&mut self, min: u8) -> Result<Value, Error> {
         self.expression_with_priority(min).map(|(value, _)| value)
     }
     fn expression_with_priority(&mut self, min: u8) -> Result<(Value, u8), Error> {
-        let (mut left, mut priority) = self.primary()?;
-        while let Some((precedence, right)) = binary(self.spelling()) {
-            if precedence < min {
-                break;
-            }
-            let op = self.spelling().to_string();
-            if priority < precedence || ((right || op == "**") && priority == precedence) {
-                return Err(self.error("Parenthesize operators with incompatible priorities."));
-            }
-            self.position += 1;
-            let rhs_min = precedence + u8::from(!right);
-            let (rhs, rhs_priority) = self.expression_with_priority(rhs_min)?;
-            if rhs_priority < rhs_min {
-                return Err(self.error("Parenthesize operators with incompatible priorities."));
-            }
-            left = Value::Compound(op, vec![left, rhs]);
-            priority = precedence;
+        // Explicit continuations keep certificate term depth off the Rust stack.
+        // Source terms retain the existing nesting and argument limits.
+        enum Part {
+            Expression(u8),
+            Primary,
+            EndPrimary,
+            Rest(u8),
+            Binary {
+                min: u8,
+                left: Value,
+                op: String,
+                precedence: u8,
+                rhs_min: u8,
+            },
+            Prefix(String),
+            Group,
+            Arguments(String, Vec<Value>),
+            List(Vec<Value>),
+            ListTail(Vec<Value>),
         }
-        Ok((left, priority))
+        fn list(items: Vec<Value>, mut tail: Value) -> Value {
+            for item in items.into_iter().rev() {
+                tail = Value::Compound(".".into(), vec![item, tail]);
+            }
+            tail
+        }
+        let mut parts = vec![Part::Expression(min)];
+        let mut values: Vec<(Value, u8)> = Vec::new();
+        while let Some(part) = parts.pop() {
+            match part {
+                Part::Expression(min) => {
+                    parts.push(Part::Rest(min));
+                    parts.push(Part::Primary);
+                }
+                Part::Primary => {
+                    self.depth += 1;
+                    if !self.recorded && self.depth > 256 {
+                        return Err(self.error("Term nesting exceeds the parser limit (256)."));
+                    }
+                    let token = self.peek().clone();
+                    if token == Token::End {
+                        return Err(self.error(
+                            "Expected an atom, number, string, variable, compound, or list.",
+                        ));
+                    }
+                    self.position += 1;
+                    parts.push(Part::EndPrimary);
+                    let value = match token {
+                        Token::Variable(name) if name == "_" => {
+                            self.anonymous += 1;
+                            Value::Variable(format!("_${}", self.anonymous))
+                        }
+                        Token::Variable(name) => Value::Variable(name),
+                        Token::Text(s) => Value::Text(s),
+                        Token::Number(s) => {
+                            if s.contains(['.', 'e', 'E']) {
+                                crate::arithmetic::real(
+                                    s.parse().map_err(|_| self.error("Invalid real number."))?,
+                                )?
+                            } else {
+                                crate::arithmetic::integer(
+                                    s.parse::<BigInt>()
+                                        .map_err(|_| self.error("Invalid integer."))?,
+                                )
+                            }
+                        }
+                        Token::Name(name) => {
+                            if self.take("(") {
+                                parts.push(Part::Arguments(name, Vec::new()));
+                                parts.push(Part::Expression(0));
+                                continue;
+                            }
+                            Value::Symbol(name)
+                        }
+                        Token::Symbol(s) if s == "(" => {
+                            parts.push(Part::Group);
+                            parts.push(Part::Expression(0));
+                            continue;
+                        }
+                        Token::Symbol(s) if s == "[" => {
+                            if self.take("]") {
+                                Value::Nil
+                            } else {
+                                parts.push(Part::List(Vec::new()));
+                                parts.push(Part::Expression(0));
+                                continue;
+                            }
+                        }
+                        Token::Symbol(s) if matches!(s.as_str(), "-" | "+" | "\\") => {
+                            parts.push(Part::Prefix(s));
+                            parts.push(Part::Expression(5));
+                            continue;
+                        }
+                        Token::Symbol(s) if s == "~" => {
+                            let Token::Text(s) = self.peek().clone() else {
+                                return Err(self.error("A witness needs a quoted identity."));
+                            };
+                            self.position += 1;
+                            Value::Witness(s)
+                        }
+                        _ => {
+                            return Err(self.error(
+                                "Expected an atom, number, string, variable, compound, or list.",
+                            ))
+                        }
+                    };
+                    values.push((value, u8::MAX));
+                }
+                Part::EndPrimary => self.depth -= 1,
+                Part::Rest(min) => {
+                    let (left, priority) = values.pop().unwrap();
+                    let Some((precedence, right)) =
+                        binary(self.spelling()).filter(|(p, _)| *p >= min)
+                    else {
+                        values.push((left, priority));
+                        continue;
+                    };
+                    let op = self.spelling().to_string();
+                    if priority < precedence || ((right || op == "**") && priority == precedence) {
+                        return Err(
+                            self.error("Parenthesize operators with incompatible priorities.")
+                        );
+                    }
+                    self.position += 1;
+                    let rhs_min = precedence + u8::from(!right);
+                    parts.push(Part::Binary {
+                        min,
+                        left,
+                        op,
+                        precedence,
+                        rhs_min,
+                    });
+                    parts.push(Part::Expression(rhs_min));
+                }
+                Part::Binary {
+                    min,
+                    left,
+                    op,
+                    precedence,
+                    rhs_min,
+                } => {
+                    let (rhs, priority) = values.pop().unwrap();
+                    if priority < rhs_min {
+                        return Err(
+                            self.error("Parenthesize operators with incompatible priorities.")
+                        );
+                    }
+                    values.push((Value::Compound(op, vec![left, rhs]), precedence));
+                    parts.push(Part::Rest(min));
+                }
+                Part::Prefix(op) => {
+                    let (value, _) = values.pop().unwrap();
+                    let mut priority = 5;
+                    let value = if op == "-" {
+                        match value {
+                            Value::Integer(n) => {
+                                priority = u8::MAX;
+                                crate::arithmetic::integer(-BigInt::from(n))
+                            }
+                            Value::BigInteger(n) => {
+                                priority = u8::MAX;
+                                crate::arithmetic::integer(-n)
+                            }
+                            Value::Real(bits) => {
+                                priority = u8::MAX;
+                                crate::arithmetic::real(-f64::from_bits(bits))?
+                            }
+                            value => Value::Compound(op, vec![value]),
+                        }
+                    } else {
+                        Value::Compound(op, vec![value])
+                    };
+                    values.push((value, priority));
+                }
+                Part::Group => {
+                    self.expect(")")?;
+                    let (value, _) = values.pop().unwrap();
+                    values.push((value, u8::MAX));
+                }
+                Part::Arguments(name, mut args) => {
+                    args.push(values.pop().unwrap().0);
+                    let witness = self.recorded && name.starts_with("$fresh:");
+                    if args.len() > 64 && !witness {
+                        return Err(self.error("A term supports at most 64 arguments."));
+                    }
+                    if self.take(",") {
+                        parts.push(Part::Arguments(name, args));
+                        parts.push(Part::Expression(0));
+                    } else {
+                        self.expect(")")?;
+                        if name == "."
+                            && args.len() == 2
+                            && !matches!(
+                                args[1],
+                                Value::Nil | Value::Variable(_) | Value::Compound(_, _)
+                            )
+                        {
+                            return Err(self.error("A list tail must be a list or variable."));
+                        }
+                        values.push((Value::Compound(name, args), u8::MAX));
+                    }
+                }
+                Part::List(mut items) => {
+                    items.push(values.pop().unwrap().0);
+                    if self.take(",") {
+                        parts.push(Part::List(items));
+                        parts.push(Part::Expression(0));
+                    } else if self.take("|") {
+                        parts.push(Part::ListTail(items));
+                        parts.push(Part::Expression(0));
+                    } else {
+                        self.expect("]")?;
+                        values.push((list(items, Value::Nil), u8::MAX));
+                    }
+                }
+                Part::ListTail(items) => {
+                    let (tail, _) = values.pop().unwrap();
+                    self.expect("]")?;
+                    if !matches!(&tail, Value::Nil | Value::Variable(_))
+                        && !matches!(&tail, Value::Compound(n, a) if n == "." && a.len() == 2)
+                    {
+                        return Err(self.error("A list tail must be a list or variable."));
+                    }
+                    values.push((list(items, tail), u8::MAX));
+                }
+            }
+        }
+        Ok(values.pop().unwrap())
     }
     fn as_goal(&self, v: Value) -> Result<Goal, Error> {
-        if !v.valid() {
+        let wide_witness = self.recorded
+            && matches!(&v, Value::Compound(name, args) if name.starts_with("$fresh:") && args.iter().all(Value::valid));
+        if !wide_witness && !v.valid() {
             return Err(self.error("Use proper lists and valid finite numeric terms."));
         }
         match v {
@@ -726,6 +820,7 @@ pub fn parse(source: &str) -> Result<Program, Error> {
 }
 pub fn parse_atom(source: &str) -> Result<Atom, Error> {
     let mut p = Parser::new(source)?;
+    p.recorded = true;
     let value = p.expression(0)?;
     let goal = p.as_goal(value)?;
     p.expect(".")?;
@@ -738,6 +833,7 @@ pub fn parse_atom(source: &str) -> Result<Atom, Error> {
 
 pub(crate) fn parse_goal(source: &str) -> Result<Goal, Error> {
     let mut p = Parser::new(source)?;
+    p.recorded = true;
     let value = p.expression(0)?;
     let goal = p.as_goal(value)?;
     p.expect(".")?;

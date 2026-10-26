@@ -17,7 +17,7 @@ ISO/IEC 13211-1:1995 with Corrigenda 1–3 as a compatibility reference.
 The [specification](https://eyereasoner.github.io/wheye/SPEC/#15-conformance)
 defines the implemented extended Datalog language and proof contract.
 
-**Version 0.2.0**
+**Version 0.2.1**
 
 ```prolog
 human(socrates).

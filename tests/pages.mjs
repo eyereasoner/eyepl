@@ -66,11 +66,41 @@ test('documentation and playground links honor root and nested Pages prefixes', 
       assert.equal(JSON.parse(await readFile(join(directory, '_config.yml'), 'utf8')).baseurl, normalized);
       for (const file of ['index.md', 'SPEC/index.md', 'playground.html']) {
         const text = await readFile(join(directory, file), 'utf8');
-        assert.doesNotMatch(text, /https:\/\/eyereasoner.github.io\/wheye\//);
+        assert.doesNotMatch(text, /(?:\]\(|href=")https:\/\/eyereasoner.github.io\/wheye\//);
+        assert.ok(!text.includes(`<${normalized}/>`), 'Relative URLs must not use Markdown autolink syntax.');
       }
+      const spec = await readFile(join(directory, 'SPEC/index.md'), 'utf8');
+      assert.ok(spec.includes(`[https://eyereasoner.github.io/wheye/](${normalized}/)`),
+        'The final guide reference must remain a link under every Pages prefix.');
       assert.ok((await readFile(join(directory, 'playground.html'), 'utf8')).includes(`href="${normalized}/SPEC/"`));
     } finally { await rm(directory, { recursive: true, force: true }); }
   }
+});
+
+test('specification section and bibliographic references resolve', async () => {
+  const spec = await readFile(new URL('SPEC.md', root), 'utf8');
+  const sections = new Set([...spec.matchAll(/^#{2,3} (\d+(?:\.\d+)*)(?:\. | )/gm)].map(match => match[1]));
+  for (const match of spec.matchAll(/\bSections? (\d+(?:\.\d+)*)/g)) {
+    if (spec.slice(match.index - 4, match.index) === 'ISO ') continue;
+    assert.ok(sections.has(match[1]), `Unknown specification section ${match[1]}`);
+  }
+  const references = new Set([...spec.matchAll(/^\[([A-Z][A-Z0-9-]+)\]\n:/gm)].map(match => match[1]));
+  for (const match of spec.matchAll(/\[([A-Z][A-Z0-9-]+)\]/g)) {
+    assert.ok(references.has(match[1]), `Undefined bibliographic reference ${match[1]}`);
+  }
+});
+
+test('specification certificate and report examples match the checked voucher program', async () => {
+  const { runProgram } = await browserEngine();
+  const spec = await readFile(new URL('SPEC.md', root), 'utf8');
+  const blocks = [...spec.matchAll(/^```text\n([\s\S]*?)^```/gm)].map(match => match[1]);
+  const certificate = blocks.find(block => block.startsWith('wheye-proof 1\n'));
+  const report = blocks.find(block => block.startsWith('checked:'));
+  assert.ok(certificate, 'The specification needs its certificate example.');
+  assert.ok(report, 'The specification needs its report example.');
+  const output = runProgram(await exampleSource('orders'));
+  assert.ok(output.includes(`?- why.\n${certificate}\n`), 'The certificate example must match the actual proof.');
+  assert.ok(output.includes(`?- check.\n${report}`), 'The report example must match the actual check.');
 });
 
 test('committed browser package matches Cargo and performs C1–C9 checking', async () => {
@@ -121,6 +151,8 @@ test('browser engine executes explicit true and false result requests', async ()
     runProgram('p(a). ?- check(p(a)). ?- check(p(b)).'),
     '?- check(p(a)).\ntrue.\n\n?- check(p(b)).\nfalse.\n',
   );
+  const output = runProgram('p(a). ?- check(p(a)). ?- p(a). ?- why.');
+  assert.match(output, /^answer 2 \[1\]$/m, 'Query IDs also count preceding goal checks.');
 });
 
 test('browser arithmetic and certificates follow ISO Corrigenda 1–3', async () => {
@@ -149,6 +181,12 @@ test('extended Datalog aggregates have query-independent scope and forward closu
     assert.match(output, /^checked:/m);
   }
   assert.equal(runProgram('p(a). p(b). total(N):-aggregate_all(count,p(X),N).'), 'total(2).\n');
+  const source = 'p(1). p(2). total(G,N):-aggregate_all(count,p(N),N),G=G.';
+  for (const [query, expected] of [['total(g,1)', 'false.'], ['total(g,2)', 'true.'], ['total(g,N)', 'N = 2.']]) {
+    const output = runProgram(`${source} ?- ${query}. ?- check.`);
+    assert.ok(output.includes(`\n${expected}\n`), output);
+    assert.match(output, /^checked:/m);
+  }
 });
 
 test('tabled fresh witnesses have checked source-prefix identities', async () => {

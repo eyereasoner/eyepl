@@ -1,6 +1,6 @@
 # Wheye specification
 
-Version **0.2.0**
+Version **0.2.1**
 
 **Status of this document.** This document specifies the behavior that the
 Wheye reference implementation provides. It is the normative contract for the
@@ -167,6 +167,15 @@ Range-restricted rule
 : A rule whose body binds every head variable under left-to-right mode analysis
   from no initial bindings (Section 5.5).
 
+Mode-dependent rule
+: A rule that is not range-restricted. It is evaluated with the bindings
+  supplied by its calls (Section 10.4).
+
+Mode-safe evaluation
+: An evaluation in which each reached goal has the required bindings of
+  Section 5.5. The runtime also accepts some partially bound structural
+  operations outside these conservative modes, as specified in Section 6.
+
 Demand-driven rule
 : A rule evaluated only for calls that request it, through tables (Section 10.1).
 
@@ -178,8 +187,8 @@ Decision
   test, absence, aggregate result, or witness (Section 12.3).
 
 Boundary
-: A finite certified model of the completed strata up to a level, with its
-  demanded calls (Section 12.5).
+: A finite supplied model, closed under the forward rules and recorded
+  demanded calls through a level (Section 12.5).
 
 Certificate
 : A `wheye-proof 1` document (Section 12).
@@ -189,9 +198,19 @@ Checker
 
 ### 1.4 Notation
 
-Grammars use ABNF [RFC5234] with its core rules (`ALPHA`, `DIGIT`, `SP`, and
+Grammar fragments use ABNF [RFC5234], including the case-sensitive `%s`
+string notation of [RFC7405], with the core rules (`ALPHA`, `DIGIT`, `SP`, and
 so on). `UPPER` is `%x41-5A`, `LOWER` is `%x61-7A`, and `ALNUM` is
-`ALPHA / DIGIT`. Literal strings in ABNF are case-sensitive in this document.
+`ALPHA / DIGIT`. Source keywords and certificate record names are
+case-sensitive. Plain ABNF quoted strings retain RFC 5234's case-insensitive
+meaning; punctuation is unaffected.
+
+Lexical productions describe character sequences; Unicode characters are
+encoded as UTF-8 in documents. The directive production in Section 2.2
+describes a token sequence, with layout between tokens as defined in Section
+3.1. Section 12.2 describes canonical certificate text and separately states
+the reader's accepted variations. The fragments and accompanying prose
+together define the syntax; they are not a standalone grammar for all terms.
 Examples in `prolog` blocks are source programs; `text` blocks are output or
 certificates.
 
@@ -203,9 +222,10 @@ aggregates, mode-dependent tabled rules, and typed witnesses. The `.pl` file
 extension and existing clause syntax are retained. The language is implemented
 by the Rust evaluator and certificate checker; no Prolog runtime is involved.
 
-Range-restricted rules define relations independently of query selection.
-This includes aggregate rules: unless explicitly declared demand-driven, they
-run forward even when no query calls them. In every range-restricted rule,
+Range-restricted rules do not require initial head bindings. This includes
+aggregate rules: unless explicitly declared demand-driven, they run forward
+even when no query calls them. A body's calls to mode-dependent rules still
+need suitable inputs (Sections 5.5 and 9.2). In every range-restricted rule,
 aggregate groups come only from preceding body goals. Binding a head variable
 in a call MUST NOT capture a producer-local variable or turn an aggregate
 result into an input. Explicit table declarations affect evaluation strategy,
@@ -217,7 +237,7 @@ not the definition of Wheye's evaluation semantics. The reference is
 ISO/IEC 13211-1:1995 with Cor.1:2007, Cor.2:2012, and Cor.3:2017
 [ISO13211-1]. Corrections in the corrigenda take precedence over the original
 text. In particular, integer power follows the error condition corrected by
-Corrigendum 3, Section 9.3.10.3(e) (Section 7.3 below).
+Corrigendum 3, ISO Section 9.3.10.3(e) (Section 7.3 below).
 
 | Supported area | ISO clauses | Wheye contract |
 | --- | --- | --- |
@@ -284,8 +304,10 @@ mortal(Person) :- human(Person).
 ```
 
 The entire input MUST be parsed and validated before evaluation begins.
-Statement order has no semantic effect on facts and rules: a request MAY use
-facts and rules that appear after it. Request order determines output order
+Facts and rules are available throughout the input: a request MAY use facts
+and rules that appear after it. Source order assigns fact, rule, and query
+numbers and therefore also affects witness identities (Section 8.3), evidence
+selection, and output order. Request order determines output order
 (Section 11.2). Requests select output; they MUST NOT become inference
 evidence.
 
@@ -294,14 +316,15 @@ evidence.
 The only directive is `table`:
 
 ```abnf
-table-directive = ":-" "table" indicator *( "," indicator ) "."
+table-directive = ":-" %s"table" indicator *( "," indicator ) "."
 indicator       = atom-name "/" 1*DIGIT
 ```
 
 `atom-name` is an unquoted or quoted atom (Section 3). The arity MUST NOT
-exceed 64. A `table` declaration makes every clause of the declared predicate
-demand-driven (Section 10.1), wherever the declaration appears. Declaring a
-predicate without clauses has no effect. Any other directive MUST be rejected
+exceed 64. A `table` declaration makes every rule of the declared predicate
+demand-driven (Section 10.1), wherever the declaration appears; ground source
+facts are still loaded unconditionally. Declaring a predicate without clauses
+has no effect. Any other directive MUST be rejected
 with an error.
 
 *Informative:* declarations are unnecessary for clauses that already need call
@@ -321,8 +344,8 @@ sequence. Variable scopes never cross statements (Section 5.4).
 
 ### 3.1 Characters, Layout, and Comments
 
-Whitespace (Unicode `White_Space`) separates tokens. A `%` outside a quoted
-value starts a line comment that ends at the next line feed. `/*` outside a
+Whitespace (Unicode `White_Space` [UNICODE]) separates tokens. A `%` outside a
+quoted value starts a line comment that ends at the next line feed. `/*` outside a
 quoted value starts a block comment that ends at the first following `*/`;
 block comments do not nest, and an unterminated block comment MUST be an error.
 Comment markers inside quoted values are literal content.
@@ -347,13 +370,13 @@ shared variables that are omitted from displayed answers (Section 11.2).
 ```abnf
 quoted-atom = "'" *( q-char / "''" / escape / DQUOTE ) "'"
 string      = DQUOTE *( s-char / 2DQUOTE / escape / "'" ) DQUOTE
-escape      = "\" ( "n" / "r" / "t" / "b" / "f" / "\" / "'" / DQUOTE )
-            / "\u" 4HEXDIG
-            / "\U" 8HEXDIG
+escape      = "\" ( %s"n" / %s"r" / %s"t" / %s"b" / %s"f" / "\" / "'" / DQUOTE )
+            / %s"\u" 4HEXDIG
+            / %s"\U" 8HEXDIG
 ```
 
-`q-char` and `s-char` are any characters other than the delimiter and `\`,
-including line feeds. Single quotes delimit atoms and double quotes delimit
+`q-char` and `s-char` are any Unicode scalar values other than the delimiter
+and `\`, including line feeds. Single quotes delimit atoms and double quotes delimit
 strings; atoms and strings are distinct kinds of terms. Inside a quoted value,
 a doubled delimiter denotes one delimiter character. The escapes denote line
 feed, carriage return, tab, backspace, form feed, backslash, single quote, and
@@ -370,7 +393,7 @@ A quoted atom whose content matches the unquoted form denotes the same atom:
 
 ```abnf
 number   = 1*DIGIT [ "." 1*DIGIT ] [ exponent ]
-exponent = ( "e" / "E" ) [ "+" / "-" ] 1*DIGIT
+exponent = ( %s"e" / %s"E" ) [ "+" / "-" ] 1*DIGIT
 ```
 
 A number with a fraction or exponent is a real. Otherwise it is an integer.
@@ -467,12 +490,16 @@ during unification.
 
 | Limit | Value | Applies to |
 | --- | --- | --- |
-| Arguments | 64 | Compounds, predicate applications, table arities |
+| Source arguments | 64 | Compounds, source predicate applications, table arities |
 | Goals | 64 | Each rule body, query, goal check, and aggregate body, after group flattening |
-| Nesting | 256 | Parser nesting of source terms |
+| Source nesting | 256 | Parser nesting of source terms |
 
-Exceeding a limit MUST be an error. The nesting limit is a resource limit for
-source text; it is not a semantic limit on terms built during evaluation.
+Exceeding a source limit MUST be an error. Source nesting is not a semantic
+limit on terms built during evaluation. Certificate term parsing uses an
+explicit stack and MUST accept generated terms deeper than 256. Ordinary
+compound terms retain the 64-argument limit; the outer argument count of a
+`$fresh` evidence atom instead follows its source-rule context (Section 12.4)
+and MAY exceed 64. Parsing remains subject to available resources.
 
 ## 5. Clauses, Goals, and Modes
 
@@ -527,10 +554,12 @@ disjunction, if-then-else, cut, or a variable as a goal, MUST be rejected
 
 ### 5.4 Variable Scope
 
-A variable's scope is one clause, one request, or one goal check. Repeated
-occurrences of a named variable in a scope denote the same term. Variables that
-first occur inside an `aggregate_all/3` goal and are not bound before it are
-local to that aggregate (Section 8.2).
+A variable's outer scope is one clause or request, including a goal check.
+Repeated occurrences of a named variable in that scope denote the same term.
+Within an aggregate's producer and template, names without permitted outer
+bindings are local to that aggregate (Section 8.2). Reusing such a name in the
+head or a later goal does not export a producer binding. The aggregate's
+`Result` belongs to the outer scope.
 
 ### 5.5 Binding Modes
 
@@ -635,6 +664,13 @@ For `atom_codes/2` and `string_codes/2`:
 No text predicate performs Unicode normalization, and none coerces atoms to
 strings or the reverse.
 
+Unicode whitespace properties and lowercase mappings come from the Rust
+standard library used to build the evaluator and checker. Its Unicode data
+version is identified by `char::UNICODE_VERSION`; it can change with the
+toolchain. Rechecking a certificate whose decisions depend on such mappings
+requires matching Unicode data. [UNICODE] supplies the versioned reference
+for the currently tested data, rather than a link to a moving latest version.
+
 ### 6.6 Term Construction and Decomposition
 
 `Term =.. Parts` relates a term to its parts without calling or evaluating it.
@@ -659,7 +695,7 @@ parts MUST raise an error; incompatible results fail by unification.
 ### 7.1 Numeric Types
 
 Integers are exact and unbounded, limited only by available resources and by
-Section 7.6. Reals are IEEE 754 binary64 values that MUST be finite; `-0.0` is
+Section 7.6. Reals are IEEE 754 binary64 values [IEEE754] that MUST be finite; `-0.0` is
 normalized to `0.0`. Integer and real results remain distinct terms.
 
 Addition, subtraction, and multiplication of two integers MUST be exact. When
@@ -688,8 +724,8 @@ in one row share precedence. Parentheses override precedence.
 | `*`, `/`, `//`, `div`, `rem`, `mod`, `<<`, `>>` | left | Multiplication, real division, truncating quotient, flooring quotient, truncating remainder, flooring remainder, integer shifts |
 | `**`, `^` | `**` none; `^` right | Real power; integer-preserving power |
 
-The supported ISO operators follow the priorities and specifiers of ISO
-Section 6.3.4.4, including Corrigendum 2's unary `+` and `div`. Infix `xor`
+The supported ISO operators follow the priorities and specifiers of
+ISO Section 6.3.4.4, including Corrigendum 2's unary `+` and `div`. Infix `xor`
 is an extension at the priority of `+`. Prefix `+`, `-`, and `\` (integer
 bitwise complement), `**`, and `^` share ISO priority 200. Prefix operands
 and the right operand of `^` MAY include another operator at that priority;
@@ -707,7 +743,7 @@ Result types and rules:
   (`0 ^ 0` is `1`). For a negative integer exponent, bases `1` and `-1` still
   produce integers; base `0` is a domain error, and every other integer base
   requires a real instead and MUST raise a type error, following Corrigendum
-  3, Section 9.3.10.3(e). Use `2.0 ^ (-1)` for the real result `0.5`.
+  3, ISO Section 9.3.10.3(e). Use `2.0 ^ (-1)` for the real result `0.5`.
   If either operand is real, `^` produces a real.
 - A negative base in `**` requires an integer exponent. In `^`, a real
   exponent with an integer value is also permitted. A zero base with a
@@ -748,11 +784,13 @@ expressions, such as `sqrt(9)` and `min(A, B)`.
 
 `floor`, `ceiling`, `round`, `truncate`, `float_integer_part`, and
 `float_fractional_part` require a real argument; an integer argument MUST raise
-a type error under Section 7.9.2 as corrected by Corrigenda 1–2. Use `float(X)` for
+a type error under ISO Section 7.9.2 as corrected by Corrigenda 1–2. Use `float(X)` for
 explicit conversion. For example, `round(-2.5)` is `-2` and `sign(-2.5)` is
 `-1.0`.
 Transcendental functions return binary64 approximations whose last bit MAY
-differ between platforms.
+differ between platforms. C5 compares the recorded result exactly, so a
+certificate containing these results can require the same arithmetic
+implementation to pass checking on another platform.
 
 ### 7.5 Constants
 
@@ -770,7 +808,9 @@ The following MUST raise an error, naming the problem:
 - a domain error, such as `sqrt(-1)` or `log(0)`, or any other non-finite real
   result, including overflow;
 - an integer too large to convert to a finite binary64 value;
-- an integer exponent above 1,000,000, or a shift count above 1,000,000.
+- a nonnegative exponent above 1,000,000 in the two-integer `^` operation, or a
+  shift count above 1,000,000. This exponent cap does not apply to real power;
+  real conversion, domain, and overflow checks still apply there.
 
 ## 8. Negation, Aggregation, and Witnesses
 
@@ -810,10 +850,15 @@ Scope:
 - Variables bound before the aggregate are *outer bindings*. They constrain the
   producer and form the aggregate's group.
 - Other producer variables are local and MUST NOT escape into the caller.
-- Every variable of `Template` MUST be bound by `Producer`.
+- Every variable of `Template` MUST have an outer binding or be bound by
+  `Producer`.
 - `Result` is unified with the computed value after collection. A bound or
   partially bound `Result` constrains the answer, but it MUST NOT bind producer
   variables or filter the producer before collection.
+- Variables produced by a rule's aggregate results MUST NOT become group
+  inputs merely because its caller binds the head. A preceding body goal MAY
+  establish such a variable as a genuine outer binding. This also applies to
+  mode-dependent rules and to nested aggregates.
 - In a range-restricted rule, a call's head bindings MUST NOT introduce outer
   bindings at an aggregate. Only preceding goals establish its group, including
   when the predicate is explicitly tabled. For example,
@@ -887,20 +932,32 @@ A Herbrand interpretation is a subset of the base.
 
 ### 9.2 Stratified Least Model
 
-Clause variables are universally quantified. If a ground instance of a rule
-body holds, its head holds. For a program without negation or aggregation, the
-meaning is the least Herbrand model: the smallest set of ground atoms that
-contains the source facts and is closed under the rules, with built-ins
-interpreted as specified.
+Outer clause variables are universally quantified. Aggregate-local variables
+belong to the producer's scope (Section 8.2), not to the enclosing clause's
+ground substitution. In the range-restricted, mode-safe fragment, if a ground
+instance of a rule body holds, its head holds. Without negation or aggregation,
+the meaning is the least Herbrand model: the smallest set of ground atoms that
+contains the source facts and is closed under the rules, with built-ins and
+witness generation interpreted as specified.
 
 With negation and aggregation, the strata of Section 10.2 are interpreted in
 increasing order. Each stratum's least model is computed with the completed
 models of lower strata fixed. A negated goal holds when its instance is absent
 from those completed models. An aggregate is computed over them.
 
-An ordinary query's answers are the distinct projections of the ground
-substitutions that make all its goals true in this model, subject to the mode
-requirements of Section 5.5.
+For that fragment, an ordinary query's answers are the distinct projections of
+the ground substitutions that make all its goals true in this model, subject
+to the mode requirements of Section 5.5 and successful completion.
+
+Mode-dependent rules and universal unit clauses are operational extensions.
+Their evaluation is defined by the calls and bindings of Section 10.4; the
+evaluator does not enumerate all of their ground instances. In particular,
+`\=/2` tests current bindings, so insufficient bindings can make a call fail
+without an error. With `q(b). p(X) :- X \= a, q(X).`, a run asking only
+`p(X)` returns no answers, while a separate run asking `p(b)` succeeds. A
+forward rule that calls a mode-dependent rule can inherit this restriction.
+The unrestricted least-model reading alone therefore does not specify the
+answers of every accepted Wheye program.
 
 *Informative:* given `human(socrates).` and `mortal(P) :- human(P).`, the model
 contains `human(socrates)` and `mortal(socrates)`. `1 + 2` is a compound in an
@@ -918,7 +975,9 @@ leave a head or answer variable unbound MUST raise an error.
 Positive recursion reaches its fixed point when the generated facts, normalized
 calls, and work are finite, every call supplies its required inputs, and the
 resource limits permit completion. For completed positive evaluations, clause
-order MUST NOT change the answer set. No semantic depth limit is defined.
+order MUST NOT change the answer set for mode-safe programs without fresh
+witnesses. Reordering witness-generating rules changes their source numbers
+and can therefore change witness spellings. No semantic depth limit is defined.
 
 A finite least model alone does not guarantee termination. For example,
 `:- table p/1. p(X) :- p(f(X)). ?- p(a).` has an empty least model but demands
@@ -972,7 +1031,8 @@ that:
 
 - it is at least the level of every positive producer;
 - it is strictly greater than the level of every strict producer;
-- it is at least 1 when the rule's own body has a negated or aggregate goal.
+- it is at least 1 when the rule's own body has a negated ordinary goal or an
+  aggregate goal. A negated built-in is a pure decision and needs no boundary.
 
 Rules in one component share a level. The *level of a goal* is the highest level
 of the rules compatible with it, or 0 when there are none.
@@ -980,8 +1040,8 @@ of the rules compatible with it, or 0 when there are none.
 The decision level of a negated goal is the level of its ground instance. The
 decision level of an aggregate goal is the highest level of the goals in its
 producer, including nested producers. A negated or aggregate decision MUST be
-made only against the complete model of all rules at or below its decision
-level (Section 12.5).
+made only against a boundary model closed through its decision level as
+defined in Section 12.5, including every transitively required demanded call.
 
 ### 10.3 Forward Inference
 
@@ -1155,24 +1215,24 @@ receives. Rule text in comments is informative only.
 
 ```abnf
 certificate   = header *( EOL line ) [ EOL ]
-header        = "wheye-proof 1"
+header        = %s"wheye-proof 1"
 line          = *WSP [ record / comment ] *WSP
 comment       = "%" *line-char  ; any character except CR and LF
 record        = step / boundary / demand / claim
 
-step          = "step" SP id SP justification SP ":" SP fact
-justification = "source" SP id
-              / "rule" SP id SP id-list
-              / "builtin"
-              / "not-builtin"
-              / "absent" SP id
-              / "aggregate" SP owner SP id SP id
-              / "fresh" SP id SP id
-boundary      = "boundary" SP id SP "level" SP level SP id-list
-demand        = "demand" SP id SP ":" SP goal
-claim         = "answer" SP id SP id-list / "derived" SP id
+step          = %s"step" SP id SP justification SP ":" SP fact
+justification = %s"source" SP id
+              / %s"rule" SP id SP id-list
+              / %s"builtin"
+              / %s"not-builtin"
+              / %s"absent" SP id
+              / %s"aggregate" SP owner SP id SP id
+              / %s"fresh" SP id SP id
+boundary      = %s"boundary" SP id SP %s"level" SP level SP id-list
+demand        = %s"demand" SP id SP ":" SP goal
+claim         = %s"answer" SP id SP id-list / %s"derived" SP id
 
-owner         = ( "r" / "q" ) id
+owner         = ( %s"r" / %s"q" ) id
 id-list       = "[" [ id *( "," id ) ] "]"
 id            = %x31-39 *DIGIT       ; positive integer
 level         = 1*DIGIT
@@ -1186,8 +1246,10 @@ MAY contain variables. Readers MUST also:
 
 - require the first line to be exactly `wheye-proof 1`;
 - ignore blank lines and lines whose first non-blank character is `%`;
-- split a step or demand at its first ` : `, and accept any run of whitespace
-  between the other fields;
+- trim record lines, require the literal prefixes `step ` and `demand ` for
+  those records, and split either at its first exact ` : ` delimiter;
+- accept runs of whitespace between the other metadata fields; ID lists remain
+  single fields with comma-separated IDs and no intervening whitespace;
 - require step IDs to be 1, 2, 3, ... in order, and boundary IDs likewise;
 - require that each `demand` names a boundary that has already appeared;
 - reject steps, boundaries, and demands after the first claim;
@@ -1200,8 +1262,13 @@ steps, then each boundary immediately followed by its demands, then all claims.
 ### 12.3 Steps and Justifications
 
 Source facts, rules, and queries are referenced by their 1-based positions in
-the merged program (Section 2.3), counted separately. Goal positions are
-1-based body positions. Every step's atom MUST be ground.
+the merged program (Section 2.3), counted separately. Query IDs count both
+ordinary queries and goal checks in source order; `why(Goals)` contributes an
+ordinary query, while bare `why` and bare `check` contribute no query. For
+example, after `?- check(p(a)). ?- p(a).`, the ordinary query has ID 2.
+The generator excludes goal-check answers (Section 12.7), so its `answer` IDs
+can have gaps. Goal positions are 1-based body positions. Every step's atom
+MUST be ground.
 
 | Justification | Kind | Evidence |
 | --- | --- | --- |
@@ -1244,8 +1311,10 @@ and `Witness` is the created witness.
 
 ### 12.5 Boundaries and Demands
 
-`boundary B level L [S1,...,Sn]` asserts that steps `S1`...`Sn` are the
-complete model of all strata at or below level `L`. Boundary levels MUST be
+`boundary B level L [S1,...,Sn]` asserts that steps `S1`...`Sn` form a model
+closed under forward rules and the recorded demanded calls through level `L`.
+It does not assert enumeration of undemanded instances of mode-dependent
+rules or universal unit clauses. Boundary levels MUST be
 unique. Members MUST be ordinary steps whose level is at most `L`: a source
 step has level 0 and a rule step has its rule's level (Section 10.2).
 
@@ -1292,8 +1361,9 @@ never steps and cannot be cited as premises. Evidence for a query aggregate
 holds.
 
 `derived S` claims a new rule conclusion. It is used only when the program has
-no queries. Step `S` MUST be a rule step whose atom is not a source fact. A
-program with queries MUST NOT use `derived` claims.
+neither ordinary queries nor goal checks. Step `S` MUST be a rule step whose
+atom is not a source fact. A program with either kind of query MUST NOT use
+`derived` claims.
 
 ### 12.7 Certificate Generation
 
@@ -1303,7 +1373,7 @@ The generator selects claims as follows:
 | --- | --- |
 | `?- why.` or `?- check.` | All answers of the most recent preceding ordinary query |
 | `Run::certificate` | All answers of every requested ordinary query; goal checks are excluded |
-| No queries | `derived` for every rule step |
+| No ordinary queries or goal checks | `derived` for every rule step |
 
 It keeps the transitive dependencies of the claims (premises, cited boundaries,
 and their members) and renumbers steps and boundaries densely while preserving
@@ -1311,6 +1381,13 @@ order. Marking dependencies is iterative, and retained IDs are scanned in
 order, so deep proof chains need neither recursion nor sorting. Boundaries can
 make a certificate much larger than its positive derivations, because
 completeness requires every member of the relevant stratum prefix.
+
+Subject to available resources, serializing a generated certificate and reading
+it with `Certificate::parse` MUST preserve the same steps, boundaries, demands,
+and claims. The reader accepts generated term depths and witness-context
+arities beyond the source parser limits (Section 4.5). Reading a certificate
+does not establish its validity; the checker still verifies the supplied
+structure and every witness's exact source-rule context.
 
 ### 12.8 Example
 
@@ -1327,13 +1404,13 @@ step 3 source 3 : line(ada, book, 12).
 step 4 source 4 : line(ada, pen, 3).
 step 5 source 5 : line(bea, map, 7).
 step 6 source 6 : blocked(bea).
-step 7 builtin : '>='(15, 10).
-step 8 fresh 3 2 : '$fresh:r3:2'(ada, 15, ~"r3:g2:{\"Customer\": Symbol(\"ada\"), \"Total\": Integer(15)}").
-step 9 aggregate r1 2 1 : '$aggregate:r1:2'([binding('Customer', ada)], 15).
-step 10 absent 1 : blocked(ada).
-step 11 rule 1 [1,9] : subtotal(ada, 15).
-step 12 rule 2 [11,10,7] : eligible(ada, 15).
-step 13 rule 3 [12,8] : voucher(ada, ~"r3:g2:{\"Customer\": Symbol(\"ada\"), \"Total\": Integer(15)}", 15).
+step 7 aggregate r1 2 1 : '$aggregate:r1:2'([binding('Customer', ada)], 15).
+step 8 rule 1 [1,7] : subtotal(ada, 15).
+step 9 absent 1 : blocked(ada).
+step 10 builtin : '>='(15, 10).
+step 11 rule 2 [8,9,10] : eligible(ada, 15).
+step 12 fresh 3 2 : '$fresh:r3:2'(ada, 15, ~"r3:g2:{\"Customer\": Symbol(\"ada\"), \"Total\": Integer(15)}").
+step 13 rule 3 [11,12] : voucher(ada, ~"r3:g2:{\"Customer\": Symbol(\"ada\"), \"Total\": Integer(15)}", 15).
 boundary 1 level 0 [1,2,3,4,5,6]
 answer 1 [13]
 ```
@@ -1356,8 +1433,9 @@ The checker receives a validated program and a parsed certificate. It:
 The outcome is an error, a valid report, or an invalid report:
 
 - *Errors* (`Err`): an invalid program; an unreadable certificate, reported as
-  `Invalid proof [C3 justification]: ...`; exceeding a limit; or an arithmetic
-  error while recomputing a boundary or aggregate.
+  `Invalid proof [C3 justification]: ...`; exceeding a limit; or a missing-input,
+  type, conversion, or arithmetic error during finite-model matching or
+  aggregate re-decision.
 - *Invalid report* (`Ok`): one or more semantic failures. All failures that can
   be decided independently are collected. Checks that depend on an unresolved
   reference are skipped, and the missing reference is reported under C4.
@@ -1385,7 +1463,7 @@ is reported as **not applicable**, with zero checks and failures:
 | Condition | Applicable when |
 | --- | --- |
 | C5 | A rule or query uses a built-in, negated built-in, or aggregate |
-| C6 | A rule or query uses negation or an aggregate |
+| C6 | A rule or query uses ordinary-predicate negation or an aggregate; negated built-ins alone do not need boundaries |
 | C8 | A rule uses `fresh/1`, or the certificate contains a witness value |
 | Others | Always |
 
@@ -1411,16 +1489,21 @@ not a count of established conclusions.
 
 ### 13.5 Reports
 
-A report has this text form:
+For the certificate in Section 12.8, the report is:
 
 ```text
 checked: 13 steps, 1 claim
 6 source facts; 3 rule applications
 Conditions:
   C1 resolution: 9 checked, 0 failed
-  ...
-  C8 witness integrity: not applicable (program uses no fresh witnesses)
-  ...
+  C2 well-foundedness: 5 checked, 0 failed
+  C3 justification: 15 checked, 0 failed
+  C4 coverage: 30 checked, 0 failed
+  C5 re-decision: 2 checked, 0 failed
+  C6 boundary consistency: 3 checked, 0 failed
+  C7 relevance: 14 checked, 0 failed
+  C8 witness integrity: 3 checked, 0 failed
+  C9 query isolation: 1 checked, 0 failed
 Source facts and rules are assumed. Answer completeness is not checked.
 ```
 
@@ -1461,7 +1544,7 @@ empty certificate is accepted with zero claims and establishes nothing.
 
 The following syntax and term forms MUST be rejected:
 
-- cut, disjunction (`;`), and if-then-else;
+- control syntax for cut (`!`), disjunction (`;`), and if-then-else;
 - predicate variables and variables as goals;
 - directives other than `table`;
 - improper lists and cyclic terms;
@@ -1529,12 +1612,17 @@ link does not run the program automatically.
 : Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words",
   BCP 14, RFC 8174, May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
 
+[RFC7405]
+: Kyzivat, P., "Case-Sensitive String Support in ABNF", RFC 7405,
+  December 2014, <https://www.rfc-editor.org/rfc/rfc7405>.
+
 [IEEE754]
 : IEEE, "IEEE Standard for Floating-Point Arithmetic", IEEE Std 754-2019.
 
 [UNICODE]
-: The Unicode Consortium, "The Unicode Standard",
-  <https://www.unicode.org/versions/latest/>.
+: The Unicode Consortium, "The Unicode Standard, Version 17.0.0", 2025,
+  <https://www.unicode.org/versions/Unicode17.0.0/>. The implementation's
+  Unicode data dependency is specified in Section 6.5.
 
 [ISO13211-1]
 : ISO/IEC 13211-1:1995, "Information technology — Programming languages —
@@ -1544,8 +1632,9 @@ link does not run the program automatically.
 ### 16.2 Informative References
 
 [HERBRAND]
-: Genesereth, M., and E. Kao, "Herbrand Logic", Introduction to Logic,
-  Chapter 7, <https://logical.stanford.edu/intrologic/chapters/chapter_07.html>.
+: Genesereth, M., and E. Kao, "The Herbrand Manifesto — Thinking Inside the
+  Box", RuleML 2015, LNCS 9202, pp. 3–12,
+  <https://doi.org/10.1007/978-3-319-21542-6_1>.
 
 [WG17]
 : Neumerkel, U., "Conformity Testing I: Syntax",

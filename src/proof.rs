@@ -119,6 +119,20 @@ pub(crate) fn witness_context(goal: &Goal, bindings: &Bindings) -> Option<Bindin
         })
         .collect()
 }
+fn aggregate_inputs(rule: &crate::Rule) -> BTreeSet<String> {
+    // Result constraints are outputs, even when the caller binds the head.
+    // Preceding body goals can establish these names as groups separately.
+    let mut inputs = rule.head.variables();
+    for literal in &rule.body {
+        if let Literal::Aggregate(a) = literal {
+            for name in crate::model::term_variables(std::slice::from_ref(&a.result)) {
+                inputs.remove(&name);
+            }
+        }
+    }
+    inputs
+}
+
 fn aggregate_names(
     program: &Program,
     plan: &Plan,
@@ -131,7 +145,7 @@ fn aggregate_names(
         .collect();
     if let Owner::Rule(n) = owner {
         if !plan.range_restricted[n - 1] {
-            names.extend(program.rules[n - 1].head.variables());
+            names.extend(aggregate_inputs(&program.rules[n - 1]));
         }
     }
     names
@@ -1582,7 +1596,7 @@ impl<'a> Checker<'a> {
                     let scope = if plan.range_restricted[i] {
                         BTreeSet::new()
                     } else {
-                        initial.keys().cloned().collect()
+                        aggregate_inputs(rule)
                     };
                     demands.check(prefix, &initial, &scope, &indexed, budget, report)?;
                     let solutions = if prefix.is_empty() {

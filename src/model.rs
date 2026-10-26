@@ -354,7 +354,15 @@ pub(crate) fn value_variables(value: &Value) -> Vec<String> {
 }
 impl Value {
     pub(crate) fn ground(&self) -> bool {
-        value_variables(self).is_empty()
+        let mut pending = vec![self];
+        while let Some(value) = pending.pop() {
+            match value {
+                Self::Variable(_) => return false,
+                Self::Compound(_, args) => pending.extend(args),
+                _ => {}
+            }
+        }
+        true
     }
     pub(crate) fn valid(&self) -> bool {
         use num_traits::ToPrimitive;

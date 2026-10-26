@@ -50,6 +50,48 @@ fn input_modes_still_parameterize_aggregate_producers() {
 }
 
 #[test]
+fn mode_dependent_aggregate_outputs_cannot_filter_their_producers() {
+    let source = "p(1). p(2). total(G,N):-aggregate_all(count,p(N),N),G=G.";
+    for declaration in ["", ":- table total/2."] {
+        for (query, answers) in [("total(g,N)", 1), ("total(g,2)", 1), ("total(g,1)", 0)] {
+            let (_, run) = checked(&format!("{declaration} {source} ?- {query}."));
+            assert_eq!(run.answers[0].len(), answers, "{declaration} {query}");
+        }
+    }
+    checked(&format!("{source} ?- total(g,N), \\+ total(g,1)."));
+    let (_, run) = checked(
+        "p(1). p(2). total(G,N):-aggregate_all(sum(K), \
+         (tag(a),aggregate_all(count,p(N),K)),N),G=G. tag(a). ?-total(g,2).",
+    );
+    assert_eq!(run.answers[0].len(), 1);
+    // A preceding goal can still establish a legitimate group binding.
+    let (_, run) =
+        checked("p(1). p(2). total(G,N):-p(N),aggregate_all(count,p(N),N),G=G. ?-total(g,1).");
+    assert_eq!(run.answers[0].len(), 1);
+}
+
+#[test]
+fn c1_and_c5_reject_result_constraints_disguised_as_call_inputs() {
+    let program =
+        parse("p(1). p(2). total(G,N):-aggregate_all(count,p(N),N),G=G. ?-total(g,1).").unwrap();
+    let forged = Certificate::parse(
+        "wheye-proof 1\n\
+         step 1 source 1 : p(1).\n\
+         step 2 source 2 : p(2).\n\
+         step 3 builtin : '='(g,g).\n\
+         step 4 aggregate r1 1 1 : '$aggregate:r1:1'([binding('G',g),binding('N',1)],1).\n\
+         step 5 rule 1 [4,3] : total(g,1).\n\
+         boundary 1 level 0 [1,2]\n\
+         answer 1 [5]\n",
+    )
+    .unwrap();
+    let report = check(&program, &forged).unwrap();
+    assert!(!report.valid(), "{report}");
+    assert!(report.condition(Condition::C1).failed > 0, "{report}");
+    assert!(report.condition(Condition::C5).failed > 0, "{report}");
+}
+
+#[test]
 fn nested_aggregates_and_demanded_boundaries_keep_lexical_scope() {
     checked(
         ":- table total/2. p(a). p(b). q(a). q(b). \

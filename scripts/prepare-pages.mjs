@@ -10,7 +10,14 @@ export async function preparePages(destination, basePath = '/wheye') {
     throw new Error('Pages base path must be empty or a slash-prefixed URL path.');
   }
   basePath = basePath.replace(/\/+$/, '');
-  const localLinks = text => text.replaceAll(publicSite, `${basePath}/`);
+  // Markdown autolinks need explicit link syntax when their target becomes a
+  // relative URL: </wheye/> is not an autolink.
+  const localLinks = text => text.replace(
+    /<https:\/\/eyereasoner\.github\.io\/wheye\/([^>\s]*)>|https:\/\/eyereasoner\.github\.io\/wheye\//g,
+    (match, suffix) => suffix === undefined
+      ? `${basePath}/`
+      : `[${match.slice(1, -1)}](${basePath}/${suffix})`,
+  );
   const write = (file, text) => writeFile(resolve(destination, file), text);
   const document = text => {
     const heading = /^# (.+)\n+/.exec(text);

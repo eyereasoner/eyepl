@@ -1,6 +1,6 @@
 # Wheye guide
 
-Version **0.2.0**. Run extended Datalog in the native CLI or browser, get
+Version **0.2.1**. Run extended Datalog in the native CLI or browser, get
 answers, and inspect their independently checkable proofs. The
 [specification](https://eyereasoner.github.io/wheye/SPEC/) defines the language
 and the [C1–C9 contract](https://eyereasoner.github.io/wheye/SPEC/#132-proof-conditions).

@@ -317,6 +317,10 @@ async function checkPlayground() {
         assert.equal(await evaluate('document.querySelectorAll(".documentation h1").length'), 1, 'Documentation needs one page title');
         assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'), `${name} documentation overflows`);
         assert.ok(await evaluate('[...document.images].every(image => image.complete && image.naturalWidth > 0)'));
+        assert.deepEqual(await evaluate(`(() => {
+          const ids = [...document.querySelectorAll('[id]')].map(element => element.id);
+          return ids.filter((id, index) => ids.indexOf(id) !== index);
+        })()`), [], 'Documentation IDs must be unique');
         const links = await evaluate('[...document.querySelectorAll("a[href]")].map(a => a.href)');
         assert.ok(links.every(link => !/\.md(?:#|$)/.test(link)), 'documentation links should open rendered pages');
         for (const link of new Set(links)) {
@@ -324,8 +328,21 @@ async function checkPlayground() {
           if (target.origin !== new URL(pagesRoot).origin) continue;
           assert.ok(target.pathname.startsWith(new URL(pagesRoot).pathname), 'link escaped the Pages base path');
           assert.ok(await evaluate(`fetch(${JSON.stringify(link)}).then(response => response.ok)`), `broken link: ${link}`);
+          if (target.hash && !/\/playground(?:\/|\.html)$/.test(target.pathname)) {
+            assert.ok(await evaluate(`fetch(${JSON.stringify(link)}).then(response => response.text()).then(html => {
+              const page = new DOMParser().parseFromString(html, 'text/html');
+              const fragment = decodeURIComponent(${JSON.stringify(target.hash.slice(1))});
+              return !!page.getElementById(fragment) || [...page.querySelectorAll('a[name]')].some(a => a.name === fragment);
+            })`), `broken fragment: ${link}`);
+          }
         }
-        if (route) assert.ok(await evaluate('!!document.getElementById("132-proof-conditions")'), 'proof contract anchor missing');
+        if (route) {
+          assert.ok(await evaluate('!!document.getElementById("132-proof-conditions")'), 'proof contract anchor missing');
+          assert.ok(await evaluate(`(() => {
+            const label = [...document.querySelectorAll('dt')].find(dt => dt.textContent === '[GUIDE]');
+            return label?.nextElementSibling?.querySelector('a')?.href === ${JSON.stringify(pagesRoot)};
+          })()`), 'The final guide reference must render as a working link');
+        }
         await screenshot(`${route ? 'specification' : 'guide'}-${name}`);
       }
     }
