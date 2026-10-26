@@ -1,16 +1,16 @@
-# Wheye specification
+# Midlog specification
 
-Version **0.2.1**
+Version **0.3.0**
 
-**Status of this document.** This document specifies the behavior that the
-Wheye reference implementation provides. It is the normative contract for the
-source language, evaluation, output, proof certificates, and certificate
-checking. Statements marked *informative* explain or illustrate; they add no
-requirements. Wheye implements extended Datalog as defined here. Its clause
-notation and shared numeric operations follow the ISO Prolog reference areas
-identified in Section 1.5, including Technical Corrigenda 1–3.
+**Status of this document.** This document defines Midlog, with Wheye as its
+Rust reference implementation. It is the normative contract for the language,
+evaluation, output, proof certificates, and certificate checking. Sections
+11.5–11.6 describe Wheye's CLI, library, and browser interfaces. Statements
+marked *informative* explain or illustrate; they add no requirements. Midlog's
+clause notation and shared numeric operations follow the ISO Prolog reference
+areas identified in Section 1.5, including Technical Corrigenda 1–3.
 
-**Abstract.** Wheye is a relational reasoner for extended Datalog with
+**Abstract.** Midlog is a relational rule language with
 structural terms, proper lists, exact integers, finite binary64 reals,
 stratified negation, `aggregate_all/3`, demand-driven tabling, and typed
 `fresh/1` witnesses. A program's requests select its output: answers, proof
@@ -112,9 +112,15 @@ under nine conditions, C1–C9, without running the evaluator.
 
 ### 1.1 Scope
 
+*Informative.* The name **Midlog** reflects a position between Datalog and
+Prolog: set-valued relations and fixed-point reasoning together with
+Prolog-style clause notation and structural terms. The following sections
+define its behavior precisely; Section 1.5 describes compatibility and
+conformance.
+
 This specification defines:
 
-- the source syntax of Wheye programs (Sections 2–5);
+- the source syntax of Midlog programs (Sections 2–5);
 - the built-in predicates and arithmetic (Sections 6–7);
 - negation, aggregation, and witnesses (Section 8);
 - the declarative meaning of a program (Section 9) and how it is evaluated
@@ -216,11 +222,11 @@ certificates.
 
 ### 1.5 Conformance
 
-Wheye's language is extended Datalog: set-valued relations and a stratified
-fixed point, extended with structural terms, proper lists, exact arithmetic,
-aggregates, mode-dependent tabled rules, and typed witnesses. The `.pl` file
-extension and existing clause syntax are retained. The language is implemented
-by the Rust evaluator and certificate checker; no Prolog runtime is involved.
+Midlog has set-valued relations and a stratified fixed point, structural terms,
+proper lists, exact arithmetic, aggregates, mode-dependent tabled rules, and
+typed witnesses. The `.pl` file extension and existing clause syntax are
+retained. Wheye implements Midlog directly through its Rust evaluator and
+certificate checker.
 
 Range-restricted rules do not require initial head bindings. This includes
 aggregate rules: unless explicitly declared demand-driven, they run forward
@@ -233,13 +239,13 @@ not this grouping rule. Rules needing call inputs and universal unit clauses
 remain mode-dependent extensions evaluated through demanded calls.
 
 ISO Prolog is a compatibility reference for shared notation and operations,
-not the definition of Wheye's evaluation semantics. The reference is
+not the definition of Midlog's evaluation semantics. The reference is
 ISO/IEC 13211-1:1995 with Cor.1:2007, Cor.2:2012, and Cor.3:2017
 [ISO13211-1]. Corrections in the corrigenda take precedence over the original
 text. In particular, integer power follows the error condition corrected by
 Corrigendum 3, ISO Section 9.3.10.3(e) (Section 7.3 below).
 
-| Supported area | ISO clauses | Wheye contract |
+| Supported area | ISO clauses | Midlog contract |
 | --- | --- | --- |
 | Terms, variables, clauses, and lexical forms | 6.1–6.4, 7.4 | Sections 2–5 |
 | Finite-term unification and non-unifiability | 8.2 | Sections 4.4 and 6.2 |
@@ -253,7 +259,7 @@ defined in this document. The [conformance corpus](https://github.com/eyereasone
 checks selected shared cases and rejection of unsupported syntax and modes.
 It does not establish coverage of every requirement in the cited clauses.
 
-The extended Datalog contract includes:
+The Midlog contract includes:
 
 - Set semantics and demand-driven tabling (Sections 9–10), with stratified
   negation, replace ISO's procedural search and repeated derivations.
@@ -272,7 +278,7 @@ The extended Datalog contract includes:
 
 Full ISO processor compliance under clause 5.1, including its required
 facilities and strictly conforming mode, is outside the implemented scope.
-Conformance in the rest of this document refers to the Wheye contract:
+Conformance in the rest of this document refers to the Midlog contract:
 
 A *conforming program* satisfies every source requirement in Sections 2–8.
 A *conforming evaluator* parses, validates, evaluates, and renders conforming
@@ -957,7 +963,7 @@ without an error. With `q(b). p(X) :- X \= a, q(X).`, a run asking only
 `p(X)` returns no answers, while a separate run asking `p(b)` succeeds. A
 forward rule that calls a mode-dependent rule can inherit this restriction.
 The unrestricted least-model reading alone therefore does not specify the
-answers of every accepted Wheye program.
+answers of every accepted Midlog program.
 
 *Informative:* given `human(socrates).` and `mortal(P) :- human(P).`, the model
 contains `human(socrates)` and `mortal(socrates)`. `1 + 2` is a compound in an

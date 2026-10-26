@@ -34,7 +34,8 @@ Keep diagnostics specific and user-facing text direct.
 ## Language and proofs
 
 Read `SPEC.md` before changing language or proof behavior. Wheye implements
-extended Datalog with structural terms, lists, exact integers, finite real arithmetic,
+Midlog, a relational rule language with structural terms, lists, exact integers,
+finite real arithmetic,
 stratified negation, aggregate_all/3, demand-driven tabling, source-selected goal checks, proof certificates,
 and final-rule fresh/1 witnesses. Keep pure decisions out of ordinary indexes.
 Unification must perform an occurs check. Do not silently coerce numeric or text

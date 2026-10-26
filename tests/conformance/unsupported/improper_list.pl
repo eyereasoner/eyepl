@@ -1,2 +1,2 @@
-% ISO permits improper lists; Wheye's extended Datalog requires proper/partial lists.
+% ISO permits improper lists; Midlog requires proper/partial lists.
 ?- X = [a|b].

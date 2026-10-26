@@ -1,25 +1,27 @@
 # Wheye guide
 
-Version **0.2.1**. Run extended Datalog in the native CLI or browser, get
+Version **0.3.0**. Run Midlog in Wheye's native CLI or browser, get
 answers, and inspect their independently checkable proofs. The
 [specification](https://eyereasoner.github.io/wheye/SPEC/) defines the language
 and the [C1–C9 contract](https://eyereasoner.github.io/wheye/SPEC/#132-proof-conditions).
 
 <a id="why-a-prolog-subset"></a>
+<a id="why-extended-datalog"></a>
 
-## Why extended Datalog?
+## Why Midlog?
 
-Datalog gives recursive relations a set-based meaning and a fixed-point
-evaluation strategy. Wheye extends that model with structural terms, lists,
-exact arithmetic, stratified negation, aggregates, and typed witnesses, with
-independently checkable evidence. The Rust evaluator and checker implement
-this extended Datalog language directly.
+**Midlog** is the language; **Wheye** is its Rust reference implementation.
+The name reflects a position in the middle between Datalog and Prolog:
+relations have set semantics and fixed-point evaluation, while clauses use
+familiar Prolog notation and support structural terms, lists, and arithmetic.
+Stratified negation, aggregates, typed witnesses, and independently checkable
+proofs complete the language defined by the specification.
 
 The existing `.pl` clause syntax is retained. Shared syntax and arithmetic use
 ISO/IEC 13211-1:1995 with Technical Corrigenda 1–3 as a compatibility reference,
 including Corrigendum 3's corrected integer-power rule. The
 [conformance section](https://eyereasoner.github.io/wheye/SPEC/#15-conformance)
-defines extended Datalog and identifies the shared ISO behavior.
+defines Midlog and identifies the shared ISO behavior.
 
 The implemented choices work together:
 
@@ -40,9 +42,9 @@ This scope keeps the relationship between a program, its answers, and its
 evidence small enough to specify and inspect. Features such as cut, mutable
 predicates, and procedural I/O would need additional semantics and evidence
 rules before they could fit that contract. A full Prolog system can support
-proofs too; wheye's current C1–C9 contract covers the language specified here.
+proofs too; Midlog's C1–C9 contract covers the language specified here.
 
-Wheye extends beyond classical function-free Datalog with structural terms,
+Midlog extends beyond classical function-free Datalog with structural terms,
 lists, arithmetic, and fresh witnesses. Term construction and arithmetic can
 create infinite computations, so the language does not guarantee termination.
 Certificate acceptance establishes the recorded claims relative to the source

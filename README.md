@@ -1,11 +1,12 @@
 # <img src="assets/eye.png" alt="" width="48" height="48" align="middle"> wheye
 
-Extended Datalog in Rust with tabled recursion and independently checked proof certificates.
+Wheye is a Rust reasoner for **Midlog**, a relational rule language with independently checked proof certificates.
 
-Wheye extends Datalog with structural terms, lists, exact arithmetic, stratified
-negation, aggregates, and fresh witnesses. Its Rust evaluator and independent
-checker define their execution and evidence requirements. See
-[why extended Datalog](https://eyereasoner.github.io/wheye/#why-extended-datalog).
+Midlog's name reflects its position between Datalog and Prolog. It combines
+set semantics and fixed-point reasoning with Prolog-style clause notation,
+structural terms, lists, arithmetic, stratified negation, aggregates, and fresh
+witnesses. Its specification defines the language and proof contract; Wheye
+implements them in Rust. See [why Midlog](https://eyereasoner.github.io/wheye/#why-midlog).
 
 Reasoning combines **forward chaining** for range-restricted rules with
 **tabled backward chaining** for demand-driven rules. Both share derived facts;
@@ -15,9 +16,9 @@ negation and aggregation use completed lower strata. See the
 The existing `.pl` clause syntax is retained. Shared syntax and arithmetic use
 ISO/IEC 13211-1:1995 with Corrigenda 1–3 as a compatibility reference.
 The [specification](https://eyereasoner.github.io/wheye/SPEC/#15-conformance)
-defines the implemented extended Datalog language and proof contract.
+defines Midlog and its proof contract.
 
-**Version 0.2.1**
+**Version 0.3.0**
 
 ```prolog
 human(socrates).

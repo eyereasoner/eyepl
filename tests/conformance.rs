@@ -1,4 +1,4 @@
-//! File-based checks of ISO compatibility and extended Datalog restrictions.
+//! File-based checks of ISO compatibility and Midlog restrictions.
 use std::collections::BTreeSet;
 use std::fs;
 use std::path::{Path, PathBuf};

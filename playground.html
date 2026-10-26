@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Explore logical programs, get answers, and check proof certificates with wheye.">
+  <meta name="description" content="Run Midlog programs, get answers, and check proof certificates with Wheye.">
   <title>wheye playground</title>
   <link rel="icon" href="assets/eye.png" type="image/png">
   <link rel="stylesheet" href="playground.css">
@@ -11,7 +11,7 @@
 <body>
   <main>
     <header class="masthead">
-      <a class="brand" href="./" aria-label="wheye home"><img src="assets/eye.png" width="64" height="64" alt=""><span class="brand-copy"><span class="brand-name">Wheye playground<span class="version" id="version">v0.2.1</span></span></span></a>
+      <a class="brand" href="./" aria-label="wheye home"><img src="assets/eye.png" width="64" height="64" alt=""><span class="brand-copy"><span class="brand-name">Wheye playground<span class="version" id="version">v0.3.0</span></span></span></a>
       <nav class="site-nav" aria-label="Project">
         <a href="https://eyereasoner.github.io/wheye/">Guide</a>
         <a href="https://eyereasoner.github.io/wheye/playground/" aria-current="page">Playground</a>
@@ -166,8 +166,8 @@
       <div id="share-box" class="share-box" hidden><label for="share-url">Your share link</label><input id="share-url" readonly><button type="button" id="close-share" aria-label="Close share link">×</button></div>
       <div class="editors">
         <section class="panel" aria-labelledby="source-heading">
-          <div class="panel-heading"><h2 id="source-heading"><span class="dot green"></span>Your program</h2><span>.pl</span></div>
-          <label class="sr-only" for="source">Facts, rules, and queries</label>
+          <div class="panel-heading"><h2 id="source-heading"><span class="dot green"></span>Midlog program</h2><span>.pl</span></div>
+          <label class="sr-only" for="source">Midlog facts, rules, and queries</label>
           <textarea id="source" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-describedby="source-hint">% A first conclusion
 human(socrates).
 mortal(Person) :- human(Person).

@@ -1,10 +1,10 @@
 [package]
 name = "wheye"
-version = "0.2.1"
+version = "0.3.0"
 edition = "2021"
 authors = ["Jos De Roo"]
 license = "MIT"
-description = "A small relational reasoner with independently checked proof certificates."
+description = "A Midlog reasoner with independently checked proof certificates."
 default-run = "wheye"
 
 [lib]

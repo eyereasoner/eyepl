@@ -1,4 +1,4 @@
-//! Extended Datalog reasoning, with a separate certificate checker.
+//! Wheye implements Midlog reasoning, with a separate certificate checker.
 //!
 //! Parse a program with [`parse`], evaluate it with [`reason`], and inspect
 //! answers or save a [`Certificate`]. Checking replays recorded applications;

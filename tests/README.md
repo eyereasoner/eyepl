@@ -41,7 +41,7 @@ Cargo discovers the `.rs` files in this directory automatically.
 | Suite | Coverage |
 | --- | --- |
 | [reasoning.rs](reasoning.rs) | Core inference, variable scope, joins, recursion, set semantics, limits, value round trips, deep proof traversal, and exhaustive small-graph reachability against an independent oracle. |
-| [datalog.rs](datalog.rs) | Forward aggregate closure, query-independent aggregate scope, call modes, tabled witness identities, and forged certificates violating the extended Datalog contract. |
+| [midlog.rs](midlog.rs) | Forward aggregate closure, query-independent aggregate scope, call modes, tabled witness identities, and forged certificates violating the Midlog contract. |
 | [prolog.rs](prolog.rs) | Structural terms, aliases, occurs checks, lists, text and numeric semantics, table completion, aggregate scope, and related forged-certificate regressions. |
 | [extensions.rs](extensions.rs) | Built-ins, stratified negation, aggregates, fresh witnesses, checker limits, and an independent graph oracle for negation and aggregation. Reported as “Built-ins and aggregates”; additional facilities are specified in [Specification §6](https://eyereasoner.github.io/wheye/SPEC/#6-built-in-predicates) and [§8](https://eyereasoner.github.io/wheye/SPEC/#8-negation-aggregation-and-witnesses). |
 | [conformance.rs](conformance.rs) | File-based tests of shared ISO syntax and operations, specific error diagnostics, and rejected syntax or input modes. See the [compatibility corpus](conformance/) for its scope and formats. |

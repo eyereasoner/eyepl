@@ -44,8 +44,12 @@ test('website stages rendered documentation and every playground dependency', as
     const guide = await readFile(join(directory, 'index.md'), 'utf8');
     assert.match(guide, /^title: "Wheye guide"$/m);
     assert.match(guide, /^## Run your first program$/m);
+    assert.match(guide, /^## Why Midlog\?$/m);
+    for (const id of ['why-a-prolog-subset', 'why-extended-datalog']) {
+      assert.ok(guide.includes(`id="${id}"`), 'Older guide links remain supported.');
+    }
     assert.match(guide, /\]\(\/wheye\/SPEC\/#132-proof-conditions\)/);
-    assert.match(await readFile(join(directory, 'SPEC/index.md'), 'utf8'), /^title: "Wheye specification"$/m);
+    assert.match(await readFile(join(directory, 'SPEC/index.md'), 'utf8'), /^title: "Midlog specification"$/m);
     const playground = await readFile(join(directory, 'playground/index.html'), 'utf8');
     assert.match(playground, /<base href="\.\.\/">/);
     assert.match(playground, /href="\/wheye\/SPEC\/"/);
@@ -168,7 +172,7 @@ test('browser arithmetic and certificates follow ISO Corrigenda 1–3', async ()
   }
 });
 
-test('extended Datalog aggregates have query-independent scope and forward closure', async () => {
+test('Midlog aggregates have query-independent scope and forward closure', async () => {
   const { runProgram } = await browserEngine();
   for (const declaration of ['', ':- table total/2.']) {
     const output = runProgram(`${declaration}

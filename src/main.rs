@@ -2,7 +2,7 @@ use std::io::{self, Read};
 use std::process::ExitCode;
 use wheye::{parse, reason, Error, Limits, Program, VERSION};
 
-const HELP: &str = "wheye — a small relational reasoner
+const HELP: &str = "wheye — a Midlog reasoner
 
 Usage: wheye FILE...
        wheye -

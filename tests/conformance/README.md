@@ -1,8 +1,8 @@
-# Extended Datalog compatibility
+# Midlog compatibility
 
-This corpus checks the syntax and operations that Wheye's extended Datalog
+This corpus checks the syntax and operations that Midlog
 shares with ISO/IEC 13211-1:1995 and Technical Corrigenda 1:2007, 2:2012, and
-3:2017, together with Wheye's input restrictions. The corrigenda take
+3:2017, together with Midlog's input restrictions. The corrigenda take
 precedence over the original standard text in these compatibility cases.
 Passing it does not establish full ISO Prolog conformance.
 The implemented language contract remains the
@@ -67,7 +67,7 @@ built-ins. Unsupported predicate names can still name ordinary user relations;
 an empty answer for such a name does not demonstrate built-in support.
 Engine behavior outside the shared ISO cases is covered by the ordinary
 regressions in `tests/prolog.rs`, including set semantics, table completion,
-the occurs check, and Wheye's numeric and text model. In particular, exact
+the occurs check, and Midlog's numeric and text model. In particular, exact
 mixed numeric comparisons and distinct strings are documented implementation
 behavior. Rounding input types,
 `sign/1` result types, and integer-power error conditions are checked against
@@ -82,7 +82,7 @@ Each answer fixture pairs `name.pl` with `name.answers`. Each ordinary query
 has exactly one expected line: `false`, `true`, or its variable bindings in
 query-variable order. Multiple answers are sorted by their rendered binding
 text and joined with `; `. Sorting ignores enumeration order but retains
-multiplicity, so unexpected duplicates fail. Values retain Wheye's typed term
+multiplicity, so unexpected duplicates fail. Values retain Midlog's typed term
 spelling. For example:
 
 ```text

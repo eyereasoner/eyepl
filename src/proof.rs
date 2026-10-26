@@ -553,7 +553,7 @@ impl fmt::Display for Certificate {
         Ok(())
     }
 }
-/// The nine proof conditions, specialized to wheye's language.
+/// The nine proof conditions for Midlog.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum Condition {
     C1,
