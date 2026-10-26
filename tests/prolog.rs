@@ -287,7 +287,7 @@ fn aggregate_results_and_producer_locals_have_independent_scopes() {
     let (_, run, _) = checked(
         "p(a). p(b). q(a). q(b). total(X,N):-aggregate_all(count,p(X),N),q(X). ?- total(a,N).",
     );
-    assert_eq!(run.answers[0][0].values, vec![Value::Integer(1)]);
+    assert_eq!(run.answers[0][0].values, vec![Value::Integer(2)]);
 }
 
 #[test]

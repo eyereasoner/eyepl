@@ -1,16 +1,23 @@
 # <img src="assets/eye.png" alt="" width="48" height="48" align="middle"> wheye
 
-An ISO Prolog subset in Rust with tabled recursion and independently checked proof certificates.
+Extended Datalog in Rust with tabled recursion and independently checked proof certificates.
 
-The subset is intentional: like Datalog, wheye specializes a rule language for
-declarative reasoning. Its scope keeps execution and the evidence required by
-the checker explicit. See [why a Prolog subset](https://eyereasoner.github.io/wheye/#why-a-prolog-subset).
+Wheye extends Datalog with structural terms, lists, exact arithmetic, stratified
+negation, aggregates, and fresh witnesses. Its Rust evaluator and independent
+checker define their execution and evidence requirements. See
+[why extended Datalog](https://eyereasoner.github.io/wheye/#why-extended-datalog).
 
-Supported ISO operations follow ISO/IEC 13211-1:1995 with Corrigenda 1–3.
+Reasoning combines **forward chaining** for range-restricted rules with
+**tabled backward chaining** for demand-driven rules. Both share derived facts;
+negation and aggregation use completed lower strata. See the
+[reasoning strategy](https://eyereasoner.github.io/wheye/#reasoning-strategy).
+
+The existing `.pl` clause syntax is retained. Shared syntax and arithmetic use
+ISO/IEC 13211-1:1995 with Corrigenda 1–3 as a compatibility reference.
 The [specification](https://eyereasoner.github.io/wheye/SPEC/#15-conformance)
-defines the implemented subset, restrictions, and extensions.
+defines the implemented extended Datalog language and proof contract.
 
-**Version 0.1.27**
+**Version 0.2.0**
 
 ```prolog
 human(socrates).
@@ -41,4 +48,4 @@ cargo run --release --locked -- examples/socrates.pl
 - Learn how to use wheye: [Guide](https://eyereasoner.github.io/wheye/).
 - Read the language and proof contract: [Specification](https://eyereasoner.github.io/wheye/SPEC/).
 - Explore runnable programs: [Examples](https://github.com/eyereasoner/wheye/tree/main/examples/).
-- Inspect the [conformance corpus](https://github.com/eyereasoner/wheye/tree/main/tests/conformance/) for the tested ISO Prolog subset and its input restrictions.
+- Inspect the [compatibility corpus](https://github.com/eyereasoner/wheye/tree/main/tests/conformance/) for shared ISO syntax, operations, and input restrictions.

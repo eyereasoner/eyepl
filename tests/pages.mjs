@@ -135,3 +135,32 @@ test('browser arithmetic and certificates follow ISO Corrigenda 1–3', async ()
     assert.throws(() => runProgram(source), error => /requires a real base/.test(String(error)));
   }
 });
+
+test('extended Datalog aggregates have query-independent scope and forward closure', async () => {
+  const { runProgram } = await browserEngine();
+  for (const declaration of ['', ':- table total/2.']) {
+    const output = runProgram(`${declaration}
+      p(a). p(b). q(a).
+      total(X,N) :- aggregate_all(count,p(X),N), q(X).
+      ?- total(a,N).
+      ?- check.
+    `);
+    assert.match(output, /N = 2\./);
+    assert.match(output, /^checked:/m);
+  }
+  assert.equal(runProgram('p(a). p(b). total(N):-aggregate_all(count,p(X),N).'), 'total(2).\n');
+});
+
+test('tabled fresh witnesses have checked source-prefix identities', async () => {
+  const { runProgram } = await browserEngine();
+  const output = runProgram(`
+    :- table ticket/2.
+    visitor(ada). visitor(bea).
+    ticket(V,W) :- visitor(V), fresh(W).
+    ?- ticket(ada,W), \\+ ticket(bea,W).
+    ?- check.
+  `);
+  assert.match(output, /^W = ~/m);
+  assert.match(output, /^checked:/m);
+  assert.match(output, /C8 witness integrity: [1-9][0-9]* checked, 0 failed/);
+});

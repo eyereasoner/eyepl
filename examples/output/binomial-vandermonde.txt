@@ -2,8 +2,8 @@
 Kind = symmetry_24_7, Value = true.
 Kind = choose_24_12, Value = 2704156.
 Kind = choose_100_50, Value = 100891344545564193334812497256.
-Kind = vandermonde_12_10_8, Value = 319770.
 Kind = row_12_sum, Value = 4096.
+Kind = vandermonde_12_10_8, Value = 319770.
 
 ?- vandermonde(12, 10, 8, Sum).
 Sum = 319770.
@@ -280,154 +280,154 @@ step 256 builtin : is(100, '//'(100, 1)).
 step 257 builtin : '>='(50, 0).
 step 258 builtin : '=<'(50, 100).
 step 259 builtin : is(50, min(50, '-'(100, 50))).
-step 260 rule 4 [] : choose_step(22, 8, 8, 319770, 319770).
-step 261 builtin : '<'(7, 8).
-step 262 builtin : is(2558160, '*'(170544, '-'(22, 7))).
-step 263 builtin : is(319770, '//'(2558160, 8)).
-step 264 builtin : '<'(6, 8).
-step 265 builtin : is(1193808, '*'(74613, '-'(22, 6))).
-step 266 builtin : is(170544, '//'(1193808, 7)).
-step 267 builtin : '<'(5, 8).
-step 268 builtin : is(447678, '*'(26334, '-'(22, 5))).
-step 269 builtin : is(74613, '//'(447678, 6)).
-step 270 builtin : '<'(4, 8).
-step 271 builtin : is(131670, '*'(7315, '-'(22, 4))).
-step 272 builtin : is(26334, '//'(131670, 5)).
-step 273 builtin : '<'(3, 8).
-step 274 builtin : is(29260, '*'(1540, '-'(22, 3))).
-step 275 builtin : is(7315, '//'(29260, 4)).
-step 276 builtin : '<'(2, 8).
-step 277 builtin : is(4620, '*'(231, '-'(22, 2))).
-step 278 builtin : is(1540, '//'(4620, 3)).
-step 279 builtin : '<'(1, 8).
-step 280 builtin : is(462, '*'(22, '-'(22, 1))).
-step 281 builtin : is(231, '//'(462, 2)).
-step 282 builtin : '<'(0, 8).
-step 283 builtin : is(22, '*'(1, '-'(22, 0))).
-step 284 builtin : is(22, '//'(22, 1)).
-step 285 builtin : '>='(8, 0).
-step 286 builtin : '=<'(8, 22).
-step 287 builtin : is(8, min(8, '-'(22, 8))).
-step 288 builtin : '=<'(0, 8).
-step 289 builtin : '=<'(1, 8).
-step 290 builtin : '=<'(2, 8).
-step 291 builtin : '=<'(3, 8).
-step 292 builtin : '=<'(4, 8).
-step 293 builtin : '=<'(5, 8).
-step 294 builtin : '=<'(6, 8).
-step 295 builtin : '=<'(7, 8).
-step 296 builtin : '=<'(8, 8).
-step 297 rule 4 [] : choose_step(12, 0, 0, 1, 1).
-step 298 builtin : '>='(0, 0).
-step 299 builtin : '=<'(0, 12).
-step 300 builtin : is(0, min(0, '-'(12, 0))).
-step 301 rule 4 [] : choose_step(12, 1, 1, 12, 12).
-step 302 builtin : '<'(0, 1).
-step 303 builtin : is(12, '*'(1, '-'(12, 0))).
-step 304 builtin : is(12, '//'(12, 1)).
-step 305 builtin : '>='(1, 0).
-step 306 builtin : '=<'(1, 12).
-step 307 builtin : is(1, min(1, '-'(12, 1))).
-step 308 rule 4 [] : choose_step(12, 2, 2, 66, 66).
-step 309 builtin : '<'(1, 2).
-step 310 builtin : is(132, '*'(12, '-'(12, 1))).
-step 311 builtin : is(66, '//'(132, 2)).
-step 312 builtin : '<'(0, 2).
-step 313 rule 4 [] : choose_step(12, 3, 3, 220, 220).
-step 314 builtin : '>='(2, 0).
-step 315 builtin : '=<'(2, 12).
-step 316 builtin : is(2, min(2, '-'(12, 2))).
-step 317 builtin : '<'(2, 3).
-step 318 builtin : is(660, '*'(66, '-'(12, 2))).
-step 319 builtin : is(220, '//'(660, 3)).
-step 320 builtin : '<'(1, 3).
-step 321 rule 4 [] : choose_step(12, 4, 4, 495, 495).
-step 322 builtin : '<'(0, 3).
-step 323 builtin : '<'(3, 4).
-step 324 builtin : is(1980, '*'(220, '-'(12, 3))).
-step 325 builtin : is(495, '//'(1980, 4)).
-step 326 builtin : '>='(3, 0).
-step 327 builtin : '=<'(3, 12).
-step 328 builtin : is(3, min(3, '-'(12, 3))).
-step 329 builtin : '<'(2, 4).
-step 330 rule 4 [] : choose_step(12, 5, 5, 792, 792).
-step 331 builtin : '<'(1, 4).
-step 332 builtin : '<'(4, 5).
-step 333 builtin : is(3960, '*'(495, '-'(12, 4))).
-step 334 builtin : is(792, '//'(3960, 5)).
-step 335 builtin : '<'(0, 4).
-step 336 builtin : '<'(3, 5).
-step 337 builtin : '>='(4, 0).
-step 338 builtin : '=<'(4, 12).
-step 339 builtin : is(4, min(4, '-'(12, 4))).
-step 340 builtin : '=<'(8, 12).
-step 341 builtin : is(4, min(8, '-'(12, 8))).
-step 342 rule 4 [] : choose_step(12, 6, 6, 924, 924).
-step 343 builtin : '<'(2, 5).
-step 344 builtin : '<'(5, 6).
-step 345 builtin : is(5544, '*'(792, '-'(12, 5))).
-step 346 builtin : is(924, '//'(5544, 6)).
-step 347 builtin : '<'(1, 5).
-step 348 builtin : '<'(4, 6).
-step 349 builtin : '<'(0, 5).
-step 350 builtin : '<'(3, 6).
-step 351 builtin : '>='(5, 0).
-step 352 builtin : '=<'(5, 12).
-step 353 builtin : is(5, min(5, '-'(12, 5))).
-step 354 builtin : '=<'(7, 12).
-step 355 builtin : is(5, min(7, '-'(12, 7))).
-step 356 builtin : '<'(2, 6).
-step 357 builtin : '<'(1, 6).
-step 358 builtin : '<'(0, 6).
-step 359 builtin : '>='(6, 0).
-step 360 builtin : '=<'(6, 12).
-step 361 builtin : is(6, min(6, '-'(12, 6))).
-step 362 rule 4 [] : choose_step(10, 0, 0, 1, 1).
-step 363 builtin : '=<'(0, 10).
-step 364 builtin : is(0, min(0, '-'(10, 0))).
-step 365 rule 4 [] : choose_step(10, 1, 1, 10, 10).
-step 366 builtin : is(10, '*'(1, '-'(10, 0))).
-step 367 builtin : is(10, '//'(10, 1)).
-step 368 builtin : '=<'(1, 10).
-step 369 builtin : is(1, min(1, '-'(10, 1))).
-step 370 rule 4 [] : choose_step(10, 2, 2, 45, 45).
-step 371 builtin : is(90, '*'(10, '-'(10, 1))).
-step 372 builtin : is(45, '//'(90, 2)).
-step 373 rule 4 [] : choose_step(10, 3, 3, 120, 120).
-step 374 builtin : '=<'(8, 10).
-step 375 builtin : is(2, min(8, '-'(10, 8))).
-step 376 builtin : '=<'(2, 10).
-step 377 builtin : is(2, min(2, '-'(10, 2))).
-step 378 builtin : is(360, '*'(45, '-'(10, 2))).
-step 379 builtin : is(120, '//'(360, 3)).
-step 380 rule 4 [] : choose_step(10, 4, 4, 210, 210).
-step 381 builtin : is(840, '*'(120, '-'(10, 3))).
-step 382 builtin : is(210, '//'(840, 4)).
-step 383 builtin : '=<'(7, 10).
-step 384 builtin : is(3, min(7, '-'(10, 7))).
-step 385 builtin : '=<'(3, 10).
-step 386 builtin : is(3, min(3, '-'(10, 3))).
-step 387 rule 4 [] : choose_step(10, 5, 5, 252, 252).
-step 388 builtin : is(1260, '*'(210, '-'(10, 4))).
-step 389 builtin : is(252, '//'(1260, 5)).
-step 390 builtin : '=<'(6, 10).
-step 391 builtin : is(4, min(6, '-'(10, 6))).
-step 392 builtin : '=<'(4, 10).
-step 393 builtin : is(4, min(4, '-'(10, 4))).
-step 394 builtin : '=<'(5, 10).
-step 395 builtin : is(5, min(5, '-'(10, 5))).
-step 396 builtin : is(22, '+'(12, 10)).
-step 397 builtin : '=<'(9, 12).
-step 398 builtin : '=<'(10, 12).
-step 399 builtin : '=<'(11, 12).
-step 400 builtin : '=<'(12, 12).
-step 401 builtin : '>='(9, 0).
-step 402 builtin : is(3, min(9, '-'(12, 9))).
-step 403 builtin : '>='(10, 0).
-step 404 builtin : is(2, min(10, '-'(12, 10))).
-step 405 builtin : '>='(11, 0).
-step 406 builtin : is(1, min(11, '-'(12, 11))).
-step 407 builtin : is(0, min(12, '-'(12, 12))).
+step 260 builtin : '=<'(0, 12).
+step 261 builtin : '=<'(1, 12).
+step 262 builtin : '=<'(2, 12).
+step 263 builtin : '=<'(3, 12).
+step 264 builtin : '=<'(4, 12).
+step 265 builtin : '=<'(5, 12).
+step 266 builtin : '=<'(6, 12).
+step 267 builtin : '=<'(7, 12).
+step 268 builtin : '=<'(8, 12).
+step 269 builtin : '=<'(9, 12).
+step 270 builtin : '=<'(10, 12).
+step 271 builtin : '=<'(11, 12).
+step 272 builtin : '=<'(12, 12).
+step 273 rule 4 [] : choose_step(22, 8, 8, 319770, 319770).
+step 274 builtin : '<'(7, 8).
+step 275 builtin : is(2558160, '*'(170544, '-'(22, 7))).
+step 276 builtin : is(319770, '//'(2558160, 8)).
+step 277 builtin : '<'(6, 8).
+step 278 builtin : is(1193808, '*'(74613, '-'(22, 6))).
+step 279 builtin : is(170544, '//'(1193808, 7)).
+step 280 builtin : '<'(5, 8).
+step 281 builtin : is(447678, '*'(26334, '-'(22, 5))).
+step 282 builtin : is(74613, '//'(447678, 6)).
+step 283 builtin : '<'(4, 8).
+step 284 builtin : is(131670, '*'(7315, '-'(22, 4))).
+step 285 builtin : is(26334, '//'(131670, 5)).
+step 286 builtin : '<'(3, 8).
+step 287 builtin : is(29260, '*'(1540, '-'(22, 3))).
+step 288 builtin : is(7315, '//'(29260, 4)).
+step 289 builtin : '<'(2, 8).
+step 290 builtin : is(4620, '*'(231, '-'(22, 2))).
+step 291 builtin : is(1540, '//'(4620, 3)).
+step 292 builtin : '<'(1, 8).
+step 293 builtin : is(462, '*'(22, '-'(22, 1))).
+step 294 builtin : is(231, '//'(462, 2)).
+step 295 builtin : '<'(0, 8).
+step 296 builtin : is(22, '*'(1, '-'(22, 0))).
+step 297 builtin : is(22, '//'(22, 1)).
+step 298 builtin : '>='(8, 0).
+step 299 builtin : '=<'(8, 22).
+step 300 builtin : is(8, min(8, '-'(22, 8))).
+step 301 rule 4 [] : choose_step(12, 0, 0, 1, 1).
+step 302 builtin : '>='(0, 0).
+step 303 builtin : is(0, min(0, '-'(12, 0))).
+step 304 builtin : is(0, min(12, '-'(12, 12))).
+step 305 rule 4 [] : choose_step(12, 1, 1, 12, 12).
+step 306 builtin : '<'(0, 1).
+step 307 builtin : is(12, '*'(1, '-'(12, 0))).
+step 308 builtin : is(12, '//'(12, 1)).
+step 309 builtin : '>='(1, 0).
+step 310 builtin : is(1, min(1, '-'(12, 1))).
+step 311 builtin : '>='(11, 0).
+step 312 builtin : is(1, min(11, '-'(12, 11))).
+step 313 rule 4 [] : choose_step(12, 2, 2, 66, 66).
+step 314 builtin : '<'(1, 2).
+step 315 builtin : is(132, '*'(12, '-'(12, 1))).
+step 316 builtin : is(66, '//'(132, 2)).
+step 317 builtin : '<'(0, 2).
+step 318 rule 4 [] : choose_step(12, 3, 3, 220, 220).
+step 319 builtin : '>='(2, 0).
+step 320 builtin : is(2, min(2, '-'(12, 2))).
+step 321 builtin : '>='(10, 0).
+step 322 builtin : is(2, min(10, '-'(12, 10))).
+step 323 builtin : '<'(2, 3).
+step 324 builtin : is(660, '*'(66, '-'(12, 2))).
+step 325 builtin : is(220, '//'(660, 3)).
+step 326 builtin : '<'(1, 3).
+step 327 rule 4 [] : choose_step(12, 4, 4, 495, 495).
+step 328 builtin : '<'(0, 3).
+step 329 builtin : '<'(3, 4).
+step 330 builtin : is(1980, '*'(220, '-'(12, 3))).
+step 331 builtin : is(495, '//'(1980, 4)).
+step 332 builtin : '>='(3, 0).
+step 333 builtin : is(3, min(3, '-'(12, 3))).
+step 334 builtin : '>='(9, 0).
+step 335 builtin : is(3, min(9, '-'(12, 9))).
+step 336 builtin : '<'(2, 4).
+step 337 rule 4 [] : choose_step(12, 5, 5, 792, 792).
+step 338 builtin : '<'(1, 4).
+step 339 builtin : '<'(4, 5).
+step 340 builtin : is(3960, '*'(495, '-'(12, 4))).
+step 341 builtin : is(792, '//'(3960, 5)).
+step 342 builtin : '<'(0, 4).
+step 343 builtin : '<'(3, 5).
+step 344 builtin : '>='(4, 0).
+step 345 builtin : is(4, min(4, '-'(12, 4))).
+step 346 builtin : is(4, min(8, '-'(12, 8))).
+step 347 rule 4 [] : choose_step(12, 6, 6, 924, 924).
+step 348 builtin : '<'(2, 5).
+step 349 builtin : '<'(5, 6).
+step 350 builtin : is(5544, '*'(792, '-'(12, 5))).
+step 351 builtin : is(924, '//'(5544, 6)).
+step 352 builtin : '<'(1, 5).
+step 353 builtin : '<'(4, 6).
+step 354 builtin : '<'(0, 5).
+step 355 builtin : '<'(3, 6).
+step 356 builtin : '>='(5, 0).
+step 357 builtin : is(5, min(5, '-'(12, 5))).
+step 358 builtin : is(5, min(7, '-'(12, 7))).
+step 359 builtin : '<'(2, 6).
+step 360 builtin : '<'(1, 6).
+step 361 builtin : '<'(0, 6).
+step 362 builtin : '>='(6, 0).
+step 363 builtin : is(6, min(6, '-'(12, 6))).
+step 364 builtin : '=<'(0, 8).
+step 365 builtin : '=<'(1, 8).
+step 366 builtin : '=<'(2, 8).
+step 367 builtin : '=<'(3, 8).
+step 368 builtin : '=<'(4, 8).
+step 369 builtin : '=<'(5, 8).
+step 370 builtin : '=<'(6, 8).
+step 371 builtin : '=<'(7, 8).
+step 372 builtin : '=<'(8, 8).
+step 373 rule 4 [] : choose_step(10, 0, 0, 1, 1).
+step 374 builtin : '=<'(0, 10).
+step 375 builtin : is(0, min(0, '-'(10, 0))).
+step 376 rule 4 [] : choose_step(10, 1, 1, 10, 10).
+step 377 builtin : is(10, '*'(1, '-'(10, 0))).
+step 378 builtin : is(10, '//'(10, 1)).
+step 379 builtin : '=<'(1, 10).
+step 380 builtin : is(1, min(1, '-'(10, 1))).
+step 381 rule 4 [] : choose_step(10, 2, 2, 45, 45).
+step 382 builtin : is(90, '*'(10, '-'(10, 1))).
+step 383 builtin : is(45, '//'(90, 2)).
+step 384 rule 4 [] : choose_step(10, 3, 3, 120, 120).
+step 385 builtin : '=<'(8, 10).
+step 386 builtin : is(2, min(8, '-'(10, 8))).
+step 387 builtin : '=<'(2, 10).
+step 388 builtin : is(2, min(2, '-'(10, 2))).
+step 389 builtin : is(360, '*'(45, '-'(10, 2))).
+step 390 builtin : is(120, '//'(360, 3)).
+step 391 rule 4 [] : choose_step(10, 4, 4, 210, 210).
+step 392 builtin : is(840, '*'(120, '-'(10, 3))).
+step 393 builtin : is(210, '//'(840, 4)).
+step 394 builtin : '=<'(7, 10).
+step 395 builtin : is(3, min(7, '-'(10, 7))).
+step 396 builtin : '=<'(3, 10).
+step 397 builtin : is(3, min(3, '-'(10, 3))).
+step 398 rule 4 [] : choose_step(10, 5, 5, 252, 252).
+step 399 builtin : is(1260, '*'(210, '-'(10, 4))).
+step 400 builtin : is(252, '//'(1260, 5)).
+step 401 builtin : '=<'(6, 10).
+step 402 builtin : is(4, min(6, '-'(10, 6))).
+step 403 builtin : '=<'(4, 10).
+step 404 builtin : is(4, min(4, '-'(10, 4))).
+step 405 builtin : '=<'(5, 10).
+step 406 builtin : is(5, min(5, '-'(10, 5))).
+step 407 builtin : is(22, '+'(12, 10)).
 step 408 rule 4 [] : choose_step(0, 0, 0, 1, 1).
 step 409 builtin : '=<'(0, 0).
 step 410 builtin : is(0, min(0, '-'(0, 0))).
@@ -479,241 +479,241 @@ step 455 builtin : is(63, '-'(100, 37)).
 step 456 rule 5 [2,3,4,5,1] : choose_step(24, 7, 6, 134596, 346104).
 step 457 rule 5 [37,38,39,40,33] : choose_step(24, 12, 11, 2496144, 2704156).
 step 458 rule 5 [69,70,71,72,68] : choose_step(100, 50, 49, 98913082887808032681188722800, 100891344545564193334812497256).
-step 459 rule 5 [261,55,262,263,260] : choose_step(22, 8, 7, 170544, 319770).
-step 460 rule 1 [288] : between(0, 8, 0).
-step 461 rule 1 [289] : between(1, 8, 1).
-step 462 rule 1 [290] : between(2, 8, 2).
-step 463 rule 1 [291] : between(3, 8, 3).
-step 464 rule 1 [292] : between(4, 8, 4).
-step 465 rule 1 [293] : between(5, 8, 5).
-step 466 rule 1 [294] : between(6, 8, 6).
-step 467 rule 1 [295] : between(7, 8, 7).
-step 468 rule 1 [296] : between(8, 8, 8).
-step 469 rule 1 [299] : between(0, 12, 0).
-step 470 rule 3 [298,299,300,297] : choose(12, 0, 1).
-step 471 rule 5 [302,27,303,304,301] : choose_step(12, 1, 0, 1, 12).
-step 472 rule 1 [306] : between(1, 12, 1).
-step 473 rule 5 [309,23,310,311,308] : choose_step(12, 2, 1, 12, 66).
-step 474 rule 1 [315] : between(2, 12, 2).
-step 475 rule 5 [317,19,318,319,313] : choose_step(12, 3, 2, 66, 220).
-step 476 rule 5 [323,15,324,325,321] : choose_step(12, 4, 3, 220, 495).
-step 477 rule 1 [327] : between(3, 12, 3).
-step 478 rule 5 [332,11,333,334,330] : choose_step(12, 5, 4, 495, 792).
-step 479 rule 1 [338] : between(4, 12, 4).
-step 480 rule 1 [340] : between(8, 12, 8).
-step 481 rule 5 [344,7,345,346,342] : choose_step(12, 6, 5, 792, 924).
-step 482 rule 1 [352] : between(5, 12, 5).
-step 483 rule 1 [354] : between(7, 12, 7).
-step 484 rule 1 [360] : between(6, 12, 6).
-step 485 rule 3 [298,363,364,362] : choose(10, 0, 1).
-step 486 rule 5 [302,27,366,367,365] : choose_step(10, 1, 0, 1, 10).
-step 487 rule 5 [309,23,371,372,370] : choose_step(10, 2, 1, 10, 45).
-step 488 rule 5 [317,19,378,379,373] : choose_step(10, 3, 2, 45, 120).
-step 489 rule 5 [323,15,381,382,380] : choose_step(10, 4, 3, 120, 210).
-step 490 rule 5 [332,11,388,389,387] : choose_step(10, 5, 4, 210, 252).
-step 491 rule 1 [397] : between(9, 12, 9).
-step 492 rule 1 [398] : between(10, 12, 10).
-step 493 rule 1 [399] : between(11, 12, 11).
-step 494 rule 1 [400] : between(12, 12, 12).
-step 495 rule 3 [65,400,407,297] : choose(12, 12, 1).
-step 496 rule 3 [298,409,410,408] : choose(0, 0, 1).
+step 459 rule 1 [260] : between(0, 12, 0).
+step 460 rule 1 [261] : between(1, 12, 1).
+step 461 rule 1 [262] : between(2, 12, 2).
+step 462 rule 1 [263] : between(3, 12, 3).
+step 463 rule 1 [264] : between(4, 12, 4).
+step 464 rule 1 [265] : between(5, 12, 5).
+step 465 rule 1 [266] : between(6, 12, 6).
+step 466 rule 1 [267] : between(7, 12, 7).
+step 467 rule 1 [268] : between(8, 12, 8).
+step 468 rule 1 [269] : between(9, 12, 9).
+step 469 rule 1 [270] : between(10, 12, 10).
+step 470 rule 1 [271] : between(11, 12, 11).
+step 471 rule 1 [272] : between(12, 12, 12).
+step 472 rule 5 [274,55,275,276,273] : choose_step(22, 8, 7, 170544, 319770).
+step 473 rule 3 [302,260,303,301] : choose(12, 0, 1).
+step 474 rule 3 [65,272,304,301] : choose(12, 12, 1).
+step 475 rule 5 [306,27,307,308,305] : choose_step(12, 1, 0, 1, 12).
+step 476 rule 5 [314,23,315,316,313] : choose_step(12, 2, 1, 12, 66).
+step 477 rule 5 [323,19,324,325,318] : choose_step(12, 3, 2, 66, 220).
+step 478 rule 5 [329,15,330,331,327] : choose_step(12, 4, 3, 220, 495).
+step 479 rule 5 [339,11,340,341,337] : choose_step(12, 5, 4, 495, 792).
+step 480 rule 5 [349,7,350,351,347] : choose_step(12, 6, 5, 792, 924).
+step 481 rule 1 [364] : between(0, 8, 0).
+step 482 rule 1 [365] : between(1, 8, 1).
+step 483 rule 1 [366] : between(2, 8, 2).
+step 484 rule 1 [367] : between(3, 8, 3).
+step 485 rule 1 [368] : between(4, 8, 4).
+step 486 rule 1 [369] : between(5, 8, 5).
+step 487 rule 1 [370] : between(6, 8, 6).
+step 488 rule 1 [371] : between(7, 8, 7).
+step 489 rule 1 [372] : between(8, 8, 8).
+step 490 rule 3 [302,374,375,373] : choose(10, 0, 1).
+step 491 rule 5 [306,27,377,378,376] : choose_step(10, 1, 0, 1, 10).
+step 492 rule 5 [314,23,382,383,381] : choose_step(10, 2, 1, 10, 45).
+step 493 rule 5 [323,19,389,390,384] : choose_step(10, 3, 2, 45, 120).
+step 494 rule 5 [329,15,392,393,391] : choose_step(10, 4, 3, 120, 210).
+step 495 rule 5 [339,11,399,400,398] : choose_step(10, 5, 4, 210, 252).
+step 496 rule 3 [302,409,410,408] : choose(0, 0, 1).
 step 497 rule 5 [412,122,123,124,411] : choose_step(100, 37, 36, 1977204582144932989443770175, 3420029547493938143902737600).
 step 498 rule 5 [6,7,8,9,456] : choose_step(24, 7, 5, 42504, 346104).
 step 499 rule 5 [42,43,44,45,457] : choose_step(24, 12, 10, 1961256, 2704156).
 step 500 rule 5 [73,74,75,76,458] : choose_step(100, 50, 48, 93206558875049876949581681100, 100891344545564193334812497256).
-step 501 rule 5 [264,3,265,266,459] : choose_step(22, 8, 6, 74613, 319770).
-step 502 rule 2 [282,27,461] : between(0, 8, 1).
-step 503 rule 2 [279,23,462] : between(1, 8, 2).
-step 504 rule 2 [276,19,463] : between(2, 8, 3).
-step 505 rule 2 [273,15,464] : between(3, 8, 4).
-step 506 rule 2 [270,11,465] : between(4, 8, 5).
-step 507 rule 2 [267,7,466] : between(5, 8, 6).
-step 508 rule 2 [264,3,467] : between(6, 8, 7).
-step 509 rule 2 [261,55,468] : between(7, 8, 8).
-step 510 rule 3 [305,306,307,471] : choose(12, 1, 12).
-step 511 rule 3 [405,399,406,471] : choose(12, 11, 12).
-step 512 rule 2 [64,27,472] : between(0, 12, 1).
-step 513 rule 5 [312,27,303,304,473] : choose_step(12, 2, 0, 1, 66).
-step 514 rule 2 [63,23,474] : between(1, 12, 2).
-step 515 rule 5 [320,23,310,311,475] : choose_step(12, 3, 1, 12, 220).
-step 516 rule 5 [329,19,318,319,476] : choose_step(12, 4, 2, 66, 495).
-step 517 rule 2 [62,19,477] : between(2, 12, 3).
-step 518 rule 5 [336,15,324,325,478] : choose_step(12, 5, 3, 220, 792).
-step 519 rule 2 [61,15,479] : between(3, 12, 4).
-step 520 rule 2 [54,55,480] : between(7, 12, 8).
-step 521 rule 5 [348,11,333,334,481] : choose_step(12, 6, 4, 495, 924).
-step 522 rule 2 [60,11,482] : between(4, 12, 5).
-step 523 rule 2 [58,3,483] : between(6, 12, 7).
-step 524 rule 2 [59,7,484] : between(5, 12, 6).
-step 525 rule 3 [305,368,369,486] : choose(10, 1, 10).
-step 526 rule 5 [312,27,366,367,487] : choose_step(10, 2, 0, 1, 45).
-step 527 rule 5 [320,23,371,372,488] : choose_step(10, 3, 1, 10, 120).
-step 528 rule 5 [329,19,378,379,489] : choose_step(10, 4, 2, 45, 210).
-step 529 rule 5 [336,15,381,382,490] : choose_step(10, 5, 3, 120, 252).
-step 530 rule 2 [50,51,491] : between(8, 12, 9).
-step 531 rule 2 [46,47,492] : between(9, 12, 10).
-step 532 rule 2 [42,43,493] : between(10, 12, 11).
-step 533 rule 2 [37,38,494] : between(11, 12, 12).
+step 501 rule 2 [64,27,460] : between(0, 12, 1).
+step 502 rule 2 [63,23,461] : between(1, 12, 2).
+step 503 rule 2 [62,19,462] : between(2, 12, 3).
+step 504 rule 2 [61,15,463] : between(3, 12, 4).
+step 505 rule 2 [60,11,464] : between(4, 12, 5).
+step 506 rule 2 [59,7,465] : between(5, 12, 6).
+step 507 rule 2 [58,3,466] : between(6, 12, 7).
+step 508 rule 2 [54,55,467] : between(7, 12, 8).
+step 509 rule 2 [50,51,468] : between(8, 12, 9).
+step 510 rule 2 [46,47,469] : between(9, 12, 10).
+step 511 rule 2 [42,43,470] : between(10, 12, 11).
+step 512 rule 2 [37,38,471] : between(11, 12, 12).
+step 513 rule 5 [277,3,278,279,472] : choose_step(22, 8, 6, 74613, 319770).
+step 514 rule 3 [309,261,310,475] : choose(12, 1, 12).
+step 515 rule 3 [311,271,312,475] : choose(12, 11, 12).
+step 516 rule 5 [317,27,307,308,476] : choose_step(12, 2, 0, 1, 66).
+step 517 rule 5 [326,23,315,316,477] : choose_step(12, 3, 1, 12, 220).
+step 518 rule 5 [336,19,324,325,478] : choose_step(12, 4, 2, 66, 495).
+step 519 rule 5 [343,15,330,331,479] : choose_step(12, 5, 3, 220, 792).
+step 520 rule 5 [353,11,340,341,480] : choose_step(12, 6, 4, 495, 924).
+step 521 rule 2 [295,27,482] : between(0, 8, 1).
+step 522 rule 2 [292,23,483] : between(1, 8, 2).
+step 523 rule 2 [289,19,484] : between(2, 8, 3).
+step 524 rule 2 [286,15,485] : between(3, 8, 4).
+step 525 rule 2 [283,11,486] : between(4, 8, 5).
+step 526 rule 2 [280,7,487] : between(5, 8, 6).
+step 527 rule 2 [277,3,488] : between(6, 8, 7).
+step 528 rule 2 [274,55,489] : between(7, 8, 8).
+step 529 rule 3 [309,379,380,491] : choose(10, 1, 10).
+step 530 rule 5 [317,27,377,378,492] : choose_step(10, 2, 0, 1, 45).
+step 531 rule 5 [326,23,382,383,493] : choose_step(10, 3, 1, 10, 120).
+step 532 rule 5 [336,19,389,390,494] : choose_step(10, 4, 2, 45, 210).
+step 533 rule 5 [343,15,392,393,495] : choose_step(10, 5, 3, 120, 252).
 step 534 rule 5 [413,126,127,128,497] : choose_step(100, 37, 35, 1095067153187962886461165020, 3420029547493938143902737600).
 step 535 rule 5 [10,11,12,13,498] : choose_step(24, 7, 4, 10626, 346104).
 step 536 rule 5 [46,47,48,49,499] : choose_step(24, 12, 9, 1307504, 2704156).
 step 537 rule 5 [77,78,79,80,500] : choose_step(100, 50, 47, 84413487283064039501507937600, 100891344545564193334812497256).
-step 538 rule 5 [267,7,268,269,501] : choose_step(22, 8, 5, 26334, 319770).
-step 539 rule 2 [282,27,503] : between(0, 8, 2).
-step 540 rule 2 [279,23,504] : between(1, 8, 3).
-step 541 rule 2 [276,19,505] : between(2, 8, 4).
-step 542 rule 2 [273,15,506] : between(3, 8, 5).
-step 543 rule 2 [270,11,507] : between(4, 8, 6).
-step 544 rule 2 [267,7,508] : between(5, 8, 7).
-step 545 rule 2 [264,3,509] : between(6, 8, 8).
-step 546 rule 3 [314,315,316,513] : choose(12, 2, 66).
-step 547 rule 3 [403,398,404,513] : choose(12, 10, 66).
-step 548 rule 2 [64,27,514] : between(0, 12, 2).
-step 549 rule 5 [322,27,303,304,515] : choose_step(12, 3, 0, 1, 220).
-step 550 rule 5 [331,23,310,311,516] : choose_step(12, 4, 1, 12, 495).
-step 551 rule 2 [63,23,517] : between(1, 12, 3).
-step 552 rule 5 [343,19,318,319,518] : choose_step(12, 5, 2, 66, 792).
-step 553 rule 2 [62,19,519] : between(2, 12, 4).
-step 554 rule 2 [58,3,520] : between(6, 12, 8).
-step 555 rule 5 [350,15,324,325,521] : choose_step(12, 6, 3, 220, 924).
-step 556 rule 2 [61,15,522] : between(3, 12, 5).
-step 557 rule 2 [59,7,523] : between(5, 12, 7).
-step 558 rule 2 [60,11,524] : between(4, 12, 6).
-step 559 rule 3 [285,374,375,526] : choose(10, 8, 45).
-step 560 rule 3 [314,376,377,526] : choose(10, 2, 45).
-step 561 rule 5 [322,27,366,367,527] : choose_step(10, 3, 0, 1, 120).
-step 562 rule 5 [331,23,371,372,528] : choose_step(10, 4, 1, 10, 210).
-step 563 rule 5 [343,19,378,379,529] : choose_step(10, 5, 2, 45, 252).
-step 564 rule 2 [54,55,530] : between(7, 12, 9).
-step 565 rule 2 [50,51,531] : between(8, 12, 10).
-step 566 rule 2 [46,47,532] : between(9, 12, 11).
-step 567 rule 2 [42,43,533] : between(10, 12, 12).
+step 538 rule 2 [64,27,502] : between(0, 12, 2).
+step 539 rule 2 [63,23,503] : between(1, 12, 3).
+step 540 rule 2 [62,19,504] : between(2, 12, 4).
+step 541 rule 2 [61,15,505] : between(3, 12, 5).
+step 542 rule 2 [60,11,506] : between(4, 12, 6).
+step 543 rule 2 [59,7,507] : between(5, 12, 7).
+step 544 rule 2 [58,3,508] : between(6, 12, 8).
+step 545 rule 2 [54,55,509] : between(7, 12, 9).
+step 546 rule 2 [50,51,510] : between(8, 12, 10).
+step 547 rule 2 [46,47,511] : between(9, 12, 11).
+step 548 rule 2 [42,43,512] : between(10, 12, 12).
+step 549 rule 5 [280,7,281,282,513] : choose_step(22, 8, 5, 26334, 319770).
+step 550 rule 3 [319,262,320,516] : choose(12, 2, 66).
+step 551 rule 3 [321,270,322,516] : choose(12, 10, 66).
+step 552 rule 5 [328,27,307,308,517] : choose_step(12, 3, 0, 1, 220).
+step 553 rule 5 [338,23,315,316,518] : choose_step(12, 4, 1, 12, 495).
+step 554 rule 5 [348,19,324,325,519] : choose_step(12, 5, 2, 66, 792).
+step 555 rule 5 [355,15,330,331,520] : choose_step(12, 6, 3, 220, 924).
+step 556 rule 2 [295,27,522] : between(0, 8, 2).
+step 557 rule 2 [292,23,523] : between(1, 8, 3).
+step 558 rule 2 [289,19,524] : between(2, 8, 4).
+step 559 rule 2 [286,15,525] : between(3, 8, 5).
+step 560 rule 2 [283,11,526] : between(4, 8, 6).
+step 561 rule 2 [280,7,527] : between(5, 8, 7).
+step 562 rule 2 [277,3,528] : between(6, 8, 8).
+step 563 rule 3 [298,385,386,530] : choose(10, 8, 45).
+step 564 rule 3 [319,387,388,530] : choose(10, 2, 45).
+step 565 rule 5 [328,27,377,378,531] : choose_step(10, 3, 0, 1, 120).
+step 566 rule 5 [338,23,382,383,532] : choose_step(10, 4, 1, 10, 210).
+step 567 rule 5 [348,19,389,390,533] : choose_step(10, 5, 2, 45, 252).
 step 568 rule 5 [414,130,131,132,534] : choose_step(100, 37, 34, 580717429720889409486981450, 3420029547493938143902737600).
 step 569 rule 5 [14,15,16,17,535] : choose_step(24, 7, 3, 2024, 346104).
 step 570 rule 5 [50,51,52,53,536] : choose_step(24, 12, 8, 735471, 2704156).
 step 571 rule 5 [81,82,83,84,537] : choose_step(100, 50, 46, 73470998190814997343905056800, 100891344545564193334812497256).
-step 572 rule 5 [270,11,271,272,538] : choose_step(22, 8, 4, 7315, 319770).
-step 573 rule 2 [282,27,540] : between(0, 8, 3).
-step 574 rule 2 [279,23,541] : between(1, 8, 4).
-step 575 rule 2 [276,19,542] : between(2, 8, 5).
-step 576 rule 2 [273,15,543] : between(3, 8, 6).
-step 577 rule 2 [270,11,544] : between(4, 8, 7).
-step 578 rule 2 [267,7,545] : between(5, 8, 8).
-step 579 rule 3 [326,327,328,549] : choose(12, 3, 220).
-step 580 rule 3 [401,397,402,549] : choose(12, 9, 220).
-step 581 rule 5 [335,27,303,304,550] : choose_step(12, 4, 0, 1, 495).
-step 582 rule 2 [64,27,551] : between(0, 12, 3).
-step 583 rule 5 [347,23,310,311,552] : choose_step(12, 5, 1, 12, 792).
-step 584 rule 2 [63,23,553] : between(1, 12, 4).
-step 585 rule 2 [59,7,554] : between(5, 12, 8).
-step 586 rule 5 [356,19,318,319,555] : choose_step(12, 6, 2, 66, 924).
-step 587 rule 2 [62,19,556] : between(2, 12, 5).
-step 588 rule 2 [60,11,557] : between(4, 12, 7).
-step 589 rule 2 [61,15,558] : between(3, 12, 6).
-step 590 rule 3 [30,383,384,561] : choose(10, 7, 120).
-step 591 rule 3 [326,385,386,561] : choose(10, 3, 120).
-step 592 rule 5 [335,27,366,367,562] : choose_step(10, 4, 0, 1, 210).
-step 593 rule 5 [347,23,371,372,563] : choose_step(10, 5, 1, 10, 252).
-step 594 rule 2 [58,3,564] : between(6, 12, 9).
-step 595 rule 2 [54,55,565] : between(7, 12, 10).
-step 596 rule 2 [50,51,566] : between(8, 12, 11).
-step 597 rule 2 [46,47,567] : between(9, 12, 12).
+step 572 rule 2 [64,27,539] : between(0, 12, 3).
+step 573 rule 2 [63,23,540] : between(1, 12, 4).
+step 574 rule 2 [62,19,541] : between(2, 12, 5).
+step 575 rule 2 [61,15,542] : between(3, 12, 6).
+step 576 rule 2 [60,11,543] : between(4, 12, 7).
+step 577 rule 2 [59,7,544] : between(5, 12, 8).
+step 578 rule 2 [58,3,545] : between(6, 12, 9).
+step 579 rule 2 [54,55,546] : between(7, 12, 10).
+step 580 rule 2 [50,51,547] : between(8, 12, 11).
+step 581 rule 2 [46,47,548] : between(9, 12, 12).
+step 582 rule 5 [283,11,284,285,549] : choose_step(22, 8, 4, 7315, 319770).
+step 583 rule 3 [332,263,333,552] : choose(12, 3, 220).
+step 584 rule 3 [334,269,335,552] : choose(12, 9, 220).
+step 585 rule 5 [342,27,307,308,553] : choose_step(12, 4, 0, 1, 495).
+step 586 rule 5 [352,23,315,316,554] : choose_step(12, 5, 1, 12, 792).
+step 587 rule 5 [359,19,324,325,555] : choose_step(12, 6, 2, 66, 924).
+step 588 rule 2 [295,27,557] : between(0, 8, 3).
+step 589 rule 2 [292,23,558] : between(1, 8, 4).
+step 590 rule 2 [289,19,559] : between(2, 8, 5).
+step 591 rule 2 [286,15,560] : between(3, 8, 6).
+step 592 rule 2 [283,11,561] : between(4, 8, 7).
+step 593 rule 2 [280,7,562] : between(5, 8, 8).
+step 594 rule 3 [30,394,395,565] : choose(10, 7, 120).
+step 595 rule 3 [332,396,397,565] : choose(10, 3, 120).
+step 596 rule 5 [342,27,377,378,566] : choose_step(10, 4, 0, 1, 210).
+step 597 rule 5 [352,23,382,383,567] : choose_step(10, 5, 1, 10, 252).
 step 598 rule 5 [415,134,135,136,568] : choose_step(100, 37, 33, 294692427022540894366527900, 3420029547493938143902737600).
 step 599 rule 5 [18,19,20,21,569] : choose_step(24, 7, 2, 276, 346104).
 step 600 rule 5 [54,55,56,57,570] : choose_step(24, 12, 7, 346104, 2704156).
 step 601 rule 5 [85,86,87,88,571] : choose_step(100, 50, 45, 61448471214136179596720592960, 100891344545564193334812497256).
-step 602 rule 5 [273,15,274,275,572] : choose_step(22, 8, 3, 1540, 319770).
-step 603 rule 2 [282,27,574] : between(0, 8, 4).
-step 604 rule 2 [279,23,575] : between(1, 8, 5).
-step 605 rule 2 [276,19,576] : between(2, 8, 6).
-step 606 rule 2 [273,15,577] : between(3, 8, 7).
-step 607 rule 2 [270,11,578] : between(4, 8, 8).
-step 608 rule 3 [337,338,339,581] : choose(12, 4, 495).
-step 609 rule 3 [285,340,341,581] : choose(12, 8, 495).
-step 610 rule 5 [349,27,303,304,583] : choose_step(12, 5, 0, 1, 792).
-step 611 rule 2 [64,27,584] : between(0, 12, 4).
-step 612 rule 2 [60,11,585] : between(4, 12, 8).
-step 613 rule 5 [357,23,310,311,586] : choose_step(12, 6, 1, 12, 924).
-step 614 rule 2 [63,23,587] : between(1, 12, 5).
-step 615 rule 2 [61,15,588] : between(3, 12, 7).
-step 616 rule 2 [62,19,589] : between(2, 12, 6).
-step 617 rule 3 [359,390,391,592] : choose(10, 6, 210).
-step 618 rule 3 [337,392,393,592] : choose(10, 4, 210).
-step 619 rule 5 [349,27,366,367,593] : choose_step(10, 5, 0, 1, 252).
-step 620 rule 2 [59,7,594] : between(5, 12, 9).
-step 621 rule 2 [58,3,595] : between(6, 12, 10).
-step 622 rule 2 [54,55,596] : between(7, 12, 11).
-step 623 rule 2 [50,51,597] : between(8, 12, 12).
+step 602 rule 2 [64,27,573] : between(0, 12, 4).
+step 603 rule 2 [63,23,574] : between(1, 12, 5).
+step 604 rule 2 [62,19,575] : between(2, 12, 6).
+step 605 rule 2 [61,15,576] : between(3, 12, 7).
+step 606 rule 2 [60,11,577] : between(4, 12, 8).
+step 607 rule 2 [59,7,578] : between(5, 12, 9).
+step 608 rule 2 [58,3,579] : between(6, 12, 10).
+step 609 rule 2 [54,55,580] : between(7, 12, 11).
+step 610 rule 2 [50,51,581] : between(8, 12, 12).
+step 611 rule 5 [286,15,287,288,582] : choose_step(22, 8, 3, 1540, 319770).
+step 612 rule 3 [344,264,345,585] : choose(12, 4, 495).
+step 613 rule 3 [298,268,346,585] : choose(12, 8, 495).
+step 614 rule 5 [354,27,307,308,586] : choose_step(12, 5, 0, 1, 792).
+step 615 rule 5 [360,23,315,316,587] : choose_step(12, 6, 1, 12, 924).
+step 616 rule 2 [295,27,589] : between(0, 8, 4).
+step 617 rule 2 [292,23,590] : between(1, 8, 5).
+step 618 rule 2 [289,19,591] : between(2, 8, 6).
+step 619 rule 2 [286,15,592] : between(3, 8, 7).
+step 620 rule 2 [283,11,593] : between(4, 8, 8).
+step 621 rule 3 [362,401,402,596] : choose(10, 6, 210).
+step 622 rule 3 [344,403,404,596] : choose(10, 4, 210).
+step 623 rule 5 [354,27,377,378,597] : choose_step(10, 5, 0, 1, 252).
 step 624 rule 5 [416,138,139,140,598] : choose_step(100, 37, 32, 143012501349174257560226775, 3420029547493938143902737600).
 step 625 rule 5 [22,23,24,25,599] : choose_step(24, 7, 1, 24, 346104).
 step 626 rule 5 [58,3,4,5,600] : choose_step(24, 12, 6, 134596, 2704156).
 step 627 rule 5 [89,90,91,92,601] : choose_step(100, 50, 44, 49378235797073715747364762200, 100891344545564193334812497256).
-step 628 rule 5 [276,19,277,278,602] : choose_step(22, 8, 2, 231, 319770).
-step 629 rule 2 [282,27,604] : between(0, 8, 5).
-step 630 rule 2 [279,23,605] : between(1, 8, 6).
-step 631 rule 2 [276,19,606] : between(2, 8, 7).
-step 632 rule 2 [273,15,607] : between(3, 8, 8).
-step 633 rule 3 [351,352,353,610] : choose(12, 5, 792).
-step 634 rule 3 [30,354,355,610] : choose(12, 7, 792).
-step 635 rule 2 [61,15,612] : between(3, 12, 8).
-step 636 rule 5 [358,27,303,304,613] : choose_step(12, 6, 0, 1, 924).
-step 637 rule 2 [64,27,614] : between(0, 12, 5).
-step 638 rule 2 [62,19,615] : between(2, 12, 7).
-step 639 rule 2 [63,23,616] : between(1, 12, 6).
-step 640 rule 3 [351,394,395,619] : choose(10, 5, 252).
-step 641 rule 2 [60,11,620] : between(4, 12, 9).
-step 642 rule 2 [59,7,621] : between(5, 12, 10).
-step 643 rule 2 [58,3,622] : between(6, 12, 11).
-step 644 rule 2 [54,55,623] : between(7, 12, 12).
+step 628 rule 2 [64,27,603] : between(0, 12, 5).
+step 629 rule 2 [63,23,604] : between(1, 12, 6).
+step 630 rule 2 [62,19,605] : between(2, 12, 7).
+step 631 rule 2 [61,15,606] : between(3, 12, 8).
+step 632 rule 2 [60,11,607] : between(4, 12, 9).
+step 633 rule 2 [59,7,608] : between(5, 12, 10).
+step 634 rule 2 [58,3,609] : between(6, 12, 11).
+step 635 rule 2 [54,55,610] : between(7, 12, 12).
+step 636 rule 5 [289,19,290,291,611] : choose_step(22, 8, 2, 231, 319770).
+step 637 rule 3 [356,265,357,614] : choose(12, 5, 792).
+step 638 rule 3 [30,267,358,614] : choose(12, 7, 792).
+step 639 rule 5 [361,27,307,308,615] : choose_step(12, 6, 0, 1, 924).
+step 640 rule 2 [295,27,617] : between(0, 8, 5).
+step 641 rule 2 [292,23,618] : between(1, 8, 6).
+step 642 rule 2 [289,19,619] : between(2, 8, 7).
+step 643 rule 2 [286,15,620] : between(3, 8, 8).
+step 644 rule 3 [356,405,406,623] : choose(10, 5, 252).
 step 645 rule 5 [417,142,143,144,624] : choose_step(100, 37, 31, 66324638306863423796047200, 3420029547493938143902737600).
 step 646 rule 5 [26,27,28,29,625] : choose_step(24, 7, 0, 1, 346104).
 step 647 rule 5 [59,7,8,9,626] : choose_step(24, 12, 5, 42504, 2704156).
 step 648 rule 5 [93,94,95,96,627] : choose_step(100, 50, 43, 38116532895986727945334202400, 100891344545564193334812497256).
-step 649 rule 5 [279,23,280,281,628] : choose_step(22, 8, 1, 22, 319770).
-step 650 rule 2 [282,27,630] : between(0, 8, 6).
-step 651 rule 2 [279,23,631] : between(1, 8, 7).
-step 652 rule 2 [276,19,632] : between(2, 8, 8).
-step 653 rule 2 [62,19,635] : between(2, 12, 8).
-step 654 rule 3 [359,360,361,636] : choose(12, 6, 924).
-step 655 rule 2 [63,23,638] : between(1, 12, 7).
-step 656 rule 2 [64,27,639] : between(0, 12, 6).
-step 657 rule 2 [61,15,641] : between(3, 12, 9).
-step 658 rule 2 [60,11,642] : between(4, 12, 10).
-step 659 rule 2 [59,7,643] : between(5, 12, 11).
-step 660 rule 2 [58,3,644] : between(6, 12, 12).
+step 649 rule 2 [64,27,629] : between(0, 12, 6).
+step 650 rule 2 [63,23,630] : between(1, 12, 7).
+step 651 rule 2 [62,19,631] : between(2, 12, 8).
+step 652 rule 2 [61,15,632] : between(3, 12, 9).
+step 653 rule 2 [60,11,633] : between(4, 12, 10).
+step 654 rule 2 [59,7,634] : between(5, 12, 11).
+step 655 rule 2 [58,3,635] : between(6, 12, 12).
+step 656 rule 5 [292,23,293,294,636] : choose_step(22, 8, 1, 22, 319770).
+step 657 rule 3 [362,266,363,639] : choose(12, 6, 924).
+step 658 rule 2 [295,27,641] : between(0, 8, 6).
+step 659 rule 2 [292,23,642] : between(1, 8, 7).
+step 660 rule 2 [289,19,643] : between(2, 8, 8).
 step 661 rule 5 [418,146,147,148,645] : choose_step(100, 37, 30, 29372339821610944823963760, 3420029547493938143902737600).
 step 662 rule 3 [30,31,32,646] : choose(24, 7, 346104).
 step 663 rule 3 [34,35,36,646] : choose(24, 17, 346104).
 step 664 rule 5 [60,11,12,13,647] : choose_step(24, 12, 4, 10626, 2704156).
 step 665 rule 5 [97,98,99,100,648] : choose_step(100, 50, 42, 28258808871162574166368460400, 100891344545564193334812497256).
-step 666 rule 5 [282,27,283,284,649] : choose_step(22, 8, 0, 1, 319770).
-step 667 rule 2 [282,27,651] : between(0, 8, 7).
-step 668 rule 2 [279,23,652] : between(1, 8, 8).
-step 669 rule 2 [63,23,653] : between(1, 12, 8).
-step 670 rule 2 [64,27,655] : between(0, 12, 7).
-step 671 rule 2 [62,19,657] : between(2, 12, 9).
-step 672 rule 2 [61,15,658] : between(3, 12, 10).
-step 673 rule 2 [60,11,659] : between(4, 12, 11).
-step 674 rule 2 [59,7,660] : between(5, 12, 12).
+step 666 rule 2 [64,27,650] : between(0, 12, 7).
+step 667 rule 2 [63,23,651] : between(1, 12, 8).
+step 668 rule 2 [62,19,652] : between(2, 12, 9).
+step 669 rule 2 [61,15,653] : between(3, 12, 10).
+step 670 rule 2 [60,11,654] : between(4, 12, 11).
+step 671 rule 2 [59,7,655] : between(5, 12, 12).
+step 672 rule 5 [295,27,296,297,656] : choose_step(22, 8, 0, 1, 319770).
+step 673 rule 2 [295,27,659] : between(0, 8, 7).
+step 674 rule 2 [292,23,660] : between(1, 8, 8).
 step 675 rule 5 [419,150,151,152,661] : choose_step(100, 37, 29, 12410847811948286545336800, 3420029547493938143902737600).
 step 676 rule 6 [662,41,663] : symmetric(24, 7).
 step 677 rule 5 [61,15,16,17,664] : choose_step(24, 12, 3, 2024, 2704156).
 step 678 rule 5 [101,102,103,104,665] : choose_step(100, 50, 41, 20116440213369968050635175200, 100891344545564193334812497256).
-step 679 rule 3 [285,286,287,666] : choose(22, 8, 319770).
-step 680 rule 2 [282,27,668] : between(0, 8, 8).
-step 681 rule 2 [64,27,669] : between(0, 12, 8).
-step 682 rule 2 [63,23,671] : between(1, 12, 9).
-step 683 rule 2 [62,19,672] : between(2, 12, 10).
-step 684 rule 2 [61,15,673] : between(3, 12, 11).
-step 685 rule 2 [60,11,674] : between(4, 12, 12).
+step 679 rule 2 [64,27,667] : between(0, 12, 8).
+step 680 rule 2 [63,23,668] : between(1, 12, 9).
+step 681 rule 2 [62,19,669] : between(2, 12, 10).
+step 682 rule 2 [61,15,670] : between(3, 12, 11).
+step 683 rule 2 [60,11,671] : between(4, 12, 12).
+step 684 rule 3 [298,299,300,672] : choose(22, 8, 319770).
+step 685 rule 2 [295,27,674] : between(0, 8, 8).
 step 686 rule 5 [420,154,155,156,675] : choose_step(100, 37, 28, 4998813702034726525205100, 3420029547493938143902737600).
 step 687 rule 11 [676] : binomial_answer(symmetry_24_7, true).
 step 688 rule 5 [62,19,20,21,677] : choose_step(24, 12, 2, 276, 2704156).
 step 689 rule 5 [105,106,107,108,678] : choose_step(100, 50, 40, 13746234145802811501267369720, 100891344545564193334812497256).
-step 690 rule 2 [64,27,682] : between(0, 12, 9).
-step 691 rule 2 [63,23,683] : between(1, 12, 10).
-step 692 rule 2 [62,19,684] : between(2, 12, 11).
-step 693 rule 2 [61,15,685] : between(3, 12, 12).
+step 690 rule 2 [64,27,680] : between(0, 12, 9).
+step 691 rule 2 [63,23,681] : between(1, 12, 10).
+step 692 rule 2 [62,19,682] : between(2, 12, 11).
+step 693 rule 2 [61,15,683] : between(3, 12, 12).
 step 694 rule 5 [421,158,159,160,686] : choose_step(100, 37, 27, 1917353200780443050763600, 3420029547493938143902737600).
 step 695 rule 5 [63,23,24,25,688] : choose_step(24, 12, 1, 24, 2704156).
 step 696 rule 5 [109,110,111,112,689] : choose_step(100, 50, 39, 9013924030034630492634340800, 100891344545564193334812497256).
@@ -799,8 +799,8 @@ step 775 rule 3 [257,258,259,774] : choose(100, 50, 1008913445455641933348124972
 step 776 rule 10 [775] : binomial_answer(choose_100_50, 100891344545564193334812497256).
 step 777 aggregate r7 1 1 : '$aggregate:r7:1'([binding('M', 10), binding('N', 12), binding('R', 8), binding('Sum', 319770)], 319770).
 step 778 rule 7 [777] : vandermonde_sum(12, 10, 8, 319770).
-step 779 rule 8 [396,679,778] : vandermonde(12, 10, 8, 319770).
-boundary 1 level 0 [1,33,68,260,297,301,308,313,321,330,342,362,365,370,373,380,387,408,411,456,457,458,459,460,461,462,463,464,465,466,467,468,469,470,471,472,473,474,475,476,477,478,479,480,481,482,483,484,485,486,487,488,489,490,491,492,493,494,495,496,497,498,499,500,501,502,503,504,505,506,507,508,509,510,511,512,513,514,515,516,517,518,519,520,521,522,523,524,525,526,527,528,529,530,531,532,533,534,535,536,537,538,539,540,541,542,543,544,545,546,547,548,549,550,551,552,553,554,555,556,557,558,559,560,561,562,563,564,565,566,567,568,569,570,571,572,573,574,575,576,577,578,579,580,581,582,583,584,585,586,587,588,589,590,591,592,593,594,595,596,597,598,599,600,601,602,603,604,605,606,607,608,609,610,611,612,613,614,615,616,617,618,619,620,621,622,623,624,625,626,627,628,629,630,631,632,633,634,635,636,637,638,639,640,641,642,643,644,645,646,647,648,649,650,651,652,653,654,655,656,657,658,659,660,661,662,663,664,665,666,667,668,669,670,671,672,673,674,675,676,677,678,679,680,681,682,683,684,685,686,687,688,689,690,691,692,693,694,695,696,697,698,699,700,701,702,703,704,705,706,707,708,709,710,711,712,713,714,715,716,717,718,719,720,721,722,723,724,725,726,727,728,729,730,731,732,733,734,735,736,737,738,739,740,741,742,743,744,745,746,747,748,749,750,751,752,753,754,755,756,757,758,759,760,761,762,763,764,765,766,767,768,769,770,771,772,773,774,775,776]
+step 779 rule 8 [407,684,778] : vandermonde(12, 10, 8, 319770).
+boundary 1 level 0 [1,33,68,273,301,305,313,318,327,337,347,373,376,381,384,391,398,408,411,456,457,458,459,460,461,462,463,464,465,466,467,468,469,470,471,472,473,474,475,476,477,478,479,480,481,482,483,484,485,486,487,488,489,490,491,492,493,494,495,496,497,498,499,500,501,502,503,504,505,506,507,508,509,510,511,512,513,514,515,516,517,518,519,520,521,522,523,524,525,526,527,528,529,530,531,532,533,534,535,536,537,538,539,540,541,542,543,544,545,546,547,548,549,550,551,552,553,554,555,556,557,558,559,560,561,562,563,564,565,566,567,568,569,570,571,572,573,574,575,576,577,578,579,580,581,582,583,584,585,586,587,588,589,590,591,592,593,594,595,596,597,598,599,600,601,602,603,604,605,606,607,608,609,610,611,612,613,614,615,616,617,618,619,620,621,622,623,624,625,626,627,628,629,630,631,632,633,634,635,636,637,638,639,640,641,642,643,644,645,646,647,648,649,650,651,652,653,654,655,656,657,658,659,660,661,662,663,664,665,666,667,668,669,670,671,672,673,674,675,676,677,678,679,680,681,682,683,684,685,686,687,688,689,690,691,692,693,694,695,696,697,698,699,700,701,702,703,704,705,706,707,708,709,710,711,712,713,714,715,716,717,718,719,720,721,722,723,724,725,726,727,728,729,730,731,732,733,734,735,736,737,738,739,740,741,742,743,744,745,746,747,748,749,750,751,752,753,754,755,756,757,758,759,760,761,762,763,764,765,766,767,768,769,770,771,772,773,774,775,776]
 demand 1 : between(0, 12, _WheyeCall0).
 demand 1 : between(0, 8, _WheyeCall0).
 demand 1 : between(1, 12, _WheyeCall0).

@@ -1,6 +1,6 @@
 use crate::engine::{instantiate, match_goal, Bindings};
 use crate::language::{bound_after, plan, Plan};
-use crate::semantics::{aggregate, bind, builtin, model_solutions, witness, Budget};
+use crate::semantics::{aggregate, bind, builtin, witness, Budget};
 use crate::{parse_atom, Atom, Error, Goal, Literal, Program, Run, Term, Value};
 use std::collections::{BTreeSet, HashMap, HashSet};
 use std::fmt;
@@ -108,25 +108,60 @@ pub(crate) fn witness_goal(program: &Program, owner: Owner, position: usize) -> 
         terms,
     })
 }
-fn aggregate_names(program: &Program, owner: Owner, position: usize) -> BTreeSet<String> {
+pub(crate) fn witness_context(goal: &Goal, bindings: &Bindings) -> Option<Bindings> {
+    goal.terms[..goal.terms.len().checked_sub(1)?]
+        .iter()
+        .map(|term| {
+            let Term::Variable(name) = term else {
+                return None;
+            };
+            crate::semantics::value(term, bindings).map(|value| (name.clone(), value))
+        })
+        .collect()
+}
+fn aggregate_names(
+    program: &Program,
+    plan: &Plan,
+    owner: Owner,
+    position: usize,
+) -> BTreeSet<String> {
     let mut names: BTreeSet<_> = body(program, owner).unwrap()[..position - 1]
         .iter()
         .flat_map(Literal::variables)
         .collect();
     if let Owner::Rule(n) = owner {
-        names.extend(program.rules[n - 1].head.variables());
+        if !plan.range_restricted[n - 1] {
+            names.extend(program.rules[n - 1].head.variables());
+        }
     }
     names
 }
+pub(crate) fn aggregate_context(
+    program: &Program,
+    plan: &Plan,
+    owner: Owner,
+    position: usize,
+    bindings: &Bindings,
+) -> Bindings {
+    aggregate_names(program, plan, owner, position)
+        .into_iter()
+        .filter_map(|name| {
+            crate::semantics::value(&Term::Variable(name.clone()), bindings)
+                .map(|value| (name, value))
+        })
+        .collect()
+}
+
 pub(crate) fn aggregate_atom(
     program: &Program,
+    plan: &Plan,
     owner: Owner,
     position: usize,
     outer: &Bindings,
     result: Value,
 ) -> Atom {
     let mut groups = Vec::new();
-    for name in aggregate_names(program, owner, position) {
+    for name in aggregate_names(program, plan, owner, position) {
         if let Some(value) = crate::semantics::value(&Term::Variable(name.clone()), outer) {
             groups.push(Value::Compound(
                 "binding".into(),
@@ -144,6 +179,7 @@ pub(crate) fn aggregate_atom(
 }
 fn aggregate_bindings(
     program: &Program,
+    plan: &Plan,
     owner: Owner,
     position: usize,
     atom: &Atom,
@@ -151,7 +187,7 @@ fn aggregate_bindings(
     if atom.predicate != format!("$aggregate:{owner}:{position}") || atom.values.len() != 2 {
         return None;
     }
-    let names = aggregate_names(program, owner, position);
+    let names = aggregate_names(program, plan, owner, position);
     let mut bindings = Bindings::new();
     let mut cursor = &atom.values[0];
     let mut previous: Option<&str> = None;
@@ -761,6 +797,7 @@ fn boundary_facts(certificate: &Certificate, id: usize) -> Option<Vec<Atom>> {
 /// must never be usable as an ordinary asserted relation.
 fn match_premises(
     program: &Program,
+    plan: &Plan,
     owner: Owner,
     premises: &[usize],
     steps: &[Step],
@@ -801,8 +838,8 @@ fn match_premises(
                     ..
                 },
             ) if *o == owner && *p == position + 1 => {
-                let groups = aggregate_bindings(program, owner, position + 1, &step.atom)?;
-                let names = aggregate_names(program, owner, position + 1);
+                let groups = aggregate_bindings(program, plan, owner, position + 1, &step.atom)?;
+                let names = aggregate_names(program, plan, owner, position + 1);
                 for name in names {
                     if let Some(value) =
                         crate::semantics::value(&Term::Variable(name.clone()), &preceding_bindings)
@@ -1031,6 +1068,7 @@ impl<'a> Checker<'a> {
                         report.attempt(C1);
                         if let Some(bindings) = match_premises(
                             program,
+                            &self.plan,
                             Owner::Rule(*rule),
                             premises,
                             &certificate.steps,
@@ -1151,7 +1189,7 @@ impl<'a> Checker<'a> {
                             }
                             let mut valid = false;
                             if let (Some(mut bindings), Some(facts)) = (
-                                aggregate_bindings(program, *owner, *position, &step.atom),
+                                aggregate_bindings(program, plan, *owner, *position, &step.atom),
                                 boundary_facts(certificate, *boundary),
                             ) {
                                 if let Some(result) = aggregate(
@@ -1334,6 +1372,7 @@ impl<'a> Checker<'a> {
                         report.attempt(C9);
                         if let Some(bindings) = match_premises(
                             program,
+                            &self.plan,
                             Owner::Query(*query),
                             premises,
                             &certificate.steps,
@@ -1504,9 +1543,16 @@ impl<'a> Checker<'a> {
                                 goals.get(position.saturating_sub(1))
                             {
                                 if let Some(initial) =
-                                    aggregate_bindings(program, *owner, *position, &step.atom)
+                                    aggregate_bindings(program, plan, *owner, *position, &step.atom)
                                 {
-                                    demands.check(&a.body, &initial, &indexed, budget, report)?;
+                                    demands.check(
+                                        &a.body,
+                                        &initial,
+                                        &initial.keys().cloned().collect(),
+                                        &indexed,
+                                        budget,
+                                        report,
+                                    )?;
                                 }
                             }
                         }
@@ -1518,7 +1564,7 @@ impl<'a> Checker<'a> {
                 if plan.rules[i] > boundary.level {
                     continue;
                 }
-                let initial = if plan.backward[i] {
+                let initial = if plan.demand_driven[i] {
                     boundary
                         .calls
                         .iter()
@@ -1533,16 +1579,30 @@ impl<'a> Checker<'a> {
                     (rule.body.as_slice(), None)
                 };
                 for initial in initial {
-                    demands.check(prefix, &initial, &indexed, budget, report)?;
+                    let scope = if plan.range_restricted[i] {
+                        BTreeSet::new()
+                    } else {
+                        initial.keys().cloned().collect()
+                    };
+                    demands.check(prefix, &initial, &scope, &indexed, budget, report)?;
                     let solutions = if prefix.is_empty() {
                         vec![initial]
                     } else {
-                        model_solutions(prefix, initial, &indexed, budget)?
+                        crate::semantics::model_solutions_scoped(
+                            prefix, initial, &scope, &indexed, budget,
+                        )?
                     };
                     for mut bindings in solutions {
                         if let Some(term) = fresh {
-                            let identity = witness(i + 1, rule.body.len(), &bindings);
-                            bind(term, identity, &mut bindings);
+                            let goal =
+                                witness_goal(program, Owner::Rule(i + 1), rule.body.len())
+                                    .ok_or_else(|| Error::new("Invalid witness source context."))?;
+                            let context = witness_context(&goal, &bindings)
+                                .ok_or_else(|| Error::new("Unbound witness firing variable."))?;
+                            let identity = witness(i + 1, rule.body.len(), &context);
+                            if !bind(term, identity, &mut bindings) {
+                                continue;
+                            }
                         }
                         let head = instantiate(&rule.head, &bindings)
                             .ok_or_else(|| Error::new("Unbound closure-check head."))?;
@@ -1633,6 +1693,7 @@ impl BoundaryDemands<'_> {
         &self,
         body: &[Literal],
         initial: &Bindings,
+        scope: &BTreeSet<String>,
         facts: &crate::semantics::Model<'_>,
         budget: &mut Budget,
         report: &mut Report,
@@ -1645,7 +1706,13 @@ impl BoundaryDemands<'_> {
                 let prefixes = if at == 0 {
                     vec![initial.clone()]
                 } else {
-                    model_solutions(&body[..at], initial.clone(), facts, budget)?
+                    crate::semantics::model_solutions_scoped(
+                        &body[..at],
+                        initial.clone(),
+                        scope,
+                        facts,
+                        budget,
+                    )?
                 };
                 for bindings in prefixes {
                     budget.tick()?;
@@ -1654,7 +1721,16 @@ impl BoundaryDemands<'_> {
                             self.require(&crate::engine::specialize(goal, &bindings), report);
                         }
                         Literal::Aggregate(aggregate) => {
-                            self.check(&aggregate.body, &bindings, facts, budget, report)?
+                            let outer =
+                                crate::semantics::aggregate_scope(&body[..at], scope, &bindings);
+                            self.check(
+                                &aggregate.body,
+                                &outer,
+                                &outer.keys().cloned().collect(),
+                                facts,
+                                budget,
+                                report,
+                            )?
                         }
                         _ => unreachable!(),
                     }

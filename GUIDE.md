@@ -1,22 +1,25 @@
 # Wheye guide
 
-Version **0.1.27**. Run an ISO Prolog subset in the native CLI or browser, get
+Version **0.2.0**. Run extended Datalog in the native CLI or browser, get
 answers, and inspect their independently checkable proofs. The
 [specification](https://eyereasoner.github.io/wheye/SPEC/) defines the language
 and the [C1–C9 contract](https://eyereasoner.github.io/wheye/SPEC/#132-proof-conditions).
 
-## Why a Prolog subset?
+<a id="why-a-prolog-subset"></a>
 
-A restricted language can be a useful language in its own right. Datalog is a
-well-established example: restricting logic programs gives recursive queries
-a precise declarative meaning and makes specialized evaluation possible.
-Wheye follows that principle, choosing a Prolog subset for recursive reasoning
-with independently checkable evidence.
+## Why extended Datalog?
 
-Supported ISO operations follow ISO/IEC 13211-1:1995 with Technical Corrigenda
-1–3, including Corrigendum 3's corrected integer-power rule. The
+Datalog gives recursive relations a set-based meaning and a fixed-point
+evaluation strategy. Wheye extends that model with structural terms, lists,
+exact arithmetic, stratified negation, aggregates, and typed witnesses, with
+independently checkable evidence. The Rust evaluator and checker implement
+this extended Datalog language directly.
+
+The existing `.pl` clause syntax is retained. Shared syntax and arithmetic use
+ISO/IEC 13211-1:1995 with Technical Corrigenda 1–3 as a compatibility reference,
+including Corrigendum 3's corrected integer-power rule. The
 [conformance section](https://eyereasoner.github.io/wheye/SPEC/#15-conformance)
-identifies the shared ISO behavior and Wheye's restrictions and extensions.
+defines extended Datalog and identifies the shared ISO behavior.
 
 The implemented choices work together:
 
@@ -41,9 +44,35 @@ proofs too; wheye's current C1–C9 contract covers the language specified here.
 
 Wheye extends beyond classical function-free Datalog with structural terms,
 lists, arithmetic, and fresh witnesses. Term construction and arithmetic can
-create infinite computations, so the subset does not guarantee termination.
+create infinite computations, so the language does not guarantee termination.
 Certificate acceptance establishes the recorded claims relative to the source
 assumptions; it does not establish answer completeness or external-world truth.
+
+## Reasoning strategy
+
+Wheye performs **hybrid deductive reasoning**, combining forward chaining and
+tabled backward chaining within one run:
+
+| Strategy | When it applies | How it works |
+| --- | --- | --- |
+| **Forward chaining** (bottom-up) | Range-restricted rules with a nonempty body, unless their predicate is declared `table` | Starts from source facts and derives new facts until the current stratum reaches a fixed point. Safe aggregate rules participate even without a query. |
+| **Tabled backward chaining** (demand-driven) | Rules requiring call inputs, universal unit clauses, and rules for predicates declared `table` | A call activates matching rules. Equivalent calls share a table of answers, and waiting consumers resume as matching facts arrive. |
+
+For example, `mortal(X) :- human(X).` runs forward. Adding
+`:- table mortal/1.` makes its rules demand-driven instead. Tabling also
+applies automatically to rules that need call inputs; recursive rules do not
+require a `table` declaration merely because they are recursive.
+
+The two strategies share ordinary facts. A forward rule can demand a tabled
+call, and a tabled call can consume facts derived forward. Negation and
+aggregation are stratified: the required lower-level producers complete before
+their absence or collected results are used. Queries select answers from this
+reasoning; they never become inference evidence.
+
+The independent certificate checker verifies the recorded deductions and
+supplied closed boundaries. It does not invoke either evaluation strategy.
+The [evaluation specification](https://eyereasoner.github.io/wheye/SPEC/#10-evaluation)
+defines the rule classification and scheduling in detail.
 
 ## Run your first program
 
@@ -189,6 +218,11 @@ only the result binds outside, and earlier bindings constrain the producer.
 Empty count and sum return zero; empty list collection returns `[]`; empty
 minimum and maximum fail.
 
+Safe aggregate rules run forward even without a query. Their groups come
+from preceding body goals, so a query filters the resulting relation without
+changing an aggregate's producer scope. Mode-dependent rules can instead use
+their required call inputs as group parameters.
+
 ## Negation, tabling, and witnesses
 
 ```prolog
@@ -210,8 +244,8 @@ recursive consumers resume as answers arrive. Tabling does not guarantee
 termination for arbitrary programs. Limits and the playground's Stop button
 bound a run.
 
-`fresh(Witness)` is an additional explicit predicate with ordinary Prolog call
-syntax. It can only end a forward rule and must bind a new output variable.
+`fresh(Witness)` is an explicit witness operation with ordinary predicate-call
+syntax. It can only end a range-restricted rule and must bind a new output variable.
 It creates an opaque typed witness for that source-rule firing. Source facts
 cannot supply witness identities. The certificate checker verifies C8 for
 the voucher example:

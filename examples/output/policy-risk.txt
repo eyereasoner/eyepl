@@ -90,26 +90,18 @@ step 70 rule 12 [57,55,47,66,39] : report(2, c3, 97, high, sharing_without_conse
 step 71 rule 12 [58,56,48,67,40] : report(1, c1, 100, high, no_removal_safeguards, add_notice_and_inform).
 boundary 1 level 0 [1,2,3,4,5,6,7,8,9,10,11,12,13,14,41,42,43,44,45,46,47,48]
 demand 1 : severity(100, _WheyeCall0).
-demand 1 : severity(100, high).
 demand 1 : severity(70, _WheyeCall0).
-demand 1 : severity(70, moderate).
 demand 1 : severity(85, _WheyeCall0).
-demand 1 : severity(85, high).
 demand 1 : severity(97, _WheyeCall0).
-demand 1 : severity(97, high).
 boundary 2 level 1 [1,2,3,4,5,6,7,8,9,10,11,12,13,14,41,42,43,44,45,46,47,48,49,50,54,55,56,57,58,59,60,61,62,63]
 demand 2 : higher(100, _WheyeCall0).
 demand 2 : higher(70, _WheyeCall0).
 demand 2 : higher(85, _WheyeCall0).
 demand 2 : higher(97, _WheyeCall0).
 demand 2 : severity(100, _WheyeCall0).
-demand 2 : severity(100, high).
 demand 2 : severity(70, _WheyeCall0).
-demand 2 : severity(70, moderate).
 demand 2 : severity(85, _WheyeCall0).
-demand 2 : severity(85, high).
 demand 2 : severity(97, _WheyeCall0).
-demand 2 : severity(97, high).
 answer 1 [68]
 answer 1 [69]
 answer 1 [70]

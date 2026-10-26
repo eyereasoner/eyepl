@@ -1,8 +1,8 @@
 ?- knapsack_answer(Kind, Value).
+Kind = feasible_pack_count, Value = 113.
 Kind = best_pack, Value = [atlas, battery, camera, medkit, sensor].
 Kind = total_weight, Value = 15.
 Kind = total_value, Value = 40.
-Kind = feasible_pack_count, Value = 113.
 
 ?- best_pack(Pack, Weight, Value).
 Pack = [atlas, battery, camera, medkit, sensor], Weight = 15, Value = 40.

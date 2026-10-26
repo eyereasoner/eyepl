@@ -20,28 +20,28 @@ step 3 source 3 : charger(rapid50, 50, 80, ccs2, three_phase, 900000).
 step 4 source 4 : charger(budget11, 11, 25, ccs2, three_phase, 220000).
 step 5 source 5 : charger(legacy22, 22, 45, type2, three_phase, 350000).
 step 6 builtin : '<'(60, 80).
-step 7 builtin : '<'(11, 22).
-step 8 builtin : '\\='(type2, ccs2).
-step 9 builtin : '>='(50, 22).
-step 10 builtin : '>'(80, 60).
-step 11 builtin : is(20, '-'(80, 60)).
-step 12 rule 1 [1,3,6] : blocker(depot_a, rapid50, insufficient_site_power(60, 80)).
-step 13 rule 2 [1,4,7] : blocker(depot_a, budget11, insufficient_charge_rate(11, 22)).
-step 14 rule 3 [1,5,8] : blocker(depot_a, legacy22, connector_mismatch(type2, ccs2)).
-step 15 rule 13 [1,3,9,10,11] : power_upgrade(depot_a, rapid50, 20).
-step 16 rule 5 [12] : has_blocker(depot_a, rapid50).
-step 17 rule 9 [12] : required_change(depot_a, rapid50, increase_site_power_to(80)).
-step 18 rule 5 [13] : has_blocker(depot_a, budget11).
-step 19 rule 10 [13] : required_change(depot_a, budget11, choose_charger_at_least_kw(22)).
-step 20 rule 5 [14] : has_blocker(depot_a, legacy22).
-step 21 rule 11 [14] : required_change(depot_a, legacy22, choose_connector(ccs2)).
+step 7 rule 1 [1,3,6] : blocker(depot_a, rapid50, insufficient_site_power(60, 80)).
+step 8 builtin : '<'(11, 22).
+step 9 rule 2 [1,4,8] : blocker(depot_a, budget11, insufficient_charge_rate(11, 22)).
+step 10 builtin : '\\='(type2, ccs2).
+step 11 rule 3 [1,5,10] : blocker(depot_a, legacy22, connector_mismatch(type2, ccs2)).
+step 12 builtin : '>='(50, 22).
+step 13 builtin : '>'(80, 60).
+step 14 builtin : is(20, '-'(80, 60)).
+step 15 rule 13 [1,3,12,13,14] : power_upgrade(depot_a, rapid50, 20).
+step 16 rule 5 [7] : has_blocker(depot_a, rapid50).
+step 17 rule 9 [7] : required_change(depot_a, rapid50, increase_site_power_to(80)).
+step 18 rule 5 [9] : has_blocker(depot_a, budget11).
+step 19 rule 10 [9] : required_change(depot_a, budget11, choose_charger_at_least_kw(22)).
+step 20 rule 5 [11] : has_blocker(depot_a, legacy22).
+step 21 rule 11 [11] : required_change(depot_a, legacy22, choose_connector(ccs2)).
 step 22 absent 1 : has_blocker(depot_a, fleet22).
 step 23 rule 6 [1,2,22] : compatible(depot_a, fleet22).
 step 24 rule 7 [23,2] : priced_option(depot_a, fleet22, 600000).
 step 25 aggregate r8 2 2 : '$aggregate:r8:2'([binding('Site', depot_a), binding('_$43', 60), binding('_$44', 22), binding('_$45', ccs2), binding('_$46', three_phase)], 600000).
 step 26 rule 8 [1,25,24] : recommendation(depot_a, fleet22).
-boundary 1 level 0 [1,2,3,4,5,12,13,14,15,16,17,18,19,20,21]
-boundary 2 level 1 [1,2,3,4,5,12,13,14,15,16,17,18,19,20,21,23,24]
+boundary 1 level 0 [1,2,3,4,5,7,9,11,15,16,17,18,19,20,21]
+boundary 2 level 1 [1,2,3,4,5,7,9,11,15,16,17,18,19,20,21,23,24]
 answer 1 [26]
 
 ?- blocker(Site, Product, Reason).

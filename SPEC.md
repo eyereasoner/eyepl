@@ -1,16 +1,16 @@
 # Wheye specification
 
-Version **0.1.27**
+Version **0.2.0**
 
 **Status of this document.** This document specifies the behavior that the
 Wheye reference implementation provides. It is the normative contract for the
 source language, evaluation, output, proof certificates, and certificate
 checking. Statements marked *informative* explain or illustrate; they add no
-requirements. Wheye follows ISO/IEC 13211-1:1995 (ISO Prolog), including
-Technical Corrigenda 1–3, for the supported subset identified in Section 1.5.
-Its relational evaluation, restrictions, and extensions are specified here.
+requirements. Wheye implements extended Datalog as defined here. Its clause
+notation and shared numeric operations follow the ISO Prolog reference areas
+identified in Section 1.5, including Technical Corrigenda 1–3.
 
-**Abstract.** Wheye is a relational reasoner for an ISO Prolog subset with
+**Abstract.** Wheye is a relational reasoner for extended Datalog with
 structural terms, proper lists, exact integers, finite binary64 reals,
 stratified negation, `aggregate_all/3`, demand-driven tabling, and typed
 `fresh/1` witnesses. A program's requests select its output: answers, proof
@@ -197,7 +197,23 @@ certificates.
 
 ### 1.5 Conformance
 
-The reference standard for the supported Prolog operations is
+Wheye's language is extended Datalog: set-valued relations and a stratified
+fixed point, extended with structural terms, proper lists, exact arithmetic,
+aggregates, mode-dependent tabled rules, and typed witnesses. The `.pl` file
+extension and existing clause syntax are retained. The language is implemented
+by the Rust evaluator and certificate checker; no Prolog runtime is involved.
+
+Range-restricted rules define relations independently of query selection.
+This includes aggregate rules: unless explicitly declared demand-driven, they
+run forward even when no query calls them. In every range-restricted rule,
+aggregate groups come only from preceding body goals. Binding a head variable
+in a call MUST NOT capture a producer-local variable or turn an aggregate
+result into an input. Explicit table declarations affect evaluation strategy,
+not this grouping rule. Rules needing call inputs and universal unit clauses
+remain mode-dependent extensions evaluated through demanded calls.
+
+ISO Prolog is a compatibility reference for shared notation and operations,
+not the definition of Wheye's evaluation semantics. The reference is
 ISO/IEC 13211-1:1995 with Cor.1:2007, Cor.2:2012, and Cor.3:2017
 [ISO13211-1]. Corrections in the corrigenda take precedence over the original
 text. In particular, integer power follows the error condition corrected by
@@ -217,7 +233,7 @@ defined in this document. The [conformance corpus](https://github.com/eyereasone
 checks selected shared cases and rejection of unsupported syntax and modes.
 It does not establish coverage of every requirement in the cited clauses.
 
-Wheye's deliberate restrictions and extensions include:
+The extended Datalog contract includes:
 
 - Set semantics and demand-driven tabling (Sections 9–10), with stratified
   negation, replace ISO's procedural search and repeated derivations.
@@ -232,7 +248,7 @@ Wheye's deliberate restrictions and extensions include:
   additional facilities. `false/0`, infix `xor`, `gcd/2`, and the arithmetic
   constant `e` are extensions (Sections 6–8 and 11–13).
 - Errors use Wheye diagnostics and API errors; ISO exception terms and
-  `catch/3` are outside the subset (Sections 11.5 and 14).
+  `catch/3` are outside the language (Sections 11.5 and 14).
 
 Full ISO processor compliance under clause 5.1, including its required
 facilities and strictly conforming mode, is outside the implemented scope.
@@ -518,13 +534,14 @@ local to that aggregate (Section 8.2).
 
 ### 5.5 Binding Modes
 
-Goals run from left to right. *Mode analysis* tracks which variables are bound
-before each goal:
+Goals run from left to right. *Mode analysis* conservatively tracks which
+variables are available before each goal when classifying rules:
 
 | Goal | Required before the goal | Binds |
 | --- | --- | --- |
 | Ordinary call | nothing | all its variables |
-| `true`, `false`, `X \= Y` | nothing | nothing |
+| `true`, `false` | nothing | nothing |
+| `X \= Y` | every variable | nothing |
 | `X = Y`, `T =.. L`, `atom_codes(A, L)`, `string_codes(S, L)` | either argument fully bound | all variables |
 | `X is E` | `E` fully bound | all variables |
 | `string_concat(A, B, C)` | `A` and `B` | all variables |
@@ -534,10 +551,12 @@ before each goal:
 | `aggregate_all(T, G, R)` | `G` must bind every variable of `T` | variables of `R` |
 | `fresh(W)` | `W` is a variable not yet bound | `W` |
 
-Mode analysis classifies rules (Section 10.1). Inputs that are unbound when a
-goal is actually reached MUST raise an error, not fail silently. A query or
-goal check is validated with all its variables treated as available, so its
-mode requirements are enforced when its goals run. The placement of `fresh/1`
+Mode analysis classifies rules (Section 10.1). It is conservative for
+structural operations: `=/2` and `=../2` also support some partially bound
+inputs, and `\=/2` can fail on unbound operands (Section 6.2). Operations that
+require ground inputs MUST raise an error when those inputs are unavailable.
+A query or goal check is validated with all its variables treated as available,
+so its mode requirements are enforced when its goals run. The placement of `fresh/1`
 and the form of aggregate templates are checked when the program is loaded.
 
 ### 5.6 Reserved Predicates
@@ -795,6 +814,12 @@ Scope:
 - `Result` is unified with the computed value after collection. A bound or
   partially bound `Result` constrains the answer, but it MUST NOT bind producer
   variables or filter the producer before collection.
+- In a range-restricted rule, a call's head bindings MUST NOT introduce outer
+  bindings at an aggregate. Only preceding goals establish its group, including
+  when the predicate is explicitly tabled. For example,
+  `total(X,N) :- aggregate_all(count,p(X),N), q(X).` counts all `p` tuples
+  before selecting `X` through `q`; calling `total(a,N)` does not change the
+  count. A rule requiring call inputs MAY use those inputs as outer bindings.
 
 Computation:
 
@@ -831,6 +856,12 @@ the complete substitution of the variables bound by the preceding goals. If the
 same firing repeats, the identity is reused. Different firings never share an
 identity. Other rules MAY carry witnesses as ordinary values. Source programs
 MUST NOT contain witness constants.
+
+The firing substitution contains the fully resolved values of preceding body
+variables, including nested structural bindings. Call-variable aliases and
+head bindings not established by those goals MUST NOT enter the identity.
+This applies to forward and explicitly tabled rules alike. C8 and boundary
+closure MUST recompute witnesses from the same source-prefix context.
 
 Witnesses are written `~"identity"` in answers and certificates. The identity
 spelling is implementation-defined. A conforming checker recomputes it rather
@@ -901,18 +932,27 @@ work instead.
 This section specifies the evaluation strategy that determines the evidence
 recorded in certificates.
 
+Wheye combines **forward chaining** (bottom-up evaluation of forward rules)
+with **tabled backward chaining** (call-driven evaluation of demand-driven
+rules). Both strategies share ordinary facts and follow the same strata.
+Backward calls share answers through tables and resume waiting consumers as
+answers arrive. Sections 10.1–10.4 define their classification and scheduling.
+
 ### 10.1 Rule Classification
 
 A rule is *demand-driven* if any of the following holds:
 
 - it is not range-restricted (Section 1.3);
 - its predicate is declared in a `table` directive;
-- it has an empty body (a unit clause);
-- its body contains an `aggregate_all/3` goal.
+- it has an empty body (a unit clause).
 
 Otherwise it is *forward*. Facts are loaded first. Forward rules are evaluated
 bottom-up. Demand-driven rules are evaluated only for the calls that request
 them, and every such call is tabled.
+
+An aggregate alone does not make a rule demand-driven. A range-restricted
+aggregate rule participates in forward closure, including in programs without
+requests. The checker applies the same classification to boundary obligations.
 
 ### 10.2 Strata and Levels
 
@@ -1192,10 +1232,11 @@ ordinary program facts.
 *Aggregate atom.* `'$aggregate:O:N'(Bindings, Result)`, where `O` is `r<RULE>`
 or `q<QUERY>` and `N` is the goal position. `Bindings` is a proper list of
 `binding('Name', Value)` terms, one for each outer variable already ground
-before the aggregate: variables of the preceding goals and, for rules, head
-variables bound by the call. The list is sorted by variable name in strictly
-increasing order. Local producer variables and variables bound only by `Result`
-are excluded. `Result` is the computed value.
+before the aggregate: variables of the preceding goals and, only for rules
+requiring call inputs, head variables bound by the call. A range-restricted
+rule MUST NOT record a group supplied only by its call. The list is sorted by
+variable name in strictly increasing order. Local producer variables and
+variables bound only by `Result` are excluded. `Result` is the computed value.
 
 *Witness atom.* `'$fresh:rR:N'(V1, ..., Vk, Witness)`, where `V1`...`Vk` are the
 values of the variables bound by the preceding goals, in increasing name order,
@@ -1326,7 +1367,7 @@ The outcome is an error, a valid report, or an invalid report:
 
 | Condition | Requirement |
 | --- | --- |
-| **C1 · Resolution** | A source step MUST equal its cited fact. For a rule step, one substitution of only rule variables MUST match the claimed head and every body goal against its premise, with the correct evidence kind (Section 12.3). Applying it to the head MUST give exactly the step's atom. Built-ins are replayed along the premises, a negated goal MUST be ground and equal to its `absent` atom, an aggregate's recorded bindings MUST agree with the preceding bindings, and head variables used by an aggregate producer MUST be bound before it. |
+| **C1 · Resolution** | A source step MUST equal its cited fact. For a rule step, one substitution of only rule variables MUST match the claimed head and every body goal against its premise, with the correct evidence kind (Section 12.3). Applying it to the head MUST give exactly the step's atom. Built-ins are replayed along the premises, a negated goal MUST be ground and equal to its `absent` atom, an aggregate's recorded bindings MUST agree with the preceding bindings, and aggregate group inputs MUST come from preceding goals or permitted call inputs, and producer-local variables MUST NOT be captured by a range-restricted head. |
 | **C2 · Well-foundedness** | Rule premises and cited boundary members MUST precede the step that uses them. Cycles, self-support, and forward references MUST be rejected. Loading rejects dependency cycles through negation or aggregation (Section 8.1). |
 | **C3 · Justification** | Every step MUST have one supported justification and a ground, valid atom. Ordinary conclusions, identical decisions, boundary levels, `derived` targets, and projected answers per query MUST be unique. An `aggregate` step MUST name an aggregate goal. Malformed records are rejected by the reader with a C3-labelled error. |
 | **C4 · Coverage** | Every referenced source fact, rule, query, owner, goal position, boundary, and step MUST exist in the program or certificate. Complete coverage of bodies and queries is checked by C1 and C9. |
@@ -1427,7 +1468,7 @@ The following syntax and term forms MUST be rejected:
 - operator declarations, curly terms, `0'c` character codes, and non-decimal or
   digit-grouped numbers.
 
-The subset has no built-in implementation of dynamic predicates such as
+The language has no built-in implementation of dynamic predicates such as
 `assert`/`retract`, meta-calls such as `call/N`, all-solutions predicates such as
 `findall/3`, `bagof/3`, and `setof/3`, or procedural I/O, streams, exceptions,
 flags, modules, and DCGs. Unreserved names remain ordinary predicates
@@ -1437,7 +1478,7 @@ matching `call/1` clause. Such a clause does not implement ISO meta-calling.
 Use `aggregate_all/3` for the collection operations of Section 8.2.
 
 General term ordering, locale collation, answer-order guarantees, duplicate
-derivations, and N3 or Turtle input are outside the subset.
+derivations, and N3 or Turtle input are outside the language.
 
 Calls that lack required inputs are errors, not enumerations (Section 5.5).
 Arithmetic is interpreted only in evaluated contexts (Section 7.2).

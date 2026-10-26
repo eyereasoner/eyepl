@@ -23,17 +23,17 @@ step 13 source 13 : owner(bob).
 step 14 source 14 : owner(carol).
 step 15 source 15 : owner(dana).
 step 16 aggregate r1 2 1 : '$aggregate:r1:2'([binding('Owner', alice)], 5).
-step 17 aggregate r1 2 1 : '$aggregate:r1:2'([binding('Owner', bob)], 2).
-step 18 aggregate r1 2 1 : '$aggregate:r1:2'([binding('Owner', carol)], 4).
-step 19 aggregate r1 2 1 : '$aggregate:r1:2'([binding('Owner', dana)], 0).
-step 20 rule 1 [12,16] : dog_count(alice, 5).
-step 21 rule 1 [13,17] : dog_count(bob, 2).
-step 22 rule 1 [14,18] : dog_count(carol, 4).
-step 23 rule 1 [15,19] : dog_count(dana, 0).
+step 17 rule 1 [12,16] : dog_count(alice, 5).
+step 18 aggregate r1 2 1 : '$aggregate:r1:2'([binding('Owner', bob)], 2).
+step 19 rule 1 [13,18] : dog_count(bob, 2).
+step 20 aggregate r1 2 1 : '$aggregate:r1:2'([binding('Owner', carol)], 4).
+step 21 rule 1 [14,20] : dog_count(carol, 4).
+step 22 aggregate r1 2 1 : '$aggregate:r1:2'([binding('Owner', dana)], 0).
+step 23 rule 1 [15,22] : dog_count(dana, 0).
 boundary 1 level 0 [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
-answer 1 [20]
+answer 1 [17]
+answer 1 [19]
 answer 1 [21]
-answer 1 [22]
 answer 1 [23]
 
 ?- requires(Owner, dog_license).
@@ -58,10 +58,10 @@ step 12 source 12 : owner(alice).
 step 13 source 13 : owner(bob).
 step 14 source 14 : owner(carol).
 step 15 source 15 : owner(dana).
-step 16 builtin : '>'(5, 4).
-step 17 aggregate r1 2 1 : '$aggregate:r1:2'([binding('Owner', alice)], 5).
-step 18 rule 1 [12,17] : dog_count(alice, 5).
-step 19 rule 2 [18,16] : requires(alice, dog_license).
+step 16 aggregate r1 2 1 : '$aggregate:r1:2'([binding('Owner', alice)], 5).
+step 17 rule 1 [12,16] : dog_count(alice, 5).
+step 18 builtin : '>'(5, 4).
+step 19 rule 2 [17,18] : requires(alice, dog_license).
 boundary 1 level 0 [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
 answer 2 [19]
 

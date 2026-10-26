@@ -371,6 +371,13 @@ impl Join<'_> {
                 }
             }
             Literal::Aggregate(a) => {
+                let outer = crate::proof::aggregate_context(
+                    self.program,
+                    self.plan,
+                    self.owner,
+                    at + 1,
+                    &current.bindings,
+                );
                 let boundary = self
                     .store
                     .boundary(self.plan.boundary(literal))
@@ -379,7 +386,7 @@ impl Join<'_> {
                     })?;
                 if let Some(result) = aggregate(
                     a,
-                    &current.bindings,
+                    &outer,
                     &crate::semantics::Model::new(&self.store.facts(boundary), budget)?,
                     budget,
                 )? {
@@ -387,9 +394,10 @@ impl Join<'_> {
                     if bind(&a.result, result.clone(), &mut bindings) {
                         let atom = crate::proof::aggregate_atom(
                             self.program,
+                            self.plan,
                             self.owner,
                             at + 1,
-                            &current.bindings,
+                            &outer,
                             result,
                         );
                         proceed(
@@ -413,13 +421,11 @@ impl Join<'_> {
                     return Err(Error::new("fresh/1 needs a rule context."));
                 };
                 let mut bindings = current.bindings.clone();
-                if bind(
-                    term,
-                    witness(rule, at + 1, &current.bindings),
-                    &mut bindings,
-                ) {
-                    let goal = witness_goal(self.program, self.owner, at + 1)
-                        .ok_or_else(|| Error::new("Invalid witness source context."))?;
+                let goal = witness_goal(self.program, self.owner, at + 1)
+                    .ok_or_else(|| Error::new("Invalid witness source context."))?;
+                let context = crate::proof::witness_context(&goal, &bindings)
+                    .ok_or_else(|| Error::new("Unbound witness firing variable."))?;
+                if bind(term, witness(rule, at + 1, &context), &mut bindings) {
                     let atom = instantiate(&goal, &bindings)
                         .ok_or_else(|| Error::new("Unbound witness firing variable."))?;
                     proceed(
@@ -490,7 +496,7 @@ fn fire(
 
 pub fn reason(program: &Program, limits: Limits) -> Result<Run, Error> {
     let plan = plan(program)?;
-    if plan.backward.iter().any(|b| *b) {
+    if plan.demand_driven.iter().any(|b| *b) {
         return reason_tabled(program, limits, &plan);
     }
     let mut store = Store::default();
@@ -903,13 +909,11 @@ impl Tabled<'_> {
                     return Err(Error::new("fresh requires a rule context."));
                 };
                 let mut bindings = a.matched.bindings.clone();
-                if bind(
-                    term,
-                    witness(rule, a.position + 1, &bindings),
-                    &mut bindings,
-                ) {
-                    let goal = witness_goal(self.program, a.owner, a.position + 1)
-                        .ok_or_else(|| Error::new("Invalid fresh context."))?;
+                let goal = witness_goal(self.program, a.owner, a.position + 1)
+                    .ok_or_else(|| Error::new("Invalid fresh context."))?;
+                let context = crate::proof::witness_context(&goal, &bindings)
+                    .ok_or_else(|| Error::new("Unbound fresh context."))?;
+                if bind(term, witness(rule, a.position + 1, &context), &mut bindings) {
                     let atom = instantiate(&goal, &bindings)
                         .ok_or_else(|| Error::new("Unbound fresh context."))?;
                     let justification = Justification::Fresh {
@@ -968,7 +972,14 @@ impl Tabled<'_> {
         let Literal::Aggregate(aggregate) = literal else {
             unreachable!()
         };
-        if self.prefix_demands(&aggregate.body, &a.matched.bindings)? {
+        let outer = crate::proof::aggregate_context(
+            self.program,
+            self.plan,
+            a.owner,
+            a.position + 1,
+            &a.matched.bindings,
+        );
+        if self.prefix_demands(&aggregate.body, &outer)? {
             let level = self.level(a.owner);
             self.push(Task::Aggregate(a), level);
             return Ok(());
@@ -989,7 +1000,7 @@ impl Tabled<'_> {
             .collect::<Vec<_>>();
         if let Some(result) = aggregate_value(
             aggregate,
-            &a.matched.bindings,
+            &outer,
             &crate::semantics::Model::new(&facts, &mut self.budget)?,
             &mut self.budget,
         )? {
@@ -997,9 +1008,10 @@ impl Tabled<'_> {
             if bind(&aggregate.result, result.clone(), &mut bindings) {
                 let atom = crate::proof::aggregate_atom(
                     self.program,
+                    self.plan,
                     a.owner,
                     a.position + 1,
-                    &a.matched.bindings,
+                    &outer,
                     result,
                 );
                 let justification = Justification::Aggregate {
@@ -1063,7 +1075,7 @@ fn reason_tabled(program: &Program, limits: Limits, plan: &Plan) -> Result<Run, 
             .insert(fact.clone(), Justification::Source(i + 1), limits.max_facts)?;
     }
     for (i, _) in program.rules.iter().enumerate() {
-        if !plan.backward[i] {
+        if !plan.demand_driven[i] {
             engine.resume(Activation {
                 owner: Owner::Rule(i + 1),
                 position: 0,

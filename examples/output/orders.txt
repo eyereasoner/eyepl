@@ -12,13 +12,13 @@ step 3 source 3 : line(ada, book, 12).
 step 4 source 4 : line(ada, pen, 3).
 step 5 source 5 : line(bea, map, 7).
 step 6 source 6 : blocked(bea).
-step 7 builtin : '>='(15, 10).
-step 8 fresh 3 2 : '$fresh:r3:2'(ada, 15, ~"r3:g2:{\"Customer\": Symbol(\"ada\"), \"Total\": Integer(15)}").
-step 9 aggregate r1 2 1 : '$aggregate:r1:2'([binding('Customer', ada)], 15).
-step 10 absent 1 : blocked(ada).
-step 11 rule 1 [1,9] : subtotal(ada, 15).
-step 12 rule 2 [11,10,7] : eligible(ada, 15).
-step 13 rule 3 [12,8] : voucher(ada, ~"r3:g2:{\"Customer\": Symbol(\"ada\"), \"Total\": Integer(15)}", 15).
+step 7 aggregate r1 2 1 : '$aggregate:r1:2'([binding('Customer', ada)], 15).
+step 8 rule 1 [1,7] : subtotal(ada, 15).
+step 9 absent 1 : blocked(ada).
+step 10 builtin : '>='(15, 10).
+step 11 rule 2 [8,9,10] : eligible(ada, 15).
+step 12 fresh 3 2 : '$fresh:r3:2'(ada, 15, ~"r3:g2:{\"Customer\": Symbol(\"ada\"), \"Total\": Integer(15)}").
+step 13 rule 3 [11,12] : voucher(ada, ~"r3:g2:{\"Customer\": Symbol(\"ada\"), \"Total\": Integer(15)}", 15).
 boundary 1 level 0 [1,2,3,4,5,6]
 answer 1 [13]
 

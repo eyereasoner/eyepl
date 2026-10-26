@@ -1,9 +1,9 @@
 ?- weighted_interval_answer(Kind, Value).
+Kind = candidate_count, Value = 8.
 Kind = best_value, Value = 13.
 Kind = chosen_interval, Value = interval(1, 1, 4, 5).
 Kind = chosen_interval, Value = interval(4, 4, 7, 4).
 Kind = chosen_interval, Value = interval(8, 8, 11, 4).
-Kind = candidate_count, Value = 8.
 
 ?- optimal_schedule(Ids, Value).
 Ids = [1, 4, 8], Value = 13.
@@ -114,39 +114,39 @@ step 89 rule 2 [76] : has_compatible(7).
 step 90 rule 2 [79] : has_compatible(8).
 step 91 rule 10 [84] : append([1, 4], [8], [1, 4, 8]).
 step 92 rule 12 [86] : member(8, [1, 4, 8]).
-step 93 absent 1 : has_compatible(1).
-step 94 absent 1 : has_compatible(2).
-step 95 absent 1 : has_compatible(3).
-step 96 absent 1 : has_compatible(5).
-step 97 aggregate r3 2 1 : '$aggregate:r3:2'([binding('I', 4), binding('_$6', 4), binding('_$7', 7), binding('_$8', 4)], 1).
-step 98 aggregate r3 2 1 : '$aggregate:r3:2'([binding('I', 6), binding('_$6', 5), binding('_$7', 9), binding('_$8', 3)], 2).
-step 99 aggregate r3 2 1 : '$aggregate:r3:2'([binding('I', 7), binding('_$6', 6), binding('_$7', 10), binding('_$8', 2)], 3).
-step 100 aggregate r3 2 1 : '$aggregate:r3:2'([binding('I', 8), binding('_$6', 8), binding('_$7', 11), binding('_$8', 4)], 4).
-step 101 rule 4 [2,93] : previous_compatible(1, 0).
-step 102 rule 4 [3,94] : previous_compatible(2, 0).
-step 103 rule 4 [4,95] : previous_compatible(3, 0).
-step 104 rule 4 [6,96] : previous_compatible(5, 0).
-step 105 rule 3 [5,97] : previous_compatible(4, 1).
-step 106 rule 3 [7,98] : previous_compatible(6, 2).
-step 107 rule 3 [8,99] : previous_compatible(7, 3).
-step 108 rule 3 [9,100] : previous_compatible(8, 4).
-step 109 rule 6 [2,32,10,101,10,33] : alternatives(1, 0, 5, 0).
+step 93 aggregate r3 2 1 : '$aggregate:r3:2'([binding('I', 4), binding('_$6', 4), binding('_$7', 7), binding('_$8', 4)], 1).
+step 94 aggregate r3 2 1 : '$aggregate:r3:2'([binding('I', 6), binding('_$6', 5), binding('_$7', 9), binding('_$8', 3)], 2).
+step 95 aggregate r3 2 1 : '$aggregate:r3:2'([binding('I', 7), binding('_$6', 6), binding('_$7', 10), binding('_$8', 2)], 3).
+step 96 aggregate r3 2 1 : '$aggregate:r3:2'([binding('I', 8), binding('_$6', 8), binding('_$7', 11), binding('_$8', 4)], 4).
+step 97 absent 1 : has_compatible(1).
+step 98 absent 1 : has_compatible(2).
+step 99 absent 1 : has_compatible(3).
+step 100 absent 1 : has_compatible(5).
+step 101 rule 3 [5,93] : previous_compatible(4, 1).
+step 102 rule 3 [7,94] : previous_compatible(6, 2).
+step 103 rule 3 [8,95] : previous_compatible(7, 3).
+step 104 rule 3 [9,96] : previous_compatible(8, 4).
+step 105 rule 4 [2,97] : previous_compatible(1, 0).
+step 106 rule 4 [3,98] : previous_compatible(2, 0).
+step 107 rule 4 [4,99] : previous_compatible(3, 0).
+step 108 rule 4 [6,100] : previous_compatible(5, 0).
+step 109 rule 6 [2,32,10,105,10,33] : alternatives(1, 0, 5, 0).
 step 110 rule 5 [34,109,35] : best_to(1, 5).
 step 111 rule 7 [34,109,65,11,64] : chosen_to(1, [1]).
-step 112 rule 6 [3,36,110,102,10,37] : alternatives(2, 0, 1, 5).
+step 112 rule 6 [3,36,110,106,10,37] : alternatives(2, 0, 1, 5).
 step 113 rule 5 [38,112,39] : best_to(2, 5).
-step 114 rule 6 [4,40,113,103,10,41] : alternatives(3, 0, 8, 5).
+step 114 rule 6 [4,40,113,107,10,41] : alternatives(3, 0, 8, 5).
 step 115 rule 5 [42,114,43] : best_to(3, 8).
-step 116 rule 6 [5,44,115,105,110,45] : alternatives(4, 1, 9, 8).
+step 116 rule 6 [5,44,115,101,110,45] : alternatives(4, 1, 9, 8).
 step 117 rule 5 [46,116,47] : best_to(4, 9).
 step 118 rule 7 [46,116,67,111,83] : chosen_to(4, [1, 4]).
-step 119 rule 6 [6,48,117,104,10,49] : alternatives(5, 0, 6, 9).
+step 119 rule 6 [6,48,117,108,10,49] : alternatives(5, 0, 6, 9).
 step 120 rule 5 [50,119,51] : best_to(5, 9).
-step 121 rule 6 [7,52,120,106,113,53] : alternatives(6, 2, 8, 9).
+step 121 rule 6 [7,52,120,102,113,53] : alternatives(6, 2, 8, 9).
 step 122 rule 5 [54,121,55] : best_to(6, 9).
-step 123 rule 6 [8,56,122,107,115,57] : alternatives(7, 3, 10, 9).
+step 123 rule 6 [8,56,122,103,115,57] : alternatives(7, 3, 10, 9).
 step 124 rule 5 [58,123,59] : best_to(7, 10).
-step 125 rule 6 [9,60,124,108,117,61] : alternatives(8, 4, 13, 10).
+step 125 rule 6 [9,60,124,104,117,61] : alternatives(8, 4, 13, 10).
 step 126 rule 5 [62,125,63] : best_to(8, 13).
 step 127 rule 7 [62,125,69,118,91] : chosen_to(8, [1, 4, 8]).
 step 128 rule 13 [1,126,127] : optimal_schedule([1, 4, 8], 13).

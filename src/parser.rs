@@ -227,7 +227,7 @@ fn tokenize(source: &str) -> Result<Vec<(Token, usize)>, Error> {
                     | "/\\"
             ) {
                 return Err(Error::new(format!(
-                    "Line {line}: Unexpected character {c:?}; use Prolog syntax."
+                    "Line {line}: Unexpected character {c:?}; use extended Datalog syntax."
                 )));
             }
             if op == "."

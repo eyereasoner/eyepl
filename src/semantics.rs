@@ -359,6 +359,20 @@ impl<'a> Model<'a> {
     }
 }
 
+/// Closed aggregate inputs established by this body's prefix and call mode.
+pub(crate) fn aggregate_scope(
+    prefix: &[Literal],
+    inputs: &BTreeSet<String>,
+    bindings: &Bindings,
+) -> Bindings {
+    inputs
+        .iter()
+        .cloned()
+        .chain(prefix.iter().flat_map(Literal::variables))
+        .filter_map(|name| value(&Term::Variable(name.clone()), bindings).map(|v| (name, v)))
+        .collect()
+}
+
 /// Finite matching over an already supplied model, without adding facts or
 /// searching for their derivations. Used for closure and aggregate re-decision.
 pub(crate) fn model_solutions(
@@ -367,10 +381,22 @@ pub(crate) fn model_solutions(
     model: &Model<'_>,
     budget: &mut Budget,
 ) -> Result<Vec<Bindings>, Error> {
+    let scope = initial.keys().cloned().collect();
+    model_solutions_scoped(body, initial, &scope, model, budget)
+}
+
+pub(crate) fn model_solutions_scoped(
+    body: &[Literal],
+    initial: Bindings,
+    scope: &BTreeSet<String>,
+    model: &Model<'_>,
+    budget: &mut Budget,
+) -> Result<Vec<Bindings>, Error> {
     fn visit(
         body: &[Literal],
         at: usize,
         bindings: Bindings,
+        scope: &BTreeSet<String>,
         model: &Model<'_>,
         budget: &mut Budget,
         out: &mut Vec<Bindings>,
@@ -385,14 +411,14 @@ pub(crate) fn model_solutions(
                     budget.tick()?;
                     let mut next = bindings.clone();
                     if match_goal(goal, &model.facts[index], &mut next) {
-                        visit(body, at + 1, next, model, budget, out)?;
+                        visit(body, at + 1, next, scope, model, budget, out)?;
                     }
                 }
             }
             Literal::Builtin(goal) => {
                 budget.tick()?;
                 if let Some((_, next)) = builtin(goal, &bindings)? {
-                    visit(body, at + 1, next, model, budget, out)?;
+                    visit(body, at + 1, next, scope, model, budget, out)?;
                 }
             }
             Literal::NotBuiltin(goal) => {
@@ -403,7 +429,7 @@ pub(crate) fn model_solutions(
                 }
                 budget.tick()?;
                 if builtin(goal, &bindings)?.is_none() {
-                    visit(body, at + 1, bindings, model, budget, out)?;
+                    visit(body, at + 1, bindings, scope, model, budget, out)?;
                 }
             }
             Literal::Not(goal) => {
@@ -412,14 +438,15 @@ pub(crate) fn model_solutions(
                 budget.tick()?;
                 let present = model.exact.contains_key(&atom);
                 if !present {
-                    visit(body, at + 1, bindings, model, budget, out)?;
+                    visit(body, at + 1, bindings, scope, model, budget, out)?;
                 }
             }
             Literal::Aggregate(a) => {
-                if let Some(result) = aggregate(a, &bindings, model, budget)? {
+                let outer = aggregate_scope(&body[..at], scope, &bindings);
+                if let Some(result) = aggregate(a, &outer, model, budget)? {
                     let mut next = bindings;
                     if bind(&a.result, result, &mut next) {
-                        visit(body, at + 1, next, model, budget, out)?;
+                        visit(body, at + 1, next, scope, model, budget, out)?;
                     }
                 }
             }
@@ -430,7 +457,7 @@ pub(crate) fn model_solutions(
         Ok(())
     }
     let mut out = Vec::new();
-    visit(body, 0, initial, model, budget, &mut out)?;
+    visit(body, 0, initial, scope, model, budget, &mut out)?;
     Ok(out)
 }
 

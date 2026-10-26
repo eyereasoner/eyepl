@@ -33,8 +33,8 @@ Keep diagnostics specific and user-facing text direct.
 
 ## Language and proofs
 
-Read `SPEC.md` before changing language or proof behavior. Wheye implements a
-Prolog subset with structural terms, lists, exact integers, finite real arithmetic,
+Read `SPEC.md` before changing language or proof behavior. Wheye implements
+extended Datalog with structural terms, lists, exact integers, finite real arithmetic,
 stratified negation, aggregate_all/3, demand-driven tabling, source-selected goal checks, proof certificates,
 and final-rule fresh/1 witnesses. Keep pure decisions out of ordinary indexes.
 Unification must perform an occurs check. Do not silently coerce numeric or text
@@ -112,6 +112,8 @@ committed Wasm, README, guide, specification, and playground to match
 
 Follow the user's instructions for committing, pushing, and releasing. Commit to
 `main`. Review the complete working tree before committing or releasing.
+Pass a short, descriptive release message summarizing the changes to `./release`;
+it becomes the commit and tag message, GitHub release notes, and Actions run title.
 `Cargo.toml` is the version source; use the release script instead of bumping it
 by hand:
 

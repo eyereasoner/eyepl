@@ -10,7 +10,8 @@ pub(crate) fn relation(goal: &Goal) -> Relation {
 pub(crate) struct Plan {
     pub levels: HashMap<Relation, usize>,
     pub rules: Vec<usize>,
-    pub backward: Vec<bool>,
+    pub demand_driven: Vec<bool>,
+    pub range_restricted: Vec<bool>,
     pub demands: HashMap<Relation, Vec<usize>>,
     heads: Vec<Goal>,
     producers: HashMap<Relation, Producers>,
@@ -167,7 +168,7 @@ fn literal_shapes(body: &[Literal], fresh: bool, nested: bool) -> Result<(), Err
                 source_term(term)?;
                 if !fresh || nested || at + 1 != body.len() {
                     return Err(Error::new(
-                        "fresh is allowed only as the final goal of a forward rule.",
+                        "fresh is allowed only as the final goal of a range-restricted rule.",
                     ));
                 }
             }
@@ -204,7 +205,7 @@ pub(crate) fn bound_after(
                         "=" | "=.." | "atom_codes" | "string_codes" => known(0) || known(1),
                         "string_concat" => known(0) && known(1),
                         "string_length" => known(0),
-                        "\\=" | "true" | "false" => true,
+                        "true" | "false" => true,
                         _ => vars.is_subset(&bound),
                     };
                     if !produces {
@@ -214,7 +215,9 @@ pub(crate) fn bound_after(
                         )));
                     }
                     generates |= !vars.is_subset(&bound);
-                    bound.extend(vars);
+                    if !matches!(g.predicate.as_str(), "\\=" | "true" | "false") {
+                        bound.extend(vars);
+                    }
                     continue;
                 }
                 let inputs = fixed_builtin_inputs(g)?;
@@ -301,7 +304,8 @@ pub(crate) fn plan(program: &Program) -> Result<Plan, Error> {
     }
     let mut levels = HashMap::new();
 
-    let mut backward = Vec::new();
+    let mut demand_driven = Vec::new();
+    let mut range_restricted = Vec::new();
     for atom in &program.facts {
         if atom.values.len() > 64 {
             return Err(Error::new("A relation supports at most 64 arguments."));
@@ -327,11 +331,9 @@ pub(crate) fn plan(program: &Program) -> Result<Plan, Error> {
         literal_shapes(&rule.body, true, false)?;
         let forward = bound_after(&rule.body, BTreeSet::new(), true, false)
             .is_ok_and(|(bound, _)| rule.head.variables().is_subset(&bound));
-        backward.push(
-            !forward
-                || program.tables.contains(&relation(&rule.head))
-                || rule.body.is_empty()
-                || rule.body.iter().any(|l| matches!(l, Literal::Aggregate(_))),
+        range_restricted.push(forward);
+        demand_driven.push(
+            !forward || program.tables.contains(&relation(&rule.head)) || rule.body.is_empty(),
         );
         if !forward && rule.body.iter().any(|l| matches!(l, Literal::Fresh(_))) {
             return Err(Error::new(
@@ -481,14 +483,15 @@ pub(crate) fn plan(program: &Program) -> Result<Plan, Error> {
     }
     let mut demands: HashMap<Relation, Vec<usize>> = HashMap::new();
     for (i, rule) in program.rules.iter().enumerate() {
-        if backward[i] {
+        if demand_driven[i] {
             demands.entry(relation(&rule.head)).or_default().push(i);
         }
     }
     Ok(Plan {
         levels,
         rules,
-        backward,
+        demand_driven,
+        range_restricted,
         demands,
         heads,
         producers,

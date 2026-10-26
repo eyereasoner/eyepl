@@ -1,8 +1,9 @@
-# Prolog subset conformance
+# Extended Datalog compatibility
 
-This corpus checks Wheye's supported subset of ISO/IEC 13211-1:1995
-with Technical Corrigenda 1:2007, 2:2012, and 3:2017, including its input
-restrictions. The corrigenda take precedence over the original standard text.
+This corpus checks the syntax and operations that Wheye's extended Datalog
+shares with ISO/IEC 13211-1:1995 and Technical Corrigenda 1:2007, 2:2012, and
+3:2017, together with Wheye's input restrictions. The corrigenda take
+precedence over the original standard text in these compatibility cases.
 Passing it does not establish full ISO Prolog conformance.
 The implemented language contract remains the
 [specification](https://eyereasoner.github.io/wheye/SPEC/).
@@ -23,7 +24,7 @@ The runner prints measured fixture and case counts for each group, reports all
 fixture failures, and exits unsuccessfully if any expectation fails. It rejects
 empty groups, missing expectations, orphaned expectations, and unexpected files.
 
-## Supported ISO subset
+## Shared ISO behavior
 
 `iso/` checks the following shared behavior. Clause numbers identify the
 relevant standard areas, not a claim of complete coverage of those clauses.
@@ -49,13 +50,13 @@ It requires the exact diagnostic and the phase (`parse` or `reason`).
 These test the error conditions with Wheye's messages; they do not claim
 ISO `error(Formal, Context)` exception terms or `catch/3` support.
 
-## Subset restrictions
+## Language restrictions
 
 `unsupported/` requires rejection of improper lists (including canonical
 construction and runtime unification), unbound answers and successful unbound
 decision evidence, non-ground negation, negative dependency cycles, general
 term ordering, disjunction, cut, and operator directives. A passing rejection
-is evidence of a subset boundary, never evidence of ISO compatibility for that
+is evidence of a language boundary, never evidence of ISO compatibility for that
 feature.
 
 The corpus does not cover the full ISO lexical grammar, general term ordering
