@@ -26,8 +26,8 @@ node scripts/test-report.mjs
 
 The report is one table with each suite's total, OK/FAIL counts, elapsed time,
 and one grand total. Conformance queries/error cases and example files count
-individually, replacing their wrapper tests. Build and non-test check time
-appears in a separate row without adding to the test count.
+individually, replacing their wrapper tests. The grand total elapsed time is
+the sum of the test-suite times, excluding builds and other non-test checks.
 The release script runs this command after the version bump and Wasm rebuild,
 then includes the refreshed report in the release commit and tag.
 Reports are also written after failures; missing result data is marked incomplete.

@@ -121,19 +121,18 @@ test('report uses one table and counts each conformance case and example once', 
   const results = parseResults(output);
   assert.deepEqual(results.problems, []);
   assert.equal(results.suites.length, 7);
-  const report = formatReport(results, { version: '1.2.3', generated: 'snapshot', seconds: 2, status: 0 });
+  const report = formatReport(results, { version: '1.2.3', generated: 'snapshot', status: 0 });
   assert.match(report, /\| Conformance \| 3 \| 3 \| 0 \| 0\.010 \|/);
   assert.match(report, /\| Examples \| 2 \| 2 \| 0 \| 0\.060 \|/);
-  assert.match(report, /\| Builds and other checks \| — \| — \| — \| 1\.120 \|/);
-  assert.match(report, /\| \*\*Grand total\*\* \| \*\*14\*\* \| \*\*10\*\* \| \*\*0\*\* \| \*\*2\.000\*\* \|/);
+  assert.match(report, /\| \*\*Grand total\*\* \| \*\*14\*\* \| \*\*10\*\* \| \*\*0\*\* \| \*\*0\.880\*\* \|/);
   assert.equal((report.match(/\| Suite \|/g) ?? []).length, 1);
-  assert.doesNotMatch(report, /Registered test functions|Pipeline checks|## /);
+  assert.doesNotMatch(report, /Builds and other checks|Registered test functions|Pipeline checks|## /);
   // Node 22 can use TAP summaries when output is piped.
   assert.deepEqual(parseResults(output.replaceAll('ℹ ', '# ')), results);
 });
 
 test('report retains failed tests and marks missing result data incomplete', () => {
-  const options = { version: '1.2.3', generated: 'snapshot', seconds: 2, status: 1 };
+  const options = { version: '1.2.3', generated: 'snapshot', status: 1 };
   const failed = formatReport(parseResults(reportOutput(true)), options);
   assert.match(failed, /\| \*\*Grand total\*\* \| \*\*14\*\* \| \*\*9\*\* \| \*\*1\*\* \|/);
   assert.match(failed, /\| Examples \| 2 \| 1 \| 1 \|/);

@@ -3,7 +3,6 @@ import { spawn } from 'node:child_process';
 import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
-import { performance } from 'node:perf_hooks';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const nodeChecks = new Set(['Playground', 'Pages and Wasm', 'Release tooling', 'Test runner']);
@@ -99,7 +98,7 @@ export function parseResults(output) {
   return { checks, suites, details, problems };
 }
 
-export function formatReport(results, { version, generated, seconds, status }) {
+export function formatReport(results, { version, generated, status }) {
   const { checks, suites, details, problems } = results;
   const labels = {
     cli: 'CLI', conformance: 'Conformance', examples: 'Examples',
@@ -142,8 +141,7 @@ export function formatReport(results, { version, generated, seconds, status }) {
     '| Suite | Total | OK | FAIL | Elapsed (s) |',
     '| --- | ---: | ---: | ---: | ---: |',
     ...rows.map(row => `| ${row.name.replaceAll('|', '\\|')} | ${count(row)} | ${row.ok} | ${row.fail} | ${row.seconds.toFixed(3)} |`),
-    `| Builds and other checks | — | — | — | ${Math.max(0, seconds - measured).toFixed(3)} |`,
-    `| **Grand total** | **${complete ? ok + fail + skipped : 'unknown'}** | **${ok}** | **${complete ? fail : 'unknown'}** | **${seconds.toFixed(3)}** |`, '',
+    `| **Grand total** | **${complete ? ok + fail + skipped : 'unknown'}** | **${ok}** | **${complete ? fail : 'unknown'}** | **${measured.toFixed(3)}** |`, '',
   ];
   if (skipped) lines.push(`${skipped} skipped tests are included in Total.`, '');
   const failedChecks = checks.filter(check => check.fail).map(check => check.name);
@@ -154,7 +152,6 @@ export function formatReport(results, { version, generated, seconds, status }) {
 }
 
 async function main() {
-  const started = performance.now();
   const child = spawn('bash', ['scripts/test-all'], { cwd: root, stdio: ['ignore', 'pipe', 'pipe'] });
   const chunks = [];
   child.stdout.on('data', chunk => { chunks.push(chunk); process.stdout.write(chunk); });
@@ -163,12 +160,11 @@ async function main() {
     child.on('error', error => { console.error(error.message); resolveStatus(1); });
     child.on('close', code => resolveStatus(code ?? 1));
   });
-  const seconds = (performance.now() - started) / 1000;
   const results = parseResults(Buffer.concat(chunks).toString('utf8'));
   const cargo = await readFile(new URL('../Cargo.toml', import.meta.url), 'utf8');
   const version = /^version\s*=\s*"([^"]+)"/m.exec(cargo)[1];
   await writeFile(new URL('../REPORT.md', import.meta.url), formatReport(results, {
-    version, generated: new Date().toISOString(), seconds, status,
+    version, generated: new Date().toISOString(), status,
   }));
   console.log('\nWrote REPORT.md.');
   process.exitCode = status || (results.problems.length || results.suites.some(row => row.fail)
