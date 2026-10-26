@@ -325,7 +325,7 @@ async function checkPlayground() {
           assert.ok(target.pathname.startsWith(new URL(pagesRoot).pathname), 'link escaped the Pages base path');
           assert.ok(await evaluate(`fetch(${JSON.stringify(link)}).then(response => response.ok)`), `broken link: ${link}`);
         }
-        if (route) assert.ok(await evaluate('!!document.getElementById("8-verification")'), 'proof contract anchor missing');
+        if (route) assert.ok(await evaluate('!!document.getElementById("132-proof-conditions")'), 'proof contract anchor missing');
         await screenshot(`${route ? 'specification' : 'guide'}-${name}`);
       }
     }

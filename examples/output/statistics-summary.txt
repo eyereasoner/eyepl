@@ -15,7 +15,7 @@ wheye-proof 1
 % Rule 1: sum([X | Xs], Total) :- sum(Xs, Rest), Total is '+'(X, Rest).
 % Rule 2: mean(Name, Mean) :- sample(Name, Values), sum(Values, Total), length(Values, Count), Mean is '/'(Total, Count).
 % Rule 3: squared_error_sum([], _mean, 0.0) :- .
-% Rule 4: squared_error_sum([X | Xs], Mean, Total) :- Delta is '-'(X, Mean), Squared is '**'(Delta, 2.0), squared_error_sum(Xs, Mean, Rest), Total is '+'(Squared, Rest).
+% Rule 4: squared_error_sum([X | Xs], Mean, Total) :- Delta is '-'(X, Mean), Squared is '**'(Delta, 2), squared_error_sum(Xs, Mean, Rest), Total is '+'(Squared, Rest).
 % Rule 5: population_variance(Name, Variance) :- sample(Name, Values), mean(Name, Mean), squared_error_sum(Values, Mean, Sumsquarederrors), length(Values, Count), Variance is '/'(Sumsquarederrors, Count).
 % Rule 6: population_stddev(Name, Stddev) :- population_variance(Name, Variance), Stddev is '**'(Variance, 0.5).
 % Rule 9: populationStddev(Name, Stddev) :- population_stddev(Name, Stddev).
@@ -42,21 +42,21 @@ step 19 builtin : is(8, '+'(7, 1)).
 step 20 builtin : is(5.0, '/'(40.0, 8)).
 step 21 rule 3 [] : squared_error_sum([], 5.0, 0.0).
 step 22 builtin : is(4.0, '-'(9.0, 5.0)).
-step 23 builtin : is(16.0, '**'(4.0, 2.0)).
+step 23 builtin : is(16.0, '**'(4.0, 2)).
 step 24 builtin : is(16.0, '+'(16.0, 0.0)).
 step 25 builtin : is(2.0, '-'(7.0, 5.0)).
-step 26 builtin : is(4.0, '**'(2.0, 2.0)).
+step 26 builtin : is(4.0, '**'(2.0, 2)).
 step 27 builtin : is(20.0, '+'(4.0, 16.0)).
 step 28 builtin : is(0.0, '-'(5.0, 5.0)).
-step 29 builtin : is(0.0, '**'(0.0, 2.0)).
+step 29 builtin : is(0.0, '**'(0.0, 2)).
 step 30 builtin : is(20.0, '+'(0.0, 20.0)).
 step 31 builtin : is(-1.0, '-'(4.0, 5.0)).
-step 32 builtin : is(1.0, '**'(-1.0, 2.0)).
+step 32 builtin : is(1.0, '**'(-1.0, 2)).
 step 33 builtin : is(21.0, '+'(1.0, 20.0)).
 step 34 builtin : is(22.0, '+'(1.0, 21.0)).
 step 35 builtin : is(23.0, '+'(1.0, 22.0)).
 step 36 builtin : is(-3.0, '-'(2.0, 5.0)).
-step 37 builtin : is(9.0, '**'(-3.0, 2.0)).
+step 37 builtin : is(9.0, '**'(-3.0, 2)).
 step 38 builtin : is(32.0, '+'(9.0, 23.0)).
 step 39 builtin : is(4.0, '/'(32.0, 8)).
 step 40 builtin : is(2.0, '**'(4.0, 0.5)).

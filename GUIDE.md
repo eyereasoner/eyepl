@@ -1,9 +1,9 @@
 # Wheye guide
 
-Version **0.1.26**. Run a Prolog subset in the native CLI or browser, get
+Version **0.1.27**. Run an ISO Prolog subset in the native CLI or browser, get
 answers, and inspect their independently checkable proofs. The
 [specification](https://eyereasoner.github.io/wheye/SPEC/) defines the language
-and the [C1–C9 contract](https://eyereasoner.github.io/wheye/SPEC/#8-verification).
+and the [C1–C9 contract](https://eyereasoner.github.io/wheye/SPEC/#132-proof-conditions).
 
 ## Why a Prolog subset?
 
@@ -12,6 +12,11 @@ well-established example: restricting logic programs gives recursive queries
 a precise declarative meaning and makes specialized evaluation possible.
 Wheye follows that principle, choosing a Prolog subset for recursive reasoning
 with independently checkable evidence.
+
+Supported ISO operations follow ISO/IEC 13211-1:1995 with Technical Corrigenda
+1–3, including Corrigendum 3's corrected integer-power rule. The
+[conformance section](https://eyereasoner.github.io/wheye/SPEC/#15-conformance)
+identifies the shared ISO behavior and Wheye's restrictions and extensions.
 
 The implemented choices work together:
 
@@ -155,7 +160,11 @@ Unification uses an occurs check. Each `_` is fresh; other names beginning
 with `_` remain shared but are omitted from displayed bindings. Arithmetic
 inputs must already be bound by preceding goals or a call. Invalid inputs,
 division by zero, and non-finite results are errors. Integer arithmetic does
-not wrap. See the [complete builtin tables](https://eyereasoner.github.io/wheye/SPEC/#41-built-ins-and-arithmetic).
+not wrap. Rounding functions require real inputs; use `float(X)` for explicit
+conversion. `round(-2.5)` is `-2`, with halfway cases toward positive infinity.
+Integer power `2 ^ (-1)` is a type error; `2.0 ^ (-1)` is `0.5`.
+See the [complete builtin tables](https://eyereasoner.github.io/wheye/SPEC/#6-built-in-predicates)
+and [arithmetic rules](https://eyereasoner.github.io/wheye/SPEC/#7-arithmetic).
 
 ## Collect completed answers
 

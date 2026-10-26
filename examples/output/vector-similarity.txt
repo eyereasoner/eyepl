@@ -13,7 +13,7 @@ Similarity = 0.3654869423239036.
 ?- why.
 wheye-proof 1
 % Rule 1: dot([A | As], [B | Bs], Dot) :- Product is '*'(A, B), dot(As, Bs, Rest), Dot is '+'(Product, Rest).
-% Rule 2: sum_squares([X | Xs], Total) :- Squared is '**'(X, 2.0), sum_squares(Xs, Rest), Total is '+'(Squared, Rest).
+% Rule 2: sum_squares([X | Xs], Total) :- Squared is '**'(X, 2), sum_squares(Xs, Rest), Total is '+'(Squared, Rest).
 % Rule 3: norm(Vector, Norm) :- sum_squares(Vector, Sumsquares), Norm is '**'(Sumsquares, 0.5).
 % Rule 4: cosine_similarity(Case, Similarity) :- vector(Case, a, A), vector(Case, b, B), dot(A, B, Dot), norm(A, Norma), norm(B, Normb), Denominator is '*'(Norma, Normb), Similarity is '/'(Dot, Denominator).
 % Rule 8: cosineSimilarity(Case, Similarity) :- cosine_similarity(Case, Similarity).
@@ -23,21 +23,21 @@ step 3 source 3 : dot([], [], 0.0).
 step 4 source 4 : sum_squares([], 0.0).
 step 5 builtin : is(18.0, '*'(3.0, 6.0)).
 step 6 builtin : is(18.0, '+'(18.0, 0.0)).
-step 7 builtin : is(9.0, '**'(3.0, 2.0)).
+step 7 builtin : is(9.0, '**'(3.0, 2)).
 step 8 builtin : is(9.0, '+'(9.0, 0.0)).
-step 9 builtin : is(36.0, '**'(6.0, 2.0)).
+step 9 builtin : is(36.0, '**'(6.0, 2)).
 step 10 builtin : is(36.0, '+'(36.0, 0.0)).
 step 11 builtin : is(-10.0, '*'(2.0, -5.0)).
 step 12 builtin : is(8.0, '+'(-10.0, 18.0)).
-step 13 builtin : is(4.0, '**'(2.0, 2.0)).
+step 13 builtin : is(4.0, '**'(2.0, 2)).
 step 14 builtin : is(13.0, '+'(4.0, 9.0)).
-step 15 builtin : is(25.0, '**'(-5.0, 2.0)).
+step 15 builtin : is(25.0, '**'(-5.0, 2)).
 step 16 builtin : is(61.0, '+'(25.0, 36.0)).
 step 17 builtin : is(4.0, '*'(1.0, 4.0)).
 step 18 builtin : is(12.0, '+'(4.0, 8.0)).
-step 19 builtin : is(1.0, '**'(1.0, 2.0)).
+step 19 builtin : is(1.0, '**'(1.0, 2)).
 step 20 builtin : is(14.0, '+'(1.0, 13.0)).
-step 21 builtin : is(16.0, '**'(4.0, 2.0)).
+step 21 builtin : is(16.0, '**'(4.0, 2)).
 step 22 builtin : is(77.0, '+'(16.0, 61.0)).
 step 23 builtin : is(3.7416573867739413, '**'(14.0, 0.5)).
 step 24 builtin : is(8.774964387392123, '**'(77.0, 0.5)).

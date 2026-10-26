@@ -19,4 +19,4 @@
 ?- X is min(2,3), Y is max(2,3).
 ?- X is sign(0), Y is sign(9).
 ?- abs(atan2(1,1) - pi / 4) < 1e-12.
-?- X is 2 ^ -2.
+?- X is 2.0 ^ -2.

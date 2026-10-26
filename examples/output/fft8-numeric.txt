@@ -9,7 +9,7 @@ wheye-proof 1
 % Rule 4: fft2([A, B], [c(Sum, 0.0), c(Difference, 0.0)]) :- Sum is '+'(A, B), Difference is '-'(A, B).
 % Rule 5: fft4([A, B, C, D], [Y0, Y1, Y2, Y3]) :- fft2([A, C], [E0, E1]), fft2([B, D], [O0, O1]), w8(2, W), c_mul(W, O1, T), c_add(E0, O0, Y0), c_add(E1, T, Y1), c_sub(E0, O0, Y2), c_sub(E1, T, Y3).
 % Rule 6: fft8([A, B, C, D, E, F, G, H], [Y0, Y1, Y2, Y3, Y4, Y5, Y6, Y7]) :- fft4([A, C, E, G], [E0, E1, E2, E3]), fft4([B, D, F, H], [O0, O1, O2, O3]), w8(1, W1), w8(2, W2), w8(3, W3), c_mul(W1, O1, T1), c_mul(W2, O2, T2), c_mul(W3, O3, T3), c_add(E0, O0, Y0), c_add(E1, T1, Y1), c_add(E2, T2, Y2), c_add(E3, T3, Y3), c_sub(E0, O0, Y4), c_sub(E1, T1, Y5), c_sub(E2, T2, Y6), c_sub(E3, T3, Y7).
-% Rule 7: rounded([c(R, I) | Rest], [c(RR, RI) | Tail]) :- RR is '/'(round('*'(R, 100000000)), 100000000), RI is '/'(round('*'(I, 100000000)), 100000000), rounded(Rest, Tail).
+% Rule 7: rounded([c(R, I) | Rest], [c(RR, RI) | Tail]) :- RR is '/'(round('*'(float(R), 100000000)), 100000000), RI is '/'(round('*'(float(I), 100000000)), 100000000), rounded(Rest, Tail).
 % Rule 8: spectrum(Name, Bins) :- wave(Name, Samples), fft8(Samples, Raw), rounded(Raw, Bins).
 step 1 source 1 : wave(ramp, [0, 1, 2, 3, 4, 5, 6, 7]).
 step 2 source 3 : w8(1, c(0.7071067811865476, -0.7071067811865476)).
@@ -48,15 +48,15 @@ step 34 builtin : is(-4, '-'(12, 16)).
 step 35 builtin : is(-4.0, '-'(-4.0, 0.0)).
 step 36 builtin : is(-1.6568542494923806, '-'(4.0, 5.656854249492381)).
 step 37 builtin : is(-9.65685424949238, '-'(-4.0, 5.656854249492381)).
-step 38 builtin : is(0.0, '/'(round('*'(0.0, 100000000)), 100000000)).
-step 39 builtin : is(-4.0, '/'(round('*'(-4.0, 100000000)), 100000000)).
-step 40 builtin : is(-9.65685425, '/'(round('*'(-9.65685424949238, 100000000)), 100000000)).
-step 41 builtin : is(-1.65685425, '/'(round('*'(-1.6568542494923806, 100000000)), 100000000)).
-step 42 builtin : is(-4.0, '/'(round('*'(-4, 100000000)), 100000000)).
-step 43 builtin : is(1.65685425, '/'(round('*'(1.6568542494923806, 100000000)), 100000000)).
-step 44 builtin : is(4.0, '/'(round('*'(4.0, 100000000)), 100000000)).
-step 45 builtin : is(9.65685425, '/'(round('*'(9.65685424949238, 100000000)), 100000000)).
-step 46 builtin : is(28.0, '/'(round('*'(28, 100000000)), 100000000)).
+step 38 builtin : is(0.0, '/'(round('*'(float(0.0), 100000000)), 100000000)).
+step 39 builtin : is(-4.0, '/'(round('*'(float(-4.0), 100000000)), 100000000)).
+step 40 builtin : is(-9.65685425, '/'(round('*'(float(-9.65685424949238), 100000000)), 100000000)).
+step 41 builtin : is(-1.65685425, '/'(round('*'(float(-1.6568542494923806), 100000000)), 100000000)).
+step 42 builtin : is(-4.0, '/'(round('*'(float(-4), 100000000)), 100000000)).
+step 43 builtin : is(1.65685425, '/'(round('*'(float(1.6568542494923806), 100000000)), 100000000)).
+step 44 builtin : is(4.0, '/'(round('*'(float(4.0), 100000000)), 100000000)).
+step 45 builtin : is(9.65685425, '/'(round('*'(float(9.65685424949238), 100000000)), 100000000)).
+step 46 builtin : is(28.0, '/'(round('*'(float(28), 100000000)), 100000000)).
 step 47 rule 4 [6,7] : fft2([0, 4], [c(4, 0.0), c(-4, 0.0)]).
 step 48 rule 4 [8,9] : fft2([2, 6], [c(8, 0.0), c(-4, 0.0)]).
 step 49 rule 3 [10,11] : c_mul(c(0.0, -1.0), c(-4, 0.0), c(0.0, 4.0)).

@@ -1,0 +1,1 @@
+reason: atan2 is undefined when both arguments are zero.

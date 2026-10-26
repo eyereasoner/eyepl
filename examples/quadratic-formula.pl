@@ -12,7 +12,7 @@ equation(eq2, 2.0, -4.0, -6.0).
 
 discriminant(Case, D) :-
   equation(Case, A, B, C),
-  (B2 is B ** 2.0),
+  (B2 is B ** 2),
   (Foura is 4.0 * A),
   (Fourac is Foura * C),
   (D is B2 - Fourac).

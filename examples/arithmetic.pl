@@ -7,7 +7,7 @@
 % Division results are [quotient toward zero, quotient toward negative
 % infinity, remainder, modulo]. Rounding results are [floor, ceiling, nearest
 % integer, truncate, real integer part, real fractional part]; halfway cases
-% round away from zero. Bit results are [AND, OR, XOR, complement, left
+% round toward positive infinity. Bit results are [AND, OR, XOR, complement, left
 % shift, right shift].
 
 :- table absolute/2.
@@ -88,8 +88,8 @@ circumference(Circle, _Calc1) :-
 ?- check((result(division, [-2, -3, -1, 2]))).
 ?- check((_Calc1 is (((-7 // 3) * 3) + (-7 rem 3)), _Calc1 =:= -7)).
 ?- check((_Calc1 is (((-7 div 3) * 3) + (-7 mod 3)), _Calc1 =:= -7)).
-?- check((result(rounding, [-3, -2, -3, -2, -2.0, -0.5]))).
-?- check((_Calc1 is round(-1.5), _Calc1 =:= -2)).
+?- check((result(rounding, [-3, -2, -2, -2, -2.0, -0.5]))).
+?- check((_Calc1 is round(-1.5), _Calc1 =:= -1)).
 ?- check((result(extrema, [1e+21, 1000000000000000000001]))).
 ?- check((result(gcd, 6))).
 ?- check((result(bits, [4, 15, 11, -14, 104, 1]))).

@@ -5,7 +5,7 @@ Value = 9007199254740993.
 What = [-2, -3, -1, 2].
 
 ?- result(rounding, What).
-What = [-3, -2, -3, -2, -2.0, -0.5].
+What = [-3, -2, -2, -2, -2.0, -0.5].
 
 ?- result(extrema, What).
 What = [1e21, 1000000000000000000001].
@@ -51,10 +51,10 @@ true.
 ?- check((_Calc1 is '+'('*'(div(-7, 3), 3), mod(-7, 3)), _Calc1 =:= -7)).
 true.
 
-?- check(result(rounding, [-3, -2, -3, -2, -2.0, -0.5])).
+?- check(result(rounding, [-3, -2, -2, -2, -2.0, -0.5])).
 true.
 
-?- check((_Calc1 is round(-1.5), _Calc1 =:= -2)).
+?- check((_Calc1 is round(-1.5), _Calc1 =:= -1)).
 true.
 
 ?- check(result(extrema, [1e21, 1000000000000000000001])).

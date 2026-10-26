@@ -42,6 +42,63 @@ fn float(v: &Value) -> Result<f64, Error> {
 fn mixed(v: &Value) -> bool {
     matches!(v, Value::Real(_))
 }
+fn real_input(v: &Value) -> Result<f64, Error> {
+    if let Value::Real(bits) = v {
+        Ok(f64::from_bits(*bits))
+    } else {
+        Err(Error::new("This arithmetic operation requires a real."))
+    }
+}
+
+fn power(name: &str, a: &Value, b: &Value) -> Result<Value, Error> {
+    if name == "^" && !mixed(a) && !mixed(b) {
+        let (base, exponent) = (int(a)?, int(b)?);
+        if exponent.is_negative() {
+            if base.is_zero() {
+                return Err(Error::new("Zero cannot be raised to a negative power."));
+            }
+            if base.abs() == BigInt::from(1) {
+                return Ok(Value::Integer(if base.is_negative() && exponent.is_odd() {
+                    -1
+                } else {
+                    1
+                }));
+            }
+            return Err(Error::new(
+                "Integer power with a negative exponent requires a real base.",
+            ));
+        }
+        let exponent = exponent
+            .to_u32()
+            .filter(|n| *n <= 1_000_000)
+            .ok_or_else(|| Error::new("Integer exponent exceeds the resource limit."))?;
+        return Ok(integer(base.pow(exponent)));
+    }
+    let (base, exponent) = (float(a)?, float(b)?);
+    if base == 0.0 && exponent < 0.0 {
+        return Err(Error::new("Zero cannot be raised to a negative power."));
+    }
+    let negative = if base < 0.0 {
+        if mixed(b) {
+            if name == "**" || exponent.fract() != 0.0 {
+                return Err(Error::new(
+                    "A negative power base requires an integer exponent.",
+                ));
+            }
+            exponent % 2.0 != 0.0
+        } else {
+            int(b)?.is_odd()
+        }
+    } else {
+        false
+    };
+    let result = base.abs().powf(exponent);
+    if result == 0.0 && base != 0.0 {
+        return Err(Error::new("Power underflow."));
+    }
+    real(if negative { -result } else { result })
+}
+
 pub(crate) fn compare(a: &Value, b: &Value) -> Result<Ordering, Error> {
     if !mixed(a) && !mixed(b) {
         return Ok(int(a)?.cmp(&int(b)?));
@@ -111,28 +168,42 @@ pub(crate) fn eval(v: &Value) -> Result<Value, Error> {
                     Ok(integer(int(a)?.abs()))
                 }
             }
-            "sign" => Ok(Value::Integer(match compare(a, &Value::Integer(0))? {
-                Ordering::Less => -1,
-                Ordering::Equal => 0,
-                Ordering::Greater => 1,
-            })),
-            "floor" | "ceiling" | "truncate" | "round" => {
-                if !mixed(a) {
-                    return Ok(a.clone());
+            "sign" => {
+                let sign = match compare(a, &Value::Integer(0))? {
+                    Ordering::Less => -1,
+                    Ordering::Equal => 0,
+                    Ordering::Greater => 1,
+                };
+                if mixed(a) {
+                    real(f64::from(sign))
+                } else {
+                    Ok(Value::Integer(i64::from(sign)))
                 }
-                let n = float(a)?;
+            }
+            "floor" | "ceiling" | "truncate" | "round" => {
+                let n = real_input(a)?;
                 let n = match name {
                     "floor" => n.floor(),
                     "ceiling" => n.ceil(),
                     "truncate" => n.trunc(),
-                    _ => n.round(),
+                    // ISO rounds halfway toward +infinity. Avoid adding 0.5
+                    // to n itself, which can round twice near integer limits.
+                    _ => {
+                        let lower = n.floor();
+                        if n - lower >= 0.5 {
+                            lower + 1.0
+                        } else {
+                            lower
+                        }
+                    }
                 };
                 Ok(integer(
                     BigInt::from_f64(n).ok_or_else(|| Error::new("Invalid rounded real."))?,
                 ))
             }
-            "float_integer_part" => real(float(a)?.trunc()),
-            "float_fractional_part" => real(float(a)?.fract()),
+            "float" => real(float(a)?),
+            "float_integer_part" => real(real_input(a)?.trunc()),
+            "float_fractional_part" => real(real_input(a)?.fract()),
             "sqrt" => real(float(a)?.sqrt()),
             "log" => real(float(a)?.ln()),
             "exp" => real(float(a)?.exp()),
@@ -181,16 +252,7 @@ pub(crate) fn eval(v: &Value) -> Result<Value, Error> {
                     _ => a.mod_floor(&b),
                 }))
             }
-            "^" if !mixed(a) && !mixed(b) && !int(b)?.is_negative() => {
-                let exponent = int(b)?
-                    .to_u32()
-                    .ok_or_else(|| Error::new("Integer exponent exceeds the resource limit."))?;
-                if exponent > 1_000_000 {
-                    return Err(Error::new("Integer exponent exceeds the resource limit."));
-                }
-                Ok(integer(int(a)?.pow(exponent)))
-            }
-            "^" | "**" => real(float(a)?.powf(float(b)?)),
+            "^" | "**" => power(name, a, b),
             "min" | "max" => {
                 let cmp = compare(a, b)?;
                 Ok(
@@ -220,7 +282,15 @@ pub(crate) fn eval(v: &Value) -> Result<Value, Error> {
                     int(a)? >> shift
                 }))
             }
-            "atan2" => real(float(a)?.atan2(float(b)?)),
+            "atan2" => {
+                let (y, x) = (float(a)?, float(b)?);
+                if y == 0.0 && x == 0.0 {
+                    return Err(Error::new(
+                        "atan2 is undefined when both arguments are zero.",
+                    ));
+                }
+                real(y.atan2(x))
+            }
             _ => Err(failure()),
         },
         _ => Err(failure()),

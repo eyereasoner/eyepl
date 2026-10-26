@@ -23,7 +23,7 @@ dot([A|As], [B|Bs], Dot) :-
 
 sum_squares([], 0.0).
 sum_squares([X|Xs], Total) :-
-  (Squared is X ** 2.0),
+  (Squared is X ** 2),
   sum_squares(Xs, Rest),
   (Total is Squared + Rest).
 

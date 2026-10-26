@@ -43,8 +43,8 @@ fft8([A, B, C, D, E, F, G, H], [Y0, Y1, Y2, Y3, Y4, Y5, Y6, Y7]) :-
 % Round only the report to eight decimal places; tests also check raw bins.
 rounded([], []).
 rounded([c(R, I)|Rest], [c(RR, RI)|Tail]) :-
-  RR is round(R*100000000)/100000000,
-  RI is round(I*100000000)/100000000,
+  RR is round(float(R)*100000000)/100000000,
+  RI is round(float(I)*100000000)/100000000,
   rounded(Rest, Tail).
 spectrum(Name, Bins) :-
   wave(Name, Samples), fft8(Samples, Raw), rounded(Raw, Bins).

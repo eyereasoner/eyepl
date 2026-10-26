@@ -1,7 +1,8 @@
 # Prolog subset conformance
 
 This corpus checks Wheye's supported subset of ISO/IEC 13211-1:1995
-and its Technical Corrigenda, including its input restrictions.
+with Technical Corrigenda 1:2007, 2:2012, and 3:2017, including its input
+restrictions. The corrigenda take precedence over the original standard text.
 Passing it does not establish full ISO Prolog conformance.
 The implemented language contract remains the
 [specification](https://eyereasoner.github.io/wheye/SPEC/).
@@ -34,14 +35,17 @@ relevant standard areas, not a claim of complete coverage of those clauses.
 | Clauses and control (7.8) | `clauses`, `control` | Finite ground answer sets, conjunction, `true/0`, ground single-goal negation, recursive append |
 | Term comparison (8.4) | `atom_order` | ASCII atom ordering only |
 | Term construction (8.5) | `univ` | `=../2` construction and decomposition, atomic and compound terms, proper lists, later-bound arguments |
-| Arithmetic evaluation and comparison (7.9, 8.6-8.7, 9) | `arithmetic`, `quotients`, `functions` | Precedence, result types, all six comparisons, signed quotients/remainders, rounding, powers, transcendental functions, extrema |
+| Arithmetic evaluation and comparison (7.9, 8.6-8.7, 9) | `arithmetic`, `quotients`, `functions`, `powers`, `rounding`, `operator_priorities` | ISO operator priorities and grouping, result types, all six comparisons, signed quotients/remainders, explicit `float/1` conversion, halfway rounding toward positive infinity, powers through Corrigendum 3, transcendental functions, extrema |
 | Integer model and bit operations (9) | `integer_model`, `bits` | Selected unbounded integer model, exact large results, signed bit operations and shifts |
 | Atomic conversion (8.16) | `atom_codes` | Both directions, empty atoms, output matching and mismatches on ASCII codes |
 
 `errors/` exercises arithmetic instantiation, operand types, division and
 remainder by zero, function domains, overflow, unsupported evaluable functors,
 atom-code input requirements, invalid `=../2` construction, and an unclosed
-quote. It requires the exact diagnostic and the phase (`parse` or `reason`).
+quote. Arithmetic cases include Corrigendum 3's negative integer-power type
+error, the zero and negative-base power domains, power underflow, float-only
+rounding inputs, the undefined `atan2(0,0)`, and invalid operator groupings.
+It requires the exact diagnostic and the phase (`parse` or `reason`).
 These test the error conditions with Wheye's messages; they do not claim
 ISO `error(Formal, Context)` exception terms or `catch/3` support.
 
@@ -63,8 +67,11 @@ an empty answer for such a name does not demonstrate built-in support.
 Engine behavior outside the shared ISO cases is covered by the ordinary
 regressions in `tests/prolog.rs`, including set semantics, table completion,
 the occurs check, and Wheye's numeric and text model. In particular, exact
-mixed numeric comparisons, integer inputs to rounding functions, and distinct
-strings are implementation behavior rather than ISO compatibility claims.
+mixed numeric comparisons and distinct strings are documented implementation
+behavior. Rounding input types,
+`sign/1` result types, and integer-power error conditions are checked against
+the standard with Corrigenda 1–3. Forged certificates with the previous
+arithmetic results are rejected by C5 in `tests/prolog.rs`.
 Aggregates, witnesses, and proof forgery checks also remain in the other
 integration suites.
 

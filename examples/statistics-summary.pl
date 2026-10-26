@@ -29,7 +29,7 @@ mean(Name, Mean) :-
 squared_error_sum([], _mean, 0.0).
 squared_error_sum([X|Xs], Mean, Total) :-
   (Delta is X - Mean),
-  (Squared is Delta ** 2.0),
+  (Squared is Delta ** 2),
   squared_error_sum(Xs, Mean, Rest),
   (Total is Squared + Rest).
 

@@ -13,14 +13,14 @@ true.
 
 ?- why.
 wheye-proof 1
-% Rule 1: discriminant(Case, D) :- equation(Case, A, B, C), B2 is '**'(B, 2.0), Foura is '*'(4.0, A), Fourac is '*'(Foura, C), D is '-'(B2, Fourac).
+% Rule 1: discriminant(Case, D) :- equation(Case, A, B, C), B2 is '**'(B, 2), Foura is '*'(4.0, A), Fourac is '*'(Foura, C), D is '-'(B2, Fourac).
 % Rule 2: sqrt_discriminant(Case, S) :- discriminant(Case, D), D >= 0.0, S is '**'(D, 0.5).
 % Rule 3: negative_b(Case, Nb) :- equation(Case, _a, B, _c), Nb is '-'(B).
 % Rule 4: denominator(Case, Den) :- equation(Case, A, _b, _c), Den is '*'(2.0, A).
 % Rule 6: root_minus(Case, Root) :- negative_b(Case, Nb), sqrt_discriminant(Case, S), denominator(Case, Den), Numerator is '-'(Nb, S), Root is '/'(Numerator, Den).
 % Rule 8: root(Case, Root) :- root_minus(Case, Root).
 step 1 source 1 : equation(eq1, 1.0, -5.0, 6.0).
-step 2 builtin : is(25.0, '**'(-5.0, 2.0)).
+step 2 builtin : is(25.0, '**'(-5.0, 2)).
 step 3 builtin : is(4.0, '*'(4.0, 1.0)).
 step 4 builtin : is(24.0, '*'(4.0, 6.0)).
 step 5 builtin : is(1.0, '-'(25.0, 24.0)).

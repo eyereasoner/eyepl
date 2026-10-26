@@ -44,7 +44,7 @@ test('website stages rendered documentation and every playground dependency', as
     const guide = await readFile(join(directory, 'index.md'), 'utf8');
     assert.match(guide, /^title: "Wheye guide"$/m);
     assert.match(guide, /^## Run your first program$/m);
-    assert.match(guide, /\]\(\/wheye\/SPEC\/#8-verification\)/);
+    assert.match(guide, /\]\(\/wheye\/SPEC\/#132-proof-conditions\)/);
     assert.match(await readFile(join(directory, 'SPEC/index.md'), 'utf8'), /^title: "Wheye specification"$/m);
     const playground = await readFile(join(directory, 'playground/index.html'), 'utf8');
     assert.match(playground, /<base href="\.\.\/">/);
@@ -121,4 +121,17 @@ test('browser engine executes explicit true and false result requests', async ()
     runProgram('p(a). ?- check(p(a)). ?- check(p(b)).'),
     '?- check(p(a)).\ntrue.\n\n?- check(p(b)).\nfalse.\n',
   );
+});
+
+test('browser arithmetic and certificates follow ISO Corrigenda 1–3', async () => {
+  const { runProgram } = await browserEngine();
+  const output = runProgram(`
+    ?- P is 2.0 ^ (-1), R is round(-2.5), S is sign(-2.5), B is 1 << 2 + 1.
+    ?- check.
+  `);
+  assert.match(output, /P = 0\.5, R = -2, S = -1\.0, B = 5\./);
+  assert.match(output, /C5 re-decision: 4 checked, 0 failed/);
+  for (const source of ['?- X is 2 ^ (-1).', '?- \\+ (0.5 is 2 ^ (-1)).']) {
+    assert.throws(() => runProgram(source), error => /requires a real base/.test(String(error)));
+  }
 });

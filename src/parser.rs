@@ -250,9 +250,8 @@ fn tokenize(source: &str) -> Result<Vec<(Token, usize)>, Error> {
 }
 fn binary(op: &str) -> Option<(u8, bool)> {
     Some(match op {
-        "\\/" | "xor" | "/\\" | "<<" | ">>" => (1, false),
-        "+" | "-" => (2, false),
-        "*" | "/" | "//" | "div" | "rem" | "mod" => (3, false),
+        "+" | "-" | "\\/" | "/\\" | "xor" => (2, false),
+        "*" | "/" | "//" | "div" | "rem" | "mod" | "<<" | ">>" => (3, false),
         "**" => (5, false),
         "^" => (5, true),
         _ => return None,
@@ -337,13 +336,14 @@ impl Parser {
             Err(self.error(format!("Expected {s}.")))
         }
     }
-    fn primary(&mut self) -> Result<Value, Error> {
+    fn primary(&mut self) -> Result<(Value, u8), Error> {
         self.depth += 1;
         if self.depth > 256 {
             return Err(self.error("Term nesting exceeds the parser limit (256)."));
         }
         let token = self.peek().clone();
         self.position += 1;
+        let mut priority = u8::MAX;
         let value = match token {
             Token::Variable(name) if name == "_" => {
                 self.anonymous += 1;
@@ -417,18 +417,24 @@ impl Parser {
                 tail
             }
             Token::Symbol(s) if matches!(s.as_str(), "-" | "+" | "\\") => {
-                let v = self.expression(4)?;
+                let v = self.expression(5)?;
+                priority = 5;
                 if s == "-" {
                     match v {
-                        Value::Integer(n) => crate::arithmetic::integer(-BigInt::from(n)),
-                        Value::BigInteger(n) => crate::arithmetic::integer(-n),
-                        Value::Real(b) => crate::arithmetic::real(-f64::from_bits(b))?,
+                        Value::Integer(n) => {
+                            priority = u8::MAX;
+                            crate::arithmetic::integer(-BigInt::from(n))
+                        }
+                        Value::BigInteger(n) => {
+                            priority = u8::MAX;
+                            crate::arithmetic::integer(-n)
+                        }
+                        Value::Real(b) => {
+                            priority = u8::MAX;
+                            crate::arithmetic::real(-f64::from_bits(b))?
+                        }
                         v => Value::Compound(s, vec![v]),
                     }
-                } else if s == "+"
-                    && matches!(v, Value::Integer(_) | Value::BigInteger(_) | Value::Real(_))
-                {
-                    v
                 } else {
                     Value::Compound(s, vec![v])
                 }
@@ -447,23 +453,31 @@ impl Parser {
             }
         };
         self.depth -= 1;
-        Ok(value)
+        Ok((value, priority))
     }
     fn expression(&mut self, min: u8) -> Result<Value, Error> {
-        let mut left = self.primary()?;
+        self.expression_with_priority(min).map(|(value, _)| value)
+    }
+    fn expression_with_priority(&mut self, min: u8) -> Result<(Value, u8), Error> {
+        let (mut left, mut priority) = self.primary()?;
         while let Some((precedence, right)) = binary(self.spelling()) {
             if precedence < min {
                 break;
             }
             let op = self.spelling().to_string();
-            self.position += 1;
-            let rhs = self.expression(precedence + u8::from(!right))?;
-            left = Value::Compound(op.clone(), vec![left, rhs]);
-            if op == "**" && self.is("**") {
-                return Err(self.error("Parenthesize chained ** expressions."));
+            if priority < precedence || ((right || op == "**") && priority == precedence) {
+                return Err(self.error("Parenthesize operators with incompatible priorities."));
             }
+            self.position += 1;
+            let rhs_min = precedence + u8::from(!right);
+            let (rhs, rhs_priority) = self.expression_with_priority(rhs_min)?;
+            if rhs_priority < rhs_min {
+                return Err(self.error("Parenthesize operators with incompatible priorities."));
+            }
+            left = Value::Compound(op, vec![left, rhs]);
+            priority = precedence;
         }
-        Ok(left)
+        Ok((left, priority))
     }
     fn as_goal(&self, v: Value) -> Result<Goal, Error> {
         if !v.valid() {

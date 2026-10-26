@@ -105,15 +105,15 @@ fn text_types_scalar_codes_and_utf16_order_follow_the_specification() {
 }
 
 #[test]
-fn exact_mixed_comparisons_and_extended_numeric_inputs_follow_the_specification() {
+fn exact_mixed_comparisons_and_iso_numeric_types_follow_the_specification() {
     let (_, run, _) = checked(
         "?- 9007199254740993 > 9007199254740992.0. \
          ?- 9007199254740993 =:= 9007199254740992.0. \
          ?- X is min(9007199254740993,9007199254740992.0). \
-         ?- X is floor(9007199254740993). \
-         ?- X is ceiling(3),Y is round(3),Z is truncate(3). \
-         ?- X is float_integer_part(3),Y is float_fractional_part(3). \
-         ?- X is sign(-2.5). ?- X is atan2(0,0).",
+         ?- X is floor(float(9007199254740993)). \
+         ?- X is ceiling(3.0),Y is round(3.0),Z is truncate(3.0). \
+         ?- X is float_integer_part(3.0),Y is float_fractional_part(3.0). \
+         ?- X is sign(-2.5). ?- X is atan2(0,1).",
     );
     assert_eq!(
         run.answers.iter().map(Vec::len).collect::<Vec<_>>(),
@@ -121,10 +121,10 @@ fn exact_mixed_comparisons_and_extended_numeric_inputs_follow_the_specification(
     );
     for (index, expected) in [
         (2, vec!["9007199254740992.0"]),
-        (3, vec!["9007199254740993"]),
+        (3, vec!["9007199254740992"]),
         (4, vec!["3", "3", "3"]),
         (5, vec!["3.0", "0.0"]),
-        (6, vec!["-1"]),
+        (6, vec!["-1.0"]),
         (7, vec!["0.0"]),
     ] {
         assert_eq!(
@@ -136,6 +136,43 @@ fn exact_mixed_comparisons_and_extended_numeric_inputs_follow_the_specification(
             expected
         );
     }
+}
+
+#[test]
+fn c5_rejects_arithmetic_results_that_violate_iso_corrigenda() {
+    for (expression, old_result) in [
+        ("2 ^ (-1)", "0.5"),
+        ("(-2) ** 3.0", "-8.0"),
+        ("2.0 ^ (-2000)", "0.0"),
+        ("round(-2.5)", "-3"),
+        ("sign(-2.5)", "-1"),
+        ("atan2(0, 0)", "0.0"),
+        ("floor(3)", "3"),
+        ("ceiling(3)", "3"),
+        ("round(3)", "3"),
+        ("truncate(3)", "3"),
+        ("float_integer_part(3)", "3.0"),
+        ("float_fractional_part(3)", "0.0"),
+    ] {
+        let program = parse(&format!("?- X is {expression}.")).unwrap();
+        let certificate = Certificate::parse(&format!(
+            "wheye-proof 1\nstep 1 builtin : is({old_result}, {expression}).\nanswer 1 [1]\n"
+        ))
+        .unwrap();
+        let report = check(&program, &certificate).unwrap();
+        assert!(!report.valid(), "accepted {expression}: {report}");
+        assert!(report.condition(Condition::C5).failed > 0, "{report}");
+    }
+
+    // A type error must not become successful negative evidence either.
+    let program = parse("?- \\+ (0.5 is 2 ^ (-1)).").unwrap();
+    let certificate = Certificate::parse(
+        "wheye-proof 1\nstep 1 not-builtin : is(0.5, 2 ^ (-1)).\nanswer 1 [1]\n",
+    )
+    .unwrap();
+    let report = check(&program, &certificate).unwrap();
+    assert!(!report.valid());
+    assert!(report.condition(Condition::C5).failed > 0);
 }
 
 #[test]
