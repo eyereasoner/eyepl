@@ -24,6 +24,121 @@ fn prolog_terms_unification_aliases_and_occurs_check_are_structural() {
 }
 
 #[test]
+fn occurs_check_rejects_direct_indirect_and_list_cycles() {
+    let (_, run, _) = checked("?- X=f(X). ?- X=Y,Y=f(X). ?- X=[a|X]. ?- X=f(Y),Y=a.");
+    assert_eq!(
+        run.answers.iter().map(Vec::len).collect::<Vec<_>>(),
+        vec![0, 0, 0, 1]
+    );
+    assert_eq!(
+        run.answers[3][0]
+            .values
+            .iter()
+            .map(ToString::to_string)
+            .collect::<Vec<_>>(),
+        vec!["f(a)", "a"]
+    );
+}
+
+#[test]
+fn projected_answers_are_sets_and_missing_relations_are_empty() {
+    let (_, run, _) = checked(
+        "item(a). item(a). item(b). project(X):-item(X). project(X):-item(X). \
+         ?- project(X). ?- item(_). ?- missing(a). ?- \\+ missing(a).",
+    );
+    assert_eq!(
+        run.answers.iter().map(Vec::len).collect::<Vec<_>>(),
+        vec![2, 1, 0, 1]
+    );
+    let mut values: Vec<_> = run.answers[0]
+        .iter()
+        .map(|answer| answer.values.clone())
+        .collect();
+    values.sort();
+    assert_eq!(
+        values,
+        vec![
+            vec![Value::Symbol("a".into())],
+            vec![Value::Symbol("b".into())]
+        ]
+    );
+}
+
+#[test]
+fn queries_use_later_recursive_clauses_and_completed_negative_calls() {
+    let (_, run, _) = checked(
+        "?- path(a,To). ?- \\+ path(a,d). \
+         path(X,Z):-path(X,Y),edge(Y,Z). path(X,Y):-edge(X,Y). \
+         edge(a,b). edge(b,c). edge(c,b).",
+    );
+    assert_eq!(run.answers[1].len(), 1);
+    let mut values: Vec<_> = run.answers[0]
+        .iter()
+        .map(|answer| answer.values.clone())
+        .collect();
+    values.sort();
+    assert_eq!(
+        values,
+        vec![
+            vec![Value::Symbol("b".into())],
+            vec![Value::Symbol("c".into())]
+        ]
+    );
+}
+
+#[test]
+fn text_types_scalar_codes_and_utf16_order_follow_the_specification() {
+    let (_, run, _) = checked(
+        r#"?- "abc"=abc. ?- "abc"=[97,98,99]. ?- []='[]'.
+           ?- "abc"=..Parts. ?- atom_codes('é🙂',Codes).
+           ?- string_codes("é🙂",Codes). ?- '\u0021'='!'.
+           ?- '🙂' @< '\uE000'."#,
+    );
+    assert_eq!(
+        run.answers.iter().map(Vec::len).collect::<Vec<_>>(),
+        vec![0, 0, 0, 1, 1, 1, 1, 1]
+    );
+    assert_eq!(run.answers[3][0].values[0].to_string(), "[\"abc\"]");
+    for index in [4, 5] {
+        assert_eq!(run.answers[index][0].values[0].to_string(), "[233, 128578]");
+    }
+}
+
+#[test]
+fn exact_mixed_comparisons_and_extended_numeric_inputs_follow_the_specification() {
+    let (_, run, _) = checked(
+        "?- 9007199254740993 > 9007199254740992.0. \
+         ?- 9007199254740993 =:= 9007199254740992.0. \
+         ?- X is min(9007199254740993,9007199254740992.0). \
+         ?- X is floor(9007199254740993). \
+         ?- X is ceiling(3),Y is round(3),Z is truncate(3). \
+         ?- X is float_integer_part(3),Y is float_fractional_part(3). \
+         ?- X is sign(-2.5). ?- X is atan2(0,0).",
+    );
+    assert_eq!(
+        run.answers.iter().map(Vec::len).collect::<Vec<_>>(),
+        vec![1, 0, 1, 1, 1, 1, 1, 1]
+    );
+    for (index, expected) in [
+        (2, vec!["9007199254740992.0"]),
+        (3, vec!["9007199254740993"]),
+        (4, vec!["3", "3", "3"]),
+        (5, vec!["3.0", "0.0"]),
+        (6, vec!["-1"]),
+        (7, vec!["0.0"]),
+    ] {
+        assert_eq!(
+            run.answers[index][0]
+                .values
+                .iter()
+                .map(ToString::to_string)
+                .collect::<Vec<_>>(),
+            expected
+        );
+    }
+}
+
+#[test]
 fn aggregation_uses_producer_tuples_not_distinct_projected_values() {
     let (_,run,_) = checked("row(a,5). row(b,5). row(b,5). ?- aggregate_all(sum(V),row(K,V),N). ?- aggregate_all(count,row(_,V),N). ?- aggregate_all(list(V),row(K,V),Items). ?- aggregate_all(count,missing(X),0).");
     assert_eq!(run.answers[0][0].values, vec![Value::Integer(10)]);

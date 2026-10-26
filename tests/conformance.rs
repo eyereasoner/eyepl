@@ -1,4 +1,4 @@
-//! File-based checks of the supported ISO overlap and explicit subset differences.
+//! File-based checks of the supported ISO subset and its input restrictions.
 use std::collections::BTreeSet;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -151,11 +151,6 @@ fn iso_subset_answers_and_certificates() {
 #[test]
 fn iso_error_conditions_use_specific_wheye_diagnostics() {
     verify("errors", "error", error);
-}
-
-#[test]
-fn documented_differences_and_certificates() {
-    verify("differences", "answers", answers);
 }
 
 #[test]

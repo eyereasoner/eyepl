@@ -1,8 +1,8 @@
 # Prolog subset conformance
 
-This corpus checks Wheye's implemented overlap with ISO/IEC 13211-1:1995
-and its Technical Corrigenda, alongside explicit subset differences and
-restrictions. Passing it does not establish full ISO Prolog conformance.
+This corpus checks Wheye's supported subset of ISO/IEC 13211-1:1995
+and its Technical Corrigenda, including its input restrictions.
+Passing it does not establish full ISO Prolog conformance.
 The implemented language contract remains the
 [specification](https://eyereasoner.github.io/wheye/SPEC/).
 
@@ -22,7 +22,7 @@ The runner prints measured fixture and case counts for each group, reports all
 fixture failures, and exits unsuccessfully if any expectation fails. It rejects
 empty groups, missing expectations, orphaned expectations, and unexpected files.
 
-## ISO overlap
+## Supported ISO subset
 
 `iso/` checks the following shared behavior. Clause numbers identify the
 relevant standard areas, not a claim of complete coverage of those clauses.
@@ -45,18 +45,7 @@ quote. It requires the exact diagnostic and the phase (`parse` or `reason`).
 These test the error conditions with Wheye's messages; they do not claim
 ISO `error(Formal, Context)` exception terms or `catch/3` support.
 
-## Differences and restrictions
-
-`differences/` checks implemented results that must be interpreted under
-Wheye's contract:
-
-| Fixture | Behavior |
-| --- | --- |
-| `occurs_check` | Cyclic unifications fail; Wheye never creates cyclic terms. This also covers cases outside ISO's ordinary NSTO unification guarantee. |
-| `sets_and_unknowns` | Duplicate derivations and projected answers collapse; undeclared relations are empty rather than raising unknown-procedure errors. |
-| `closed_recursion` | Left recursion and cycles complete through tables; negation waits for completed producers; queries see the entire source. |
-| `text_and_lists` | Double quotes produce distinct strings; `[]` differs from `'[]'`; Unicode scalar codes, Unicode escapes, and UTF-16 lexical ordering follow Wheye's choices. |
-| `arithmetic` | Mixed comparisons preserve exact integers; rounding accepts integers; float-part functions accept integers; `sign/1` returns an integer even for reals; `atan2(0,0)` returns `0.0`. |
+## Subset restrictions
 
 `unsupported/` requires rejection of improper lists (including canonical
 construction and runtime unification), unbound answers and successful unbound
@@ -71,8 +60,13 @@ all-solutions predicates, mutable databases, streams, term I/O, exception
 handling, flags, modules, or DCGs. Those facilities are not implemented as ISO
 built-ins. Unsupported predicate names can still name ordinary user relations;
 an empty answer for such a name does not demonstrate built-in support.
-Wheye-specific aggregates, witnesses, and proof forgery checks remain in the
-other integration suites.
+Engine behavior outside the shared ISO cases is covered by the ordinary
+regressions in `tests/prolog.rs`, including set semantics, table completion,
+the occurs check, and Wheye's numeric and text model. In particular, exact
+mixed numeric comparisons, integer inputs to rounding functions, and distinct
+strings are implementation behavior rather than ISO compatibility claims.
+Aggregates, witnesses, and proof forgery checks also remain in the other
+integration suites.
 
 ## Fixture format and evidence
 
