@@ -32,7 +32,7 @@ if git show-ref --verify --quiet "refs/tags/$release_tag"; then
   exit 1
 fi
 ./scripts/build-playground
-./scripts/test-all
+node scripts/test-report.mjs
 cargo clippy --target wasm32-unknown-unknown --lib --locked -- -D warnings
 git diff --check
 

@@ -4,6 +4,7 @@ import { copyFile, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promi
 import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { formatReport, parseResults } from '../scripts/test-report.mjs';
 
 async function fixture(t) {
   const directory = await mkdtemp(join(tmpdir(), 'wheye-runner-'));
@@ -91,4 +92,59 @@ test('native build failures retain the compiler diagnostic and exit code', async
     {cwd:directory, env, encoding:'utf8'});
   assert.equal(result.status,9);
   assert.match(result.stderr,/specific compiler diagnostic/);
+});
+
+function reportOutput(failed = false) {
+  const simple = name => `=== ${name} ===\nPASS ${name} · 0.10 s\n`;
+  const node = name => `=== ${name} ===\nℹ tests 2\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 1\nℹ todo 0\nPASS ${name} · 0.20 s\n`;
+  return simple('Formatting')
+    + `=== Native tests and goldens ===
+# conformance: 1 native regression tests
+    iso: 1 fixtures, 3 passing cases, 0 failures
+  PASS · 0.010 s
+# examples: 1 native regression tests
+    Example first.pl: PASS · 0.020 s · golden + C1–C9
+    Example second.pl: ${failed ? 'FAIL' : 'PASS'} · 0.030 s · golden + C1–C9
+  ${failed ? 'FAIL' : 'PASS'} · 0.060 s
+Native tests: ${failed ? '1 passed, 1 failed' : '2 passed, 0 failed'}.
+${failed ? 'FAIL Native tests and goldens · exit 1' : 'PASS Native tests and goldens'} · 0.80 s
+=== API examples ===
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+PASS API examples · 0.10 s
+`
+    + simple('Native clippy') + simple('API documentation') + simple('Generated taxonomies')
+    + node('Playground') + node('Pages and Wasm') + node('Release tooling') + node('Test runner');
+}
+
+test('report uses one table and counts each conformance case and example once', () => {
+  const output = reportOutput().replace('PASS · 0.010 s', '\x1b[32mPASS\x1b[0m · 0.010 s');
+  const results = parseResults(output);
+  assert.deepEqual(results.problems, []);
+  assert.equal(results.suites.length, 7);
+  const report = formatReport(results, { version: '1.2.3', generated: 'snapshot', seconds: 2, status: 0 });
+  assert.match(report, /\| Conformance \| 3 \| 3 \| 0 \| 0\.010 \|/);
+  assert.match(report, /\| Examples \| 2 \| 2 \| 0 \| 0\.060 \|/);
+  assert.match(report, /\| Builds and other checks \| — \| — \| — \| 1\.120 \|/);
+  assert.match(report, /\| \*\*Grand total\*\* \| \*\*14\*\* \| \*\*10\*\* \| \*\*0\*\* \| \*\*2\.000\*\* \|/);
+  assert.equal((report.match(/\| Suite \|/g) ?? []).length, 1);
+  assert.doesNotMatch(report, /Registered test functions|Pipeline checks|## /);
+  // Node 22 can use TAP summaries when output is piped.
+  assert.deepEqual(parseResults(output.replaceAll('ℹ ', '# ')), results);
+});
+
+test('report retains failed tests and marks missing result data incomplete', () => {
+  const options = { version: '1.2.3', generated: 'snapshot', seconds: 2, status: 1 };
+  const failed = formatReport(parseResults(reportOutput(true)), options);
+  assert.match(failed, /\| \*\*Grand total\*\* \| \*\*14\*\* \| \*\*9\*\* \| \*\*1\*\* \|/);
+  assert.match(failed, /\| Examples \| 2 \| 1 \| 1 \|/);
+  assert.match(failed, /Failed checks: Native tests and goldens/);
+  const incomplete = parseResults('=== Native tests and goldens ===\nFAIL Native tests and goldens · exit 9 · 0.10 s\n');
+  assert.ok(incomplete.problems.length > 0);
+  assert.match(formatReport(incomplete, options), /Incomplete counts:/);
+  const interrupted = parseResults(reportOutput().replace('  PASS · 0.010 s\n', ''));
+  assert.ok(interrupted.problems.some(problem => problem.includes('not every discovered test')));
+  const partial = parseResults(reportOutput(true).replace('3 passing cases, 0 failures', '0 passing cases, 1 failures'));
+  const partialReport = formatReport(partial, options);
+  assert.match(partialReport, /\| Conformance \| unknown \| 0 \| unknown \|/);
+  assert.match(partialReport, /Incomplete counts:/);
 });

@@ -38,6 +38,7 @@ async function fixture(t) {
   git('config', 'user.email', 'release@example.invalid');
   await mkdir(join(work, 'scripts'));
   for (const [file, text] of Object.entries(documents)) await writeFile(join(work, file), text);
+  await writeFile(join(work, 'REPORT.md'), 'Stale report for 0.1.0\n');
   await copyFile(new URL('release', root), join(work, 'release'));
   await copyFile(new URL('scripts/sync-version.mjs', root), join(work, 'scripts/sync-version.mjs'));
   const driver = join(directory, 'driver.mjs');
@@ -63,6 +64,11 @@ if (kind === 'build') {
   mkdirSync('pkg', { recursive: true });
   writeFileSync('pkg/build-version.txt', version);
 }
+if (kind === 'report') {
+  execFileSync(process.execPath, [process.env.WHEYE_TEST_DRIVER, 'checks'], { stdio: 'inherit' });
+  const version = /version = "([^"]+)"/.exec(readFileSync('Cargo.toml', 'utf8'))[1];
+  writeFileSync('REPORT.md', '# Test report\\n\\nFresh report for ' + version + '\\n');
+}
 if (kind === 'gh' && args[0] === 'release') {
   // The remote tag must already exist before GitHub Release creation.
   execFileSync('git', ['ls-remote', '--exit-code', 'origin', 'refs/tags/' + args[2]]);
@@ -74,6 +80,11 @@ if (kind === 'gh' && args[0] === 'release') {
   for (const [script, kind] of [['build-playground', 'build'], ['test-all', 'checks']]) {
     await writeFile(join(work, 'scripts', script), `#!/usr/bin/env bash\nexec node "$WHEYE_TEST_DRIVER" ${kind} "$@"\n`, { mode: 0o755 });
   }
+  await writeFile(join(work, 'scripts/test-report.mjs'), `
+import { spawnSync } from 'node:child_process';
+const result = spawnSync(process.execPath, [process.env.WHEYE_TEST_DRIVER, 'report'], { stdio: 'inherit' });
+process.exit(result.status ?? 1);
+`);
   git('add', '-A');
   git('commit', '-m', 'Initial version');
   git('push', 'origin', 'main');
@@ -99,11 +110,15 @@ for (const [args, version] of [[[], '0.1.1'], [['patch'], '0.1.1'], [['minor'], 
     assert.equal(f.git('--git-dir', f.remote, 'rev-parse', 'main'), f.git('rev-parse', 'HEAD'));
     assert.equal(f.git('--git-dir', f.remote, 'rev-parse', tag), f.git('rev-parse', tag));
     assert.equal(f.git('show', `${tag}:feature.pl`), 'fact(added).');
-    for (const file of ['README.md', 'GUIDE.md', 'SPEC.md', 'playground.html', 'pkg/build-version.txt']) {
+    for (const file of ['README.md', 'GUIDE.md', 'SPEC.md', 'playground.html', 'pkg/build-version.txt', 'REPORT.md']) {
       assert.ok((await readFile(join(f.work, file), 'utf8')).includes(version), file);
     }
+    assert.equal(f.git('show', `${tag}:REPORT.md`), `# Test report\n\nFresh report for ${version}`);
     const calls = await f.calls();
-    assert.ok(calls.find(c => c.kind === 'checks'));
+    assert.equal(calls.filter(c => c.kind === 'report').length, 1);
+    assert.equal(calls.filter(c => c.kind === 'checks').length, 1);
+    assert.ok(calls.findIndex(c => c.kind === 'build') < calls.findIndex(c => c.kind === 'report'));
+    assert.ok(calls.findIndex(c => c.kind === 'report') < calls.findIndex(c => c.kind === 'cargo' && c.args[0] === 'clippy'));
     assert.deepEqual(calls.find(c => c.kind === 'cargo' && c.args[0] === 'clippy').args,
       ['clippy', '--target', 'wasm32-unknown-unknown', '--lib', '--locked', '--', '-D', 'warnings']);
     assert.deepEqual(calls.at(-1), { kind: 'gh', args: ['release', 'create', tag, `--title=${tag}`, `--notes=Release ${tag}`] });
@@ -131,7 +146,7 @@ test('help and invalid arguments leave the repository untouched', async t => {
   assert.equal(f.git('status', '--porcelain'), '');
 });
 
-for (const failure of ['gh:auth', 'build', 'checks', 'cargo:clippy']) {
+for (const failure of ['gh:auth', 'build', 'report', 'checks', 'cargo:clippy']) {
   test(`${failure} failure prevents commit, tag, and publication`, async t => {
     const f = await fixture(t);
     assert.notEqual(f.release([], { WHEYE_TEST_FAIL: failure }).status, 0);
@@ -139,6 +154,9 @@ for (const failure of ['gh:auth', 'build', 'checks', 'cargo:clippy']) {
     assert.equal(f.git('tag'), '');
     assert.equal(f.git('--git-dir', f.remote, 'rev-parse', 'main'), f.initial);
     assert.ok(!(await f.calls()).some(c => c.kind === 'gh' && c.args[0] === 'release'));
+    if (failure === 'report' || failure === 'checks') {
+      assert.equal(await readFile(join(f.work, 'REPORT.md'), 'utf8'), 'Stale report for 0.1.0\n');
+    }
     if (failure === 'gh:auth') assert.equal(f.git('status', '--porcelain'), '');
   });
 }

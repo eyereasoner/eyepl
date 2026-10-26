@@ -1,6 +1,6 @@
 # Wheye guide
 
-Version **0.1.23**. Run a Prolog subset in the native CLI or browser, get
+Version **0.1.24**. Run a Prolog subset in the native CLI or browser, get
 answers, and inspect their independently checkable proofs. The
 [specification](https://eyereasoner.github.io/wheye/SPEC/) defines the language
 and the [C1–C9 contract](https://eyereasoner.github.io/wheye/SPEC/#8-verification).
@@ -370,7 +370,7 @@ The first argument defaults to `patch`. The optional second argument becomes the
 
 Install [cargo-edit](https://github.com/killercup/cargo-edit), [wasm-pack](https://github.com/drager/wasm-pack), and the [GitHub CLI](https://cli.github.com/), along with Rust, the `wasm32-unknown-unknown` target, and Node.js 22 or later. Sign in once with `gh auth login`. The script needs permission to push `main` and tags and create releases in the `origin` repository.
 
-The script switches to `main`, pulls with `--ff-only`, bumps `Cargo.toml` with `cargo set-version`, and synchronizes the README, guide, specification, and playground version labels. It rebuilds WebAssembly, runs `./scripts/test-all` and Wasm clippy, then commits **all working-tree changes**, creates an annotated `v<version>` tag, pushes the branch and tag together, and creates the GitHub release. Review `git status` and `git diff` first. The push also starts CI and the Pages deployment.
+The script switches to `main`, pulls with `--ff-only`, bumps `Cargo.toml` with `cargo set-version`, and synchronizes the README, guide, specification, and playground version labels. It rebuilds WebAssembly, runs `./scripts/test-all` through `node scripts/test-report.mjs` to refresh `REPORT.md` for the new version, and runs Wasm clippy. It then commits **all working-tree changes**, including the fresh report, creates an annotated `v<version>` tag, pushes the branch and tag together, and creates the GitHub release. Review `git status` and `git diff` first. The push also starts CI and the Pages deployment.
 
 A failed build or check stops before committing or publishing, leaving the local version changes available for inspection. Resolve the failure and finish that version rather than bumping again. If a commit and tag were created but publication stopped, retry only the unfinished steps, substituting the actual tag:
 
