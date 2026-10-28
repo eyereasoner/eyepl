@@ -27,10 +27,10 @@ mod wasm;
 
 pub use engine::{reason, Answer, Limits, Run};
 pub use model::{
-    Aggregate, AggregateKind, Atom, Error, Goal, Literal, Program, Query, Request, Rule, Term,
-    Value,
+    Aggregate, AggregateKind, Atom, Error, Goal, Literal, Name, Program, Query, Request, Rule,
+    Term, Value,
 };
-pub use parser::{parse, parse_atom};
+pub use parser::{parse, parse_atom, parse_document};
 pub use proof::{
     check, check_with_limits, Boundary, Certificate, Claim, Condition, ConditionReport, Failure,
     Justification, Owner, ProofLocation, Report, Step,
@@ -40,6 +40,6 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Evaluate source and render its answer, certificate, and verification requests.
 pub fn execute(source: &str, limits: Limits) -> Result<String, Error> {
-    let program = parse(source)?;
+    let program = parse_document(source)?;
     reason(&program, limits)?.output_with_limits(&program, limits)
 }

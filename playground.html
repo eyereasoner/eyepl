@@ -11,7 +11,7 @@
 <body>
   <main>
     <header class="masthead">
-      <a class="brand" href="./" aria-label="wheye home"><img src="assets/eye.png" width="64" height="64" alt=""><span class="brand-copy"><span class="brand-name">Wheye playground<span class="version" id="version">v0.3.0</span></span></span></a>
+      <a class="brand" href="./" aria-label="wheye home"><img src="assets/eye.png" width="64" height="64" alt=""><span class="brand-copy"><span class="brand-name">Wheye playground<span class="version" id="version">v0.3.1</span></span></span></a>
       <nav class="site-nav" aria-label="Project">
         <a href="https://eyereasoner.github.io/wheye/">Guide</a>
         <a href="https://eyereasoner.github.io/wheye/playground/" aria-current="page">Playground</a>
@@ -68,6 +68,7 @@
               <option value="drone-corridor-planner">Drone corridor planning</option>
               <option value="easter">Easter</option>
               <option value="electrical-rc-filter">Electrical rc filter</option>
+              <option value="examiners">Examiners</option>
               <option value="explainable-ev-depot-configuration">Explainable ev depot configuration</option>
               <option value="expression-eval">Expression eval</option>
               <option value="family">Family</option>
@@ -168,12 +169,15 @@
         <section class="panel" aria-labelledby="source-heading">
           <div class="panel-heading"><h2 id="source-heading"><span class="dot green"></span>Midlog program</h2><span>.pl</span></div>
           <label class="sr-only" for="source">Midlog facts, rules, and queries</label>
+          <div class="editor" id="editor">
+          <pre id="source-highlight" class="highlight" aria-hidden="true"></pre>
           <textarea id="source" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-describedby="source-hint">% A first conclusion
 human(socrates).
 mortal(Person) :- human(Person).
 
 ?- mortal(Who).
 </textarea>
+          </div>
           <p class="panel-hint" id="source-hint">Facts end in <code>.</code> · Rules use <code>:-</code> · Questions start with <code>?-</code></p>
         </section>
         <section class="panel output-panel" aria-labelledby="output-heading">

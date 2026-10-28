@@ -7,7 +7,7 @@ type Routes = BTreeSet<(String, String, i64, String)>;
 
 fn label(value: &Value) -> String {
     match value {
-        Value::Symbol(s) | Value::Text(s) => s.clone(),
+        Value::Symbol(s) | Value::Text(s) => s.to_string(),
         _ => panic!("expected airport ID or label"),
     }
 }

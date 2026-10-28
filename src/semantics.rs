@@ -1,6 +1,7 @@
 use crate::engine::{instantiate, match_goal, Bindings};
-use crate::{Aggregate, AggregateKind, Atom, Error, Goal, Literal, Term, Value};
-use std::collections::{BTreeMap, BTreeSet, HashMap};
+use crate::model::HashMap;
+use crate::{Aggregate, AggregateKind, Atom, Error, Goal, Literal, Name, Term, Value};
+use std::collections::{BTreeMap, BTreeSet};
 
 pub(crate) struct Budget {
     pub used: usize,
@@ -72,7 +73,7 @@ fn fixed_mode_builtin(goal: &Goal, bindings: &Bindings) -> Option<(Atom, Binding
         ("div", [Value::Integer(a), Value::Integer(b)]) => Some(Value::Integer(a.checked_div(*b)?)),
         ("mod", [Value::Integer(a), Value::Integer(b)]) => Some(Value::Integer(a.checked_rem(*b)?)),
         ("abs", [Value::Integer(a)]) => Some(Value::Integer(a.checked_abs()?)),
-        ("concat", [Value::Text(a), Value::Text(b)]) => Some(Value::Text(format!("{a}{b}"))),
+        ("concat", [Value::Text(a), Value::Text(b)]) => Some(Value::Text(format!("{a}{b}").into())),
         ("strlen", [Value::Text(a)]) => {
             Some(Value::Integer(i64::try_from(a.chars().count()).ok()?))
         }
@@ -189,7 +190,7 @@ pub(crate) fn builtin(goal: &Goal, bindings: &Bindings) -> Result<Option<(Atom, 
             require(b)?;
             match (a, b) {
                 (Value::Text(a), Value::Text(b)) => {
-                    unify(c, &Value::Text(format!("{a}{b}")), &mut next)
+                    unify(c, &Value::Text(format!("{a}{b}").into()), &mut next)
                 }
                 _ => return Err(Error::new("string_concat requires two input strings.")),
             }
@@ -237,9 +238,9 @@ pub(crate) fn builtin(goal: &Goal, bindings: &Bindings) -> Result<Option<(Atom, 
                         Error::new("Use valid Unicode scalar values in the codes list.")
                     })?;
                 let v = if goal.predicate == "atom_codes" {
-                    Value::Symbol(text)
+                    Value::Symbol(text.into())
                 } else {
-                    Value::Text(text)
+                    Value::Text(text.into())
                 };
                 unify(a, &v, &mut next)
             }
@@ -302,42 +303,52 @@ pub(crate) fn builtin(goal: &Goal, bindings: &Bindings) -> Result<Option<(Atom, 
 
 pub(crate) struct Model<'a> {
     facts: &'a [Atom],
-    relations: HashMap<(String, usize), Vec<usize>>,
-    positions: HashMap<((String, usize), usize, Value), Vec<usize>>,
-    exact: HashMap<Atom, usize>,
+    relations: HashMap<u64, Vec<usize>>,
+    positions: HashMap<u64, Vec<usize>>,
+    /// Facts by `atom_key`; equal keys are confirmed against `facts`.
+    exact: HashMap<u64, Vec<usize>>,
 }
 impl<'a> Model<'a> {
     pub fn new(facts: &'a [Atom], budget: &mut Budget) -> Result<Self, Error> {
         let mut model = Self {
             facts,
-            relations: HashMap::new(),
-            positions: HashMap::new(),
-            exact: HashMap::new(),
+            relations: HashMap::default(),
+            positions: HashMap::default(),
+            exact: HashMap::default(),
         };
         for (i, atom) in facts.iter().enumerate() {
             budget.tick()?;
-            let relation = (atom.predicate.clone(), atom.values.len());
-            model.relations.entry(relation.clone()).or_default().push(i);
-            model.exact.insert(atom.clone(), i);
+            let relation = crate::model::relation_key(&atom.predicate, atom.values.len());
+            model.relations.entry(relation).or_default().push(i);
+            let exact = model.exact.entry(crate::model::atom_key(atom)).or_default();
+            match exact.iter_mut().find(|j| facts[**j] == *atom) {
+                Some(j) => *j = i,
+                None => exact.push(i),
+            }
             for (at, value) in atom.values.iter().enumerate() {
                 model
                     .positions
-                    .entry((relation.clone(), at, value.clone()))
+                    .entry(crate::model::position_key(relation, at, value))
                     .or_default()
                     .push(i);
             }
         }
         Ok(model)
     }
+    fn contains(&self, atom: &Atom) -> bool {
+        self.exact
+            .get(&crate::model::atom_key(atom))
+            .is_some_and(|ids| ids.iter().any(|&i| self.facts[i] == *atom))
+    }
     fn candidates(&self, goal: &Goal, bindings: &Bindings) -> &[usize] {
         if let Some(atom) = instantiate(goal, bindings) {
             return self
                 .exact
-                .get(&atom)
-                .map(std::slice::from_ref)
+                .get(&crate::model::atom_key(&atom))
+                .map(Vec::as_slice)
                 .unwrap_or(&[]);
         }
-        let relation = (goal.predicate.clone(), goal.terms.len());
+        let relation = crate::model::relation_key(&goal.predicate, goal.terms.len());
         let mut result = self
             .relations
             .get(&relation)
@@ -347,7 +358,7 @@ impl<'a> Model<'a> {
             if let Some(value) = value(term, bindings) {
                 let candidates = self
                     .positions
-                    .get(&(relation.clone(), at, value))
+                    .get(&crate::model::position_key(relation, at, &value))
                     .map(Vec::as_slice)
                     .unwrap_or(&[]);
                 if candidates.len() < result.len() {
@@ -362,7 +373,7 @@ impl<'a> Model<'a> {
 /// Closed aggregate inputs established by this body's prefix and call mode.
 pub(crate) fn aggregate_scope(
     prefix: &[Literal],
-    inputs: &BTreeSet<String>,
+    inputs: &BTreeSet<Name>,
     bindings: &Bindings,
 ) -> Bindings {
     inputs
@@ -388,7 +399,7 @@ pub(crate) fn model_solutions(
 pub(crate) fn model_solutions_scoped(
     body: &[Literal],
     initial: Bindings,
-    scope: &BTreeSet<String>,
+    scope: &BTreeSet<Name>,
     model: &Model<'_>,
     budget: &mut Budget,
 ) -> Result<Vec<Bindings>, Error> {
@@ -396,7 +407,7 @@ pub(crate) fn model_solutions_scoped(
         body: &[Literal],
         at: usize,
         bindings: Bindings,
-        scope: &BTreeSet<String>,
+        scope: &BTreeSet<Name>,
         model: &Model<'_>,
         budget: &mut Budget,
         out: &mut Vec<Bindings>,
@@ -436,7 +447,7 @@ pub(crate) fn model_solutions_scoped(
                 let atom = instantiate(goal, &bindings)
                     .ok_or_else(|| Error::new("Unbound negative goal."))?;
                 budget.tick()?;
-                let present = model.exact.contains_key(&atom);
+                let present = model.contains(&atom);
                 if !present {
                     visit(body, at + 1, bindings, scope, model, budget, out)?;
                 }
@@ -533,5 +544,5 @@ pub(crate) fn aggregate(
 pub(crate) fn witness(rule: usize, position: usize, bindings: &Bindings) -> Value {
     // Debug's tagged, escaped value representation keeps kinds and delimiters
     // distinct; this is a scoped identity, not a hash that could collide.
-    Value::Witness(format!("r{rule}:g{position}:{bindings:?}"))
+    Value::Witness(format!("r{rule}:g{position}:{bindings:?}").into())
 }

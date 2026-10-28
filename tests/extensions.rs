@@ -199,6 +199,52 @@ fn witness_identity_is_typed_stable_scoped_and_carried_by_rules() {
 }
 
 #[test]
+fn witnesses_are_lean_and_depend_only_on_the_frontier() {
+    // Premise substitutions that differ only outside the head share a witness.
+    let found = answers("p(a,1). p(a,2). p(b,1). t(X,W):-p(X,Y),fresh(W). ?- t(X,W).");
+    assert_eq!(found[0].len(), 2);
+    // A source fact already satisfies t(a,_), so only b gets a witness.
+    let found = answers("t(a,k). q(a). q(b). t(X,W):-q(X),fresh(W). ?- t(X,W).");
+    assert_eq!(found[0].len(), 2);
+    assert!(found[0].contains(&vec![Value::Symbol("a".into()), Value::Symbol("k".into())]));
+    assert!(found[0]
+        .iter()
+        .any(|a| a[0] == Value::Symbol("b".into()) && matches!(a[1], Value::Witness(_))));
+    // A lower stratum's conclusion satisfies it as well, including through a
+    // demand-driven producer of the witness relation.
+    let lower = "r(a). q(a). q(b). t(X,k):-r(X),\\+ s(X). t(X,W):-q(X),fresh(W). ?- t(X,W).";
+    assert_eq!(answers(lower)[0].len(), 2);
+    assert_eq!(answers(&format!(":- table t/2. {lower}"))[0].len(), 2);
+    // The witness rule's own conclusions never satisfy its test.
+    assert_eq!(
+        answers("q(a). t(X,W):-q(X),fresh(W). ?- t(X,W).")[0].len(),
+        1
+    );
+}
+
+#[test]
+fn lean_helpers_are_reserved_and_stay_distinct_across_inputs() {
+    let error = parse("'$lean:1'(a).").unwrap_err().to_string();
+    assert!(error.contains("reserved"), "{error}");
+    assert!(parse("p :- '$satisfied:1'.").is_err());
+    assert!(parse(":- table '$lean:1'/1.").is_err());
+    let mut program = parse("q(a). t(X,W):-q(X),fresh(W).").unwrap();
+    program.extend(parse("r(b). u(X,W):-r(X),fresh(W). ?- t(X,W), u(Y,V).").unwrap());
+    let heads: BTreeSet<_> = program
+        .rules
+        .iter()
+        .map(|r| r.head.predicate.to_string())
+        .collect();
+    assert!(heads.contains("$lean:2") && heads.contains("$satisfied:2"));
+    let run = reason(&program, Limits::default()).unwrap();
+    assert_eq!(run.answers[0].len(), 1);
+    check(&program, &run.certificate(&program))
+        .unwrap()
+        .require_valid()
+        .unwrap();
+}
+
+#[test]
 fn full_example_exercises_every_condition_with_no_not_applicable_entries() {
     let (p, r) = run(include_str!("../examples/orders.pl"));
     let report = check(&p, &r.certificate(&p)).unwrap();
@@ -235,7 +281,7 @@ fn negative_reachability_and_aggregates_agree_with_an_independent_graph_oracle()
         let (_, r) = run(&source);
         let expected: BTreeSet<_> = (0..3)
             .filter(|i| !reach[0][*i])
-            .map(|i| Value::Symbol(format!("n{i}")))
+            .map(|i| Value::Symbol(format!("n{i}").into()))
             .collect();
         let actual: BTreeSet<_> = r.answers[0].iter().map(|a| a.values[0].clone()).collect();
         assert_eq!(actual, expected, "graph {mask}");

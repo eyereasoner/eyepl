@@ -277,6 +277,65 @@ textarea {
   outline-offset:-3px!important;
   border-radius:0
 }
+.editor {
+  display:grid;
+  flex:none
+}
+.editor > * {
+  grid-area:1 / 1
+}
+.editor textarea {
+  position:relative;
+  color:transparent;
+  caret-color:var(--ink);
+  white-space:pre-wrap;
+  overflow-wrap:anywhere
+}
+.editor textarea::selection {
+  color:transparent;
+  background:rgba(34,189,231,.28)
+}
+.editor.plain textarea {
+  color:var(--ink)
+}
+.editor.plain textarea::selection {
+  color:inherit
+}
+.editor .highlight {
+  pointer-events:none;
+  min-height:0;
+  color:var(--ink)
+}
+.editor .highlight span {
+  font-weight:inherit;
+  font-style:inherit
+}
+.t-comment {
+  color:var(--muted);
+  font-style:italic
+}
+.t-keyword {
+  color:#b3261e;
+  font-weight:600
+}
+.t-builtin {
+  color:#6c3fb5
+}
+.t-var {
+  color:#0b6f8c
+}
+.t-string {
+  color:#2b7a2f
+}
+.t-number {
+  color:#9a5200
+}
+.t-pred {
+  font-weight:600
+}
+.t-punct {
+  color:var(--muted)
+}
 pre {
   white-space:pre-wrap;
   overflow-wrap:anywhere;
@@ -462,7 +521,7 @@ footer {
     font-size:12px;
     white-space:nowrap
   }
-  textarea,select {
+  textarea,select,.editor .highlight {
     font-size:16px
   }
 }

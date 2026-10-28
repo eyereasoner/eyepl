@@ -1,8 +1,9 @@
 use crate::engine::{instantiate, match_goal, Bindings};
 use crate::language::{bound_after, plan, Plan};
+use crate::model::{HashMap, HashSet};
 use crate::semantics::{aggregate, bind, builtin, witness, Budget};
-use crate::{parse_atom, Atom, Error, Goal, Literal, Program, Run, Term, Value};
-use std::collections::{BTreeSet, HashMap, HashSet};
+use crate::{parse_atom, Atom, Error, Goal, Literal, Name, Program, Run, Term, Value};
+use std::collections::BTreeSet;
 use std::fmt;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -104,7 +105,7 @@ pub(crate) fn witness_goal(program: &Program, owner: Owner, position: usize) -> 
     let mut terms: Vec<_> = bound.into_iter().map(Term::Variable).collect();
     terms.push(result);
     Some(Goal {
-        predicate: format!("$fresh:{owner}:{position}"),
+        predicate: format!("$fresh:{owner}:{position}").into(),
         terms,
     })
 }
@@ -119,7 +120,7 @@ pub(crate) fn witness_context(goal: &Goal, bindings: &Bindings) -> Option<Bindin
         })
         .collect()
 }
-fn aggregate_inputs(rule: &crate::Rule) -> BTreeSet<String> {
+fn aggregate_inputs(rule: &crate::Rule) -> BTreeSet<Name> {
     // Result constraints are outputs, even when the caller binds the head.
     // Preceding body goals can establish these names as groups separately.
     let mut inputs = rule.head.variables();
@@ -138,7 +139,7 @@ fn aggregate_names(
     plan: &Plan,
     owner: Owner,
     position: usize,
-) -> BTreeSet<String> {
+) -> BTreeSet<Name> {
     let mut names: BTreeSet<_> = body(program, owner).unwrap()[..position - 1]
         .iter()
         .flat_map(Literal::variables)
@@ -187,7 +188,7 @@ pub(crate) fn aggregate_atom(
         Value::Compound(".".into(), vec![item, tail])
     });
     Atom {
-        predicate: format!("$aggregate:{owner}:{position}"),
+        predicate: format!("$aggregate:{owner}:{position}").into(),
         values: vec![groups, result],
     }
 }
@@ -1009,7 +1010,7 @@ impl<'a> Checker<'a> {
                 used: 0,
                 limit: limits.max_matches,
             },
-            witnesses: HashMap::new(),
+            witnesses: HashMap::default(),
         })
     }
 
@@ -1031,8 +1032,8 @@ impl<'a> Checker<'a> {
         let budget = &mut self.budget;
         let witnesses = &mut self.witnesses;
 
-        let mut known = HashSet::new();
-        let mut decisions = HashSet::new();
+        let mut known = HashSet::default();
+        let mut decisions = HashSet::default();
         for (index, step) in certificate.steps.iter().enumerate() {
             budget.tick()?;
             let location = ProofLocation::Step(index + 1);
@@ -1339,8 +1340,8 @@ impl<'a> Checker<'a> {
         let report = &mut self.report;
 
         let source_atoms: HashSet<_> = program.facts.iter().collect();
-        let mut answers = HashSet::new();
-        let mut derived = HashSet::new();
+        let mut answers = HashSet::default();
+        let mut derived = HashSet::default();
         for (index, claim) in certificate.claims.iter().enumerate() {
             let location = ProofLocation::Claim(index + 1);
             report.attempt(C3);
@@ -1427,7 +1428,7 @@ impl<'a> Checker<'a> {
         let budget = &mut self.budget;
         let witnesses = &self.witnesses;
 
-        let mut boundary_levels = HashSet::new();
+        let mut boundary_levels = HashSet::default();
         for (index, boundary) in certificate.boundaries.iter().enumerate() {
             let location = ProofLocation::Boundary(index + 1);
             report.attempt(C3);
@@ -1436,7 +1437,7 @@ impl<'a> Checker<'a> {
                 report.fail(C3, location, "Duplicate boundary level.");
             }
             let mut covered = true;
-            let mut ids = HashSet::new();
+            let mut ids = HashSet::default();
             for id in &boundary.steps {
                 budget.tick()?;
                 covered &=
@@ -1518,7 +1519,7 @@ impl<'a> Checker<'a> {
                     }
                 }
                 budget.tick()?;
-                if plan.goal_level(call) > boundary.level
+                if plan.call_level(call) > boundary.level
                     || !plan
                         .demands
                         .contains_key(&(call.predicate.clone(), call.terms.len()))
@@ -1574,10 +1575,41 @@ impl<'a> Checker<'a> {
                     _ => {}
                 }
             }
+            // A rule in stratum k is closed over the facts of strata up to k.
+            // Stratification makes that the whole boundary for ordinary rules;
+            // a lean satisfaction test ignores its witness rule's conclusions.
+            let mut lower_facts: Vec<(usize, Vec<Atom>)> = Vec::new();
+            for (i, level) in plan.rules.iter().copied().enumerate() {
+                if plan.satisfaction[i]
+                    && level < boundary.level
+                    && lower_facts.iter().all(|(l, _)| *l != level)
+                {
+                    let facts = boundary
+                        .steps
+                        .iter()
+                        .map(|id| &certificate.steps[id - 1])
+                        .filter(|s| plan.step_level(s).is_some_and(|l| l <= level))
+                        .map(|s| s.atom.clone())
+                        .collect();
+                    lower_facts.push((level, facts));
+                }
+            }
+            let mut lower = HashMap::default();
+            for (level, facts) in &lower_facts {
+                let model: HashSet<_> = facts.iter().collect();
+                lower.insert(
+                    *level,
+                    (model, crate::semantics::Model::new(facts, budget)?),
+                );
+            }
             for (i, rule) in program.rules.iter().enumerate() {
                 if plan.rules[i] > boundary.level {
                     continue;
                 }
+                let (model, indexed) = match lower.get(&plan.rules[i]) {
+                    Some((m, x)) if plan.satisfaction[i] => (m, x),
+                    _ => (&model, &indexed),
+                };
                 let initial = if plan.demand_driven[i] {
                     boundary
                         .calls
@@ -1598,12 +1630,12 @@ impl<'a> Checker<'a> {
                     } else {
                         aggregate_inputs(rule)
                     };
-                    demands.check(prefix, &initial, &scope, &indexed, budget, report)?;
+                    demands.check(prefix, &initial, &scope, indexed, budget, report)?;
                     let solutions = if prefix.is_empty() {
                         vec![initial]
                     } else {
                         crate::semantics::model_solutions_scoped(
-                            prefix, initial, &scope, &indexed, budget,
+                            prefix, initial, &scope, indexed, budget,
                         )?
                     };
                     for mut bindings in solutions {
@@ -1639,8 +1671,8 @@ impl<'a> Checker<'a> {
         let certificate = self.certificate;
         let report = &mut self.report;
 
-        let mut relevant = HashSet::new();
-        let mut used_boundaries = HashSet::new();
+        let mut relevant = HashSet::default();
+        let mut used_boundaries = HashSet::default();
         let mut pending: Vec<_> = certificate.claims.iter().flat_map(claim_premises).collect();
         while let Some(id) = pending.pop() {
             if let Some(step) = id.checked_sub(1).and_then(|i| certificate.steps.get(i)) {
@@ -1707,7 +1739,7 @@ impl BoundaryDemands<'_> {
         &self,
         body: &[Literal],
         initial: &Bindings,
-        scope: &BTreeSet<String>,
+        scope: &BTreeSet<Name>,
         facts: &crate::semantics::Model<'_>,
         budget: &mut Budget,
         report: &mut Report,

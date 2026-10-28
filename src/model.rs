@@ -1,5 +1,164 @@
 use std::collections::BTreeSet;
 use std::fmt;
+use std::hash::{BuildHasherDefault, Hasher};
+
+/// Hash tables for terms and atoms. SipHash's flood resistance buys nothing
+/// for a local reasoner, while long IRIs make it a large share of the work.
+pub(crate) type HashMap<K, V> = std::collections::HashMap<K, V, BuildHasherDefault<FastHasher>>;
+pub(crate) type HashSet<K> = std::collections::HashSet<K, BuildHasherDefault<FastHasher>>;
+
+/// A shared, immutable name or text. Terms are copied constantly during
+/// matching, so cloning one only increments a reference count.
+#[derive(Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct Name(std::sync::Arc<str>);
+impl Name {
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+}
+impl std::ops::Deref for Name {
+    type Target = str;
+    fn deref(&self) -> &str {
+        &self.0
+    }
+}
+impl std::borrow::Borrow<str> for Name {
+    fn borrow(&self) -> &str {
+        &self.0
+    }
+}
+impl AsRef<str> for Name {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+impl From<&str> for Name {
+    fn from(text: &str) -> Self {
+        Self(text.into())
+    }
+}
+impl From<String> for Name {
+    fn from(text: String) -> Self {
+        Self(text.into())
+    }
+}
+impl From<&String> for Name {
+    fn from(text: &String) -> Self {
+        Self(text.as_str().into())
+    }
+}
+impl From<Name> for String {
+    fn from(name: Name) -> Self {
+        name.0.to_string()
+    }
+}
+impl PartialEq<str> for Name {
+    fn eq(&self, other: &str) -> bool {
+        &*self.0 == other
+    }
+}
+impl PartialEq<&str> for Name {
+    fn eq(&self, other: &&str) -> bool {
+        &*self.0 == *other
+    }
+}
+impl PartialEq<String> for Name {
+    fn eq(&self, other: &String) -> bool {
+        &*self.0 == other.as_str()
+    }
+}
+impl PartialEq<Name> for str {
+    fn eq(&self, other: &Name) -> bool {
+        self == &*other.0
+    }
+}
+impl PartialEq<Name> for &str {
+    fn eq(&self, other: &Name) -> bool {
+        *self == &*other.0
+    }
+}
+impl PartialEq<Name> for String {
+    fn eq(&self, other: &Name) -> bool {
+        self.as_str() == &*other.0
+    }
+}
+impl fmt::Display for Name {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.0)
+    }
+}
+impl fmt::Debug for Name {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Debug::fmt(&*self.0, f)
+    }
+}
+
+/// Index keys for facts. Lookups through these keys yield candidates that are
+/// always matched against the goal, so a collision costs one failed match.
+pub(crate) fn relation_key(predicate: &str, arity: usize) -> u64 {
+    use std::hash::Hash;
+    let mut hasher = FastHasher::default();
+    predicate.hash(&mut hasher);
+    hasher.write_usize(arity);
+    hasher.finish()
+}
+pub(crate) fn position_key(relation: u64, position: usize, value: &Value) -> u64 {
+    use std::hash::Hash;
+    let mut hasher = FastHasher(relation);
+    hasher.write_usize(position);
+    value.hash(&mut hasher);
+    hasher.finish()
+}
+pub(crate) fn atom_key(atom: &Atom) -> u64 {
+    let relation = relation_key(&atom.predicate, atom.values.len());
+    atom.values
+        .iter()
+        .enumerate()
+        .fold(relation, |key, (position, value)| {
+            position_key(key, position, value)
+        })
+}
+
+/// A multiply-rotate hasher over 8-byte words. Tables pick buckets from the
+/// low bits, so `finish` applies the MurmurHash3 finalizer to spread them.
+#[derive(Default)]
+pub(crate) struct FastHasher(u64);
+impl FastHasher {
+    fn add(&mut self, word: u64) {
+        self.0 = (self.0.rotate_left(5) ^ word).wrapping_mul(0x51_7c_c1_b7_27_22_0a_95);
+    }
+}
+impl Hasher for FastHasher {
+    fn write(&mut self, bytes: &[u8]) {
+        let (chunks, rest) = bytes.as_chunks::<8>();
+        for chunk in chunks {
+            self.add(u64::from_le_bytes(*chunk));
+        }
+        let mut tail = [0u8; 8];
+        tail[..rest.len()].copy_from_slice(rest);
+        self.add(u64::from_le_bytes(tail) ^ ((rest.len() as u64) << 56));
+    }
+    fn write_u8(&mut self, n: u8) {
+        self.add(u64::from(n));
+    }
+    fn write_u32(&mut self, n: u32) {
+        self.add(u64::from(n));
+    }
+    fn write_u64(&mut self, n: u64) {
+        self.add(n);
+    }
+    fn write_usize(&mut self, n: usize) {
+        self.add(n as u64);
+    }
+    fn finish(&self) -> u64 {
+        let mut h = self.0;
+        h ^= h >> 33;
+        h = h.wrapping_mul(0xff51_afd7_ed55_8ccd);
+        h ^= h >> 33;
+        h = h.wrapping_mul(0xc4ce_b9fe_1a85_ec53);
+        h ^ (h >> 33)
+    }
+}
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Error(pub String);
@@ -19,18 +178,18 @@ impl std::error::Error for Error {}
 /// Ground values have structural identity; integers, reals, atoms, and strings are distinct.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Value {
-    Symbol(String),
-    Text(String),
+    Symbol(Name),
+    Text(Name),
     Integer(i64),
     BigInteger(num_bigint::BigInt),
     /// Finite binary64 number, stored as normalized IEEE bits.
     Real(u64),
     Nil,
-    Compound(String, Vec<Value>),
+    Compound(Name, Vec<Value>),
     /// Variables occur only in source templates and transient substitutions.
-    Variable(String),
+    Variable(Name),
     /// Opaque identity produced only by a checked fresh-witness firing.
-    Witness(String),
+    Witness(Name),
 }
 
 fn quoted(f: &mut fmt::Formatter<'_>, value: &str, quote: char) -> fmt::Result {
@@ -101,24 +260,24 @@ impl fmt::Display for Value {
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Atom {
-    pub predicate: String,
+    pub predicate: Name,
     pub values: Vec<Value>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum Term {
-    Variable(String),
+    Variable(Name),
     Constant(Value),
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Goal {
-    pub predicate: String,
+    pub predicate: Name,
     pub terms: Vec<Term>,
 }
 
 impl Goal {
-    pub fn variables(&self) -> BTreeSet<String> {
+    pub fn variables(&self) -> BTreeSet<Name> {
         term_variables(&self.terms)
     }
     pub fn ground(&self) -> Option<Atom> {
@@ -212,7 +371,7 @@ pub enum Literal {
 
 impl Literal {
     /// Aggregate-local variables are deliberately absent from outer projection.
-    pub fn variables(&self) -> BTreeSet<String> {
+    pub fn variables(&self) -> BTreeSet<Name> {
         match self {
             Self::Relation(g) | Self::Builtin(g) | Self::Not(g) | Self::NotBuiltin(g) => {
                 g.variables()
@@ -223,11 +382,17 @@ impl Literal {
     }
 }
 
-pub(crate) fn term_variables(terms: &[Term]) -> BTreeSet<String> {
-    terms
-        .iter()
-        .flat_map(|t| value_variables(&term_value(t)))
-        .collect()
+pub(crate) fn term_variables(terms: &[Term]) -> BTreeSet<Name> {
+    let mut names = BTreeSet::new();
+    for term in terms {
+        match term {
+            Term::Variable(name) => {
+                names.insert(name.clone());
+            }
+            Term::Constant(value) => names.extend(value_variables(value)),
+        }
+    }
+    names
 }
 
 impl fmt::Display for Literal {
@@ -298,7 +463,7 @@ impl fmt::Display for Rule {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Query {
     pub goals: Vec<Literal>,
-    pub variables: Vec<String>,
+    pub variables: Vec<Name>,
 }
 
 /// Output requests, in source order. Query indexes are zero-based.
@@ -316,12 +481,40 @@ pub struct Program {
     pub facts: Vec<Atom>,
     pub rules: Vec<Rule>,
     pub queries: Vec<Query>,
-    pub tables: BTreeSet<(String, usize)>,
+    pub tables: BTreeSet<(Name, usize)>,
     pub requests: Vec<Request>,
 }
 
 impl Program {
-    pub fn extend(&mut self, other: Self) {
+    pub fn extend(&mut self, mut other: Self) {
+        // Lean witness helpers are numbered per document. Renumber the added
+        // document's helpers after this program's so they stay distinct.
+        let tag = |name: &str| {
+            [crate::parser::LEAN, crate::parser::SATISFIED]
+                .iter()
+                .find_map(|prefix| {
+                    Some((*prefix, name.strip_prefix(prefix)?.parse::<usize>().ok()?))
+                })
+        };
+        let offset = self
+            .rules
+            .iter()
+            .filter_map(|r| tag(&r.head.predicate).map(|(_, n)| n))
+            .max()
+            .unwrap_or(0);
+        if offset > 0 {
+            for rule in &mut other.rules {
+                let goals = rule.body.iter_mut().filter_map(|l| match l {
+                    Literal::Relation(g) | Literal::Not(g) => Some(g),
+                    _ => None,
+                });
+                for goal in std::iter::once(&mut rule.head).chain(goals) {
+                    if let Some((prefix, n)) = tag(&goal.predicate) {
+                        goal.predicate = format!("{prefix}{}", n + offset).into();
+                    }
+                }
+            }
+        }
         self.facts.extend(other.facts);
         self.rules.extend(other.rules);
         let offset = self.queries.len();
@@ -345,7 +538,7 @@ pub(crate) fn term_value(term: &Term) -> Value {
         Term::Constant(value) => value.clone(),
     }
 }
-pub(crate) fn value_variables(value: &Value) -> Vec<String> {
+pub(crate) fn value_variables(value: &Value) -> Vec<Name> {
     match value {
         Value::Variable(name) => vec![name.clone()],
         Value::Compound(_, args) => args.iter().flat_map(value_variables).collect(),
@@ -354,6 +547,11 @@ pub(crate) fn value_variables(value: &Value) -> Vec<String> {
 }
 impl Value {
     pub(crate) fn ground(&self) -> bool {
+        match self {
+            Self::Variable(_) => return false,
+            Self::Compound(_, _) => {}
+            _ => return true,
+        }
         let mut pending = vec![self];
         while let Some(value) = pending.pop() {
             match value {
@@ -366,6 +564,17 @@ impl Value {
     }
     pub(crate) fn valid(&self) -> bool {
         use num_traits::ToPrimitive;
+        if matches!(
+            self,
+            Self::Symbol(_)
+                | Self::Text(_)
+                | Self::Integer(_)
+                | Self::Nil
+                | Self::Variable(_)
+                | Self::Witness(_)
+        ) {
+            return true;
+        }
         let mut pending = vec![self];
         while let Some(value) = pending.pop() {
             match value {

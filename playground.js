@@ -1,5 +1,5 @@
 const $ = id => document.getElementById(id);
-const examples = new Set(['abstract-interpretation', 'access-control-policy', 'ackermann', 'age', 'aggregation', 'agri-drought-relief', 'animals', 'arithmetic', 'battery-dispatch', 'bayes-diagnosis', 'beam-deflection', 'binomial-vandermonde', 'braking-distance', 'buck-converter-design', 'canary-release', 'catalan-convolution', 'collatz', 'competitive-enzyme-kinetics', 'complex', 'continued-fraction-sqrt2', 'control-system', 'critical-path-schedule', 'dairy-energy-balance', 'data-quality-audit', 'declarative-fault-localization', 'deep-taxonomy-10', 'deep-taxonomy-100', 'deep-taxonomy-1000', 'deep-taxonomy-10000', 'deep-taxonomy-100000', 'delfour', 'deontic-logic', 'dijkstra', 'dog-license', 'drone-corridor-planner', 'easter', 'electrical-rc-filter', 'explainable-ev-depot-configuration', 'expression-eval', 'family', 'family-cousins', 'fft8-numeric', 'fibonacci', 'field-nitrogen-balance', 'flute-puzzle', 'french-cities', 'friends', 'fundamental-theorem-arithmetic', 'gcd-bezout-identity', 'goldbach', 'good-cobbler', 'gps', 'grammar', 'gray-code-counter', 'hamiltonian-path', 'hamming-code', 'hanoi', 'heat-loss', 'heron-theorem', 'ideal-gas-law', 'integer-partitions', 'interval-relations', 'intuitionistic-logic-kripke', 'inventory', 'job-shop-scheduling', 'kaprekar-6174', 'knapsack-optimization', 'lagrange-cosets', 'law-of-cosines', 'least-squares-regression', 'linear-logic-resources', 'list-collection', 'lists', 'manufacturing-quality-control', 'matrix-multiplication', 'modal-logic-kripke', 'modular-exponentiation', 'monkey-bananas', 'negation', 'network-sla', 'newton-raphson', 'nilakantha-pi', 'nixon-diamond', 'observability-log-correlation', 'orbital-transfer-design', 'orders', 'owl-property-chain', 'padovan', 'paraconsistent-animals', 'path-discovery', 'paths', 'peano', 'peasant', 'pell-equation', 'pendulum-period', 'permissions', 'pointer-analysis', 'policy-risk', 'polynomial', 'quadratic-formula', 'queens', 'radioactive-decay', 'rdf', 'research-portal', 'sbom-vulnerability-response', 'schema-inference', 'service-outage-recovery', 'shoelace-polygon-area', 'shortest-path', 'sieve', 'socrates', 'spacecraft-battery-diagnosis', 'state-transitions', 'statistics-summary', 'stirling-bell-numbers', 'symbolic-derivative', 'term-structure', 'text-processing', 'totient-summatory', 'turing', 'type-inference', 'unification', 'values', 'vector-similarity', 'weighted-interval-scheduling', 'wind-turbine', 'witnesses', 'wolf-goat-cabbage']);
+const examples = new Set(['abstract-interpretation', 'access-control-policy', 'ackermann', 'age', 'aggregation', 'agri-drought-relief', 'animals', 'arithmetic', 'battery-dispatch', 'bayes-diagnosis', 'beam-deflection', 'binomial-vandermonde', 'braking-distance', 'buck-converter-design', 'canary-release', 'catalan-convolution', 'collatz', 'competitive-enzyme-kinetics', 'complex', 'continued-fraction-sqrt2', 'control-system', 'critical-path-schedule', 'dairy-energy-balance', 'data-quality-audit', 'declarative-fault-localization', 'deep-taxonomy-10', 'deep-taxonomy-100', 'deep-taxonomy-1000', 'deep-taxonomy-10000', 'deep-taxonomy-100000', 'delfour', 'deontic-logic', 'dijkstra', 'dog-license', 'drone-corridor-planner', 'easter', 'electrical-rc-filter', 'examiners', 'explainable-ev-depot-configuration', 'expression-eval', 'family', 'family-cousins', 'fft8-numeric', 'fibonacci', 'field-nitrogen-balance', 'flute-puzzle', 'french-cities', 'friends', 'fundamental-theorem-arithmetic', 'gcd-bezout-identity', 'goldbach', 'good-cobbler', 'gps', 'grammar', 'gray-code-counter', 'hamiltonian-path', 'hamming-code', 'hanoi', 'heat-loss', 'heron-theorem', 'ideal-gas-law', 'integer-partitions', 'interval-relations', 'intuitionistic-logic-kripke', 'inventory', 'job-shop-scheduling', 'kaprekar-6174', 'knapsack-optimization', 'lagrange-cosets', 'law-of-cosines', 'least-squares-regression', 'linear-logic-resources', 'list-collection', 'lists', 'manufacturing-quality-control', 'matrix-multiplication', 'modal-logic-kripke', 'modular-exponentiation', 'monkey-bananas', 'negation', 'network-sla', 'newton-raphson', 'nilakantha-pi', 'nixon-diamond', 'observability-log-correlation', 'orbital-transfer-design', 'orders', 'owl-property-chain', 'padovan', 'paraconsistent-animals', 'path-discovery', 'paths', 'peano', 'peasant', 'pell-equation', 'pendulum-period', 'permissions', 'pointer-analysis', 'policy-risk', 'polynomial', 'quadratic-formula', 'queens', 'radioactive-decay', 'rdf', 'research-portal', 'sbom-vulnerability-response', 'schema-inference', 'service-outage-recovery', 'shoelace-polygon-area', 'shortest-path', 'sieve', 'socrates', 'spacecraft-battery-diagnosis', 'state-transitions', 'statistics-summary', 'stirling-bell-numbers', 'symbolic-derivative', 'term-structure', 'text-processing', 'totient-summatory', 'turing', 'type-inference', 'unification', 'values', 'vector-similarity', 'weighted-interval-scheduling', 'wind-turbine', 'witnesses', 'wolf-goat-cabbage']);
 const storageKey = 'wheye.playground.v1';
 const gistTokenKey = 'wheye.playground.github.gistToken.v1';
 const gistFile = 'wheye-playground-state.json';
@@ -79,10 +79,51 @@ function save() {
     try { localStorage.setItem(storageKey, JSON.stringify(snapshot())); } catch { /* Storage can be unavailable. */ }
   }, 200);
 }
+const keywords = new Set(['aggregate_all', 'fresh', 'table', 'why', 'check', 'is', 'mod', 'div', 'rem', 'xor', 'true', 'false']);
+const builtins = new Set(['count', 'sum', 'min', 'max', 'list', 'string_concat', 'string_length', 'contains_text', 'atom_codes', 'string_codes', 'abs', 'sign', 'sqrt', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'atan2', 'exp', 'log', 'log2', 'float', 'integer', 'truncate', 'round', 'ceiling', 'floor', 'gcd', 'msb', 'pi']);
+const tokens = /(%[^\n]*|\/\*[\s\S]*?(?:\*\/|$))|("(?:[^"\\]|\\.|"")*"?)|('(?:[^'\\]|\\.|'')*'?)|([A-Z_][A-Za-z0-9_]*)|(\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)|([a-z][A-Za-z0-9_]*)|(:-|\?-|\\\+)|([()[\]|,.~]|[=<>@+\-*\/\\^]+)/g;
+const escapeHtml = text => text.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
+// Coloring copies the text into spans; very large programs and results stay plain.
+const colorLimit = 200000;
+/** Midlog source and results share one lexical coloring, following the tokenizer's token kinds. */
+function highlight(text) {
+  let html = '';
+  let at = 0;
+  for (const match of text.matchAll(tokens)) {
+    html += escapeHtml(text.slice(at, match.index));
+    const [token, comment, string, quoted, variable, number, word, keyword] = match;
+    const call = text[match.index + token.length] === '(';
+    let kind = 'punct';
+    if (comment) kind = 'comment';
+    else if (string) kind = 'string';
+    else if (quoted) kind = call ? 'pred' : 'symbol';
+    else if (variable) kind = 'var';
+    else if (number) kind = 'number';
+    else if (word) kind = keywords.has(word) ? 'keyword' : builtins.has(word) ? 'builtin' : call ? 'pred' : 'symbol';
+    else if (keyword) kind = 'keyword';
+    html += `<span class="t-${kind}">${escapeHtml(token)}</span>`;
+    at = match.index + token.length;
+  }
+  return html + escapeHtml(text.slice(at));
+}
+// Check reports are prose, so their lines keep the plain text color.
+const reportLine = /^(?:checked:|invalid:|\d+ source facts?;|Conditions:|Failures:|  C\d |  \[C\d|Source facts and rules are assumed)/;
+function showResult(text) {
+  if (text.length > colorLimit) { $('output').textContent = text; return; }
+  $('output').innerHTML = text.split('\n').map(line => reportLine.test(line) ? escapeHtml(line) : highlight(line)).join('\n');
+}
+function paintSource() {
+  const text = $('source').value;
+  const plain = text.length > colorLimit;
+  $('editor').classList.toggle('plain', plain);
+  // A trailing space keeps a final empty line as tall as the textarea's.
+  $('source-highlight').innerHTML = plain ? '' : `${highlight(text)} `;
+}
 function restore(state) {
   if (typeof state?.source !== 'string') return false;
   $('source').value = state.source;
   $('example').value = '';
+  paintSource();
   sizeSource();
   return true;
 }
@@ -114,7 +155,8 @@ function ensureWorker() {
       } else if (data.id === sequence) {
         working(false);
         if (data.kind === 'result') {
-          $('output').textContent = data.output || 'No new facts were derived.';
+          if (data.output) showResult(data.output);
+          else $('output').textContent = 'No new facts were derived.';
           finished(true);
         } else {
           $('output').textContent = data.message;
@@ -158,7 +200,7 @@ $('run').addEventListener('click', async () => {
   }
 });
 $('stop').addEventListener('click', stop);
-$('source').addEventListener('input', () => { $('example').value = ''; sizeSource(); clearShare(); save(); });
+$('source').addEventListener('input', () => { $('example').value = ''; paintSource(); sizeSource(); clearShare(); save(); });
 if (!contentSizedInput) window.addEventListener('resize', sizeSource);
 $('source').addEventListener('keydown', event => {
   if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') { event.preventDefault(); if (!busy) $('run').click(); }
@@ -313,4 +355,5 @@ async function initialise() {
   }
 }
 window.addEventListener('hashchange', () => { void initialise(); });
+paintSource();
 await initialise();

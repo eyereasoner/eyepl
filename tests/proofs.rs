@@ -157,7 +157,7 @@ fn wide_witness_contexts_round_trip_and_extra_values_are_rejected() {
         .collect::<Vec<_>>()
         .join(",");
     let program = parse(&format!(
-        "row({arguments}). ticket(W):-row({variables}),fresh(W). ?-ticket(W)."
+        "row({arguments}). ticket({variables}):-row({variables}),fresh(W). ?-ticket({variables})."
     ))
     .unwrap();
     let run = reason(&program, Limits::default()).unwrap();

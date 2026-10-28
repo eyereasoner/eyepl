@@ -1,6 +1,6 @@
 use std::io::{self, Read};
 use std::process::ExitCode;
-use wheye::{parse, reason, Error, Limits, Program, VERSION};
+use wheye::{parse_document, reason, Error, Limits, Program, VERSION};
 
 const HELP: &str = "wheye — a Midlog reasoner
 
@@ -61,8 +61,10 @@ fn run() -> Result<String, Error> {
     }
     let mut program = Program::default();
     for file in files {
-        program
-            .extend(parse(&read(&file)?).map_err(|error| Error::new(format!("{file}: {error}")))?);
+        program.extend(
+            parse_document(&read(&file)?)
+                .map_err(|error| Error::new(format!("{file}: {error}")))?,
+        );
     }
     reason(&program, Limits::default())?.output(&program)
 }

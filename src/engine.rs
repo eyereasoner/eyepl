@@ -1,13 +1,13 @@
 use crate::language::{plan, Plan, Relation};
+use crate::model::{HashMap, HashSet};
 use crate::proof::witness_goal;
 use crate::semantics::{aggregate, bind, builtin, witness, Budget};
 use crate::{
-    Atom, Boundary, Error, Goal, Justification, Literal, Owner, Program, Step, Term, Value,
+    Atom, Boundary, Error, Goal, Justification, Literal, Name, Owner, Program, Step, Term, Value,
 };
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::collections::BTreeMap;
 
-pub(crate) type Bindings = BTreeMap<String, Value>;
-type Position = (Relation, usize, Value);
+pub(crate) type Bindings = BTreeMap<crate::model::Name, Value>;
 #[derive(Clone, Copy, Debug)]
 pub struct Limits {
     pub max_facts: usize,
@@ -59,22 +59,37 @@ pub(crate) fn instantiate(goal: &Goal, bindings: &Bindings) -> Option<Atom> {
 #[derive(Default)]
 struct Store {
     steps: Vec<Step>,
-    known: HashMap<Atom, usize>,
+    /// Ordinary facts by `atom_key`; equal keys are confirmed against steps.
+    known: HashMap<u64, Vec<usize>>,
     decisions: HashMap<Step, usize>,
-    relations: HashMap<Relation, Vec<usize>>,
-    positions: HashMap<Position, Vec<usize>>,
+    relations: HashMap<u64, Vec<usize>>,
+    positions: HashMap<u64, Vec<usize>>,
     boundaries: Vec<Boundary>,
 }
 impl Store {
+    /// The one-based step of an ordinary fact, if it is known.
+    fn find(&self, atom: &Atom) -> Option<usize> {
+        self.find_keyed(crate::model::atom_key(atom), atom)
+    }
+    fn find_keyed(&self, key: u64, atom: &Atom) -> Option<usize> {
+        self.known
+            .get(&key)?
+            .iter()
+            .find(|&&id| self.steps[id - 1].atom == *atom)
+            .copied()
+    }
     fn insert(
         &mut self,
         atom: Atom,
         justification: Justification,
         limit: usize,
     ) -> Result<usize, Error> {
-        if justification.ordinary() {
-            if let Some(id) = self.known.get(&atom) {
-                return Ok(*id);
+        let key = justification
+            .ordinary()
+            .then(|| crate::model::atom_key(&atom));
+        if let Some(key) = key {
+            if let Some(id) = self.find_keyed(key, &atom) {
+                return Ok(id);
             }
         } else if let Some(id) = self.decisions.get(&Step {
             atom: atom.clone(),
@@ -88,19 +103,16 @@ impl Store {
             )));
         }
         let index = self.steps.len();
-        if justification.ordinary() {
-            let relation = (atom.predicate.clone(), atom.values.len());
-            self.relations
-                .entry(relation.clone())
-                .or_default()
-                .push(index);
+        if let Some(key) = key {
+            let relation = crate::model::relation_key(&atom.predicate, atom.values.len());
+            self.relations.entry(relation).or_default().push(index);
             for (position, value) in atom.values.iter().enumerate() {
                 self.positions
-                    .entry((relation.clone(), position, value.clone()))
+                    .entry(crate::model::position_key(relation, position, value))
                     .or_default()
                     .push(index);
             }
-            self.known.insert(atom.clone(), index + 1);
+            self.known.entry(key).or_default().push(index + 1);
         } else {
             self.decisions.insert(
                 Step {
@@ -117,7 +129,7 @@ impl Store {
         Ok(index + 1)
     }
     fn candidates(&self, goal: &Goal, bindings: &Bindings) -> &[usize] {
-        let relation = (goal.predicate.clone(), goal.terms.len());
+        let relation = crate::model::relation_key(&goal.predicate, goal.terms.len());
         let mut result = self
             .relations
             .get(&relation)
@@ -128,7 +140,7 @@ impl Store {
             if let Some(value) = value {
                 let candidates = self
                     .positions
-                    .get(&(relation.clone(), position, value.clone()))
+                    .get(&crate::model::position_key(relation, position, &value))
                     .map(Vec::as_slice)
                     .unwrap_or(&[]);
                 if candidates.len() < result.len() {
@@ -237,7 +249,7 @@ impl Triggers {
             // constant and variable binding after this fixed-argument lookup.
             entries
                 .constants
-                .resize_with(goal.terms.len(), HashMap::new);
+                .resize_with(goal.terms.len(), HashMap::default);
             entries.constants[position]
                 .entry(value.clone())
                 .or_default()
@@ -359,7 +371,7 @@ impl Join<'_> {
                     .ok_or_else(|| Error::new("A negative dependency stratum is not complete."))?;
                 let atom = instantiate(goal, &current.bindings)
                     .ok_or_else(|| Error::new("Unbound negative goal."))?;
-                if !self.store.known.contains_key(&atom) {
+                if self.store.find(&atom).is_none() {
                     proceed(
                         current.bindings.clone(),
                         Evidence::Decision(Step {
@@ -480,7 +492,7 @@ fn fire(
 ) -> Result<(), Error> {
     let atom = instantiate(&program.rules[rule].head, &matched.bindings)
         .ok_or_else(|| Error::new("A rule head remained unbound."))?;
-    if !store.known.contains_key(&atom) {
+    if store.find(&atom).is_none() {
         let premises = store.materialize(matched.evidence, &matched.bindings, limit)?;
         store.insert(
             atom,
@@ -572,7 +584,7 @@ pub fn reason(program: &Program, limits: Limits) -> Result<Run, Error> {
     }
     let mut answers = Vec::new();
     for (index, query) in program.queries.iter().enumerate() {
-        let mut seen = HashSet::new();
+        let mut seen = HashSet::default();
         let mut result = Vec::new();
         for matched in (Join {
             store: &store,
@@ -647,10 +659,10 @@ pub(crate) fn specialize(goal: &Goal, bindings: &Bindings) -> Goal {
     }
 }
 pub(crate) fn canonical_goal(goal: &Goal) -> Goal {
-    fn rename(v: Value, names: &mut HashMap<String, String>) -> Value {
+    fn rename(v: Value, names: &mut HashMap<Name, Name>) -> Value {
         match v {
             Value::Variable(n) => {
-                let next = format!("_WheyeCall{}", names.len());
+                let next = format!("_WheyeCall{}", names.len()).into();
                 Value::Variable(names.entry(n).or_insert(next).clone())
             }
             Value::Compound(n, a) => {
@@ -659,7 +671,7 @@ pub(crate) fn canonical_goal(goal: &Goal) -> Goal {
             v => v,
         }
     }
-    let mut names = HashMap::new();
+    let mut names = HashMap::default();
     Goal {
         predicate: goal.predicate.clone(),
         terms: goal
@@ -687,7 +699,7 @@ pub(crate) fn match_call(head: &Goal, call: &Goal) -> Option<Bindings> {
         .variables()
         .into_iter()
         .enumerate()
-        .map(|(i, n)| (n, Value::Variable(format!("{prefix}{i}"))))
+        .map(|(i, n)| (n, Value::Variable(format!("{prefix}{i}").into())))
         .collect();
     let call = specialize(call, &substitutions);
     let mut bindings = Bindings::new();
@@ -763,7 +775,7 @@ impl Tabled<'_> {
                         return Ok(());
                     }
                 }
-                if !self.store.known.contains_key(&atom) {
+                if self.store.find(&atom).is_none() {
                     let premises = self.store.materialize(
                         a.matched.evidence,
                         &a.matched.bindings,
@@ -940,8 +952,22 @@ impl Tabled<'_> {
             unreachable!()
         };
         self.budget.tick()?;
+        // A rule consumes facts only from its own or lower strata. Stratification
+        // makes this automatic except for a lean satisfaction test, whose
+        // witness rule's later conclusions are not its inputs (Section 8.3).
+        let step = &self.store.steps[fact];
+        if let Owner::Rule(n) = a.owner {
+            if self.plan.satisfaction[n - 1]
+                && self
+                    .plan
+                    .step_level(step)
+                    .is_some_and(|level| level > self.plan.rules[n - 1])
+            {
+                return Ok(());
+            }
+        }
         let mut bindings = a.matched.bindings.clone();
-        if match_goal(goal, &self.store.steps[fact].atom, &mut bindings) {
+        if match_goal(goal, &step.atom, &mut bindings) {
             self.continue_with(a, bindings, Evidence::Fact(fact + 1));
         }
         Ok(())
@@ -953,7 +979,7 @@ impl Tabled<'_> {
         };
         let atom = instantiate(goal, &a.matched.bindings)
             .ok_or_else(|| Error::new("Negation needs bound inputs."))?;
-        if !self.store.known.contains_key(&atom) {
+        if self.store.find(&atom).is_none() {
             let boundary = self.plan.goal_level(&specialize(goal, &a.matched.bindings)) + 1;
             let bindings = a.matched.bindings.clone();
             self.continue_with(
@@ -1117,7 +1143,7 @@ fn reason_tabled(program: &Program, limits: Limits, plan: &Plan) -> Result<Run, 
         boundary.calls = engine
             .calls
             .iter()
-            .filter(|g| plan.goal_level(g) <= level)
+            .filter(|g| plan.call_level(g) <= level)
             .cloned()
             .collect();
         boundary.calls.sort_by_key(ToString::to_string);

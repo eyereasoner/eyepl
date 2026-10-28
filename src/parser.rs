@@ -1,15 +1,21 @@
+use crate::model::HashSet;
 use crate::{
-    Aggregate, AggregateKind, Atom, Error, Goal, Literal, Program, Query, Rule, Term, Value,
+    Aggregate, AggregateKind, Atom, Error, Goal, Literal, Name, Program, Query, Rule, Term, Value,
 };
 use num_bigint::BigInt;
+use std::collections::BTreeSet;
+
+/// Predicate prefixes of the helper relations that make witness rules lean.
+pub(crate) const LEAN: &str = "$lean:";
+pub(crate) const SATISFIED: &str = "$satisfied:";
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 enum Token {
-    Name(String),
-    Variable(String),
-    Text(String),
-    Number(String),
-    Symbol(String),
+    Name(Name),
+    Variable(Name),
+    Text(Name),
+    Number(Name),
+    Symbol(Name),
     End,
 }
 struct Parser {
@@ -22,6 +28,17 @@ struct Parser {
 fn tokenize(source: &str) -> Result<Vec<(Token, usize)>, Error> {
     let chars: Vec<_> = source.chars().collect();
     let (mut at, mut line, mut tokens) = (0, 1, Vec::new());
+    // A program repeats its names, so tokens share one copy of each spelling.
+    let mut names = HashSet::<Name>::default();
+    let mut intern = |text: &str| match names.get(text) {
+        Some(name) => name.clone(),
+        None => {
+            let name = Name::from(text);
+            names.insert(name.clone());
+            name
+        }
+    };
+    let mut spelling = String::new();
     while at < chars.len() {
         let c = chars[at];
         if c.is_whitespace() {
@@ -126,9 +143,9 @@ fn tokenize(source: &str) -> Result<Vec<(Token, usize)>, Error> {
                 }
             }
             if c == '\'' {
-                Token::Name(text)
+                Token::Name(intern(&text))
             } else {
-                Token::Text(text)
+                Token::Text(intern(&text))
             }
         } else if c.is_ascii_digit() {
             let start = at;
@@ -156,7 +173,9 @@ fn tokenize(source: &str) -> Result<Vec<(Token, usize)>, Error> {
                     )));
                 }
             }
-            Token::Number(chars[start..at].iter().collect())
+            spelling.clear();
+            spelling.extend(&chars[start..at]);
+            Token::Number(intern(&spelling))
         } else if c.is_ascii_alphabetic() || c == '_' {
             let start = at;
             at += 1;
@@ -166,7 +185,9 @@ fn tokenize(source: &str) -> Result<Vec<(Token, usize)>, Error> {
             {
                 at += 1;
             }
-            let name = chars[start..at].iter().collect();
+            spelling.clear();
+            spelling.extend(&chars[start..at]);
+            let name = intern(&spelling);
             if c.is_ascii_uppercase() || c == '_' {
                 Token::Variable(name)
             } else {
@@ -178,19 +199,24 @@ fn tokenize(source: &str) -> Result<Vec<(Token, usize)>, Error> {
                 "=\\=", "=:=", "@=<", "@>=", "=..", ":-", "?-", "\\+", "\\=", "=<", ">=", "@<",
                 "@>", "//", "**", "<<", ">>", "\\/", "/\\",
             ] {
-                let width = op.chars().count();
+                // Every operator spelling is ASCII, so bytes count characters.
                 if chars
-                    .get(at..at + width)
+                    .get(at..at + op.len())
                     .is_some_and(|part| part.iter().copied().eq(op.chars()))
                 {
-                    found = Some(op.to_string());
+                    found = Some(op);
                     break;
                 }
             }
-            let op = found.unwrap_or_else(|| c.to_string());
+            spelling.clear();
+            match found {
+                Some(op) => spelling.push_str(op),
+                None => spelling.push(c),
+            }
+            let op = spelling.as_str();
             at += op.chars().count();
             if !matches!(
-                op.as_str(),
+                op,
                 "(" | ")"
                     | "["
                     | "]"
@@ -242,7 +268,7 @@ fn tokenize(source: &str) -> Result<Vec<(Token, usize)>, Error> {
                     "Line {line}: Follow a statement period with whitespace, a comment, or end of input."
                 )));
             }
-            Token::Symbol(op)
+            Token::Symbol(intern(op))
         };
         tokens.push((token, start_line));
     }
@@ -352,13 +378,13 @@ impl Parser {
             Binary {
                 min: u8,
                 left: Value,
-                op: String,
+                op: Name,
                 precedence: u8,
                 rhs_min: u8,
             },
-            Prefix(String),
+            Prefix(Name),
             Group,
-            Arguments(String, Vec<Value>),
+            Arguments(Name, Vec<Value>),
             List(Vec<Value>),
             ListTail(Vec<Value>),
         }
@@ -392,7 +418,7 @@ impl Parser {
                     let value = match token {
                         Token::Variable(name) if name == "_" => {
                             self.anonymous += 1;
-                            Value::Variable(format!("_${}", self.anonymous))
+                            Value::Variable(format!("_${}", self.anonymous).into())
                         }
                         Token::Variable(name) => Value::Variable(name),
                         Token::Text(s) => Value::Text(s),
@@ -459,7 +485,9 @@ impl Parser {
                         values.push((left, priority));
                         continue;
                     };
-                    let op = self.spelling().to_string();
+                    let (Token::Name(op) | Token::Symbol(op)) = self.peek().clone() else {
+                        unreachable!("binary operators are names or symbols")
+                    };
                     if priority < precedence || ((right || op == "**") && priority == precedence) {
                         return Err(
                             self.error("Parenthesize operators with incompatible priorities.")
@@ -588,6 +616,14 @@ impl Parser {
             }),
             _ => Err(self.error("A goal needs a predicate name.")),
         }
+        .and_then(|goal| {
+            if !self.recorded && goal.predicate.starts_with('$') {
+                return Err(self.error(
+                    "Predicate names that begin with $ are reserved for generated relations.",
+                ));
+            }
+            Ok(goal)
+        })
     }
     fn literal(&mut self) -> Result<Literal, Error> {
         if self.take("\\+") {
@@ -650,7 +686,7 @@ impl Parser {
         }
         let left = self.expression(0)?;
         if test(self.spelling()) {
-            let predicate = self.spelling().to_string();
+            let predicate = self.spelling().into();
             self.position += 1;
             return Ok(Literal::Builtin(Goal {
                 predicate,
@@ -767,6 +803,11 @@ impl Parser {
                         let Token::Name(name) = self.peek().clone() else {
                             return Err(self.error("A table declaration needs a predicate name."));
                         };
+                        if name.starts_with('$') {
+                            return Err(self.error(
+                                "Predicate names that begin with $ are reserved for generated relations.",
+                            ));
+                        }
                         self.position += 1;
                         self.expect("/")?;
                         let Token::Number(n) = self.peek() else {
@@ -811,11 +852,74 @@ impl Parser {
             }
             self.expect(".")?;
         }
-        program.validate()?;
+        lean_witnesses(&mut program);
         Ok(program)
     }
 }
+/// Make witness rules lean (Section 8.3). A rule `H :- B, fresh(W).` whose
+/// head variables other than `W`, its frontier `F`, are bound by `B` becomes
+///
+/// ```text
+/// H :- '$lean:K'(F), fresh(W).
+/// '$satisfied:K'(F) :- H.
+/// '$lean:K'(F) :- B, \+ '$satisfied:K'(F).
+/// ```
+///
+/// The witness then depends only on the frontier, and it is introduced only
+/// when no fact of a completed lower stratum already matches `H` with any
+/// value for `W`. The decision is an ordinary absence, so the checker's
+/// boundary closure (C6) verifies it. Malformed witness rules keep their
+/// shape so that planning reports them.
+fn lean_witnesses(program: &mut Program) {
+    let mut helpers = Vec::new();
+    for rule in &mut program.rules {
+        let Some((Literal::Fresh(Term::Variable(witness)), body)) = rule.body.split_last() else {
+            continue;
+        };
+        let Ok((bound, _)) = crate::language::bound_after(body, BTreeSet::new(), false, false)
+        else {
+            continue;
+        };
+        let mut frontier = rule.head.variables();
+        frontier.remove(witness);
+        if bound.contains(witness) || !frontier.is_subset(&bound) {
+            continue;
+        }
+        let tag = helpers.len() / 2 + 1;
+        let terms: Vec<_> = frontier.into_iter().map(Term::Variable).collect();
+        let lean = Goal {
+            predicate: format!("{LEAN}{tag}").into(),
+            terms: terms.clone(),
+        };
+        let satisfied = Goal {
+            predicate: format!("{SATISFIED}{tag}").into(),
+            terms,
+        };
+        let mut test = body.to_vec();
+        test.push(Literal::Not(satisfied.clone()));
+        helpers.push(Rule {
+            head: satisfied,
+            body: vec![Literal::Relation(rule.head.clone())],
+        });
+        helpers.push(Rule {
+            head: lean.clone(),
+            body: test,
+        });
+        let fresh = rule.body.pop().unwrap();
+        rule.body = vec![Literal::Relation(lean), fresh];
+    }
+    program.rules.extend(helpers);
+}
+/// Parse a Midlog program and check its modes and strata.
 pub fn parse(source: &str) -> Result<Program, Error> {
+    let program = parse_document(source)?;
+    program.validate()?;
+    Ok(program)
+}
+/// Parse a Midlog program without planning its modes and strata. `reason`
+/// performs those checks, so a program read only to be merged and run need
+/// not be planned twice.
+pub fn parse_document(source: &str) -> Result<Program, Error> {
     Parser::new(source)?.program()
 }
 pub fn parse_atom(source: &str) -> Result<Atom, Error> {

@@ -216,6 +216,36 @@ fn c8_rejects_forged_witnesses_even_when_all_rule_matches_are_consistent() {
 }
 
 #[test]
+fn c6_rejects_a_witness_introduced_although_a_fact_satisfies_its_conclusion() {
+    let source = "t(a,k). q(a). t(X,W):-q(X),fresh(W). ?- t(X,W).";
+    let witness = r#"~"r1:g2:{\"X\": Symbol(\"a\")}""#;
+    let forged = |boundary: &str| {
+        format!(
+            "wheye-proof 1\nstep 1 source 1 : t(a, k).\nstep 2 source 2 : q(a).\n\
+             step 3 absent 1 : '$satisfied:1'(a).\nstep 4 rule 3 [2,3] : '$lean:1'(a).\n\
+             step 5 fresh 1 2 : '$fresh:r1:2'(a, {witness}).\n\
+             step 6 rule 1 [4,5] : t(a, {witness}).\nboundary 1 level 0 {boundary}\nanswer 1 [6]\n"
+        )
+    };
+    // The boundary omits the satisfaction fact that t(a, k) entails.
+    let p = parse(source).unwrap();
+    let c = Certificate::parse(&forged("[1,2]")).unwrap();
+    rejects(&p, &c, Condition::C6);
+    let report = check(&p, &c).unwrap();
+    assert!(
+        report
+            .to_string()
+            .contains("omits rule 2 conclusion '$satisfied:1'(a)"),
+        "{report}"
+    );
+    for condition in [Condition::C1, Condition::C2, Condition::C5, Condition::C8] {
+        assert_eq!(report.condition(condition).failed, 0, "{report}");
+    }
+    // Omitting the satisfying fact itself leaves the boundary incomplete.
+    inspect(source, &forged("[2]"), Condition::C6);
+}
+
+#[test]
 fn c8_prevents_reuse_of_a_witness_from_a_different_firing() {
     let (p, mut c) =
         proof("visitor(a). visitor(b). ticket(P,W):-visitor(P),fresh(W). ?- ticket(P,W).");

@@ -1,6 +1,6 @@
 # Wheye guide
 
-Version **0.3.0**. Run Midlog in Wheye's native CLI or browser, get
+Version **0.3.1**. Run Midlog in Wheye's native CLI or browser, get
 answers, and inspect their independently checkable proofs. The
 [specification](https://eyereasoner.github.io/wheye/SPEC/) defines the language
 and the [C1–C9 contract](https://eyereasoner.github.io/wheye/SPEC/#132-proof-conditions).
@@ -21,7 +21,9 @@ The existing `.pl` clause syntax is retained. Shared syntax and arithmetic use
 ISO/IEC 13211-1:1995 with Technical Corrigenda 1–3 as a compatibility reference,
 including Corrigendum 3's corrected integer-power rule. The
 [conformance section](https://eyereasoner.github.io/wheye/SPEC/#15-conformance)
-defines Midlog and identifies the shared ISO behavior.
+defines Midlog and identifies the shared ISO behavior. The
+[compatibility corpus](https://github.com/eyereasoner/wheye/tree/main/tests/conformance/)
+exercises shared ISO syntax, operations, and input restrictions.
 
 The implemented choices work together:
 
@@ -97,6 +99,15 @@ mortal(Person) :- human(Person).
 ?- check(mortal(socrates)).
 ```
 
+The source selects the output:
+
+| Request | Result |
+| --- | --- |
+| `?- Goal.` | Answer bindings, `true.`, or `false.` |
+| `?- why.` | Proof certificate for the preceding query |
+| `?- check.` | Independent verification under C1–C9 |
+| `?- check(Goal).` | `true.` or `false.` |
+
 Each request prints its `?- ... .` line, followed by its result. An ordinary
 query prints answers; `why` prints its proof certificate; bare `check` verifies
 that certificate under C1–C9. `check(Goal)` prints `true.` or `false.` without
@@ -143,6 +154,7 @@ suite compares them exactly and independently checks the certificates under C1�
 | [Bézout identity](https://github.com/eyereasoner/wheye/blob/main/examples/gcd-bezout-identity.pl) | Exact coefficients from the extended Euclidean algorithm |
 | [Command grammar](https://github.com/eyereasoner/wheye/blob/main/examples/grammar.pl) | List parsing with structured results and unconsumed input |
 | [Drought relief](https://github.com/eyereasoner/wheye/blob/main/examples/agri-drought-relief.pl) | Explicit eligibility, recorded statuses, and fresh payment identities |
+| [Examiners](https://github.com/eyereasoner/wheye/blob/main/examples/examiners.pl) | A fresh witness introduced only when no known fact satisfies its rule |
 | [River crossing](https://github.com/eyereasoner/wheye/blob/main/examples/wolf-goat-cabbage.pl) | Safe state transitions and minimum-cost plans |
 | [Catalan numbers](https://github.com/eyereasoner/wheye/blob/main/examples/catalan-convolution.pl) | Tabled convolution with an explicit recursive sum |
 | [Pointer analysis](https://github.com/eyereasoner/wheye/blob/main/examples/pointer-analysis.pl) | A finite fixed point for possible memory targets |
@@ -248,12 +260,18 @@ bound a run.
 
 `fresh(Witness)` is an explicit witness operation with ordinary predicate-call
 syntax. It can only end a range-restricted rule and must bind a new output variable.
-It creates an opaque typed witness for that source-rule firing. Source facts
-cannot supply witness identities. The certificate checker verifies C8 for
-the voucher example:
+It creates one opaque typed witness for each assignment of the head's other
+variables, and only when no fact of a lower stratum already matches the head
+with any value in the witness position. The parser expresses that test with
+generated `'$satisfied:K'` and `'$lean:K'` rules, so it appears in certificates
+as an ordinary absence that the checker verifies under C6. Source facts cannot
+supply witness identities, and source predicates cannot begin with `$`. The
+certificate checker verifies C8 for the voucher example, and the examiners
+example shows a known examiner preventing a fresh one:
 
 ```sh
 ./target/release/wheye examples/orders.pl
+./target/release/wheye examples/examiners.pl
 ```
 
 ## Keep and independently check evidence
@@ -332,9 +350,17 @@ Malformed input and resource exhaustion return errors.
 
 ## Implementation
 
-`parse` builds the source model. `reason` validates its modes and dependencies,
-then evaluates forward rules and demand-driven tables. `Run::output` follows
-the source requests.
+`parse` builds the source model, rewrites witness rules into their lean form,
+and validates modes and strata. `parse_document` does the same without that
+validation; the CLI and `execute` use it because `reason` validates the merged
+program again before it evaluates forward rules and demand-driven tables.
+`Run::output` follows the source requests.
+
+Names, text, variables, and predicates are shared `Name` values, so copying a
+term during matching copies only reference-counted pointers. Fact indexes are
+keyed by 64-bit hashes from a small multiply-rotate hasher with a MurmurHash3
+finalizer; every candidate is matched against its goal, so a collision costs
+only a failed match.
 
 The checker validates evidence steps, witness origins, claims, closed boundaries,
 and relevance. It consumes the supplied certificate and returns condition counts
@@ -343,7 +369,7 @@ and failures; it never invokes `reason` or fills a missing boundary.
 | File | Responsibility |
 | --- | --- |
 | `src/model.rs` | Structural values, facts, clauses, and source requests |
-| `src/parser.rs` | The `.pl` program syntax |
+| `src/parser.rs` | The `.pl` program syntax and lean witness rules |
 | `src/language.rs` | Safety, built-in modes, strata, and recursion restrictions |
 | `src/semantics.rs` | Unification, built-ins, aggregates, and finite-model matching |
 | `src/arithmetic.rs` | Exact integer operations and finite real arithmetic |

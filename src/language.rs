@@ -1,8 +1,9 @@
 use crate::model::term_variables;
-use crate::{AggregateKind, Error, Goal, Literal, Program, Term, Value};
-use std::collections::{BTreeSet, HashMap};
+use crate::model::HashMap;
+use crate::{AggregateKind, Error, Goal, Literal, Name, Program, Term, Value};
+use std::collections::BTreeSet;
 
-pub(crate) type Relation = (String, usize);
+pub(crate) type Relation = (Name, usize);
 pub(crate) fn relation(goal: &Goal) -> Relation {
     (goal.predicate.clone(), goal.terms.len())
 }
@@ -13,6 +14,12 @@ pub(crate) struct Plan {
     pub demand_driven: Vec<bool>,
     pub range_restricted: Vec<bool>,
     pub demands: HashMap<Relation, Vec<usize>>,
+    /// Lean satisfaction tests (Section 8.3), which read only facts of their
+    /// own or lower strata because their witness rule's conclusions are not
+    /// counted among their producers.
+    pub satisfaction: Vec<bool>,
+    /// Witness rules whose conclusions some satisfaction test ignores.
+    witness: Vec<bool>,
     heads: Vec<Goal>,
     producers: HashMap<Relation, Producers>,
 }
@@ -59,10 +66,10 @@ fn candidates(goal: &Goal, heads: &[Goal], index: &HashMap<Relation, Producers>)
     });
     result
 }
-fn goal_dependencies(literal: &Literal, strict: bool, out: &mut Vec<(Goal, bool)>) {
+fn goal_dependencies<'a>(literal: &'a Literal, strict: bool, out: &mut Vec<(&'a Goal, bool)>) {
     match literal {
-        Literal::Relation(g) => out.push((g.clone(), strict)),
-        Literal::Not(g) => out.push((g.clone(), true)),
+        Literal::Relation(g) => out.push((g, strict)),
+        Literal::Not(g) => out.push((g, true)),
         Literal::Aggregate(a) => {
             for l in &a.body {
                 goal_dependencies(l, true, out);
@@ -75,6 +82,17 @@ impl Plan {
     pub fn goal_level(&self, goal: &Goal) -> usize {
         candidates(goal, &self.heads, &self.producers)
             .into_iter()
+            .map(|i| self.rules[i])
+            .max()
+            .unwrap_or(0)
+    }
+    /// The lowest boundary level that records a demanded call: its goal level
+    /// without witness rules, since a lean satisfaction test at a lower level
+    /// calls that relation before their conclusions exist (Section 8.3).
+    pub fn call_level(&self, goal: &Goal) -> usize {
+        candidates(goal, &self.heads, &self.producers)
+            .into_iter()
+            .filter(|i| !self.witness[*i])
             .map(|i| self.rules[i])
             .max()
             .unwrap_or(0)
@@ -121,12 +139,15 @@ pub(crate) fn fixed_builtin_inputs(goal: &Goal) -> Result<usize, Error> {
 }
 
 fn source_term(term: &Term) -> Result<(), Error> {
-    if !crate::model::term_value(term).valid() {
+    let Term::Constant(value) = term else {
+        return Ok(());
+    };
+    if !value.valid() {
         return Err(Error::new(
             "Use proper lists and valid finite numeric terms.",
         ));
     }
-    if crate::model::term_value(term).has_witness() {
+    if value.has_witness() {
         return Err(Error::new(
             "Witness constants belong to certificates, not source programs.",
         ));
@@ -181,10 +202,10 @@ fn literal_shapes(body: &[Literal], fresh: bool, nested: bool) -> Result<(), Err
 /// is a parameter; new producer names have only that aggregate's scope.
 pub(crate) fn bound_after(
     body: &[Literal],
-    mut bound: BTreeSet<String>,
+    mut bound: BTreeSet<Name>,
     fresh: bool,
     nested: bool,
-) -> Result<(BTreeSet<String>, bool), Error> {
+) -> Result<(BTreeSet<Name>, bool), Error> {
     if body.len() > 64 {
         return Err(Error::new("Use 1 to 64 body goals."));
     }
@@ -294,6 +315,32 @@ fn dependencies_of(literal: &Literal, strict: bool, output: &mut Vec<(Relation, 
     }
 }
 
+/// The witness rules whose conclusions a lean satisfaction test ignores. The
+/// test `'$satisfied:K'` decides, by completed negation in `'$lean:K'`, whether
+/// the rule reading `'$lean:K'` introduces a witness, so those conclusions are
+/// later evidence rather than inputs to the test (Section 8.3).
+fn own_conclusions(program: &Program, helper: usize) -> Vec<usize> {
+    let Some(tag) = program.rules[helper]
+        .head
+        .predicate
+        .strip_prefix(crate::parser::SATISFIED)
+    else {
+        return Vec::new();
+    };
+    let lean = format!("{}{tag}", crate::parser::LEAN);
+    program
+        .rules
+        .iter()
+        .enumerate()
+        .filter(|(_, r)| {
+            r.body
+                .iter()
+                .any(|l| matches!(l, Literal::Relation(g) if g.predicate == lean))
+        })
+        .map(|(i, _)| i)
+        .collect()
+}
+
 pub(crate) fn plan(program: &Program) -> Result<Plan, Error> {
     for request in &program.requests {
         if let crate::Request::Answer(i) | crate::Request::Result(i) = request {
@@ -302,7 +349,7 @@ pub(crate) fn plan(program: &Program) -> Result<Plan, Error> {
             }
         }
     }
-    let mut levels = HashMap::new();
+    let mut levels = HashMap::default();
 
     let mut demand_driven = Vec::new();
     let mut range_restricted = Vec::new();
@@ -364,7 +411,7 @@ pub(crate) fn plan(program: &Program) -> Result<Plan, Error> {
         }
     }
     let heads: Vec<_> = program.rules.iter().map(|r| r.head.clone()).collect();
-    let mut producers: HashMap<Relation, Producers> = HashMap::new();
+    let mut producers: HashMap<Relation, Producers> = HashMap::default();
     for (id, head) in heads.iter().enumerate() {
         let entry = producers.entry(relation(head)).or_default();
         entry.all.push(id);
@@ -384,13 +431,24 @@ pub(crate) fn plan(program: &Program) -> Result<Plan, Error> {
     let count = heads.len();
     let mut outgoing = vec![Vec::new(); count];
     let mut incoming = vec![Vec::new(); count];
+    let mut deps = Vec::new();
+    let mut satisfaction = vec![false; count];
+    let mut witness = vec![false; count];
     for (target, rule) in program.rules.iter().enumerate() {
-        let mut deps = Vec::new();
+        deps.clear();
         for l in &rule.body {
             goal_dependencies(l, false, &mut deps);
         }
-        for (goal, strict) in deps {
-            for source in candidates(&goal, &heads, &producers) {
+        let own = own_conclusions(program, target);
+        satisfaction[target] = !own.is_empty();
+        for &i in &own {
+            witness[i] = true;
+        }
+        for &(goal, strict) in &deps {
+            for source in candidates(goal, &heads, &producers) {
+                if own.contains(&source) {
+                    continue;
+                }
                 outgoing[source].push((target, strict));
                 incoming[target].push(source);
             }
@@ -398,12 +456,13 @@ pub(crate) fn plan(program: &Program) -> Result<Plan, Error> {
     }
     let mut visited = vec![false; count];
     let mut order = Vec::new();
+    let mut stack = Vec::new();
     for root in 0..count {
         if visited[root] {
             continue;
         }
         visited[root] = true;
-        let mut stack = vec![(root, 0)];
+        stack.push((root, 0));
         while let Some((id, at)) = stack.last_mut() {
             if *at == outgoing[*id].len() {
                 order.push(*id);
@@ -420,12 +479,13 @@ pub(crate) fn plan(program: &Program) -> Result<Plan, Error> {
     }
     let mut component = vec![usize::MAX; count];
     let mut components = 0;
+    let mut stack = Vec::new();
     for root in order.into_iter().rev() {
         if component[root] != usize::MAX {
             continue;
         }
         component[root] = components;
-        let mut stack = vec![root];
+        stack.push(root);
         while let Some(id) = stack.pop() {
             for &next in &incoming[id] {
                 if component[next] == usize::MAX {
@@ -481,7 +541,7 @@ pub(crate) fn plan(program: &Program) -> Result<Plan, Error> {
         let level = levels.entry(relation(head)).or_insert(0);
         *level = (*level).max(rules[i]);
     }
-    let mut demands: HashMap<Relation, Vec<usize>> = HashMap::new();
+    let mut demands: HashMap<Relation, Vec<usize>> = HashMap::default();
     for (i, rule) in program.rules.iter().enumerate() {
         if demand_driven[i] {
             demands.entry(relation(&rule.head)).or_default().push(i);
@@ -493,6 +553,8 @@ pub(crate) fn plan(program: &Program) -> Result<Plan, Error> {
         demand_driven,
         range_restricted,
         demands,
+        satisfaction,
+        witness,
         heads,
         producers,
     })

@@ -1,6 +1,6 @@
 # Midlog specification
 
-Version **0.3.0**
+Version **0.3.1**
 
 **Status of this document.** This document defines Midlog, with Wheye as its
 Rust reference implementation. It is the normative contract for the language,
@@ -597,9 +597,11 @@ and the form of aggregate templates are checked when the program is loaded.
 ### 5.6 Reserved Predicates
 
 Facts and rule heads MUST NOT define a built-in predicate of Section 6 or the
-names `aggregate_all`, `fresh`, `why`, or `check` at any arity. Every other
-predicate indicator is ordinary and has no implicit definition: a call to an
-ordinary predicate without facts or rules has no solutions.
+names `aggregate_all`, `fresh`, `why`, or `check` at any arity. Source goals,
+facts, and heads MUST NOT name a predicate that begins with `$`; such names
+belong to generated relations (Sections 8.3 and 12.4). Every other predicate
+indicator is ordinary and has no implicit definition: a call to an ordinary
+predicate without facts or rules has no solutions.
 
 ## 6. Built-in Predicates
 
@@ -902,17 +904,57 @@ variable not bound by earlier goals. It MUST NOT occur in queries, goal checks,
 or aggregate bodies. It binds `W` to a *witness*, an opaque typed value
 distinct from atoms, strings, and numbers.
 
+Witness introduction is *lean*. The head's variables other than `W` form the
+rule's *frontier*. When the preceding goals bind the frontier, the rule
+concludes its head only when no fact of a completed lower stratum already
+matches the head with any value in place of `W`, and it creates one witness
+per frontier assignment. Premise substitutions that differ only outside the
+frontier therefore share one witness, and no fresh value is created where a
+known one already fits. This is the restricted introduction of
+[Stratified Negation in RDF Rules](https://arxiv.org/abs/2607.28778), with
+the precedence approximated by Midlog's strata.
+
+The parser states this with ordinary rules. Rule `H :- B, fresh(W).` with
+frontier `F` (its variables in increasing name order) becomes the following,
+where `K` numbers the document's witness rules from 1:
+
+```prolog
+H :- '$lean:K'(F), fresh(W).
+'$satisfied:K'(F) :- H.
+'$lean:K'(F) :- B, \+ '$satisfied:K'(F).
+```
+
+The first rule keeps the source rule's number, and the two helpers follow the
+document's other rules, so the helpers appear in certificates and their
+decisions are checked like any other: the satisfaction test is an ordinary
+absence (C6). Its producers are the rules compatible with `H` other than the
+rule reading `'$lean:K'`. That rule's conclusions are later evidence, not
+inputs to the test: they create no dependency edge to `'$satisfied:K'`
+(Section 10.2), and the test matches only facts of its own or lower strata,
+in evaluation and in boundary closure (Section 12.5). Every other producer of
+`H` MUST therefore lie in a lower stratum; a program in which another producer
+depends on the witness rule's conclusions has a cycle through the negation
+and is rejected. A rule whose `fresh/1` goal is misplaced or whose frontier
+the preceding goals do not bind is not rewritten, so loading reports it.
+
 A witness's identity is determined by the rule number, the goal position, and
-the complete substitution of the variables bound by the preceding goals. If the
-same firing repeats, the identity is reused. Different firings never share an
-identity. Other rules MAY carry witnesses as ordinary values. Source programs
-MUST NOT contain witness constants.
+the substitution of the variables bound by the preceding goals, which after
+the rewriting are exactly the frontier. If the same firing repeats, the
+identity is reused. Different firings never share an identity. Other rules MAY
+carry witnesses as ordinary values. Source programs MUST NOT contain witness
+constants.
 
 The firing substitution contains the fully resolved values of preceding body
 variables, including nested structural bindings. Call-variable aliases and
 head bindings not established by those goals MUST NOT enter the identity.
 This applies to forward and explicitly tabled rules alike. C8 and boundary
 closure MUST recompute witnesses from the same source-prefix context.
+
+*Informative:* with `teacher(c, t). participant(c, p).`, the rules
+`examiner(C, T) :- teacher(C, T), \+ student(T).` and
+`examiner(C, E) :- participant(C, P), fresh(E).` give course `c` no fresh
+examiner, because `examiner(c, t)` is derived in a lower stratum. See
+[`examples/examiners.pl`](https://github.com/eyereasoner/wheye/blob/main/examples/examiners.pl).
 
 Witnesses are written `~"identity"` in answers and certificates. The identity
 spelling is implementation-defined. A conforming checker recomputes it rather
@@ -1029,7 +1071,8 @@ out compatibility. This analysis MAY be conservative.
 *Dependency graph.* There is an edge from rule *P* to rule *C* for each goal of
 *C* compatible with *P*'s head. The edge is *strict* when the goal is negated or
 is inside an aggregate producer, including nested ones, and *positive*
-otherwise. Built-in goals create no edges. A strongly connected component that
+otherwise. Built-in goals create no edges, and a witness rule creates no edge
+to its own satisfaction test (Section 8.3). A strongly connected component that
 contains a strict edge MUST be rejected (Section 8.1).
 
 *Levels.* Source facts have level 0. A rule's level is the least value such
@@ -1086,7 +1129,7 @@ completed. A query is ranked above every rule level.
   producer call reachable from the aggregate body over the current model, and
   it repeats this until no new call appears.
 - *Boundaries.* After evaluation, a boundary is recorded for each decision level
-  that was used. It contains the demanded calls whose goal level does not
+  that was used. It contains the demanded calls whose call level does not
   exceed that level, sorted by their text.
 
 Tables and calls are local to one run.
@@ -1331,7 +1374,8 @@ decision level of the aggregate goal.
 `demand B : Goal.` records one call to demand-driven rules that the boundary's
 model answers completely. Calls are compared after the variable renaming of
 Section 10.4. Each call MUST name a predicate that has demand-driven rules, and
-its goal level MUST be at most `L`. A call to which no clause applies is
+its *call level*, the goal level computed without witness rules (Section 8.3),
+MUST be at most `L`. A call to which no clause applies is
 permitted and certifies an empty answer set for that call.
 
 A boundary is *closed* when all of the following hold (verified as C6,
@@ -1340,7 +1384,8 @@ Section 13.2):
 1. it contains every source fact;
 2. for every forward rule at or below `L`, every solution of the body over the
    boundary's model, with any witness recomputed, gives a head instance in the
-   model;
+   model. A satisfaction test (Section 8.3) is matched only against the members
+   of its own or lower levels;
 3. for every demand-driven rule at or below `L` and every recorded call whose
    head unifies with it, every solution of the body over the model, starting
    from that unification, gives a head instance in the model;
@@ -1403,7 +1448,8 @@ structure and every witness's exact source-rule context.
 wheye-proof 1
 % Rule 1: subtotal(Customer, Total) :- customer(Customer), aggregate_all(sum(Price), (line(Customer, Item, Price)), Total).
 % Rule 2: eligible(Customer, Total) :- subtotal(Customer, Total), \+ (blocked(Customer)), Total >= 10.
-% Rule 3: voucher(Customer, Voucher, Total) :- eligible(Customer, Total), fresh(Voucher).
+% Rule 3: voucher(Customer, Voucher, Total) :- '$lean:1'(Customer, Total), fresh(Voucher).
+% Rule 5: '$lean:1'(Customer, Total) :- eligible(Customer, Total), \+ ('$satisfied:1'(Customer, Total)).
 step 1 source 1 : customer(ada).
 step 2 source 2 : customer(bea).
 step 3 source 3 : line(ada, book, 12).
@@ -1415,10 +1461,12 @@ step 8 rule 1 [1,7] : subtotal(ada, 15).
 step 9 absent 1 : blocked(ada).
 step 10 builtin : '>='(15, 10).
 step 11 rule 2 [8,9,10] : eligible(ada, 15).
-step 12 fresh 3 2 : '$fresh:r3:2'(ada, 15, ~"r3:g2:{\"Customer\": Symbol(\"ada\"), \"Total\": Integer(15)}").
-step 13 rule 3 [11,12] : voucher(ada, ~"r3:g2:{\"Customer\": Symbol(\"ada\"), \"Total\": Integer(15)}", 15).
+step 12 absent 1 : '$satisfied:1'(ada, 15).
+step 13 rule 5 [11,12] : '$lean:1'(ada, 15).
+step 14 fresh 3 2 : '$fresh:r3:2'(ada, 15, ~"r3:g2:{\"Customer\": Symbol(\"ada\"), \"Total\": Integer(15)}").
+step 15 rule 3 [13,14] : voucher(ada, ~"r3:g2:{\"Customer\": Symbol(\"ada\"), \"Total\": Integer(15)}", 15).
 boundary 1 level 0 [1,2,3,4,5,6]
-answer 1 [13]
+answer 1 [15]
 ```
 
 A program with demand-driven rules adds demand records after a boundary, for
@@ -1498,16 +1546,16 @@ not a count of established conclusions.
 For the certificate in Section 12.8, the report is:
 
 ```text
-checked: 13 steps, 1 claim
-6 source facts; 3 rule applications
+checked: 15 steps, 1 claim
+6 source facts; 4 rule applications
 Conditions:
-  C1 resolution: 9 checked, 0 failed
-  C2 well-foundedness: 5 checked, 0 failed
-  C3 justification: 15 checked, 0 failed
-  C4 coverage: 30 checked, 0 failed
+  C1 resolution: 10 checked, 0 failed
+  C2 well-foundedness: 7 checked, 0 failed
+  C3 justification: 17 checked, 0 failed
+  C4 coverage: 34 checked, 0 failed
   C5 re-decision: 2 checked, 0 failed
-  C6 boundary consistency: 3 checked, 0 failed
-  C7 relevance: 14 checked, 0 failed
+  C6 boundary consistency: 4 checked, 0 failed
+  C7 relevance: 16 checked, 0 failed
   C8 witness integrity: 3 checked, 0 failed
   C9 query isolation: 1 checked, 0 failed
 Source facts and rules are assumed. Answer completeness is not checked.

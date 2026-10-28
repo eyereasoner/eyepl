@@ -5,7 +5,8 @@ Customer = ada, Voucher = ~"r3:g2:{\"Customer\": Symbol(\"ada\"), \"Total\": Int
 wheye-proof 1
 % Rule 1: subtotal(Customer, Total) :- customer(Customer), aggregate_all(sum(Price), (line(Customer, Item, Price)), Total).
 % Rule 2: eligible(Customer, Total) :- subtotal(Customer, Total), \+ (blocked(Customer)), Total >= 10.
-% Rule 3: voucher(Customer, Voucher, Total) :- eligible(Customer, Total), fresh(Voucher).
+% Rule 3: voucher(Customer, Voucher, Total) :- '$lean:1'(Customer, Total), fresh(Voucher).
+% Rule 5: '$lean:1'(Customer, Total) :- eligible(Customer, Total), \+ ('$satisfied:1'(Customer, Total)).
 step 1 source 1 : customer(ada).
 step 2 source 2 : customer(bea).
 step 3 source 3 : line(ada, book, 12).
@@ -17,22 +18,24 @@ step 8 rule 1 [1,7] : subtotal(ada, 15).
 step 9 absent 1 : blocked(ada).
 step 10 builtin : '>='(15, 10).
 step 11 rule 2 [8,9,10] : eligible(ada, 15).
-step 12 fresh 3 2 : '$fresh:r3:2'(ada, 15, ~"r3:g2:{\"Customer\": Symbol(\"ada\"), \"Total\": Integer(15)}").
-step 13 rule 3 [11,12] : voucher(ada, ~"r3:g2:{\"Customer\": Symbol(\"ada\"), \"Total\": Integer(15)}", 15).
+step 12 absent 1 : '$satisfied:1'(ada, 15).
+step 13 rule 5 [11,12] : '$lean:1'(ada, 15).
+step 14 fresh 3 2 : '$fresh:r3:2'(ada, 15, ~"r3:g2:{\"Customer\": Symbol(\"ada\"), \"Total\": Integer(15)}").
+step 15 rule 3 [13,14] : voucher(ada, ~"r3:g2:{\"Customer\": Symbol(\"ada\"), \"Total\": Integer(15)}", 15).
 boundary 1 level 0 [1,2,3,4,5,6]
-answer 1 [13]
+answer 1 [15]
 
 ?- check.
-checked: 13 steps, 1 claim
-6 source facts; 3 rule applications
+checked: 15 steps, 1 claim
+6 source facts; 4 rule applications
 Conditions:
-  C1 resolution: 9 checked, 0 failed
-  C2 well-foundedness: 5 checked, 0 failed
-  C3 justification: 15 checked, 0 failed
-  C4 coverage: 30 checked, 0 failed
+  C1 resolution: 10 checked, 0 failed
+  C2 well-foundedness: 7 checked, 0 failed
+  C3 justification: 17 checked, 0 failed
+  C4 coverage: 34 checked, 0 failed
   C5 re-decision: 2 checked, 0 failed
-  C6 boundary consistency: 3 checked, 0 failed
-  C7 relevance: 14 checked, 0 failed
+  C6 boundary consistency: 4 checked, 0 failed
+  C7 relevance: 16 checked, 0 failed
   C8 witness integrity: 3 checked, 0 failed
   C9 query isolation: 1 checked, 0 failed
 Source facts and rules are assumed. Answer completeness is not checked.
