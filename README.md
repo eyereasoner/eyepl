@@ -1,6 +1,8 @@
 # <img src="assets/eye.png" alt="" width="48" height="48" align="absmiddle"> eyepl
 
-**Version 0.3.2**
+[![crates.io](https://img.shields.io/crates/v/eyepl.svg)](https://crates.io/crates/eyepl)
+
+**Version 0.3.3**
 
 **eyepl** is a relational rule language and Rust reasoner between
 Datalog and Prolog: set semantics and fixed-point reasoning with Prolog-style

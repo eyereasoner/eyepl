@@ -1,11 +1,19 @@
 [package]
 name = "eyepl"
-version = "0.3.2"
+version = "0.3.3"
 edition = "2021"
 authors = ["Jos De Roo"]
 license = "MIT"
 description = "An eyepl reasoner with independently checked proof certificates."
+repository = "https://github.com/eyereasoner/eyepl"
+homepage = "https://eyereasoner.github.io/eyepl/"
+readme = "README.md"
+keywords = ["reasoner", "datalog", "prolog", "proof", "logic"]
+categories = ["science", "command-line-utilities", "wasm"]
 default-run = "eyepl"
+# The crate carries the library, CLI, and contract documents; examples, tests,
+# the browser package, and the website stay in the repository.
+include = ["/src/", "/README.md", "/GUIDE.md", "/SPEC.md", "/LICENSE.md"]
 
 [lib]
 crate-type = ["rlib", "cdylib"]

@@ -1,0 +1,15 @@
+{
+  "title": "eyepl",
+  "description": "A relational rule language and Rust reasoner between Datalog and Prolog, with independently checked proof certificates, a command-line interface, a Rust library, and a browser playground.",
+  "creators": [
+    {
+      "name": "Jos De Roo",
+      "affiliation": "Ghent University",
+      "orcid": "0000-0001-8862-0666"
+    }
+  ],
+  "license": "MIT",
+  "keywords": ["eyepl", "reasoner", "Datalog", "Prolog", "proof checking", "Rust"],
+  "upload_type": "software",
+  "access_right": "open"
+}

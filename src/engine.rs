@@ -12,15 +12,12 @@ pub(crate) type Bindings = BTreeMap<crate::model::Name, Value>;
 pub struct Limits {
     pub max_facts: usize,
     pub max_matches: usize,
-    /// Largest term text of one derived fact, in bytes.
-    pub max_term_bytes: usize,
 }
 impl Default for Limits {
     fn default() -> Self {
         Self {
             max_facts: 1_000_000,
             max_matches: 10_000_000,
-            max_term_bytes: crate::model::MAX_TERM_BYTES,
         }
     }
 }
@@ -68,15 +65,8 @@ struct Store {
     relations: HashMap<u64, Vec<usize>>,
     positions: HashMap<u64, Vec<usize>>,
     boundaries: Vec<Boundary>,
-    max_term_bytes: usize,
 }
 impl Store {
-    fn new(limits: Limits) -> Self {
-        Self {
-            max_term_bytes: limits.max_term_bytes,
-            ..Self::default()
-        }
-    }
     /// The one-based step of an ordinary fact, if it is known.
     fn find(&self, atom: &Atom) -> Option<usize> {
         self.find_keyed(crate::model::atom_key(atom), atom)
@@ -111,9 +101,6 @@ impl Store {
             return Err(Error::new(format!(
                 "Incomplete: fact limit ({limit}) reached; no complete answer is available."
             )));
-        }
-        if !matches!(justification, Justification::Source(_)) && atom.exceeds(self.max_term_bytes) {
-            return Err(crate::model::term_limit_error(self.max_term_bytes));
         }
         let index = self.steps.len();
         if let Some(key) = key {
@@ -524,7 +511,7 @@ pub fn reason(program: &Program, limits: Limits) -> Result<Run, Error> {
     if plan.demand_driven.iter().any(|b| *b) {
         return reason_tabled(program, limits, &plan);
     }
-    let mut store = Store::new(limits);
+    let mut store = Store::default();
     let mut budget = Budget {
         used: 0,
         limit: limits.max_matches,
@@ -1096,7 +1083,7 @@ fn reason_tabled(program: &Program, limits: Limits, plan: &Plan) -> Result<Run, 
     let mut engine = Tabled {
         program,
         plan,
-        store: Store::new(limits),
+        store: Store::default(),
         budget: Budget {
             used: 0,
             limit: limits.max_matches,

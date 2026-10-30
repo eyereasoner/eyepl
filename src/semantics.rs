@@ -190,9 +190,6 @@ pub(crate) fn builtin(goal: &Goal, bindings: &Bindings) -> Result<Option<(Atom, 
             require(b)?;
             match (a, b) {
                 (Value::Text(a), Value::Text(b)) => {
-                    if a.len() + b.len() > crate::model::MAX_TERM_BYTES {
-                        return Err(crate::model::term_limit_error(crate::model::MAX_TERM_BYTES));
-                    }
                     unify(c, &Value::Text(format!("{a}{b}").into()), &mut next)
                 }
                 _ => return Err(Error::new("string_concat requires two input strings.")),

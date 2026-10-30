@@ -26,13 +26,6 @@ fn int(v: &Value) -> Result<BigInt, Error> {
         _ => Err(Error::new("This arithmetic operation requires integers.")),
     }
 }
-/// Refuses an integer result that would exceed the term size limit.
-fn bounded(bits: u64) -> Result<(), Error> {
-    if bits > 8 * crate::model::MAX_TERM_BYTES as u64 {
-        return Err(crate::model::term_limit_error(crate::model::MAX_TERM_BYTES));
-    }
-    Ok(())
-}
 fn float(v: &Value) -> Result<f64, Error> {
     let n = match v {
         Value::Real(b) => f64::from_bits(*b),
@@ -79,7 +72,6 @@ fn power(name: &str, a: &Value, b: &Value) -> Result<Value, Error> {
             .to_u32()
             .filter(|n| *n <= 1_000_000)
             .ok_or_else(|| Error::new("Integer exponent exceeds the resource limit."))?;
-        bounded(base.bits().saturating_mul(exponent.into()))?;
         return Ok(integer(base.pow(exponent)));
     }
     let (base, exponent) = (float(a)?, float(b)?);
@@ -234,7 +226,6 @@ pub(crate) fn eval(v: &Value) -> Result<Value, Error> {
                     })
                 } else {
                     let (a, b) = (int(a)?, int(b)?);
-                    bounded(a.bits() + b.bits())?;
                     Ok(integer(match name {
                         "+" => a + b,
                         "-" => a - b,
@@ -285,11 +276,11 @@ pub(crate) fn eval(v: &Value) -> Result<Value, Error> {
                     .ok_or_else(|| {
                         Error::new("Shift count must be nonnegative and within the resource limit.")
                     })?;
-                let a = int(a)?;
-                if name == "<<" {
-                    bounded(a.bits() + shift as u64)?;
-                }
-                Ok(integer(if name == "<<" { a << shift } else { a >> shift }))
+                Ok(integer(if name == "<<" {
+                    int(a)? << shift
+                } else {
+                    int(a)? >> shift
+                }))
             }
             "atan2" => {
                 let (y, x) = (float(a)?, float(b)?);

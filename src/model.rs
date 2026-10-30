@@ -545,44 +545,6 @@ pub(crate) fn value_variables(value: &Value) -> Vec<Name> {
         _ => Vec::new(),
     }
 }
-/// Default cap on the term text of one derived fact, in bytes.
-///
-/// A rule such as `s(Y) :- s(X), string_concat(X, X, Y).` doubles a value on
-/// every firing, so it exhausts memory long before the fact or match limit is
-/// reached. Bounding one fact turns that into an ordinary incomplete run.
-/// Built-ins also refuse to construct a larger text or integer, so a single
-/// call cannot allocate past it.
-pub(crate) const MAX_TERM_BYTES: usize = 16 * 1024 * 1024;
-pub(crate) fn term_limit_error(limit: usize) -> Error {
-    Error::new(format!(
-        "Incomplete: term size limit ({limit} bytes) reached; no complete answer is available."
-    ))
-}
-impl Atom {
-    /// Whether the atom's term text exceeds `limit` bytes; stops counting early.
-    pub(crate) fn exceeds(&self, limit: usize) -> bool {
-        let mut size = self.predicate.len();
-        let mut pending: Vec<&Value> = self.values.iter().collect();
-        while let Some(value) = pending.pop() {
-            size += match value {
-                Value::Symbol(n) | Value::Text(n) | Value::Variable(n) | Value::Witness(n) => {
-                    n.len()
-                }
-                Value::Integer(_) | Value::Real(_) => 8,
-                Value::BigInteger(n) => n.bits().div_ceil(8) as usize,
-                Value::Nil => 2,
-                Value::Compound(name, args) => {
-                    pending.extend(args);
-                    name.len()
-                }
-            };
-            if size > limit {
-                return true;
-            }
-        }
-        false
-    }
-}
 impl Value {
     pub(crate) fn ground(&self) -> bool {
         match self {

@@ -74,6 +74,10 @@ git diff --check
 ```
 
 Use focused tests while working, then run `./scripts/test-all` for code changes.
+It caps its run at 3 GiB of RAM without swap (`EYEPL_TEST_MEMORY`); wrap other
+heavy builds, benchmarks, and large example runs the same way, for example
+`systemd-run --user --scope -p MemoryMax=3G -p MemorySwapMax=0 <command>`, and
+never start a second heavy job alongside one already running.
 It checks formatting, Rust tests, native clippy, API docs, the browser worker,
 Pages, and release tooling. Node.js 22 or later is required. Browser changes also
 need a real browser check at desktop and phone widths; `tests/browser.mjs`
@@ -129,8 +133,10 @@ The optional message defaults to `Release v<version>`. The script switches to
 `main`, pulls with `--ff-only`, bumps with `cargo set-version` (cargo-edit), syncs
 version labels, rebuilds `pkg/`, runs checks, stages every change, commits, creates
 an annotated tag, pushes branch and tag atomically, and creates a GitHub release
-with `gh`. It needs authenticated Git and GitHub CLI access. No release workflow
-is needed; a push to `main` runs CI and deploys Pages.
+with `gh`. It needs authenticated Git and GitHub CLI access. A push to `main`
+runs CI and deploys Pages; the `v*` tag publishes the crate through
+`.github/workflows/publish-crates.yml`, and Zenodo archives the GitHub release
+using `.zenodo.json`. See the guide for the one-time crates.io and Zenodo setup.
 
 If a release fails, inspect which steps completed and finish that version; do not
 blindly bump again. The guide documents publication recovery. Release tests use

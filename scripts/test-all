@@ -1,6 +1,16 @@
 #!/usr/bin/env bash
 # Run every check, with its purpose, individual test timings, and an overall time.
 set -uo pipefail
+
+# Cap the whole run in RAM, with no swap, so a runaway test is killed instead of
+# freezing the machine. Set EYEPL_TEST_MEMORY to another systemd size, or to 0
+# to run uncapped. Without user systemd scopes (as in CI), the run is uncapped.
+memory=${EYEPL_TEST_MEMORY:-3G}
+if [[ $memory != 0 && -z ${EYEPL_TEST_CAPPED:-} ]] &&
+  systemd-run --user --scope --quiet -p MemoryMax=64M true 2>/dev/null; then
+  export EYEPL_TEST_CAPPED=$memory
+  exec systemd-run --user --scope --quiet -p MemoryMax="$memory" -p MemorySwapMax=0 -- bash "$0" "$@"
+fi
 cd "$(dirname "$0")/.."
 
 export CARGO_BUILD_JOBS=${CARGO_BUILD_JOBS:-2}

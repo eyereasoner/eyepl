@@ -11,7 +11,7 @@ async function fixture(t) {
   t.after(() => rm(directory, { recursive: true, force: true }));
   const bin = join(directory, 'bin');
   await mkdir(bin);
-  return { directory, bin, env: { ...process.env, NO_COLOR: '1', PATH: `${bin}:${process.env.PATH}` } };
+  return { directory, bin, env: { ...process.env, NO_COLOR: '1', EYEPL_TEST_MEMORY: '0', PATH: `${bin}:${process.env.PATH}` } };
 }
 
 async function checksFixture(t) {

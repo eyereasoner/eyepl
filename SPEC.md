@@ -1,6 +1,6 @@
 # <img src="assets/eye.png" alt="" width="48" height="48" align="absmiddle"> eyepl specification
 
-Version **0.3.2**
+Version **0.3.3**
 
 **Status of this document.** This document defines the eyepl language,
 with the eyepl Rust reasoner as its reference implementation. It is the
@@ -819,9 +819,7 @@ The following MUST raise an error, naming the problem:
 - an integer too large to convert to a finite binary64 value;
 - a nonnegative exponent above 1,000,000 in the two-integer `^` operation, or a
   shift count above 1,000,000. This exponent cap does not apply to real power;
-  real conversion, domain, and overflow checks still apply there;
-- an integer `*`, `^`, or `<<` result whose magnitude would exceed 16 MiB,
-  reported as an incomplete result (Section 10.6).
+  real conversion, domain, and overflow checks still apply there.
 
 ## 8. Negation, Aggregation, and Witnesses
 
@@ -1152,16 +1150,10 @@ record follows everything it depends on (Section 12.3).
 | --- | --- | --- |
 | `max_facts` | 1,000,000 | Stored evidence records (facts and decisions) |
 | `max_matches` | 10,000,000 | Counted operations: candidate matches, built-in calls, tasks, index entries, demanded calls, and finite-model matching |
-| `max_term_bytes` | 16,777,216 | Term text of one derived evidence record: name and text bytes, 8 bytes per number, and the magnitude bytes of a big integer |
 
 Exceeding a limit MUST raise an error that states the result is incomplete. It
-MUST NOT produce successful partial output. A rule that doubles a value on each
-firing exhausts memory long before the counted limits are reached;
-`max_term_bytes` turns that into an incomplete run. Source facts are not
-measured. Independently of `max_term_bytes`, built-ins MUST refuse to construct
-a text or integer whose size exceeds 16 MiB (Section 7). Limits bound counted
-work and the size of single records, not elapsed time, stack depth, or total
-process memory. The browser playground MUST allow
+MUST NOT produce successful partial output. Limits bound counted work, not
+elapsed time, stack depth, or process memory. The browser playground MUST allow
 cancellation by terminating its computation worker.
 
 ## 11. Requests and Output

@@ -1,6 +1,6 @@
 # <img src="assets/eye.png" alt="" width="48" height="48" align="absmiddle"> eyepl guide
 
-Version **0.3.2**. Run eyepl programs in the native CLI or browser, get
+Version **0.3.3**. Run eyepl programs in the native CLI or browser, get
 answers, and inspect their independently checkable proofs. The
 [specification](https://eyereasoner.github.io/eyepl/SPEC/) defines the language
 and the [C1–C9 contract](https://eyereasoner.github.io/eyepl/SPEC/#132-proof-conditions).
@@ -258,8 +258,7 @@ that need caller inputs use demand-driven tables; a `table` declaration makes
 all clauses of that predicate demand-driven. Variant calls share work and
 recursive consumers resume as answers arrive. Tabling does not guarantee
 termination for arbitrary programs. Limits and the playground's Stop button
-bound a run. A derived fact larger than 16 MiB, such as a string doubled on each
-firing, ends the run as incomplete instead of exhausting memory.
+bound a run.
 
 `fresh(Witness)` is an explicit witness operation with ordinary predicate-call
 syntax. It can only end a range-restricted rule and must bind a new output variable.
@@ -403,6 +402,10 @@ example, and prints overall timing at the end. Terminal output uses cyan heading
 green passes, and red failures; redirected logs stay plain. Set `NO_COLOR=1` to
 disable colors or `FORCE_COLOR=1` to retain them in captured output. The script
 continues after failures and returns a nonzero status if any check fails.
+Where user systemd scopes are available, the whole run is capped at 3 GiB of RAM
+with swap disabled, so a runaway test is killed instead of freezing the machine.
+Set `EYEPL_TEST_MEMORY` to another size, such as `4G`, or to `0` to run uncapped;
+CI runs uncapped.
 Every example must have exactly one
 golden in `examples/output/`; the suite also checks its saved certificate and
 its expected goal checks. Graph oracles, forged-certificate regressions, worker,
@@ -454,7 +457,29 @@ git tag --list v0.1.1 --format='%(contents)' |
   gh release create v0.1.1 --title=v0.1.1 --notes-file -
 ```
 
-Skip the push if it already succeeded, and create the GitHub release only if it is still missing. The release contains GitHub's source archives. A separate tag workflow is not needed.
+Skip the push if it already succeeded, and create the GitHub release only if it is still missing. The release contains GitHub's source archives.
+
+### Automatic crates.io and Zenodo publishing
+
+`.github/workflows/publish-crates.yml` publishes every `v*` tag to crates.io,
+after checking that the tag matches `Cargo.toml` and that the packaged crate
+builds. The crate carries the library, CLI, README, guide, specification, and
+license; examples, tests, and the browser package stay in the repository. The
+workflow can also publish an existing release through **Actions → Publish to
+crates.io → Run workflow**: enter its tag, such as `v0.3.3`. The optional
+dry-run input verifies the package without uploading it.
+
+For the first publication, configure the repository or organization Actions
+secret `CARGO_REGISTRY_TOKEN` (or `CRATES_TOKEN`) with a crates.io token permitted
+to create `eyepl` and publish its versions. The workflow uses it automatically;
+subsequent tag pushes need no publishing commands from a maintainer. After the
+crate exists, maintainers may configure a crates.io GitHub trusted publisher for
+owner `eyereasoner`, repository `eyepl`, and workflow `publish-crates.yml`, then
+remove the token secret; the workflow then obtains a short-lived token through OIDC.
+
+Zenodo archives each published GitHub release and assigns it a DOI, using the
+metadata in `.zenodo.json`. Enable the repository once in Zenodo's GitHub
+settings; releases created before that are not archived.
 
 ## Publish the website
 

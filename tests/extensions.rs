@@ -179,8 +179,7 @@ fn unsafe_modes_non_stratified_cycles_and_invalid_witnesses_are_rejected() {
         &p,
         Limits {
             max_facts: 30,
-            max_matches: 1000,
-            ..Limits::default()
+            max_matches: 1000
         }
     )
     .is_err());
