@@ -1,7 +1,0 @@
-?- grandparent(Who, Whom).
-Who = ada, Whom = cleo.
-Who = ada, Whom = dan.
-
-?- parent(ada, Child), parent(Child, Grandchild).
-Child = bea, Grandchild = cleo.
-Child = bea, Grandchild = dan.

@@ -1,2 +1,0 @@
-?- test(Result).
-Result = true.

@@ -1,2 +1,0 @@
-?- triple(Who, type, 'https://example.org/Mortal').
-Who = 'https://example.org/Socrates'.

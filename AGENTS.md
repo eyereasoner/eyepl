@@ -9,8 +9,8 @@ Keep diagnostics specific and user-facing text direct.
 - All Rust files live directly in `src/`: `model.rs` holds values and clauses; `arithmetic.rs` handles pure numeric evaluation;
   `parser.rs` parses `.pl`; `engine.rs` evaluates; `proof.rs` generates and
   checks certificates. `language.rs` validates modes and strata; `semantics.rs`
-  supplies pure built-ins, aggregates, and finite-model matching. `output.rs` renders
-  requests; `lib.rs` exposes the API, `main.rs` the CLI, and `wasm.rs` the browser bridge.
+  supplies pure built-ins, aggregates, and finite-model matching. `output.rs` and
+  `export.rs` render requests as one reloadable document; `lib.rs` exposes the API, `main.rs` the CLI, and `wasm.rs` the browser bridge.
 - `examples/*.pl`: runnable programs with clear header comments describing
   the situation, result, and language feature. Do not mention project provenance.
   Start with a short title, a `%` separator, and an introduction for a wide audience.
@@ -18,9 +18,11 @@ Keep diagnostics specific and user-facing text direct.
   before each heading; use only the sections the program actually requests.
   After editing them, run `node scripts/index-examples.mjs` to update fingerprints
   used for short share links and restoring older bundled examples.
-  `examples/output/*.txt` are exact golden transcripts for every program;
-  update intentional output changes with `EYEPL_UPDATE_GOLDENS=1 cargo test
-  --release --locked --test examples -- --nocapture` and review their diffs.
+  `examples/output/*.pl` are the exact, reloadable result documents of every
+  program; `why` and `check` put the proof and its C1–C9 report in them as
+  records. Do not add `.txt` transcript artifacts. Update intentional output
+  changes with `EYEPL_UPDATE_GOLDENS=1 cargo test --release --locked --test
+  examples -- --nocapture` and review their diffs.
 - `tests/`: language, CLI, proof, worker, Pages, browser, and release checks.
 - `benches/taxonomy.rs`: standalone taxonomy timing benchmark.
 - `playground.html`, `playground.css`, `playground.js`, `playground-worker.js`:

@@ -199,3 +199,26 @@ fn source_limits_and_recorded_compound_arity_remain_enforced() {
         assert!(Certificate::parse(&format!("eyepl-proof 1\nstep 1 source 1 : {source}")).is_err());
     }
 }
+
+#[test]
+fn specification_certificate_and_report_examples_match_the_voucher_program() {
+    let spec = include_str!("../SPEC.md");
+    let blocks: Vec<&str> = spec
+        .split("```text\n")
+        .skip(1)
+        .filter_map(|rest| rest.split_once("```").map(|(block, _)| block))
+        .collect();
+    let certificate = blocks
+        .iter()
+        .find(|block| block.starts_with("eyepl-proof 1\n"))
+        .expect("the specification needs its certificate example");
+    let report = blocks
+        .iter()
+        .find(|block| block.starts_with("checked:"))
+        .expect("the specification needs its report example");
+    let program = parse(include_str!("../examples/orders.pl")).unwrap();
+    let run = reason(&program, Limits::default()).unwrap();
+    assert_eq!(run.proof(&program), *certificate);
+    let checked = check(&program, &run.certificate(&program)).unwrap();
+    assert_eq!(checked.to_string(), *report);
+}

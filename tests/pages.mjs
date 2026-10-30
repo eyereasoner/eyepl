@@ -98,17 +98,15 @@ test('specification section and bibliographic references resolve', async () => {
   }
 });
 
-test('specification certificate and report examples match the checked voucher program', async () => {
+// The certificate and report examples are compared natively in tests/proofs.rs.
+test('specification result document example matches the checked voucher program', async () => {
   const { runProgram } = await browserEngine();
   const spec = await readFile(new URL('SPEC.md', root), 'utf8');
-  const blocks = [...spec.matchAll(/^```text\n([\s\S]*?)^```/gm)].map(match => match[1]);
-  const certificate = blocks.find(block => block.startsWith('eyepl-proof 1\n'));
-  const report = blocks.find(block => block.startsWith('checked:'));
-  assert.ok(certificate, 'The specification needs its certificate example.');
-  assert.ok(report, 'The specification needs its report example.');
-  const output = runProgram(await exampleSource('orders'));
-  assert.ok(output.includes(`?- why.\n${certificate}\n`), 'The certificate example must match the actual proof.');
-  assert.ok(output.includes(`?- check.\n${report}`), 'The report example must match the actual check.');
+  const document = [...spec.matchAll(/^```prolog\n([\s\S]*?)^```/gm)]
+    .map(match => match[1])
+    .find(block => block.includes('% Check 1\n'));
+  assert.ok(document, 'The specification needs its result document example.');
+  assert.equal(runProgram(await exampleSource('orders')), document);
 });
 
 test('committed browser package matches Cargo and performs C1–C9 checking', async () => {
@@ -127,19 +125,19 @@ test('committed browser package matches Cargo and performs C1–C9 checking', as
   assert.doesNotMatch(playground, /eyepl · version|class="notes"/);
   const source = await exampleSource('socrates');
   const report = runProgram(source);
-  assert.match(report, /^checked: 2 steps, 1 claim/m);
-  for (let condition = 1; condition <= 9; condition++) assert.match(report, new RegExp(`C${condition} `));
+  assert.match(report, /^proof_check\(1, checked, \[\n {4}steps\(2\),\n {4}claims\(1\),$/m);
+  for (let condition = 1; condition <= 9; condition++) assert.match(report, new RegExp(`\\bc${condition},`));
 });
 
 
 test('browser engine checks all nine conditions on the voucher example', async () => {
   const { runProgram } = await browserEngine();
   const output = runProgram(await exampleSource('orders'));
-  assert.match(output, /^eyepl-proof 1/m);
-  assert.match(output, /^checked:/m);
-  assert.doesNotMatch(output, /not applicable/);
+  assert.match(output, /^proof_step\(1, 1, /m);
+  assert.match(output, /^proof_check\(1, checked, /m);
+  assert.doesNotMatch(output, /not_applicable/);
   for (let condition = 1; condition <= 9; condition++) {
-    assert.match(output, new RegExp(`C${condition} [^\\n]+: [1-9][0-9]* checked, 0 failed`));
+    assert.match(output, new RegExp(`^proof_condition\\(1, c${condition}, "[^"]+", checked\\([1-9][0-9]*, 0\\)\\)\\.$`, 'm'));
   }
 });
 
@@ -148,19 +146,19 @@ test('browser engine checks a small taxonomy within default limits', async () =>
   const { runProgram } = await browserEngine();
   const source = await exampleSource('deep-taxonomy-100');
   const output = runProgram(source + '\n?- check.\n');
-  assert.match(output, /Who = ind/);
-  assert.match(output, /^checked: 102 steps, 1 claim/m);
-  assert.match(output, /C1 resolution: 102 checked, 0 failed/);
+  assert.match(output, /^is_a\(ind, a2\)\.$/m);
+  assert.match(output, /^ {4}steps\(102\),\n {4}claims\(1\),$/m);
+  assert.match(output, /^proof_condition\(1, c1, "resolution", checked\(102, 0\)\)\.$/m);
 });
 
 test('browser engine executes explicit true and false result requests', async () => {
   const { runProgram } = await browserEngine();
   assert.equal(
     runProgram('p(a). ?- check(p(a)). ?- check(p(b)).'),
-    '?- check(p(a)).\ntrue.\n\n?- check(p(b)).\nfalse.\n',
+    '% Goal check 1\ncheck_result(1, true).\n\n% Goal check 2\ncheck_result(2, false).\n',
   );
   const output = runProgram('p(a). ?- check(p(a)). ?- p(a). ?- why.');
-  assert.match(output, /^answer 2 \[1\]$/m, 'Query IDs also count preceding goal checks.');
+  assert.match(output, /^proof_claim\(2, answer\(2, \[1\]\)\)\.$/m, 'Query IDs also count preceding goal checks.');
 });
 
 test('browser arithmetic and certificates follow ISO Corrigenda 1–3', async () => {
@@ -169,8 +167,8 @@ test('browser arithmetic and certificates follow ISO Corrigenda 1–3', async ()
     ?- P is 2.0 ^ (-1), R is round(-2.5), S is sign(-2.5), B is 1 << 2 + 1.
     ?- check.
   `);
-  assert.match(output, /P = 0\.5, R = -2, S = -1\.0, B = 5\./);
-  assert.match(output, /C5 re-decision: 4 checked, 0 failed/);
+  assert.match(output, /binding\("P", 0\.5\),\n {4}binding\("R", -2\),\n {4}binding\("S", -1\.0\),\n {4}binding\("B", 5\)/);
+  assert.match(output, /^proof_condition\(1, c5, "re-decision", checked\(4, 0\)\)\.$/m);
   for (const source of ['?- X is 2 ^ (-1).', '?- \\+ (0.5 is 2 ^ (-1)).']) {
     assert.throws(() => runProgram(source), error => /requires a real base/.test(String(error)));
   }
@@ -185,15 +183,15 @@ test('eyepl aggregates have query-independent scope and forward closure', async 
       ?- total(a,N).
       ?- check.
     `);
-    assert.match(output, /N = 2\./);
-    assert.match(output, /^checked:/m);
+    assert.match(output, /^total\(a, 2\)\.$/m);
+    assert.match(output, /^proof_check\(1, checked, /m);
   }
   assert.equal(runProgram('p(a). p(b). total(N):-aggregate_all(count,p(X),N).'), 'total(2).\n');
   const source = 'p(1). p(2). total(G,N):-aggregate_all(count,p(N),N),G=G.';
-  for (const [query, expected] of [['total(g,1)', 'false.'], ['total(g,2)', 'true.'], ['total(g,N)', 'N = 2.']]) {
+  for (const [query, expected] of [['total(g,1)', 'no_answer(1).'], ['total(g,2)', 'total(g, 2).'], ['total(g,N)', 'total(g, 2).']]) {
     const output = runProgram(`${source} ?- ${query}. ?- check.`);
     assert.ok(output.includes(`\n${expected}\n`), output);
-    assert.match(output, /^checked:/m);
+    assert.match(output, /^proof_check\(1, checked, /m);
   }
 });
 
@@ -206,7 +204,7 @@ test('tabled fresh witnesses have checked source-prefix identities', async () =>
     ?- ticket(ada,W), \\+ ticket(bea,W).
     ?- check.
   `);
-  assert.match(output, /^W = ~/m);
-  assert.match(output, /^checked:/m);
-  assert.match(output, /C8 witness integrity: [1-9][0-9]* checked, 0 failed/);
+  assert.match(output, /^witness\(w1, W\) :- fresh\(W\)\.$/m);
+  assert.match(output, /binding\("W", W1\)\n\]\) :-\n {4}witness\(w1, W1\)\./);
+  assert.match(output, /^proof_condition\(1, c8, "witness integrity", checked\([1-9][0-9]*, 0\)\)\.$/m);
 });

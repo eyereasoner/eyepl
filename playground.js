@@ -106,11 +106,10 @@ function highlight(text) {
   }
   return html + escapeHtml(text.slice(at));
 }
-// Check reports are prose, so their lines keep the plain text color.
-const reportLine = /^(?:checked:|invalid:|\d+ source facts?;|Conditions:|Failures:|  C\d |  \[C\d|Source facts and rules are assumed)/;
+// Results are an eyepl document, colored like the source.
 function showResult(text) {
   if (text.length > colorLimit) { $('output').textContent = text; return; }
-  $('output').innerHTML = text.split('\n').map(line => reportLine.test(line) ? escapeHtml(line) : highlight(line)).join('\n');
+  $('output').innerHTML = highlight(text);
 }
 function paintSource() {
   const text = $('source').value;

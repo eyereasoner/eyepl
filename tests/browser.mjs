@@ -10,6 +10,9 @@ const debug = args[1] || 'http://127.0.0.1:9226';
 const screenshots = args[2];
 const pagesRoot = args[3];
 const expectedVersion = /^version\s*=\s*"([^"]+)"/m.exec(await readFile(new URL('../Cargo.toml', import.meta.url), 'utf8'))[1];
+// Result documents record a check as proof_check and proof_condition facts.
+const summary = (steps, claims) => new RegExp(`^proof_check\\(\\d+, checked, \\[\\n {4}steps\\(${steps}\\),\\n {4}claims\\(${claims}\\),$`, 'm');
+const condition = id => new RegExp(`^proof_condition\\(\\d+, c${id}, "[^"]+", checked\\([1-9][0-9]*, 0\\)\\)\\.$`, 'm');
 const tabs = await (await fetch(`${debug}/json`)).json();
 const tab = tabs.find(tab => tab.type === 'page');
 assert.ok(tab, 'Chrome needs an open page');
@@ -152,13 +155,13 @@ async function checkPlayground() {
   await navigate(base);
   await wait(`document.getElementById("source").value === ${JSON.stringify(currentSocrates)}`, 'old autosave refreshed');
   assert.equal(new URL(await share()).hash, '#example=socrates');
-  assert.match(await run(), /Who = socrates/);
+  assert.match(await run(), /^mortal\(socrates\)\.$/m);
   for (const source of [legacySocrates, currentSocrates]) {
     await navigate(`${base}#${new URLSearchParams({ code: source })}`, 'socrates');
     assert.equal(await evaluate('document.getElementById("source").value'), currentSocrates);
     assert.equal(new URL(await share()).hash, '#example=socrates');
     assert.match(await evaluate('document.getElementById("output").textContent'), /first answer/);
-    assert.match(await run(), /checked: 2 steps, 1 claim/);
+    assert.match(await run(), summary(2, 1));
   }
   const draft = "human('Élodie'). ?- human(Who).";
   await evaluate(`localStorage.setItem('eyepl.playground.v1', JSON.stringify({source: ${JSON.stringify(draft)}}))`);
@@ -178,10 +181,11 @@ async function checkPlayground() {
   assert.ok(await evaluate('!!document.querySelector(".toolbar #status") && !document.querySelector(".notes") && !document.querySelector("footer").textContent.includes("version")'));
   assert.equal(await evaluate('document.getElementById("version").textContent'), expectedVersion);
   const socrates = await run();
-  assert.match(socrates, /\?- mortal\(Who\)\.\nWho = socrates/);
-  assert.match(socrates, /\?- why\.\neyepl-proof 1/);
-  assert.match(socrates, /\?- check\.\nchecked: 2 steps, 1 claim/);
-  for (let id = 1; id <= 9; id++) assert.match(socrates, new RegExp(`C${id} `));
+  assert.match(socrates, /^% Answer 1\nmortal\(socrates\)\.$/m);
+  assert.match(socrates, /^% Reason 1\nproof_step\(1, 1, human\(socrates\), source\(1\)\)\.$/m);
+  assert.match(socrates, summary(2, 1));
+  assert.equal(socrates.match(/^proof_condition\(/gm).length, 9);
+  for (let id = 1; id <= 9; id++) assert.match(socrates, new RegExp(`\\bc${id},`));
   const widths = await evaluate('[...document.querySelectorAll(".editors > .panel")].map(e => e.getBoundingClientRect().width)');
   assert.ok(Math.abs(widths[0] - widths[1]) < 1);
   assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'));
@@ -190,10 +194,10 @@ async function checkPlayground() {
 
   await set('source', 'p(a). ?- p(X). ?- check(p(b)). ?- why. ?- check.');
   const explicit = await run();
-  assert.match(explicit, /^\?- p\(X\)\.\nX = a\.\n\n\?- check\(p\(b\)\)\.\nfalse\./);
-  assert.match(explicit, /checked: 1 step, 1 claim/);
+  assert.match(explicit, /^% Answer 1\np\(a\)\.\n\n% Goal check 2\ncheck_result\(2, false\)\./);
+  assert.match(explicit, summary(1, 1));
   await set('source', '?- check(true). ?- check(false).');
-  assert.equal(await run(), '?- check(true).\ntrue.\n\n?- check(false).\nfalse.\n');
+  assert.equal(await run(), '% Goal check 1\ncheck_result(1, true).\n\n% Goal check 2\ncheck_result(2, false).\n');
   await set('source', 'human(X). ?- human(X).');
   assert.match(await run(), /ground answer/);
   assert.ok(await evaluate('document.getElementById("output").classList.contains("error")'));
@@ -207,23 +211,23 @@ async function checkPlayground() {
     const source = await example(name);
     await set('source', source + '\n?- check.');
     const result = await run();
-    assert.match(result, /^checked:/m, name);
+    assert.match(result, /^proof_check\(/m, name);
     if (name === 'orders') {
-      assert.doesNotMatch(result, /not applicable/);
-      for (let i = 1; i <= 9; i++) assert.match(result, new RegExp(`C${i} [^\n]+: [1-9][0-9]* checked, 0 failed`));
+      assert.doesNotMatch(result, /not_applicable/);
+      for (let i = 1; i <= 9; i++) assert.match(result, condition(i));
     }
   }
 
   const deep = await example('deep-taxonomy-100');
-  assert.match(await run(), /Who = ind/);
+  assert.match(await run(), /^is_a\(ind, a2\)\.$/m);
   await set('source', deep + '\n?- check.');
-  assert.match(await run(), /^checked: 102 steps, 1 claim/m);
+  assert.match(await run(), summary(102, 1));
   await set('source', deep);
   assert.ok(await evaluate('document.getElementById("source").scrollHeight <= document.getElementById("source").clientHeight + 2'), 'the full small taxonomy must fit in the page');
   assert.equal(new URL(await share()).hash, '#example=deep-taxonomy-100');
 
   await example('paths');
-  for (const name of ['ben', 'cara']) assert.match(await run(), new RegExp(`Who = ${name}`));
+  for (const name of ['ben', 'cara']) assert.match(await run(), new RegExp(`^reaches\\(${name}, ada\\)\\.$`, 'm'));
   assert.equal(new URL(await share()).hash, '#example=paths');
 
   const unicode = "human('Élodie'). mortal(P) :- human(P). ?- mortal(Who). ?- why. ?- check.";
@@ -288,7 +292,7 @@ async function checkPlayground() {
 
   await command('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
   await navigate(`${base}#example=socrates`);
-  assert.match(await run(), /checked: 2 steps, 1 claim/);
+  assert.match(await run(), summary(2, 1));
   assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'), 'phone layout overflows');
   await checkPageScrolling();
   assert.ok(await evaluate('document.querySelector(".output-panel").getBoundingClientRect().top > document.querySelector(".editors .panel").getBoundingClientRect().top'), 'phone panels should stack');
@@ -297,9 +301,9 @@ async function checkPlayground() {
     const source = await example(name);
     await set('source', source + '\n?- check.');
     const result = await run();
-    assert.match(result, /^checked:/m);
-    if (name === 'orders') assert.doesNotMatch(result, /not applicable/);
-    if (name === 'deep-taxonomy-100') assert.match(result, /checked: 102 steps, 1 claim/);
+    assert.match(result, /^proof_check\(/m);
+    if (name === 'orders') assert.doesNotMatch(result, /not_applicable/);
+    if (name === 'deep-taxonomy-100') assert.match(result, summary(102, 1));
     assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'), 'mobile layout overflows');
     await screenshot(`mobile-${name}`);
   }
@@ -307,7 +311,7 @@ async function checkPlayground() {
   if (pagesRoot) {
     // Check the compatibility route as well as the directory route used above.
     await navigate(new URL('playground.html#example=socrates', pagesRoot).href);
-    assert.match(await run(), /checked: 2 steps, 1 claim/);
+    assert.match(await run(), summary(2, 1));
     for (const [name, width, mobile] of [['desktop', 1280, false], ['mobile', 390, true]]) {
       await command('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile });
       for (const route of ['', 'GUIDE/', 'SPEC/']) {
@@ -349,7 +353,7 @@ async function checkPlayground() {
     }
   }
   assert.deepEqual(exceptions, []);
-  console.log('Browser checks passed: source-selected answers, proofs and C1–C9 checks, echoed queries, small taxonomy, desktop/mobile layouts, rendered docs, short example links, restored old examples, Gist sharing, one page scrollbar, custom snapshots, Unicode, autosave, cancellation and restart.');
+  console.log('Browser checks passed: source-selected answers, proofs and C1–C9 checks as result documents, small taxonomy, desktop/mobile layouts, rendered docs, short example links, restored old examples, Gist sharing, one page scrollbar, custom snapshots, Unicode, autosave, cancellation and restart.');
 }
 
 try {

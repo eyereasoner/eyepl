@@ -1,7 +1,0 @@
-?- value(Record, "42").
-Record = text_record.
-
-?- value(Record, Value).
-Record = atom_record, Value = '42'.
-Record = text_record, Value = "42".
-Record = number_record, Value = 42.

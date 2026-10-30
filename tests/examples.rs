@@ -30,7 +30,7 @@ fn verify(path: &Path, update: bool) -> Result<(), Box<dyn std::error::Error>> {
         .unwrap()
         .join("output")
         .join(path.file_stem().unwrap())
-        .with_extension("txt");
+        .with_extension("pl");
     if update {
         fs::write(golden, output)?;
     } else {
@@ -88,7 +88,7 @@ fn all_examples_match_goldens_and_pass_c1_c9() {
     let goldens: BTreeSet<_> = fs::read_dir(directory.join("output"))
         .unwrap()
         .map(|entry| entry.unwrap().path())
-        .filter(|path| path.extension().is_some_and(|extension| extension == "txt"))
+        .filter(|path| path.extension().is_some_and(|extension| extension == "pl"))
         .map(|path| path.file_stem().unwrap().to_owned())
         .collect();
     if goldens != names {

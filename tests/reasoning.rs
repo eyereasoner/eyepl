@@ -13,7 +13,7 @@ fn output(source: &str) -> String {
 fn socrates_has_one_exact_answer() {
     assert_eq!(
         output(include_str!("fixtures/minimal.pl")),
-        "?- mortal(Who).\nWho = socrates.\n"
+        "% Answer 1\nmortal(socrates).\n"
     );
 }
 
@@ -50,7 +50,7 @@ fn recursion_cycles_and_rule_order_preserve_reachability() {
 fn joins_require_consistent_bindings_and_keep_anonymous_variables_fresh() {
     assert_eq!(
         output("p(a,b). p(c,c). ?- p(X,X). ?- p(_, _). ?- p(a,X), p(X,Y)."),
-        "?- p(X, X).\nX = c.\n\n?- p(_, _).\ntrue.\n\n?- p(a, X), p(X, Y).\nfalse.\n"
+        "% Answer 1\np(c, c).\n\n% Answer 2\nanswer(2, []).\n\n% Answer 3\nno_answer(3).\n"
     );
 }
 
@@ -80,7 +80,7 @@ fn duplicate_facts_and_derivations_do_not_duplicate_answers() {
 fn relation_arity_and_value_types_are_distinct() {
     assert_eq!(
         output("p. p(1). p('1'). p(\"1\"). ?- p(X). ?- p."),
-        "?- p(X).\nX = 1.\nX = '1'.\nX = \"1\".\n\n?- p.\ntrue.\n"
+        "% Answer 1\np(1).\np('1').\np(\"1\").\n\n% Answer 2\np.\n"
     );
 }
 
@@ -88,9 +88,9 @@ fn relation_arity_and_value_types_are_distinct() {
 fn zero_arity_rules_and_queries() {
     assert_eq!(
         output("ready. done :- ready. ?- done."),
-        "?- done.\ntrue.\n"
+        "% Answer 1\ndone.\n"
     );
-    assert_eq!(output("?- ready."), "?- ready.\nfalse.\n");
+    assert_eq!(output("?- ready."), "% Answer 1\nno_answer(1).\n");
 }
 
 #[test]
@@ -233,4 +233,26 @@ fn positive_closure_agrees_with_an_independent_graph_search() {
         assert_eq!(actual, expected, "graph {mask}");
         assert!(check(&p, &run.certificate(&p)).unwrap().valid());
     }
+}
+
+#[test]
+fn result_documents_reload_and_keep_shared_witnesses() {
+    let first = output(
+        "visitor(ada). ticket(V, T) :- visitor(V), fresh(T). \
+         pass(V, T) :- ticket(V, T). ?- ticket(V, T), pass(V, T). ?- why.",
+    );
+    assert!(first.starts_with("% Witnesses\nwitness(w1, W) :- fresh(W).\n\n% Answer 1\n"));
+    assert!(first.contains("ticket(ada, W1) :-\n    witness(w1, W1).\n"));
+    assert!(first.contains("pass(ada, W1) :-\n    witness(w1, W1).\n"));
+    assert!(first.contains("proof_witness(1, w1, "));
+    // Reloading keeps the shared witness shared, and is stable from then on.
+    let second = output(&first);
+    assert!(second.contains("ticket(ada, W1) :-\n    witness(w1, W1).\n"));
+    assert!(second.contains("pass(ada, W1) :-\n    witness(w1, W1).\n"));
+    assert_eq!(output(&second), second);
+
+    let negation = output("p(a). q(b). r(X) :- p(X), \\+ q(X). ?- r(X). ?- why. ?- check.");
+    assert!(negation.contains("proof_boundary(1, 1, 0).\nproof_boundary_steps(1, 1, 1, 2).\n"));
+    let reloaded = parse(&negation).unwrap();
+    assert!(reloaded.requests.is_empty() && reloaded.rules.is_empty());
 }

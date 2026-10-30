@@ -1,4 +1,4 @@
-use eyepl::{check, parse, Certificate, Condition, Limits};
+use eyepl::{check, parse, reason, Certificate, Condition, Limits};
 use std::io::Write;
 use std::process::{Command, Stdio};
 
@@ -18,13 +18,15 @@ fn cli(args: &[&str], input: &str) -> std::process::Output {
         .unwrap();
     child.wait_with_output().unwrap()
 }
-fn proof(text: &str) -> Certificate {
-    let start = text.find("eyepl-proof 1\n").unwrap();
-    let end = text[start..]
-        .find("\n?- check.")
-        .map(|n| start + n)
-        .unwrap_or(text.len());
-    Certificate::parse(&text[start..end]).unwrap()
+/// Every condition is reported once; a long record wraps across lines.
+fn reports_all_conditions(text: &str) {
+    assert_eq!(text.matches("proof_condition(").count(), 9);
+    for condition in Condition::ALL {
+        assert!(
+            text.contains(&format!("\"{}\"", condition.name())),
+            "{condition}"
+        );
+    }
 }
 #[test]
 fn source_requests_select_answers_proof_verification_and_results() {
@@ -36,21 +38,26 @@ fn source_requests_select_answers_proof_verification_and_results() {
         String::from_utf8_lossy(&result.stderr)
     );
     let text = String::from_utf8(result.stdout).unwrap();
-    assert!(text.starts_with("?- mortal(Who).\nWho = socrates.\n\n?- why.\neyepl-proof 1\n"));
-    assert!(text
-        .ends_with("\n?- check(mortal(socrates)).\ntrue.\n\n?- check(mortal(plato)).\nfalse.\n"));
-    let certificate = proof(&text);
-    assert_eq!(certificate.steps.len(), 2);
-    assert_eq!(certificate.claims.len(), 1);
-    assert!(check(&parse(source).unwrap(), &certificate)
-        .unwrap()
-        .valid());
-    for condition in Condition::ALL {
-        assert!(text.contains(&format!("{condition}:")));
-    }
+    assert!(text.starts_with(concat!(
+        "% Answer 1\nmortal(socrates).\n\n",
+        "% Reason 1\n",
+        "proof_step(1, 1, human(socrates), source(1)).\n",
+        "proof_step(1, 2, mortal(socrates), rule(1, [1])).\n",
+        "proof_claim(1, answer(1, [2])).\n\n",
+        "% Check 1\nproof_check(1, checked, [\n    steps(2),\n    claims(1),\n"
+    )));
+    assert!(text.ends_with(concat!(
+        "\n% Goal check 2\ncheck_result(2, true).\n",
+        "\n% Goal check 3\ncheck_result(3, false).\n"
+    )));
+    reports_all_conditions(&text);
+    // The result document is itself an eyepl program.
+    let reloaded = parse(&text).unwrap();
+    assert!(reloaded.requests.is_empty());
+    assert_eq!(reloaded.facts.len(), text.matches(").\n").count());
 }
 #[test]
-fn echoed_queries_keep_goal_structure_and_ignore_source_layout() {
+fn answers_ignore_source_layout_and_number_every_query() {
     let result = cli(
         &["-"],
         "p(a). ?- % a comment\n p( X ). ?- check((p(X), X = a)).",
@@ -58,7 +65,7 @@ fn echoed_queries_keep_goal_structure_and_ignore_source_layout() {
     assert!(result.status.success());
     assert_eq!(
         String::from_utf8(result.stdout).unwrap(),
-        "?- p(X).\nX = a.\n\n?- check((p(X), X = a)).\ntrue.\n"
+        "% Answer 1\np(a).\n\n% Goal check 2\ncheck_result(2, true).\n"
     );
 }
 #[test]
@@ -67,11 +74,13 @@ fn checks_do_not_replace_the_ordinary_query_and_context_crosses_files() {
     let result = cli(&[file, "-"], "?- check(mortal(plato)). ?- why. ?- check.");
     assert!(result.status.success());
     let text = String::from_utf8(result.stdout).unwrap();
-    assert!(
-        text.starts_with("?- mortal(Who).\nWho = socrates.\n\n?- check(mortal(plato)).\nfalse.\n")
-    );
-    assert!(text.contains("checked: 2 steps, 1 claim"));
-    assert_eq!(proof(&text).claims.len(), 1);
+    assert!(text.starts_with(concat!(
+        "% Answer 1\nmortal(socrates).\n\n",
+        "% Goal check 2\ncheck_result(2, false).\n\n",
+        "% Reason 1\n"
+    )));
+    assert!(text.contains("proof_check(1, checked, [\n    steps(2),\n    claims(1),\n"));
+    assert_eq!(text.matches("proof_claim(1, ").count(), 1);
 }
 #[test]
 fn only_help_and_version_options_are_available() {
@@ -120,7 +129,7 @@ fn malformed_input_and_missing_context_fail_without_partial_output() {
     }
     let result = cli(&["-"], "?- check(missing(X)).");
     assert!(result.status.success());
-    assert_eq!(result.stdout, b"?- check(missing(X)).\nfalse.\n");
+    assert_eq!(result.stdout, b"% Goal check 1\ncheck_result(1, false).\n");
 }
 #[test]
 fn all_nine_conditions_and_forged_certificates_still_work() {
@@ -132,13 +141,13 @@ fn all_nine_conditions_and_forged_certificates_still_work() {
         String::from_utf8_lossy(&result.stderr)
     );
     let output = String::from_utf8(result.stdout).unwrap();
-    assert!(!output.contains("not applicable"));
-    for condition in Condition::ALL {
-        assert!(output.contains(&format!("{condition}:")));
-    }
+    assert!(!output.contains("not_applicable"));
+    reports_all_conditions(&output);
     let source = std::fs::read_to_string(path).unwrap();
     let program = parse(&source).unwrap();
-    let certificate = proof(&output);
+    let certificate = reason(&program, Limits::default())
+        .unwrap()
+        .certificate(&program);
     assert!(check(&program, &certificate).unwrap().valid());
     let forged = certificate
         .to_string()

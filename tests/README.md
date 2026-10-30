@@ -45,7 +45,7 @@ Cargo discovers the `.rs` files in this directory automatically.
 | [prolog.rs](prolog.rs) | Structural terms, aliases, occurs checks, lists, text and numeric semantics, table completion, aggregate scope, and related forged-certificate regressions. |
 | [extensions.rs](extensions.rs) | Built-ins, stratified negation, aggregates, fresh witnesses, checker limits, and an independent graph oracle for negation and aggregation. Reported as “Built-ins and aggregates”; additional facilities are specified in [Specification §6](https://eyereasoner.github.io/eyepl/SPEC/#6-built-in-predicates) and [§8](https://eyereasoner.github.io/eyepl/SPEC/#8-negation-aggregation-and-witnesses). |
 | [conformance.rs](conformance.rs) | File-based tests of shared ISO syntax and operations, specific error diagnostics, and rejected syntax or input modes. See the [compatibility corpus](conformance/) for its scope and formats. |
-| [cli.rs](cli.rs) | Command-line options, stdin and file input, source-selected output, echoed queries, proof context across files, and failures without partial output. |
+| [cli.rs](cli.rs) | Command-line options, stdin and file input, source-selected result documents, proof context across files, and failures without partial output. |
 | [examples.rs](examples.rs) | Every bundled program's exact output, successful goal checks, certificate round trip, and independent C1–C9 verification. |
 | [proofs.rs](proofs.rs) | Rejection of malformed or forged basic certificates, and the distinction between valid recorded claims and complete answers. |
 | [proof_conditions.rs](proof_conditions.rs) | C1–C9 reports and failure locations, condition applicability, independent failures, and exhaustive small forged certificates. |
@@ -115,8 +115,8 @@ The [conformance corpus](conformance/) pairs `.pl` sources with `.answers` or
 evaluator output. General engine regressions also live in the Rust suites;
 passing the conformance corpus does not establish full ISO Prolog conformance.
 
-Bundled examples live in `examples/`, with one exact transcript per program
-in `examples/output/`. After an intentional example/output change:
+Bundled examples live in `examples/`, with one exact, reloadable result document per
+program in `examples/output/`. After an intentional example/output change:
 
 ```sh
 node scripts/index-examples.mjs

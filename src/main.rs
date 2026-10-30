@@ -15,9 +15,9 @@ The program selects the output:
   ?- Goal.         Print answers
   ?- why.          Print the preceding query's proof
   ?- check.        Check that proof with C1–C9
-  ?- check(Goal).  Print true. or false.
+  ?- check(Goal).  Print whether Goal holds
 
-Each request is echoed before its result.
+The output is one eyepl document that can be reloaded as a program.
 Use - for stdin. Multiple files form one program, in the supplied order.
 Proof checking verifies recorded claims, not answer completeness.
 ";

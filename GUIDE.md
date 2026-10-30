@@ -1,6 +1,6 @@
 # <img src="assets/eye.png" alt="" width="48" height="48" align="absmiddle"> eyepl guide
 
-Version **0.3.4**. Run eyepl programs in the native CLI or browser, get
+Version **0.3.5**. Run eyepl programs in the native CLI or browser, get
 answers, and inspect their independently checkable proofs. The
 [specification](https://eyereasoner.github.io/eyepl/SPEC/) defines the language
 and the [C1–C9 contract](https://eyereasoner.github.io/eyepl/SPEC/#132-proof-conditions).
@@ -105,16 +105,33 @@ The source selects the output:
 
 | Request | Result |
 | --- | --- |
-| `?- Goal.` | Answer bindings, `true.`, or `false.` |
-| `?- why.` | Proof certificate for the preceding query |
-| `?- check.` | Independent verification under C1–C9 |
-| `?- check(Goal).` | `true.` or `false.` |
+| `?- Goal.` | `% Answer N`: the answer facts, or `no_answer(N)` |
+| `?- why.` | `% Reason N`: the proof of the preceding query as `proof_step` and related records |
+| `?- check.` | `% Check N`: independent verification under C1–C9 as `proof_check` and `proof_condition` records |
+| `?- check(Goal).` | `% Goal check N`: `check_result(N, true)` or `check_result(N, false)` |
 
-Each request prints its `?- ... .` line, followed by its result. An ordinary
-query prints answers; `why` prints its proof certificate; bare `check` verifies
-that certificate under C1–C9. `check(Goal)` prints `true.` or `false.` without
-changing which ordinary query `why` and `check` refer to. Goal checks never
-add facts. A false goal check is a result, not a run error.
+The output is itself an eyepl document that can be saved as `.pl` and loaded
+again. `N` numbers the queries, including goal checks, in source order. A query
+of ordinary calls answers with its instantiated facts; a query with arithmetic,
+negation, aggregates, or anonymous variables answers with
+`answer(N, [binding("Name", Value), ...])`. `check(Goal)` records whether the
+goal holds without changing which ordinary query `why` and `check` refer to.
+Goal checks never add facts. A false goal check is a result, not a run error.
+Without its `?- check.` request, which adds a `% Check 1` group, the program
+above writes:
+
+```prolog
+% Answer 1
+mortal(socrates).
+
+% Reason 1
+proof_step(1, 1, human(socrates), source(1)).
+proof_step(1, 2, mortal(socrates), rule(1, [1])).
+proof_claim(1, answer(1, [2])).
+
+% Goal check 2
+check_result(2, true).
+```
 
 The playground uses the same source requests. Opening a shared program does
 not run it automatically; press **Run**.
@@ -140,9 +157,10 @@ and selectable in the [playground](https://eyereasoner.github.io/eyepl/playgroun
 The collection includes lists, structural unification, recursive arithmetic,
 Fibonacci at 10,000, graph algorithms, finite optimization, text processing,
 scientific calculations, and classification chains. Source header comments
-explain each example's assumptions and expected results. Golden transcripts in
-`examples/output/` contain the current output of every program. The example
-suite compares them exactly and independently checks the certificates under C1–C9.
+explain each example's assumptions and expected results. The result documents
+in `examples/output/` hold the current output of every program as reloadable
+`.pl` files. The example suite compares them exactly and independently checks
+the certificates under C1–C9.
 
 | Example | What it shows |
 | --- | --- |
@@ -177,7 +195,7 @@ entire closure. Use files for large proofs:
 
 ```sh
 printf '?- why.\n?- check.\n' > /tmp/taxonomy-requests.pl
-./target/release/eyepl examples/deep-taxonomy-100000.pl /tmp/taxonomy-requests.pl > /tmp/taxonomy.txt
+./target/release/eyepl examples/deep-taxonomy-100000.pl /tmp/taxonomy-requests.pl > /tmp/taxonomy.pl
 ```
 
 Tests bound counted dispatch/matching work and proof size, including a
@@ -278,20 +296,21 @@ example shows a known examiner preventing a fresh one:
 
 ## Keep and independently check evidence
 
-Add `?- why.` after a query to print its certificate, and `?- check.` to
-verify that certificate. The orders example includes both:
+Add `?- why.` after a query to record its proof, and `?- check.` to
+verify that proof. The orders example includes both:
 
 ```sh
-./target/release/eyepl examples/orders.pl > /tmp/orders.txt
+./target/release/eyepl examples/orders.pl > /tmp/orders.pl
 ```
 
-There is one proof format, starting with `eyepl-proof 1`. It lists supporting
-source facts, rule applications, pure decisions, required closed boundaries
-and demanded-call patterns, and claims for the preceding ordinary query.
-`% Rule` comments show the source rules used; verification uses the supplied
-source program. To save a standalone certificate, retain the section starting
-at `eyepl-proof 1` up to the next request. The Rust API accepts saved evidence
-with `Certificate::parse` and `check`; goal-check requests do not become claims.
+A proof lists supporting source facts, rule applications, pure decisions,
+required closed boundaries and demanded-call patterns, and claims for the
+preceding ordinary query. In the result document these are `proof_step`,
+`proof_boundary`, `proof_boundary_steps`, `proof_boundary_call`, and
+`proof_claim` records. The Rust API also writes the same certificate as a
+standalone `eyepl-proof 1` text with `Run::proof`, reads saved evidence with
+`Certificate::parse`, and checks it with `check`; goal-check requests do not
+become claims. Verification uses the supplied source program.
 The checker validates the supplied evidence; it does not call the evaluator,
 activate tables, or repair missing facts. C5 recomputes builtins and aggregates.
 C6 requires complete finite models and transitively complete demanded calls;
@@ -318,9 +337,8 @@ eyepl -v
 
 Only `-h` (help) and `-v` (version) are options. `-` reads source from stdin;
 multiple files form one program in the supplied order. Source requests select
-the output, with each request echoed before its result. Use `?- why.` for
-proofs and `?- check.` for verification. `?- check(Goal).` prints a boolean
-result. Only `:- table Name/Arity.` directives are supported.
+the output, one reloadable eyepl document. Use `?- why.` for proofs and
+`?- check.` for verification. `?- check(Goal).` records a boolean result. Only `:- table Name/Arity.` directives are supported.
 
 Success returns status 0. Parse errors, incomplete runs, missing preceding
 queries for `why` or bare `check`, and invalid proof reports return status 1
@@ -376,7 +394,8 @@ and failures; it never invokes `reason` or fills a missing boundary.
 | `src/semantics.rs` | Unification, built-ins, aggregates, and finite-model matching |
 | `src/arithmetic.rs` | Exact integer operations and finite real arithmetic |
 | `src/engine.rs` | Indexed forward inference, demand-driven tables, and execution limits |
-| `src/output.rs` | Answers, certificates, and reports in source request order |
+| `src/output.rs` | Answer, proof, and check records in source request order; the standalone certificate text |
+| `src/export.rs` | Formatting records as one reloadable eyepl document |
 | `src/proof.rs` | Certificate selection and serialization; independent C1–C9 verification |
 | `src/main.rs` | Native command line and file I/O |
 | `src/wasm.rs` | Browser bindings |

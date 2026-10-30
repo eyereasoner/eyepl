@@ -1,6 +1,6 @@
 # <img src="assets/eye.png" alt="" width="48" height="48" align="absmiddle"> eyepl specification
 
-Version **0.3.4**
+Version **0.3.5**
 
 **Status of this document.** This document defines the eyepl language,
 with the eyepl Rust reasoner as its reference implementation. It is the
@@ -83,7 +83,7 @@ under nine conditions, C1–C9, without running the evaluator.
     6. [Resource Limits](#106-resource-limits)
 11. [Requests and Output](#11-requests-and-output)
     1. [Request Forms](#111-request-forms)
-    2. [Rendering Requests](#112-rendering-requests)
+    2. [The Result Document](#112-the-result-document)
     3. [Output Without Requests](#113-output-without-requests)
     4. [Term Formatting](#114-term-formatting)
     5. [Command-Line Interface](#115-command-line-interface)
@@ -626,7 +626,7 @@ The complete set of built-in predicates is:
 | Predicate | Behavior |
 | --- | --- |
 | `true/0` | Succeeds without bindings. |
-| `false/0` | Fails. (The printed result `false.` is defined in Section 11.2.) |
+| `false/0` | Fails. (How a query without answers is recorded is defined in Section 11.2.) |
 | `Left = Right` | Unifies the operands (Section 4.4). Either operand MAY contain variables. |
 | `Left \= Right` | Succeeds when the operands do not unify with the current bindings; trial bindings are discarded. It does not constrain later bindings: `X \= a` fails while `X` is unbound. |
 
@@ -957,7 +957,9 @@ closure MUST recompute witnesses from the same source-prefix context.
 examiner, because `examiner(c, t)` is derived in a lower stratum. See
 [`examples/examiners.pl`](https://github.com/eyereasoner/eyepl/blob/main/examples/examiners.pl).
 
-Witnesses are written `~"identity"` in answers and certificates. The identity
+Witnesses are written `~"identity"` in certificates. Result documents give
+each witness a short label instead (Section 11.4) and record its identity with
+`proof_witness`. The identity
 spelling is implementation-defined. A conforming checker recomputes it rather
 than interpreting it (Section 13.2, C8). *Informative:* this implementation
 spells it `r<RULE>:g<POSITION>:<substitution>`.
@@ -1162,43 +1164,134 @@ cancellation by terminating its computation worker.
 
 | Request | Effect |
 | --- | --- |
-| `?- Goals.` | Ordinary query: print all distinct answers. |
-| `?- why.` | Print the certificate of the most recent preceding ordinary query. |
+| `?- Goals.` | Ordinary query: record all distinct answers. |
+| `?- why.` | Record the proof of the most recent preceding ordinary query. |
 | `?- why(Goals).` | Exactly `?- Goals.` followed by `?- why.` |
-| `?- check.` | Generate the certificate of the most recent preceding ordinary query, check it (Section 13), and print the report. |
-| `?- check(Goals).` | Goal check: print `true.` if `Goals` has a solution, otherwise `false.` |
+| `?- check.` | Generate the certificate of the most recent preceding ordinary query, check it (Section 13), and record the report. |
+| `?- check(Goals).` | Goal check: record whether `Goals` has a solution. |
 
 A goal check does not count as the preceding ordinary query for `why` or
 `check`. A bare `why` or `check` with no preceding ordinary query, counting
 across merged inputs, MUST raise an error.
 
-### 11.2 Rendering Requests
+### 11.2 The Result Document
 
-Requests are rendered in source order, separated by one blank line. Each block
-begins with the request echoed as `?- ... .` in normalized form (Section
-11.4):
+The output is one eyepl document, identical across the command line, the
+playground, and the library (`execute` and `Run::output`). Requests are
+rendered in source order as groups of records. Each group starts with a
+`% Heading N` comment line, and groups are separated by one blank line. `N` is
+the one-based number of the query in source order; queries and goal checks
+share this numbering, while `why` and `check` take the number of the query they
+explain. `examples/output/` holds this document for every bundled example.
 
-- *Ordinary query.* The echo is followed by one line per distinct answer. The
-  projected variables are the query's variables in order of first occurrence,
-  excluding names that begin with `_` and variables local to aggregates. Each
-  line is `Name = Value, ...` terminated by `.`, or `true.` when no variables
-  are projected. A query with no answers prints `false.`, which records query
-  failure, not an asserted negative fact or a certificate of absence. Answer
-  order follows evaluation and is not otherwise specified.
-- *`why`.* The echo `?- why.` is followed by the certificate. Before the
-  records, a `% Rule N: ...` comment line is printed for each rule that the
-  certificate uses.
-- *`check`.* The echo `?- check.` is followed by the report (Section 13.5). An
-  invalid report is an error for the whole run (Section 11.5).
-- *Goal check.* The echo is `?- check(Goals).`, with the goals parenthesized
-  when there is more than one, followed by `true.` or `false.`. Variable
-  bindings are not printed, and `false.` does not fail the run.
+| Heading | Records |
+| --- | --- |
+| `% Answer N` | The answer facts, `answer(N, Bindings)`, or `no_answer(N)` |
+| `% Reason N` | `proof_witness`, `proof_step`, `proof_boundary`, `proof_boundary_steps`, `proof_boundary_call`, and `proof_claim` |
+| `% Check N` | `proof_check` followed by nine `proof_condition` records |
+| `% Goal check N` | `check_result(N, true)` or `check_result(N, false)` |
+
+- *Answers.* When every goal of a query is an ordinary relation call, each
+  distinct instantiated goal of each answer is written as a fact. Otherwise,
+  including queries with anonymous variables, each answer is written as
+  `answer(N, [binding("Name", Value), ...])` with the projected variables in
+  order of first occurrence, excluding names that begin with `_` and variables
+  local to aggregates. A query with no answers writes `no_answer(N)`, which
+  records query failure, not an asserted negative fact or a certificate of
+  absence. Answer order follows evaluation and is not otherwise specified.
+- *Reasons.* The certificate of Section 12, as data:
+
+  | Record | Meaning |
+  | --- | --- |
+  | `proof_witness(N, Label, Identity)` | A short witness label and its typed certificate identity |
+  | `proof_step(N, Step, Conclusion, Justification)` | A source fact, rule application, or decision |
+  | `proof_boundary(N, Boundary, Level)` | A closed boundary at a stratum level |
+  | `proof_boundary_steps(N, Boundary, First, Last)` | A run of consecutive member steps |
+  | `proof_boundary_call(N, Boundary, Call)` | A demanded call of the boundary |
+  | `proof_claim(N, Claim)` | `answer(Query, Premises)` or `derived(Step)` |
+
+  Justifications are `source(Fact)`, `rule(Rule, Premises)`, `builtin`,
+  `not_builtin`, `absent(Boundary)`, `aggregate(Owner, Position, Boundary)`
+  with owner `rule(R)` or `query(Q)`, and `fresh(Rule, Position)`. In proof
+  records, call variables are written `variable("Name")` and witnesses
+  `witness(Label)`, so the records stay ground data. Boundary members are
+  separate records, so a large boundary needs no deeply nested list.
+- *Checks.* `proof_check(N, checked, Summary)` records the counts of Section
+  13.4 and that source facts and rules are assumed and answer completeness is
+  not checked. Each `proof_condition(N, Condition, Name, Result)` gives
+  `checked(Attempts, Failures)` or `not_applicable(Reason)`. An invalid report
+  is an error for the whole run (Section 11.5).
+- *Goal checks.* Variable bindings are not recorded, and `false` does not fail
+  the run.
+
+*Informative.* For `examples/orders.pl`, which asks for vouchers, their proof,
+and its check:
+
+```prolog
+% Witnesses
+witness(w1, W) :- fresh(W).
+
+% Answer 1
+voucher(ada, W1, 15) :-
+    witness(w1, W1).
+
+% Reason 1
+proof_witness(1, w1, "r3:g2:{\"Customer\": Symbol(\"ada\"), \"Total\": Integer(15)}").
+proof_step(1, 1, customer(ada), source(1)).
+proof_step(1, 2, customer(bea), source(2)).
+proof_step(1, 3, line(ada, book, 12), source(3)).
+proof_step(1, 4, line(ada, pen, 3), source(4)).
+proof_step(1, 5, line(bea, map, 7), source(5)).
+proof_step(1, 6, blocked(bea), source(6)).
+proof_step(
+    1,
+    7,
+    '$aggregate:r1:2'([binding('Customer', ada)], 15),
+    aggregate(rule(1), 2, 1)
+).
+proof_step(1, 8, subtotal(ada, 15), rule(1, [1, 7])).
+proof_step(1, 9, blocked(ada), absent(1)).
+proof_step(1, 10, '>='(15, 10), builtin).
+proof_step(1, 11, eligible(ada, 15), rule(2, [8, 9, 10])).
+proof_step(1, 12, '$satisfied:1'(ada, 15), absent(1)).
+proof_step(1, 13, '$lean:1'(ada, 15), rule(5, [11, 12])).
+proof_step(1, 14, '$fresh:r3:2'(ada, 15, witness(w1)), fresh(3, 2)).
+proof_step(1, 15, voucher(ada, witness(w1), 15), rule(3, [13, 14])).
+proof_boundary(1, 1, 0).
+proof_boundary_steps(1, 1, 1, 6).
+proof_claim(1, answer(1, [15])).
+
+% Check 1
+proof_check(1, checked, [
+    steps(15),
+    claims(1),
+    source_facts(6),
+    rule_applications(4),
+    assumed([source_facts, source_rules]),
+    answer_completeness(not_checked)
+]).
+proof_condition(1, c1, "resolution", checked(10, 0)).
+proof_condition(1, c2, "well-foundedness", checked(7, 0)).
+proof_condition(1, c3, "justification", checked(17, 0)).
+proof_condition(1, c4, "coverage", checked(34, 0)).
+proof_condition(1, c5, "re-decision", checked(2, 0)).
+proof_condition(1, c6, "boundary consistency", checked(4, 0)).
+proof_condition(1, c7, "relevance", checked(16, 0)).
+proof_condition(1, c8, "witness integrity", checked(3, 0)).
+proof_condition(1, c9, "query isolation", checked(1, 0)).
+```
+
+Reloading the document gives a program whose facts are the recorded answers
+and records. Reloading does not by itself establish their truth or verify a
+proof; the proof records describe a certificate that is checked against its
+source program.
 
 ### 11.3 Output Without Requests
 
-A program without requests prints each derived ordinary fact that is not a
-source fact as `Fact.`, one per line, in evidence order. Decisions and auxiliary
-evidence are not printed.
+A program without requests writes each derived ordinary fact that is not a
+source fact, one per line, in evidence order, without a heading. Decisions,
+auxiliary evidence, and generated relations are not written. A program with
+ordinary queries but no requests writes the answers of every query.
 
 ### 11.4 Term Formatting
 
@@ -1209,14 +1302,22 @@ evidence are not printed.
 | Integer | Decimal, with `-` for negatives |
 | Real | Shortest round-trip decimal, always with a fraction or exponent, such as `2.5`, `15.0`, `1e-7` |
 | Compound | `name(A1, A2)` in canonical functional notation, such as `'+'(1, 2)` |
-| List | `[a, b]`, or `[a \| T]` for a variable tail |
-| Witness | `~"identity"` |
-| Anonymous variable | `_` |
+| List | `[a, b]` |
 
 Inside quotes, line feed, carriage return, tab, backslash, and the delimiter are
-escaped as `\n`, `\r`, `\t`, `\\`, and `\'` or `\"`. Echoed goals use infix form
-for comparisons, `\+ (Goal)` for negation, and
-`aggregate_all(Template, (Goals), Result)` for aggregates.
+escaped as `\n`, `\r`, `\t`, `\\`, and `\'` or `\"`. A record that fits in 88
+columns is written on one line. A longer one puts one argument per line with
+four-space indentation; a one-argument term keeps its argument beside it, and
+a list of plain values fills each line. Answer bindings and check summaries
+put one list entry per line.
+
+The document MUST parse as eyepl. A witness has no source notation, so the
+document starts with `% Witnesses` and one `witness(wK, W) :- fresh(W).` rule
+per witness label, and each answer that contains witnesses is written as a rule
+calling `witness/2`, such as `voucher(ada, W1, 15) :- witness(w1, W1).`
+Reloading introduces new witness identities while preserving equality among
+them inside the document. Output that cannot be written as parseable eyepl
+MUST fail explicitly.
 
 ### 11.5 Command-Line Interface
 
@@ -1241,7 +1342,9 @@ output, and exits with status 1.
 ### 11.6 Library and Browser Interfaces
 
 The Rust library exposes `parse`, `reason`, `Run::output`, `Run::certificate`,
-`Certificate::parse`, `check`, and `check_with_limits`. `Run::certificate`
+`Run::proof`, `Certificate::parse`, `check`, and `check_with_limits`.
+`Run::proof` writes the standalone certificate of Section 12, and a report's
+text form is shown in Section 13.5. `Run::certificate`
 selects the answers of every ordinary query that is requested (Section 12.7).
 The WebAssembly module exposes `runProgram(source)`, which produces the same
 output as the CLI for one document, and `version()`. The playground runs it in
@@ -1443,7 +1546,7 @@ structure and every witness's exact source-rule context.
 
 ### 12.8 Example
 
-*Informative.* For `examples/orders.pl`:
+*Informative.* For `examples/orders.pl`, `Run::proof` writes:
 
 ```text
 eyepl-proof 1
@@ -1544,7 +1647,7 @@ not a count of established conclusions.
 
 ### 13.5 Reports
 
-For the certificate in Section 12.8, the report is:
+For the certificate in Section 12.8, the report's text form is:
 
 ```text
 checked: 15 steps, 1 claim
