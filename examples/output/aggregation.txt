@@ -8,7 +8,7 @@ Result = 3.
 Result = 24.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: is_a(Player, 'team-member') :- is_a(Player, player).
 step 1 source 1 : is_a(milo, player).
 step 2 source 2 : is_a(luna, player).

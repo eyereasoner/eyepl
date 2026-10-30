@@ -2,7 +2,7 @@
 Who = socrates.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: mortal(Person) :- human(Person).
 step 1 source 1 : human(socrates).
 step 2 rule 1 [1] : mortal(socrates).

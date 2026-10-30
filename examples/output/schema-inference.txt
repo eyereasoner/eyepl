@@ -9,7 +9,7 @@ Who = bob, Class = person.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 3: type(X, B) :- type(X, A), subclass(A, B).
 step 1 source 1 : subclass(cat, mammal).
 step 2 source 2 : subclass(mammal, animal).
@@ -27,7 +27,7 @@ Subject = alice, Property = connected_to, Object = bob.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 4: triple(S, Q, O) :- triple(S, P, O), subproperty(P, Q).
 step 1 source 3 : subproperty(parent_of, related_to).
 step 2 source 4 : subproperty(related_to, connected_to).
@@ -40,7 +40,7 @@ answer 4 [5]
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 5: type(S, Class) :- triple(S, P, _), domain(P, Class).
 step 1 source 5 : domain(parent_of, person).
 step 2 source 8 : triple(alice, parent_of, bob).

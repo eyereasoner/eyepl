@@ -2,7 +2,7 @@
 Primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97].
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: primes(Limit, Primes) :- range(2, Limit, Integers), sift(Integers, Primes).
 % Rule 2: range(Start, End, []) :- Start > End.
 % Rule 3: range(Start, End, [Start | Rest]) :- Start =< End, Next is '+'(Start, 1), range(Next, End, Rest).

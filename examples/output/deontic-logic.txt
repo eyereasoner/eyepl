@@ -12,7 +12,7 @@ Actor = alice, Status = requires_review.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: violation(Actor, missed_obligation(Action)) :- obliged(Actor, Action), not_performed(Actor, Action).
 % Rule 4: uncompensated_violation(Actor, missed_obligation(Action)) :- violation(Actor, missed_obligation(Action)).
 % Rule 7: status(Actor, requires_review) :- uncompensated_violation(Actor, _violation).

@@ -2,7 +2,7 @@
 Amount = 65.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 3: balance(0, Amount) :- opening_balance(Amount).
 % Rule 4: balance(N, Amount) :- N > 0, event(N, deposit, Value), Before is '-'(N, 1), balance(Before, Previous), Amount is '+'(Previous, Value).
 % Rule 5: balance(N, Amount) :- N > 0, event(N, withdraw, Value), Before is '-'(N, 1), balance(Before, Previous), Amount is '-'(Previous, Value).
@@ -32,7 +32,7 @@ N = 2, Amount = 85.
 N = 3, Amount = 65.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: between(Low, High, Low) :- Low =< High.
 % Rule 2: between(Low, High, Value) :- Low < High, Next is '+'(Low, 1), between(Next, High, Value).
 % Rule 3: balance(0, Amount) :- opening_balance(Amount).

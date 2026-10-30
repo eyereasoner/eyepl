@@ -8,7 +8,7 @@ Check = double_spend_rejected, Result = yes.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: select(X, [X | Rest], Rest) :- .
 % Rule 3: append([], Ys, Ys) :- .
 % Rule 4: append([X | Xs], Ys, [X | Rest]) :- append(Xs, Ys, Rest).

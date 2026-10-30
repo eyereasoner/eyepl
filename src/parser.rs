@@ -254,7 +254,7 @@ fn tokenize(source: &str) -> Result<Vec<(Token, usize)>, Error> {
                     | "/\\"
             ) {
                 return Err(Error::new(format!(
-                    "Line {line}: Unexpected character {c:?}; use Midlog syntax."
+                    "Line {line}: Unexpected character {c:?}; use eyepl syntax."
                 )));
             }
             if op == "."
@@ -910,13 +910,13 @@ fn lean_witnesses(program: &mut Program) {
     }
     program.rules.extend(helpers);
 }
-/// Parse a Midlog program and check its modes and strata.
+/// Parse an eyepl program and check its modes and strata.
 pub fn parse(source: &str) -> Result<Program, Error> {
     let program = parse_document(source)?;
     program.validate()?;
     Ok(program)
 }
-/// Parse a Midlog program without planning its modes and strata. `reason`
+/// Parse an eyepl program without planning its modes and strata. `reason`
 /// performs those checks, so a program read only to be merged and run need
 /// not be planned twice.
 pub fn parse_document(source: &str) -> Result<Program, Error> {

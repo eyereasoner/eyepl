@@ -14,7 +14,7 @@ Value = 2.
 Value = 2.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: padovan(A, B) :- padovan(A, 0, 1, 1, B).
 % Rule 4: padovan(2, _, _, A, A) :- .
 % Rule 5: padovan(A, B, C, D, E) :- A > 2, F is '-'(A, 1), G is '+'(B, C), padovan(F, C, D, G, E).

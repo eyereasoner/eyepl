@@ -12,7 +12,7 @@ Case = eq2, Root = -1.0.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: discriminant(Case, D) :- equation(Case, A, B, C), B2 is '**'(B, 2), Foura is '*'(4.0, A), Fourac is '*'(Foura, C), D is '-'(B2, Fourac).
 % Rule 2: sqrt_discriminant(Case, S) :- discriminant(Case, D), D >= 0.0, S is '**'(D, 0.5).
 % Rule 3: negative_b(Case, Nb) :- equation(Case, _a, B, _c), Nb is '-'(B).

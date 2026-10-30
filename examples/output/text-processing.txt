@@ -2,7 +2,7 @@
 Name = sensor_0042, Value = 42.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: append([], Right, Right) :- .
 % Rule 2: append([Head | Tail], Right, [Head | Joined]) :- append(Tail, Right, Joined).
 % Rule 3: decimal_digits([], Value, Value) :- .

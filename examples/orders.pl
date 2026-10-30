@@ -1,7 +1,7 @@
 % Checked customer vouchers
 %
 % A shop totals each customer's purchases and gives eligible customers a
-% distinct voucher. Wheye combines aggregation, a closed-world exclusion,
+% distinct voucher. eyepl combines aggregation, a closed-world exclusion,
 % an arithmetic comparison, and a fresh witness. Its certificate exercises
 % all nine proof-checking conditions, including closure and witness integrity.
 

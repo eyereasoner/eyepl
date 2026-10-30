@@ -1,4 +1,4 @@
-/* @ts-self-types="./wheye.d.ts" */
+/* @ts-self-types="./eyepl.d.ts" */
 
 /**
  * @param {string} source
@@ -61,7 +61,7 @@ function __wbg_get_imports() {
     };
     return {
         __proto__: null,
-        "./wheye_bg.js": import0,
+        "./eyepl_bg.js": import0,
     };
 }
 
@@ -261,7 +261,7 @@ async function __wbg_init(module_or_path) {
     }
 
     if (module_or_path === undefined) {
-        module_or_path = new URL('wheye_bg.wasm', import.meta.url);
+        module_or_path = new URL('eyepl_bg.wasm', import.meta.url);
     }
     const imports = __wbg_get_imports();
 

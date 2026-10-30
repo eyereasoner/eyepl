@@ -25,7 +25,7 @@ Program = guarded, Point = zero_result, Sign = zero.
 Program = countdown, Warning = possible_division_by_zero(divide).
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: abs_state(Program, Point, Sign) :- entry(Program, Point), input_sign(Sign).
 % Rule 2: abs_state(Program, To, Result) :- abs_state(Program, From, Sign), transition(Program, From, To, Guard, Operation), accepts(Guard, Sign), transfer(Operation, Sign, Result).
 % Rule 3: zero_possible(Program, Point) :- abs_state(Program, Point, zero).
@@ -52,7 +52,7 @@ answer 2 [16]
 Program = guarded, Point = divide.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: abs_state(Program, Point, Sign) :- entry(Program, Point), input_sign(Sign).
 % Rule 2: abs_state(Program, To, Result) :- abs_state(Program, From, Sign), transition(Program, From, To, Guard, Operation), accepts(Guard, Sign), transfer(Operation, Sign, Result).
 % Rule 3: zero_possible(Program, Point) :- abs_state(Program, Point, zero).

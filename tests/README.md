@@ -41,9 +41,9 @@ Cargo discovers the `.rs` files in this directory automatically.
 | Suite | Coverage |
 | --- | --- |
 | [reasoning.rs](reasoning.rs) | Core inference, variable scope, joins, recursion, set semantics, limits, value round trips, deep proof traversal, and exhaustive small-graph reachability against an independent oracle. |
-| [midlog.rs](midlog.rs) | Forward aggregate closure, query-independent aggregate scope, call modes, tabled witness identities, and forged certificates violating the Midlog contract. |
+| [eyepl.rs](eyepl.rs) | Forward aggregate closure, query-independent aggregate scope, call modes, tabled witness identities, and forged certificates violating the eyepl contract. |
 | [prolog.rs](prolog.rs) | Structural terms, aliases, occurs checks, lists, text and numeric semantics, table completion, aggregate scope, and related forged-certificate regressions. |
-| [extensions.rs](extensions.rs) | Built-ins, stratified negation, aggregates, fresh witnesses, checker limits, and an independent graph oracle for negation and aggregation. Reported as “Built-ins and aggregates”; additional facilities are specified in [Specification §6](https://eyereasoner.github.io/wheye/SPEC/#6-built-in-predicates) and [§8](https://eyereasoner.github.io/wheye/SPEC/#8-negation-aggregation-and-witnesses). |
+| [extensions.rs](extensions.rs) | Built-ins, stratified negation, aggregates, fresh witnesses, checker limits, and an independent graph oracle for negation and aggregation. Reported as “Built-ins and aggregates”; additional facilities are specified in [Specification §6](https://eyereasoner.github.io/eyepl/SPEC/#6-built-in-predicates) and [§8](https://eyereasoner.github.io/eyepl/SPEC/#8-negation-aggregation-and-witnesses). |
 | [conformance.rs](conformance.rs) | File-based tests of shared ISO syntax and operations, specific error diagnostics, and rejected syntax or input modes. See the [compatibility corpus](conformance/) for its scope and formats. |
 | [cli.rs](cli.rs) | Command-line options, stdin and file input, source-selected output, echoed queries, proof context across files, and failures without partial output. |
 | [examples.rs](examples.rs) | Every bundled program's exact output, successful goal checks, certificate round trip, and independent C1–C9 verification. |
@@ -86,7 +86,7 @@ Start a server and Chrome in separate terminals, then run the script:
 
 ```sh
 python3 -m http.server 8766 --bind 127.0.0.1
-google-chrome --headless --remote-debugging-port=9226 --user-data-dir=/tmp/wheye-browser about:blank
+google-chrome --headless --remote-debugging-port=9226 --user-data-dir=/tmp/eyepl-browser about:blank
 node tests/browser.mjs
 ```
 
@@ -120,7 +120,7 @@ in `examples/output/`. After an intentional example/output change:
 
 ```sh
 node scripts/index-examples.mjs
-WHEYE_UPDATE_GOLDENS=1 cargo test --release --locked --test examples -- --nocapture
+EYEPL_UPDATE_GOLDENS=1 cargo test --release --locked --test examples -- --nocapture
 ```
 
 Review the resulting diffs. Add a focused regression for meaningful behavior
@@ -138,5 +138,5 @@ git diff --check
 
 The rebuild requires `wasm-pack` and the `wasm32-unknown-unknown` Rust target.
 The main test runner checks the existing package; it does not rebuild it or
-launch Chrome. See the [development guide](https://eyereasoner.github.io/wheye/#develop-and-verify)
+launch Chrome. See the [development guide](https://eyereasoner.github.io/eyepl/GUIDE/#develop-and-verify)
 for the wider verification workflow.

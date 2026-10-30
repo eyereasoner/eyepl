@@ -1,4 +1,4 @@
-name: Check wheye
+name: Check eyepl
 on: [push, pull_request]
 permissions:
   contents: read

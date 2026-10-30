@@ -9,7 +9,7 @@ Kind = chosen_interval, Value = interval(8, 8, 11, 4).
 Ids = [1, 4, 8], Value = 13.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: compatible_before(I, J) :- interval(I, Start, _, _), interval(J, _, Finish, _), J < I, Finish =< Start.
 % Rule 2: has_compatible(I) :- compatible_before(I, _).
 % Rule 3: previous_compatible(I, J) :- interval(I, _, _, _), aggregate_all(max(K), (compatible_before(I, K)), J).
@@ -151,16 +151,16 @@ step 126 rule 5 [62,125,63] : best_to(8, 13).
 step 127 rule 7 [62,125,69,118,91] : chosen_to(8, [1, 4, 8]).
 step 128 rule 13 [1,126,127] : optimal_schedule([1, 4, 8], 13).
 boundary 1 level 0 [1,2,3,4,5,6,7,8,9,10,11,64,66,68,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92]
-demand 1 : append([1, 4], [8], _WheyeCall0).
-demand 1 : append([1], [4], _WheyeCall0).
-demand 1 : append([4], [8], _WheyeCall0).
-demand 1 : append([], [1], _WheyeCall0).
-demand 1 : append([], [4], _WheyeCall0).
-demand 1 : append([], [8], _WheyeCall0).
-demand 1 : member(_WheyeCall0, [1, 4, 8]).
-demand 1 : member(_WheyeCall0, [4, 8]).
-demand 1 : member(_WheyeCall0, [8]).
-demand 1 : member(_WheyeCall0, []).
+demand 1 : append([1, 4], [8], _EyeplCall0).
+demand 1 : append([1], [4], _EyeplCall0).
+demand 1 : append([4], [8], _EyeplCall0).
+demand 1 : append([], [1], _EyeplCall0).
+demand 1 : append([], [4], _EyeplCall0).
+demand 1 : append([], [8], _EyeplCall0).
+demand 1 : member(_EyeplCall0, [1, 4, 8]).
+demand 1 : member(_EyeplCall0, [4, 8]).
+demand 1 : member(_EyeplCall0, [8]).
+demand 1 : member(_EyeplCall0, []).
 answer 2 [128]
 
 ?- check(optimal_schedule([1, 4, 8], 13)).

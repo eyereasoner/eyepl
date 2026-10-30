@@ -21,7 +21,7 @@ Case = d1, Plan = plan([fly_gent_kortrijk, get_zone_permit_kortrijk, fly_kortrij
 Duration = 2800.0, Cost = 0.012, Belief = 0.9602999999999999, Comfort = 0.9503999999999999, Battery = low, Permit = none, FuelLeft = [t, t, t, t, t].
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: step(state(gent, full, P), state(brugge, mid, P), fly_gent_brugge, 1500.0, 0.006, 0.99, 0.99) :- .
 % Rule 11: step(state(brugge, mid, P), state(oostende, low, P), public_coastline_brugge_oostende, 1300.0, 0.006, 0.97, 0.96) :- .
 % Rule 13: path(From, To, [Act], Duration, Cost, Belief, Comfort, [_fuel | Fuelout], Fuelout) :- step(From, To, Act, Duration, Cost, Belief, Comfort).

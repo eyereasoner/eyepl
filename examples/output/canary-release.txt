@@ -11,7 +11,7 @@ Release = canary42, Status = rollback_recommended.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: error_rate(Release, Rate) :- canary(Release, Requests, Errors, _p95latency), Rate is '/'(Errors, Requests).
 % Rule 3: error_budget_exceeded(Release) :- error_rate(Release, Rate), threshold(Release, maximum_error_rate, Maximum), Rate > Maximum.
 % Rule 4: rollback_recommended(Release) :- error_budget_exceeded(Release).

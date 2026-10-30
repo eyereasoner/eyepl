@@ -29,7 +29,7 @@ What = 0.9999999999999999.
 What = [-2, -3, -1, 2].
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 2: result(division, [_Calc1, _Calc2, _Calc3, _Calc4]) :- inputs(division, [A, B]), _Calc1 is '//'(A, B), _Calc2 is div(A, B), _Calc3 is rem(A, B), _Calc4 is mod(A, B).
 step 1 source 3 : inputs(division, [-7, 3]).
 step 2 builtin : is(-2, '//'(-7, 3)).

@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ page.title | escape }}</title>
   <link rel="icon" href="{{ '/assets/eye.png' | relative_url }}" type="image/png">
-  <link rel="stylesheet" href="{{ '/playground.css' | relative_url }}">
   <link rel="stylesheet" href="{{ '/assets/docs.css' | relative_url }}">
 </head>
 <body>
@@ -13,14 +12,14 @@
     <header class="masthead">
       <a class="brand" href="{{ '/' | relative_url }}"><img src="{{ '/assets/eye.png' | relative_url }}" width="64" height="64" alt=""><h1>{{ page.title | escape }}</h1></a>
       <nav class="site-nav" aria-label="Project">
-        <a href="{{ '/' | relative_url }}">Guide</a>
+        <a href="{{ '/GUIDE/' | relative_url }}"{% if page.url == '/GUIDE/' %} aria-current="page"{% endif %}>Guide</a>
         <a href="{{ '/playground/' | relative_url }}">Playground</a>
-        <a href="{{ '/SPEC/' | relative_url }}">Specification</a>
-        <a href="https://github.com/eyereasoner/wheye">Repository ↗</a>
+        <a href="{{ '/SPEC/' | relative_url }}"{% if page.url == '/SPEC/' %} aria-current="page"{% endif %}>Specification</a>
+        <a href="https://github.com/eyereasoner/eyepl">Repository ↗</a>
       </nav>
     </header>
     <article>{{ content }}</article>
-    <footer><span>wheye · small programs, visible reasoning</span><span>MIT licensed</span></footer>
+    <footer><span>eyepl · small programs, visible reasoning</span><span>MIT licensed</span></footer>
   </main>
 </body>
 </html>

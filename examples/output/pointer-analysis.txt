@@ -12,7 +12,7 @@ HeapObject = object_a, ValueObject = object_b.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: points_to(Var, Object) :- addr(Var, Object).
 % Rule 2: points_to(To, Object) :- assign(To, From), points_to(From, Object).
 % Rule 3: field_points_to(Heap_object, Value_object) :- store(Pointer, Value), points_to(Pointer, Heap_object), points_to(Value, Value_object).

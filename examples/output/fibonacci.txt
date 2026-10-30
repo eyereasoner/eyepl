@@ -35,7 +35,7 @@ What = 55.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: fibonacci(Index, _Calc3) :- Index > 1, _Calc1 is '-'(Index, 1), fibonacci(_Calc1, Previous), _Calc2 is '-'(Index, 2), fibonacci(_Calc2, Earlier), _Calc3 is '+'(Previous, Earlier).
 step 1 source 1 : fibonacci(0, 0).
 step 2 source 2 : fibonacci(1, 1).

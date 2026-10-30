@@ -2,7 +2,7 @@
 Policy = 'PolicyX'.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 2: matched_any(Policy) :- policy(Request, Policy), policy(Policy), anyOf(Policy, Attribute), has(Request, Attribute).
 % Rule 4: pass(Policy, allOfTest) :- policy(Policy), \+ (missing_all(Policy)).
 % Rule 5: pass(Policy, anyOfTest) :- policy(Policy), matched_any(Policy).

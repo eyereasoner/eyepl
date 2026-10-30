@@ -1,12 +1,12 @@
-# Midlog compatibility
+# eyepl compatibility
 
-This corpus checks the syntax and operations that Midlog
+This corpus checks the syntax and operations that eyepl
 shares with ISO/IEC 13211-1:1995 and Technical Corrigenda 1:2007, 2:2012, and
-3:2017, together with Midlog's input restrictions. The corrigenda take
+3:2017, together with eyepl's input restrictions. The corrigenda take
 precedence over the original standard text in these compatibility cases.
 Passing it does not establish full ISO Prolog conformance.
 The implemented language contract remains the
-[specification](https://eyereasoner.github.io/wheye/SPEC/).
+[specification](https://eyereasoner.github.io/eyepl/SPEC/).
 
 Like EyeProlog's file-based conformance corpus, each source fixture has a
 reviewable expected result. These tests run locally without another Prolog
@@ -47,7 +47,7 @@ quote. Arithmetic cases include Corrigendum 3's negative integer-power type
 error, the zero and negative-base power domains, power underflow, float-only
 rounding inputs, the undefined `atan2(0,0)`, and invalid operator groupings.
 It requires the exact diagnostic and the phase (`parse` or `reason`).
-These test the error conditions with Wheye's messages; they do not claim
+These test the error conditions with eyepl's messages; they do not claim
 ISO `error(Formal, Context)` exception terms or `catch/3` support.
 
 ## Language restrictions
@@ -67,7 +67,7 @@ built-ins. Unsupported predicate names can still name ordinary user relations;
 an empty answer for such a name does not demonstrate built-in support.
 Engine behavior outside the shared ISO cases is covered by the ordinary
 regressions in `tests/prolog.rs`, including set semantics, table completion,
-the occurs check, and Midlog's numeric and text model. In particular, exact
+the occurs check, and eyepl's numeric and text model. In particular, exact
 mixed numeric comparisons and distinct strings are documented implementation
 behavior. Rounding input types,
 `sign/1` result types, and integer-power error conditions are checked against
@@ -82,7 +82,7 @@ Each answer fixture pairs `name.pl` with `name.answers`. Each ordinary query
 has exactly one expected line: `false`, `true`, or its variable bindings in
 query-variable order. Multiple answers are sorted by their rendered binding
 text and joined with `; `. Sorting ignores enumeration order but retains
-multiplicity, so unexpected duplicates fail. Values retain Midlog's typed term
+multiplicity, so unexpected duplicates fail. Values retain eyepl's typed term
 spelling. For example:
 
 ```text

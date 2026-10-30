@@ -1,2 +1,2 @@
-% Cut is outside Wheye's declarative execution model.
+% Cut is outside eyepl's declarative execution model.
 ?- !.

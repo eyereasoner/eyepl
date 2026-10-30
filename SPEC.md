@@ -1,16 +1,17 @@
-# Midlog specification
+# <img src="assets/eye.png" alt="" width="48" height="48" align="absmiddle"> eyepl specification
 
-Version **0.3.1**
+Version **0.3.2**
 
-**Status of this document.** This document defines Midlog, with Wheye as its
-Rust reference implementation. It is the normative contract for the language,
-evaluation, output, proof certificates, and certificate checking. Sections
-11.5–11.6 describe Wheye's CLI, library, and browser interfaces. Statements
-marked *informative* explain or illustrate; they add no requirements. Midlog's
-clause notation and shared numeric operations follow the ISO Prolog reference
-areas identified in Section 1.5, including Technical Corrigenda 1–3.
+**Status of this document.** This document defines the eyepl language,
+with the eyepl Rust reasoner as its reference implementation. It is the
+normative contract for the language, evaluation, output, proof certificates,
+and certificate checking. Sections 11.5–11.6 describe eyepl's CLI, library,
+and browser interfaces. Statements marked *informative* explain or illustrate;
+they add no requirements. eyepl's clause notation and shared numeric operations
+follow the ISO Prolog reference areas identified in Section 1.5, including
+Technical Corrigenda 1–3.
 
-**Abstract.** Midlog is a relational rule language with
+**Abstract.** eyepl is a relational rule language with
 structural terms, proper lists, exact integers, finite binary64 reals,
 stratified negation, `aggregate_all/3`, demand-driven tabling, and typed
 `fresh/1` witnesses. A program's requests select its output: answers, proof
@@ -112,7 +113,7 @@ under nine conditions, C1–C9, without running the evaluator.
 
 ### 1.1 Scope
 
-*Informative.* The name **Midlog** reflects a position between Datalog and
+*Informative.* The **eyepl** language takes a position between Datalog and
 Prolog: set-valued relations and fixed-point reasoning together with
 Prolog-style clause notation and structural terms. The following sections
 define its behavior precisely; Section 1.5 describes compatibility and
@@ -120,7 +121,7 @@ conformance.
 
 This specification defines:
 
-- the source syntax of Midlog programs (Sections 2–5);
+- the source syntax of eyepl programs (Sections 2–5);
 - the built-in predicates and arithmetic (Sections 6–7);
 - negation, aggregation, and witnesses (Section 8);
 - the declarative meaning of a program (Section 9) and how it is evaluated
@@ -128,7 +129,7 @@ This specification defines:
 - requests and their output (Section 11);
 - the proof certificate format (Section 12) and its verification (Section 13).
 
-The [guide](https://eyereasoner.github.io/wheye/) describes CLI and browser
+The [guide](https://eyereasoner.github.io/eyepl/GUIDE/) describes CLI and browser
 usage; it is informative.
 
 ### 1.2 Requirements Language
@@ -197,7 +198,7 @@ Boundary
   demanded calls through a level (Section 12.5).
 
 Certificate
-: A `wheye-proof 1` document (Section 12).
+: A `eyepl-proof 1` document (Section 12).
 
 Checker
 : The verifier of a certificate against a program (Section 13).
@@ -222,11 +223,11 @@ certificates.
 
 ### 1.5 Conformance
 
-Midlog has set-valued relations and a stratified fixed point, structural terms,
+eyepl has set-valued relations and a stratified fixed point, structural terms,
 proper lists, exact arithmetic, aggregates, mode-dependent tabled rules, and
 typed witnesses. The `.pl` file extension and existing clause syntax are
-retained. Wheye implements Midlog directly through its Rust evaluator and
-certificate checker.
+retained. The eyepl reasoner implements the language directly through its
+Rust evaluator and certificate checker.
 
 Range-restricted rules do not require initial head bindings. This includes
 aggregate rules: unless explicitly declared demand-driven, they run forward
@@ -239,13 +240,13 @@ not this grouping rule. Rules needing call inputs and universal unit clauses
 remain mode-dependent extensions evaluated through demanded calls.
 
 ISO Prolog is a compatibility reference for shared notation and operations,
-not the definition of Midlog's evaluation semantics. The reference is
+not the definition of eyepl's evaluation semantics. The reference is
 ISO/IEC 13211-1:1995 with Cor.1:2007, Cor.2:2012, and Cor.3:2017
 [ISO13211-1]. Corrections in the corrigenda take precedence over the original
 text. In particular, integer power follows the error condition corrected by
 Corrigendum 3, ISO Section 9.3.10.3(e) (Section 7.3 below).
 
-| Supported area | ISO clauses | Midlog contract |
+| Supported area | ISO clauses | eyepl contract |
 | --- | --- | --- |
 | Terms, variables, clauses, and lexical forms | 6.1–6.4, 7.4 | Sections 2–5 |
 | Finite-term unification and non-unifiability | 8.2 | Sections 4.4 and 6.2 |
@@ -255,11 +256,11 @@ Corrigendum 3, ISO Section 9.3.10.3(e) (Section 7.3 below).
 | Atom/code conversion | 8.16.5 | Section 6.5 |
 
 The table identifies supported areas, with the input modes and boundaries
-defined in this document. The [conformance corpus](https://github.com/eyereasoner/wheye/tree/main/tests/conformance/)
+defined in this document. The [conformance corpus](https://github.com/eyereasoner/eyepl/tree/main/tests/conformance/)
 checks selected shared cases and rejection of unsupported syntax and modes.
 It does not establish coverage of every requirement in the cited clauses.
 
-The Midlog contract includes:
+The eyepl contract includes:
 
 - Set semantics and demand-driven tabling (Sections 9–10), with stratified
   negation, replace ISO's procedural search and repeated derivations.
@@ -273,12 +274,12 @@ The Midlog contract includes:
 - `table`, aggregates, witnesses, string predicates, and proof requests are
   additional facilities. `false/0`, infix `xor`, `gcd/2`, and the arithmetic
   constant `e` are extensions (Sections 6–8 and 11–13).
-- Errors use Wheye diagnostics and API errors; ISO exception terms and
+- Errors use eyepl diagnostics and API errors; ISO exception terms and
   `catch/3` are outside the language (Sections 11.5 and 14).
 
 Full ISO processor compliance under clause 5.1, including its required
 facilities and strictly conforming mode, is outside the implemented scope.
-Conformance in the rest of this document refers to the Midlog contract:
+Conformance in the rest of this document refers to the eyepl contract:
 
 A *conforming program* satisfies every source requirement in Sections 2–8.
 A *conforming evaluator* parses, validates, evaluates, and renders conforming
@@ -818,7 +819,9 @@ The following MUST raise an error, naming the problem:
 - an integer too large to convert to a finite binary64 value;
 - a nonnegative exponent above 1,000,000 in the two-integer `^` operation, or a
   shift count above 1,000,000. This exponent cap does not apply to real power;
-  real conversion, domain, and overflow checks still apply there.
+  real conversion, domain, and overflow checks still apply there;
+- an integer `*`, `^`, or `<<` result whose magnitude would exceed 16 MiB,
+  reported as an incomplete result (Section 10.6).
 
 ## 8. Negation, Aggregation, and Witnesses
 
@@ -912,7 +915,7 @@ per frontier assignment. Premise substitutions that differ only outside the
 frontier therefore share one witness, and no fresh value is created where a
 known one already fits. This is the restricted introduction of
 [Stratified Negation in RDF Rules](https://arxiv.org/abs/2607.28778), with
-the precedence approximated by Midlog's strata.
+the precedence approximated by eyepl's strata.
 
 The parser states this with ordinary rules. Rule `H :- B, fresh(W).` with
 frontier `F` (its variables in increasing name order) becomes the following,
@@ -954,7 +957,7 @@ closure MUST recompute witnesses from the same source-prefix context.
 `examiner(C, T) :- teacher(C, T), \+ student(T).` and
 `examiner(C, E) :- participant(C, P), fresh(E).` give course `c` no fresh
 examiner, because `examiner(c, t)` is derived in a lower stratum. See
-[`examples/examiners.pl`](https://github.com/eyereasoner/wheye/blob/main/examples/examiners.pl).
+[`examples/examiners.pl`](https://github.com/eyereasoner/eyepl/blob/main/examples/examiners.pl).
 
 Witnesses are written `~"identity"` in answers and certificates. The identity
 spelling is implementation-defined. A conforming checker recomputes it rather
@@ -1005,7 +1008,7 @@ without an error. With `q(b). p(X) :- X \= a, q(X).`, a run asking only
 `p(X)` returns no answers, while a separate run asking `p(b)` succeeds. A
 forward rule that calls a mode-dependent rule can inherit this restriction.
 The unrestricted least-model reading alone therefore does not specify the
-answers of every accepted Midlog program.
+answers of every accepted eyepl program.
 
 *Informative:* given `human(socrates).` and `mortal(P) :- human(P).`, the model
 contains `human(socrates)` and `mortal(socrates)`. `1 + 2` is a compound in an
@@ -1039,7 +1042,7 @@ work instead.
 This section specifies the evaluation strategy that determines the evidence
 recorded in certificates.
 
-Wheye combines **forward chaining** (bottom-up evaluation of forward rules)
+eyepl combines **forward chaining** (bottom-up evaluation of forward rules)
 with **tabled backward chaining** (call-driven evaluation of demand-driven
 rules). Both strategies share ordinary facts and follow the same strata.
 Backward calls share answers through tables and resume waiting consumers as
@@ -1149,10 +1152,16 @@ record follows everything it depends on (Section 12.3).
 | --- | --- | --- |
 | `max_facts` | 1,000,000 | Stored evidence records (facts and decisions) |
 | `max_matches` | 10,000,000 | Counted operations: candidate matches, built-in calls, tasks, index entries, demanded calls, and finite-model matching |
+| `max_term_bytes` | 16,777,216 | Term text of one derived evidence record: name and text bytes, 8 bytes per number, and the magnitude bytes of a big integer |
 
 Exceeding a limit MUST raise an error that states the result is incomplete. It
-MUST NOT produce successful partial output. Limits bound counted work, not
-elapsed time, stack depth, or process memory. The browser playground MUST allow
+MUST NOT produce successful partial output. A rule that doubles a value on each
+firing exhausts memory long before the counted limits are reached;
+`max_term_bytes` turns that into an incomplete run. Source facts are not
+measured. Independently of `max_term_bytes`, built-ins MUST refuse to construct
+a text or integer whose size exceeds 16 MiB (Section 7). Limits bound counted
+work and the size of single records, not elapsed time, stack depth, or total
+process memory. The browser playground MUST allow
 cancellation by terminating its computation worker.
 
 ## 11. Requests and Output
@@ -1220,9 +1229,9 @@ for comparisons, `\+ (Goal)` for negation, and
 ### 11.5 Command-Line Interface
 
 ```text
-wheye FILE...
-wheye -
-wheye -h | -v
+eyepl FILE...
+eyepl -
+eyepl -h | -v
 ```
 
 The CLI accepts `-h` (help) and `-v` (version). `-` reads standard input, at
@@ -1234,7 +1243,7 @@ output; there is no output-selection option.
 On success, the CLI writes the complete output to standard output and exits
 with status 0. On any error, including a parse error (prefixed with the file
 name), a resource limit, or an invalid `check` report, it writes one
-`wheye: message` diagnostic to standard error, writes nothing to standard
+`eyepl: message` diagnostic to standard error, writes nothing to standard
 output, and exits with status 1.
 
 ### 11.6 Library and Browser Interfaces
@@ -1250,7 +1259,7 @@ a cancellable worker.
 
 ### 12.1 Overview
 
-There is one certificate format, `wheye-proof 1`. It is readable and
+There is one certificate format, `eyepl-proof 1`. It is readable and
 checkable. A certificate has three parts:
 
 1. *Steps*: numbered evidence records, each concluding one ground atom.
@@ -1264,7 +1273,7 @@ receives. Rule text in comments is informative only.
 
 ```abnf
 certificate   = header *( EOL line ) [ EOL ]
-header        = %s"wheye-proof 1"
+header        = %s"eyepl-proof 1"
 line          = *WSP [ record / comment ] *WSP
 comment       = "%" *line-char  ; any character except CR and LF
 record        = step / boundary / demand / claim
@@ -1293,7 +1302,7 @@ terminator `.`. It names an ordinary or auxiliary predicate (Section 12.4) and
 MAY contain witnesses. `goal` is one predicate application followed by `.`; it
 MAY contain variables. Readers MUST also:
 
-- require the first line to be exactly `wheye-proof 1`;
+- require the first line to be exactly `eyepl-proof 1`;
 - ignore blank lines and lines whose first non-blank character is `%`;
 - trim record lines, require the literal prefixes `step ` and `demand ` for
   those records, and split either at its first exact ` : ` delimiter;
@@ -1445,7 +1454,7 @@ structure and every witness's exact source-rule context.
 *Informative.* For `examples/orders.pl`:
 
 ```text
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: subtotal(Customer, Total) :- customer(Customer), aggregate_all(sum(Price), (line(Customer, Item, Price)), Total).
 % Rule 2: eligible(Customer, Total) :- subtotal(Customer, Total), \+ (blocked(Customer)), Total >= 10.
 % Rule 3: voucher(Customer, Voucher, Total) :- '$lean:1'(Customer, Total), fresh(Voucher).
@@ -1470,7 +1479,7 @@ answer 1 [15]
 ```
 
 A program with demand-driven rules adds demand records after a boundary, for
-example `demand 1 : between(0, 8, _WheyeCall0).`
+example `demand 1 : between(0, 8, _EyeplCall0).`
 
 ## 13. Verification
 
@@ -1521,7 +1530,7 @@ is reported as **not applicable**, with zero checks and failures:
 | C8 | A rule uses `fresh/1`, or the certificate contains a witness value |
 | Others | Always |
 
-The [voucher example](https://github.com/eyereasoner/wheye/blob/main/examples/orders.pl)
+The [voucher example](https://github.com/eyereasoner/eyepl/blob/main/examples/orders.pl)
 MUST perform at least one successful check under every condition.
 
 ### 13.4 Check Counts
@@ -1695,4 +1704,4 @@ link does not run the program automatically.
   <https://www.complang.tuwien.ac.at/ulrich/iso-prolog/conformity_testing>.
 
 [GUIDE]
-: "Wheye guide", <https://eyereasoner.github.io/wheye/>.
+: "eyepl guide", <https://eyereasoner.github.io/eyepl/GUIDE/>.

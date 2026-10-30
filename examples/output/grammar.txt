@@ -8,7 +8,7 @@ Command = command(close, window), Rest = [please].
 Command = command(open, door).
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: verb([open | Rest], open, Rest) :- .
 % Rule 3: noun([door | Rest], door, Rest) :- .
 % Rule 5: sentence(Input, command(Verb, Object), Rest) :- verb(Input, Verb, Middle), noun(Middle, Object, Rest).

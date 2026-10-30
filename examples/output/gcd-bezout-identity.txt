@@ -10,7 +10,7 @@ Case = c2, G = 1, S = 215, T = -47.
 G = 9, S = 1, T = 1.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: bezout(A, B, G, S, T) :- '+'(abs(A), abs(B)) > 0, R0 is abs(A), R1 is abs(B), euclid(R0, R1, 1, 0, 0, 1, G, U, V), S is '*'(sign(A), U), T is '*'(sign(B), V).
 % Rule 2: euclid(R0, 0, S0, _, T0, _, R0, S0, T0) :- .
 % Rule 3: euclid(R0, R1, S0, S1, T0, T1, G, S, T) :- R1 > 0, Q is div(R0, R1), R2 is '-'(R0, '*'(Q, R1)), S2 is '-'(S0, '*'(Q, S1)), T2 is '-'(T0, '*'(Q, T1)), euclid(R1, R2, S1, S2, T1, T2, G, S, T).

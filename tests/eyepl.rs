@@ -1,6 +1,6 @@
-use wheye::{check, parse, reason, Certificate, Condition, Justification, Limits, Value};
+use eyepl::{check, parse, reason, Certificate, Condition, Justification, Limits, Value};
 
-fn checked(source: &str) -> (wheye::Program, wheye::Run) {
+fn checked(source: &str) -> (eyepl::Program, eyepl::Run) {
     let program = parse(source).unwrap();
     let run = reason(&program, Limits::default()).unwrap();
     let certificate = run.certificate(&program);
@@ -75,7 +75,7 @@ fn c1_and_c5_reject_result_constraints_disguised_as_call_inputs() {
     let program =
         parse("p(1). p(2). total(G,N):-aggregate_all(count,p(N),N),G=G. ?-total(g,1).").unwrap();
     let forged = Certificate::parse(
-        "wheye-proof 1\n\
+        "eyepl-proof 1\n\
          step 1 source 1 : p(1).\n\
          step 2 source 2 : p(2).\n\
          step 3 builtin : '='(g,g).\n\
@@ -164,7 +164,7 @@ fn c1_and_c5_reject_caller_injected_aggregate_groups() {
     )
     .unwrap();
     let forged = Certificate::parse(
-        "wheye-proof 1\n\
+        "eyepl-proof 1\n\
          step 1 source 1 : p(a).\n\
          step 2 source 2 : p(b).\n\
          step 3 source 3 : q(a).\n\
@@ -184,7 +184,7 @@ fn c1_and_c5_reject_caller_injected_aggregate_groups() {
 fn c6_requires_undemanded_safe_aggregate_conclusions_in_closed_models() {
     let program = parse("p(a). total(N):-aggregate_all(count,p(X),N). ?- \\+ total(2).").unwrap();
     let forged = Certificate::parse(
-        "wheye-proof 1\n\
+        "eyepl-proof 1\n\
          step 1 source 1 : p(a).\n\
          step 2 absent 1 : total(2).\n\
          boundary 1 level 1 [1]\n\

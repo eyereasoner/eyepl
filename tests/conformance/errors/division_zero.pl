@@ -1,2 +1,2 @@
-% ISO arithmetic error condition; diagnostic follows Wheye's API.
+% ISO arithmetic error condition; diagnostic follows eyepl's API.
 ?- X is 1 / 0.

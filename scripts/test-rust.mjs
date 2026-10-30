@@ -4,7 +4,7 @@ import { createInterface } from 'node:readline';
 import { performance } from 'node:perf_hooks';
 
 const useColor = process.env.NO_COLOR === undefined && (
-  process.env.WHEYE_TEST_COLOR === '1' || process.stdout.isTTY ||
+  process.env.EYEPL_TEST_COLOR === '1' || process.stdout.isTTY ||
   (process.env.FORCE_COLOR !== undefined && process.env.FORCE_COLOR !== '0')
 );
 const color = (code, text) => useColor ? `\x1b[${code}m${text}\x1b[0m` : text;

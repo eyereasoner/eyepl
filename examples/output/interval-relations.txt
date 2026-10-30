@@ -104,7 +104,7 @@ I = j, Relation = after, J = g.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 3: valid_interval(I, S, E) :- interval(I, S, E), S < E.
 % Rule 4: pair(I, J, SI, EI, SJ, EJ) :- valid_interval(I, SI, EI), valid_interval(J, SJ, EJ).
 % Rule 7: relation(I, overlaps, J) :- pair(I, J, SI, EI, SJ, EJ), SI < SJ, SJ < EI, EI < EJ.

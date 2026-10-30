@@ -10,8 +10,8 @@ const root = new URL('../', import.meta.url);
 let browser;
 function browserEngine() {
   browser ??= (async () => {
-    const engine = await import('../pkg/wheye.js');
-    engine.initSync({ module: await readFile(new URL('pkg/wheye_bg.wasm', root)) });
+    const engine = await import('../pkg/eyepl.js');
+    engine.initSync({ module: await readFile(new URL('pkg/eyepl_bg.wasm', root)) });
     return engine;
   })();
   return browser;
@@ -22,12 +22,12 @@ async function exampleSource(name) {
 }
 
 test('website stages rendered documentation and every playground dependency', async () => {
-  const directory = await mkdtemp(join(tmpdir(), 'wheye-pages-'));
+  const directory = await mkdtemp(join(tmpdir(), 'eyepl-pages-'));
   try {
     await preparePages(directory);
-    for (const file of ['index.md', 'SPEC/index.md', 'playground.html', 'playground/index.html',
+    for (const file of ['index.md', 'GUIDE/index.md', 'SPEC/index.md', 'playground.html', 'playground/index.html',
       'playground.css', 'playground.js', 'playground-worker.js', 'assets/eye.png', 'assets/docs.css',
-      'pkg/wheye.js', 'pkg/wheye_bg.wasm', 'examples/index.json', 'examples/socrates.pl', 'examples/paths.pl', 'examples/family.pl',
+      'pkg/eyepl.js', 'pkg/eyepl_bg.wasm', 'examples/index.json', 'examples/socrates.pl', 'examples/paths.pl', 'examples/family.pl',
       'examples/values.pl', 'examples/rdf.pl', 'examples/arithmetic.pl', 'examples/negation.pl',
       'examples/aggregation.pl', 'examples/witnesses.pl', 'examples/orders.pl', 'LICENSE.md', '_layouts/default.html']) {
       assert.ok((await stat(join(directory, file))).isFile(), file);
@@ -35,26 +35,30 @@ test('website stages rendered documentation and every playground dependency', as
     for (const file of await readdir(new URL('examples/', root))) {
       if (file.endsWith('.pl')) assert.ok((await stat(join(directory, 'examples', file))).isFile(), file);
     }
-    for (const file of ['index.md', 'SPEC/index.md']) {
+    for (const file of ['index.md', 'GUIDE/index.md', 'SPEC/index.md']) {
       const document = await readFile(join(directory, file), 'utf8');
       assert.match(document, /^---\nlayout: default\n/);
       assert.doesNotMatch(document, /^# /m, 'The title belongs in the shared header, once.');
-      assert.doesNotMatch(document, /\]\([^)]*\.md(?:#|\))/);
+      assert.doesNotMatch(document, /\]\((?!https?:)[^)]*\.md(?:#|\))/);
     }
-    const guide = await readFile(join(directory, 'index.md'), 'utf8');
-    assert.match(guide, /^title: "Wheye guide"$/m);
+    const readme = await readFile(join(directory, 'index.md'), 'utf8');
+    assert.match(readme, /^title: "eyepl"$/m, 'The README is the site root.');
+    assert.match(readme, /\]\(\/eyepl\/GUIDE\/\)/);
+    assert.match(readme, /\]\(https:\/\/github\.com\/eyereasoner\/eyepl\/blob\/main\/LICENSE\.md\)/);
+    const guide = await readFile(join(directory, 'GUIDE/index.md'), 'utf8');
+    assert.match(guide, /^title: "eyepl guide"$/m);
     assert.match(guide, /^## Run your first program$/m);
-    assert.match(guide, /^## Why Midlog\?$/m);
+    assert.match(guide, /^## Why eyepl\?$/m);
     for (const id of ['why-a-prolog-subset', 'why-extended-datalog']) {
       assert.ok(guide.includes(`id="${id}"`), 'Older guide links remain supported.');
     }
-    assert.match(guide, /\]\(\/wheye\/SPEC\/#132-proof-conditions\)/);
-    assert.match(await readFile(join(directory, 'SPEC/index.md'), 'utf8'), /^title: "Midlog specification"$/m);
+    assert.match(guide, /\]\(\/eyepl\/SPEC\/#132-proof-conditions\)/);
+    assert.match(await readFile(join(directory, 'SPEC/index.md'), 'utf8'), /^title: "eyepl specification"$/m);
     const playground = await readFile(join(directory, 'playground/index.html'), 'utf8');
     assert.match(playground, /<base href="\.\.\/">/);
-    assert.match(playground, /href="\/wheye\/SPEC\/"/);
+    assert.match(playground, /href="\/eyepl\/SPEC\/"/);
     assert.doesNotMatch(playground, /href="[^"]*\.md(?:#|")/);
-    assert.deepEqual(await readFile(join(directory, 'pkg/wheye_bg.wasm')), await readFile(new URL('pkg/wheye_bg.wasm', root)));
+    assert.deepEqual(await readFile(join(directory, 'pkg/eyepl_bg.wasm')), await readFile(new URL('pkg/eyepl_bg.wasm', root)));
     for (const directoryName of ['src', 'target', '.github']) {
       await assert.rejects(stat(join(directory, directoryName)), { code: 'ENOENT' });
     }
@@ -62,19 +66,19 @@ test('website stages rendered documentation and every playground dependency', as
 });
 
 test('documentation and playground links honor root and nested Pages prefixes', async () => {
-  for (const base of ['', '/preview/wheye/']) {
-    const directory = await mkdtemp(join(tmpdir(), 'wheye-prefix-'));
+  for (const base of ['', '/preview/eyepl/']) {
+    const directory = await mkdtemp(join(tmpdir(), 'eyepl-prefix-'));
     try {
       await preparePages(directory, base);
       const normalized = base.replace(/\/+$/, '');
       assert.equal(JSON.parse(await readFile(join(directory, '_config.yml'), 'utf8')).baseurl, normalized);
-      for (const file of ['index.md', 'SPEC/index.md', 'playground.html']) {
+      for (const file of ['index.md', 'GUIDE/index.md', 'SPEC/index.md', 'playground.html']) {
         const text = await readFile(join(directory, file), 'utf8');
-        assert.doesNotMatch(text, /(?:\]\(|href=")https:\/\/eyereasoner.github.io\/wheye\//);
+        assert.doesNotMatch(text, /(?:\]\(|href=")https:\/\/eyereasoner.github.io\/eyepl\//);
         assert.ok(!text.includes(`<${normalized}/>`), 'Relative URLs must not use Markdown autolink syntax.');
       }
       const spec = await readFile(join(directory, 'SPEC/index.md'), 'utf8');
-      assert.ok(spec.includes(`[https://eyereasoner.github.io/wheye/](${normalized}/)`),
+      assert.ok(spec.includes(`[https://eyereasoner.github.io/eyepl/GUIDE/](${normalized}/GUIDE/)`),
         'The final guide reference must remain a link under every Pages prefix.');
       assert.ok((await readFile(join(directory, 'playground.html'), 'utf8')).includes(`href="${normalized}/SPEC/"`));
     } finally { await rm(directory, { recursive: true, force: true }); }
@@ -98,7 +102,7 @@ test('specification certificate and report examples match the checked voucher pr
   const { runProgram } = await browserEngine();
   const spec = await readFile(new URL('SPEC.md', root), 'utf8');
   const blocks = [...spec.matchAll(/^```text\n([\s\S]*?)^```/gm)].map(match => match[1]);
-  const certificate = blocks.find(block => block.startsWith('wheye-proof 1\n'));
+  const certificate = blocks.find(block => block.startsWith('eyepl-proof 1\n'));
   const report = blocks.find(block => block.startsWith('checked:'));
   assert.ok(certificate, 'The specification needs its certificate example.');
   assert.ok(report, 'The specification needs its report example.');
@@ -119,8 +123,8 @@ test('committed browser package matches Cargo and performs C1–C9 checking', as
   assert.ok(readme.includes(`**Version ${expectedVersion}**`));
   assert.ok(guide.includes(`Version **${expectedVersion}**`));
   assert.ok(spec.includes(`Version **${expectedVersion}**`));
-  assert.ok(playground.includes(`id="version">v${expectedVersion}</span>`));
-  assert.doesNotMatch(playground, /wheye · version|class="notes"/);
+  assert.ok(playground.includes(`id="version">${expectedVersion}</strong>`));
+  assert.doesNotMatch(playground, /eyepl · version|class="notes"/);
   const source = await exampleSource('socrates');
   const report = runProgram(source);
   assert.match(report, /^checked: 2 steps, 1 claim/m);
@@ -131,7 +135,7 @@ test('committed browser package matches Cargo and performs C1–C9 checking', as
 test('browser engine checks all nine conditions on the voucher example', async () => {
   const { runProgram } = await browserEngine();
   const output = runProgram(await exampleSource('orders'));
-  assert.match(output, /^wheye-proof 1/m);
+  assert.match(output, /^eyepl-proof 1/m);
   assert.match(output, /^checked:/m);
   assert.doesNotMatch(output, /not applicable/);
   for (let condition = 1; condition <= 9; condition++) {
@@ -172,7 +176,7 @@ test('browser arithmetic and certificates follow ISO Corrigenda 1–3', async ()
   }
 });
 
-test('Midlog aggregates have query-independent scope and forward closure', async () => {
+test('eyepl aggregates have query-independent scope and forward closure', async () => {
   const { runProgram } = await browserEngine();
   for (const declaration of ['', ':- table total/2.']) {
     const output = runProgram(`${declaration}

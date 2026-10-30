@@ -7,7 +7,7 @@ Cost = 6.
 Cost = 6.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: path(X, Y, Cost) :- edge(X, Y, Cost).
 % Rule 2: path(X, Z, Cost) :- path(X, Y, Before), edge(Y, Z, Weight), Cost is '+'(Before, Weight).
 % Rule 3: cheaper(X, Y, Cost) :- path(X, Y, Other), Other < Cost.

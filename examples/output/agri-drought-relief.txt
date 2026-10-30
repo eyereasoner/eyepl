@@ -6,7 +6,7 @@ Application = dr01, Status = approved.
 Application = dr01, Payment = ~"r5:g2:{\"App\": Symbol(\"dr01\")}".
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: qualifies(Area, Rain, Baseline, Current) :- Area >= 5, Rain < 20, Drop is '-'(Baseline, Current), Drop >= 30.
 % Rule 2: eligible(App, true) :- application(App, drought_relief, Farm), farm(Farm, Area, Rain, Baseline, Current), qualifies(Area, Rain, Baseline, Current).
 % Rule 3: status(App, approved) :- eligible(App, true), status(App, submitted).

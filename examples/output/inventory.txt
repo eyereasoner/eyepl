@@ -2,7 +2,7 @@
 Total = 28.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: line_total(Name, Total) :- item(Name, Quantity, Price), Total is '*'(Quantity, Price).
 % Rule 2: invoice(Total) :- aggregate_all(sum(Amount), (line_total(Name, Amount)), Total).
 step 1 source 1 : item(apple, 3, 2).

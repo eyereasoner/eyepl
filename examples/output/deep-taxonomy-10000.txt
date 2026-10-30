@@ -2,7 +2,7 @@
 Who = ind.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: is_a(Entity, a2) :- is_a(Entity, n10000).
 % Rule 2: is_a(Entity, n1) :- is_a(Entity, n0).
 % Rule 5: is_a(Entity, n2) :- is_a(Entity, n1).

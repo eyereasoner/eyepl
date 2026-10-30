@@ -5,7 +5,7 @@ Owner = carol, Count = 4.
 Owner = dana, Count = 0.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: dog_count(Owner, N) :- owner(Owner), aggregate_all(count, (owns(Owner, Dog)), N).
 step 1 source 1 : owns(alice, dog1).
 step 2 source 2 : owns(alice, dog2).
@@ -40,7 +40,7 @@ answer 1 [23]
 Owner = alice.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: dog_count(Owner, N) :- owner(Owner), aggregate_all(count, (owns(Owner, Dog)), N).
 % Rule 2: requires(Owner, dog_license) :- dog_count(Owner, N), N > 4.
 step 1 source 1 : owns(alice, dog1).

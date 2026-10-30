@@ -2,7 +2,7 @@
 Flute = sandy.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: solution(Flute) :- uniq_people(Doctor, Lawyer, Engineer), uniq_people(Piano, Violin, Flute), chris \= Doctor, Lawyer = Piano, Engineer \= chris, Violin = Doctor, sandy \= Violin.
 % Rule 2: uniq_people(A, B, C) :- person(A), person(B), person(C), A \= B, A \= C, B \= C.
 step 1 source 1 : person(chris).

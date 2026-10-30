@@ -42,7 +42,7 @@ test('worker runs the engine off the UI thread and reports failures', async () =
   const source = await readFile(new URL('playground-worker.js', root), 'utf8');
   const messages = [];
   const context = vm.createContext({ self: { postMessage: message => messages.push(message) } });
-  const script = new vm.Script(source.replace("import('./pkg/wheye.js')", 'Promise.resolve(mockEngine)'), { filename: fileURLToPath(new URL('playground-worker.js', root)) });
+  const script = new vm.Script(source.replace("import('./pkg/eyepl.js')", 'Promise.resolve(mockEngine)'), { filename: fileURLToPath(new URL('playground-worker.js', root)) });
   context.mockEngine = { default: async () => {}, version: () => '0.1.0', runProgram: source => {
     if (source === 'bad') throw new Error('specific failure');
     return source;
@@ -87,9 +87,9 @@ async function createPlayground({ source, hash = '', stateUrl, request, token = 
   const timers = new Map();
   let nextTimer = 0;
   let saved = source === undefined ? null : JSON.stringify({ source });
-  const location = new URL(`https://example.test/wheye/playground/${hash}`);
+  const location = new URL(`https://example.test/eyepl/playground/${hash}`);
   if (stateUrl) location.searchParams.set('stateurl', stateUrl);
-  const session = new Map(token ? [['wheye.playground.github.gistToken.v1', token]] : []);
+  const session = new Map(token ? [['eyepl.playground.github.gistToken.v1', token]] : []);
   const element = id => {
     if (!elements.has(id)) elements.set(id, {
       value: '', textContent: '', hidden: true, listeners: {},
@@ -199,7 +199,7 @@ function jsonResponse(payload, status = 200) {
   return { ok: status >= 200 && status < 300, status, json: async () => payload };
 }
 
-const rawGist = 'https://gist.githubusercontent.com/example/123/raw/abc/wheye-playground-state.json';
+const rawGist = 'https://gist.githubusercontent.com/example/123/raw/abc/eyepl-playground-state.json';
 
 test('Gist sharing uploads only the source, keeps its token in the session, and restores without running', async () => {
   const source = "human('Élodie'). ?- human(Who).";
@@ -213,15 +213,15 @@ test('Gist sharing uploads only the source, keeps its token in the session, and 
       assert.equal(options.credentials, 'omit');
       assert.equal(options.headers.Authorization, 'Bearer test-token');
       uploaded = JSON.parse(options.body);
-      return jsonResponse({ files: { 'wheye-playground-state.json': { raw_url: rawGist } } }, 201);
+      return jsonResponse({ files: { 'eyepl-playground-state.json': { raw_url: rawGist } } }, 201);
     },
   });
   const shared = new URL(await page.gist());
   assert.equal(uploaded.public, false);
-  assert.deepEqual(JSON.parse(uploaded.files['wheye-playground-state.json'].content), { source });
+  assert.deepEqual(JSON.parse(uploaded.files['eyepl-playground-state.json'].content), { source });
   assert.equal(shared.searchParams.get('stateurl'), rawGist);
   assert.ok(!shared.href.includes('test-token'));
-  assert.equal(page.session.get('wheye.playground.github.gistToken.v1'), 'test-token');
+  assert.equal(page.session.get('eyepl.playground.github.gistToken.v1'), 'test-token');
 
   const restored = await createPlayground({
     stateUrl: rawGist,

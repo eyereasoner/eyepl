@@ -10,7 +10,7 @@ Case = t6, Which = a, Length = 13.0.
 Length = 5.0.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: side(Case, Which, Length) :- given(Case, Which, U, V, Angle), U > 0, V > 0, Angle > 0, Angle < pi, Squared is '-'('+'('*'(U, U), '*'(V, V)), '*'('*'('*'(2, U), V), cos(Angle))), Squared >= 0, Length is sqrt(Squared).
 step 1 source 1 : given(t1, c, 3, 4, 1.5707963267948966).
 step 2 builtin : '>'(3, 0).

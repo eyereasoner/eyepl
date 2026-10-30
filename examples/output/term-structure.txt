@@ -9,7 +9,7 @@ Record = unexpected(on), Name = unexpected, Arity = 1.
 Record = location(sensor, north), Name = location, Arity = 2.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: member(Head, [Head | _]) :- .
 % Rule 2: member(Value, [_ | Rest]) :- member(Value, Rest).
 % Rule 3: length([_ | Rest], Count) :- length(Rest, Previous), Count is '+'(Previous, 1).
@@ -61,20 +61,20 @@ step 41 absent 1 : schema(location, 2).
 step 42 rule 6 [34,40] : rejected(unexpected(on), unexpected, 1).
 step 43 rule 6 [33,41] : rejected(location(sensor, north), location, 2).
 boundary 1 level 0 [1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39]
-demand 1 : length([21], _WheyeCall0).
-demand 1 : length([3], _WheyeCall0).
-demand 1 : length([], _WheyeCall0).
-demand 1 : length([north, 3], _WheyeCall0).
-demand 1 : length([north], _WheyeCall0).
-demand 1 : length([on], _WheyeCall0).
-demand 1 : length([room, 21], _WheyeCall0).
-demand 1 : length([sensor, north, 3], _WheyeCall0).
-demand 1 : length([sensor, north], _WheyeCall0).
-demand 1 : member(_WheyeCall0, []).
-demand 1 : member(_WheyeCall0, [location(sensor, north), unexpected(on)]).
-demand 1 : member(_WheyeCall0, [location(sensor, north, 3), location(sensor, north), unexpected(on)]).
-demand 1 : member(_WheyeCall0, [temperature(room, 21), location(sensor, north, 3), location(sensor, north), unexpected(on)]).
-demand 1 : member(_WheyeCall0, [unexpected(on)]).
+demand 1 : length([21], _EyeplCall0).
+demand 1 : length([3], _EyeplCall0).
+demand 1 : length([], _EyeplCall0).
+demand 1 : length([north, 3], _EyeplCall0).
+demand 1 : length([north], _EyeplCall0).
+demand 1 : length([on], _EyeplCall0).
+demand 1 : length([room, 21], _EyeplCall0).
+demand 1 : length([sensor, north, 3], _EyeplCall0).
+demand 1 : length([sensor, north], _EyeplCall0).
+demand 1 : member(_EyeplCall0, []).
+demand 1 : member(_EyeplCall0, [location(sensor, north), unexpected(on)]).
+demand 1 : member(_EyeplCall0, [location(sensor, north, 3), location(sensor, north), unexpected(on)]).
+demand 1 : member(_EyeplCall0, [temperature(room, 21), location(sensor, north, 3), location(sensor, north), unexpected(on)]).
+demand 1 : member(_EyeplCall0, [unexpected(on)]).
 answer 2 [42]
 answer 2 [43]
 

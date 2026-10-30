@@ -8,7 +8,7 @@ Length = 5, Moves = [go(loc3), push(loc1), climb_on, grab, climb_off].
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: legal_move([B, M, M, n, H], climb_on, [B, M, M, y, H]) :- .
 % Rule 3: legal_move([B, B, B, y, n], grab, [B, B, B, y, y]) :- .
 % Rule 4: legal_move([B, M, M, n, H], push(X), [B, X, X, n, H]) :- location(X), X \= M.

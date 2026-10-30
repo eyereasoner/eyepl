@@ -104,7 +104,7 @@ export function formatReport(results, { version, generated, status }) {
     cli: 'CLI', conformance: 'Conformance', examples: 'Examples',
     extended_proofs: 'Extended proofs', extensions: 'Built-ins and aggregates',
     path_discovery: 'Route discovery', prolog: 'Terms and compatibility',
-    midlog: 'Midlog',
+    eyepl: 'eyepl',
     proof_conditions: 'Proof conditions', proofs: 'Basic proofs',
     reasoning: 'Core reasoning', taxonomy: 'Taxonomy',
   };
@@ -138,7 +138,7 @@ export function formatReport(results, { version, generated, status }) {
   const count = row => typeof row.fail === 'number' ? row.ok + row.fail + row.skipped : 'unknown';
   const lines = [
     '# Test report', '',
-    `Wheye **${version}** · ${generated} · **${successful ? 'OK' : 'FAIL'}**`, '',
+    `eyepl **${version}** · ${generated} · **${successful ? 'OK' : 'FAIL'}**`, '',
     '| Suite | Total | OK | FAIL | Elapsed (s) |',
     '| --- | ---: | ---: | ---: | ---: |',
     ...rows.map(row => `| ${row.name.replaceAll('|', '\\|')} | ${count(row)} | ${row.ok} | ${row.fail} | ${row.seconds.toFixed(3)} |`),

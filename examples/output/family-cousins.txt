@@ -16,7 +16,7 @@ X = judy, Y = ivan.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: generation(Child, Next) :- parent(Parent, Child), generation(Parent, N), Next is '+'(N, 1).
 % Rule 2: branch(Child, Branch) :- parent(Parent, Child), branch(Parent, Branch).
 % Rule 3: cousin(X, Y) :- generation(X, N), generation(Y, N), branch(X, A), branch(Y, B), A \= B.

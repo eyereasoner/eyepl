@@ -3,7 +3,7 @@ Person = alice, Grandchild = carol.
 Person = bob, Grandchild = dave.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: triple(Start, Property, End) :- property_chain(Property, [First | Rest]), triple(Start, First, Middle), follow_chain(Rest, Middle, End).
 % Rule 2: follow_chain([], Node, Node) :- .
 % Rule 3: follow_chain([Property | Rest], Start, End) :- triple(Start, Property, Middle), follow_chain(Rest, Middle, End).

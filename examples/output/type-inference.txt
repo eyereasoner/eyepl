@@ -10,7 +10,7 @@ Name = compose, Type = fun(fun(t1, t2), fun(fun(t0, t1), fun(t0, t2))).
 Type = fun(fun(t1, t2), fun(fun(t0, t1), fun(t0, t2))).
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: lookup(Name, [[Name, Type] | _], Type) :- .
 % Rule 2: lookup(Name, [[Other, _] | Rest], Type) :- Name \= Other, lookup(Name, Rest, Type).
 % Rule 5: type_expr(Env, var(Name), Type) :- lookup(Name, Env, Type).

@@ -8,7 +8,7 @@ Path = edge_path, Status = sla_compliant.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: latency_sum([Link | Links], Total) :- link_latency(Link, Linklatency), latency_sum(Links, Rest), Total is '+'(Linklatency, Rest).
 % Rule 2: end_to_end_latency(Path, Latency) :- path(Path, Links), latency_sum(Links, Linklatency), jitter(Path, Jitter), Latency is '+'(Linklatency, Jitter).
 % Rule 3: sla_compliant(Path) :- end_to_end_latency(Path, Latency), sla(Path, maximum_latency_ms, Maximum), Latency < Maximum.

@@ -2,7 +2,7 @@
 Name = demo, Duty = 0.20833333, CurrentPP = 0.35984848, VoltagePP = 0.00191409.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: ripple(Name, Duty, CurrentPP, Ratio, VoltagePP) :- converter(Name, Vin, Vout, Load, Frequency, L, C), Vin > Vout, Vout > 0, Load > 0, Frequency > 0, L > 0, C > 0, Duty is '/'(Vout, Vin), CurrentPP is '/'('*'('-'(Vin, Vout), Duty), '*'(L, Frequency)), CurrentPP < '*'(2, Load), Ratio is '/'(CurrentPP, Load), VoltagePP is '/'(CurrentPP, '*'('*'(8, Frequency), C)).
 % Rule 3: ripple_report(Name, Duty, CurrentPP, VoltagePP) :- ripple(Name, D, I, _, V), Duty is '/'(round('*'(D, 100000000)), 100000000), CurrentPP is '/'(round('*'(I, 100000000)), 100000000), VoltagePP is '/'(round('*'(V, 100000000)), 100000000).
 step 1 source 1 : converter(demo, 24.0, 5.0, 2.0, 500000.0, 2.2e-5, 4.7e-5).

@@ -1,17 +1,19 @@
-# Wheye guide
+# <img src="assets/eye.png" alt="" width="48" height="48" align="absmiddle"> eyepl guide
 
-Version **0.3.1**. Run Midlog in Wheye's native CLI or browser, get
+Version **0.3.2**. Run eyepl programs in the native CLI or browser, get
 answers, and inspect their independently checkable proofs. The
-[specification](https://eyereasoner.github.io/wheye/SPEC/) defines the language
-and the [C1–C9 contract](https://eyereasoner.github.io/wheye/SPEC/#132-proof-conditions).
+[specification](https://eyereasoner.github.io/eyepl/SPEC/) defines the language
+and the [C1–C9 contract](https://eyereasoner.github.io/eyepl/SPEC/#132-proof-conditions).
+
+**Start now:** [Try Socrates in the playground](https://eyereasoner.github.io/eyepl/playground/#example=socrates) · [Run locally](#run-your-first-program) · [Check a proof](#keep-and-independently-check-evidence)
 
 <a id="why-a-prolog-subset"></a>
 <a id="why-extended-datalog"></a>
 
-## Why Midlog?
+## Why eyepl?
 
-**Midlog** is the language; **Wheye** is its Rust reference implementation.
-The name reflects a position in the middle between Datalog and Prolog:
+**eyepl** is both the language and its Rust reference implementation.
+The language sits in the middle between Datalog and Prolog:
 relations have set semantics and fixed-point evaluation, while clauses use
 familiar Prolog notation and support structural terms, lists, and arithmetic.
 Stratified negation, aggregates, typed witnesses, and independently checkable
@@ -20,9 +22,9 @@ proofs complete the language defined by the specification.
 The existing `.pl` clause syntax is retained. Shared syntax and arithmetic use
 ISO/IEC 13211-1:1995 with Technical Corrigenda 1–3 as a compatibility reference,
 including Corrigendum 3's corrected integer-power rule. The
-[conformance section](https://eyereasoner.github.io/wheye/SPEC/#15-conformance)
-defines Midlog and identifies the shared ISO behavior. The
-[compatibility corpus](https://github.com/eyereasoner/wheye/tree/main/tests/conformance/)
+[conformance section](https://eyereasoner.github.io/eyepl/SPEC/#15-conformance)
+defines eyepl and identifies the shared ISO behavior. The
+[compatibility corpus](https://github.com/eyereasoner/eyepl/tree/main/tests/conformance/)
 exercises shared ISO syntax, operations, and input restrictions.
 
 The implemented choices work together:
@@ -44,9 +46,9 @@ This scope keeps the relationship between a program, its answers, and its
 evidence small enough to specify and inspect. Features such as cut, mutable
 predicates, and procedural I/O would need additional semantics and evidence
 rules before they could fit that contract. A full Prolog system can support
-proofs too; Midlog's C1–C9 contract covers the language specified here.
+proofs too; eyepl's C1–C9 contract covers the language specified here.
 
-Midlog extends beyond classical function-free Datalog with structural terms,
+eyepl extends beyond classical function-free Datalog with structural terms,
 lists, arithmetic, and fresh witnesses. Term construction and arithmetic can
 create infinite computations, so the language does not guarantee termination.
 Certificate acceptance establishes the recorded claims relative to the source
@@ -54,7 +56,7 @@ assumptions; it does not establish answer completeness or external-world truth.
 
 ## Reasoning strategy
 
-Wheye performs **hybrid deductive reasoning**, combining forward chaining and
+eyepl performs **hybrid deductive reasoning**, combining forward chaining and
 tabled backward chaining within one run:
 
 | Strategy | When it applies | How it works |
@@ -75,7 +77,7 @@ reasoning; they never become inference evidence.
 
 The independent certificate checker verifies the recorded deductions and
 supplied closed boundaries. It does not invoke either evaluation strategy.
-The [evaluation specification](https://eyereasoner.github.io/wheye/SPEC/#10-evaluation)
+The [evaluation specification](https://eyereasoner.github.io/eyepl/SPEC/#10-evaluation)
 defines the rule classification and scheduling in detail.
 
 ## Run your first program
@@ -84,7 +86,7 @@ With Rust and Cargo installed:
 
 ```sh
 cargo build --release --locked
-./target/release/wheye examples/socrates.pl
+./target/release/eyepl examples/socrates.pl
 cargo install --path . --locked
 ```
 
@@ -118,7 +120,7 @@ The playground uses the same source requests. Opening a shared program does
 not run it automatically; press **Run**.
 
 Unedited examples use short share links such as
-[Socrates](https://eyereasoner.github.io/wheye/playground/#example=socrates).
+[Socrates](https://eyereasoner.github.io/eyepl/playground/#example=socrates).
 The playground recognizes saved copies of bundled examples, including older
 versions, and loads their current source. Custom edits retain their exact text
 in saved state and full source share links.
@@ -133,8 +135,8 @@ scrollbar to move through both panes; neither pane scrolls independently.
 
 ## Explore the examples
 
-All programs are directly in [examples/](https://github.com/eyereasoner/wheye/tree/main/examples/)
-and selectable in the [playground](https://eyereasoner.github.io/wheye/playground/).
+All programs are directly in [examples/](https://github.com/eyereasoner/eyepl/tree/main/examples/)
+and selectable in the [playground](https://eyereasoner.github.io/eyepl/playground/).
 The collection includes lists, structural unification, recursive arithmetic,
 Fibonacci at 10,000, graph algorithms, finite optimization, text processing,
 scientific calculations, and classification chains. Source header comments
@@ -144,22 +146,22 @@ suite compares them exactly and independently checks the certificates under C1�
 
 | Example | What it shows |
 | --- | --- |
-| [Socrates](https://github.com/eyereasoner/wheye/blob/main/examples/socrates.pl) | Queries, certificates, goal checks |
-| [Lists](https://github.com/eyereasoner/wheye/blob/main/examples/lists.pl) | Tabled list processing |
-| [Aggregation](https://github.com/eyereasoner/wheye/blob/main/examples/aggregation.pl) | Counts, sums, minima, maxima |
-| [List collection](https://github.com/eyereasoner/wheye/blob/main/examples/list-collection.pl) | Lists with repeated projected items |
-| [Inventory](https://github.com/eyereasoner/wheye/blob/main/examples/inventory.pl) | Arithmetic followed by aggregation |
-| [Airport paths](https://github.com/eyereasoner/wheye/blob/main/examples/path-discovery.pl) | Three routes across the full supplied airport graph |
-| [Customer vouchers](https://github.com/eyereasoner/wheye/blob/main/examples/orders.pl) | All nine proof conditions, including witnesses |
-| [Bézout identity](https://github.com/eyereasoner/wheye/blob/main/examples/gcd-bezout-identity.pl) | Exact coefficients from the extended Euclidean algorithm |
-| [Command grammar](https://github.com/eyereasoner/wheye/blob/main/examples/grammar.pl) | List parsing with structured results and unconsumed input |
-| [Drought relief](https://github.com/eyereasoner/wheye/blob/main/examples/agri-drought-relief.pl) | Explicit eligibility, recorded statuses, and fresh payment identities |
-| [Examiners](https://github.com/eyereasoner/wheye/blob/main/examples/examiners.pl) | A fresh witness introduced only when no known fact satisfies its rule |
-| [River crossing](https://github.com/eyereasoner/wheye/blob/main/examples/wolf-goat-cabbage.pl) | Safe state transitions and minimum-cost plans |
-| [Catalan numbers](https://github.com/eyereasoner/wheye/blob/main/examples/catalan-convolution.pl) | Tabled convolution with an explicit recursive sum |
-| [Pointer analysis](https://github.com/eyereasoner/wheye/blob/main/examples/pointer-analysis.pl) | A finite fixed point for possible memory targets |
-| [Consumable resources](https://github.com/eyereasoner/wheye/blob/main/examples/linear-logic-resources.pl) | Resource lists prevent spending one token twice |
-| [Constructive logic](https://github.com/eyereasoner/wheye/blob/main/examples/intuitionistic-logic-kripke.pl) | Formula terms evaluated in a finite information-growth model |
+| [Socrates](https://github.com/eyereasoner/eyepl/blob/main/examples/socrates.pl) | Queries, certificates, goal checks |
+| [Lists](https://github.com/eyereasoner/eyepl/blob/main/examples/lists.pl) | Tabled list processing |
+| [Aggregation](https://github.com/eyereasoner/eyepl/blob/main/examples/aggregation.pl) | Counts, sums, minima, maxima |
+| [List collection](https://github.com/eyereasoner/eyepl/blob/main/examples/list-collection.pl) | Lists with repeated projected items |
+| [Inventory](https://github.com/eyereasoner/eyepl/blob/main/examples/inventory.pl) | Arithmetic followed by aggregation |
+| [Airport paths](https://github.com/eyereasoner/eyepl/blob/main/examples/path-discovery.pl) | Three routes across the full supplied airport graph |
+| [Customer vouchers](https://github.com/eyereasoner/eyepl/blob/main/examples/orders.pl) | All nine proof conditions, including witnesses |
+| [Bézout identity](https://github.com/eyereasoner/eyepl/blob/main/examples/gcd-bezout-identity.pl) | Exact coefficients from the extended Euclidean algorithm |
+| [Command grammar](https://github.com/eyereasoner/eyepl/blob/main/examples/grammar.pl) | List parsing with structured results and unconsumed input |
+| [Drought relief](https://github.com/eyereasoner/eyepl/blob/main/examples/agri-drought-relief.pl) | Explicit eligibility, recorded statuses, and fresh payment identities |
+| [Examiners](https://github.com/eyereasoner/eyepl/blob/main/examples/examiners.pl) | A fresh witness introduced only when no known fact satisfies its rule |
+| [River crossing](https://github.com/eyereasoner/eyepl/blob/main/examples/wolf-goat-cabbage.pl) | Safe state transitions and minimum-cost plans |
+| [Catalan numbers](https://github.com/eyereasoner/eyepl/blob/main/examples/catalan-convolution.pl) | Tabled convolution with an explicit recursive sum |
+| [Pointer analysis](https://github.com/eyereasoner/eyepl/blob/main/examples/pointer-analysis.pl) | A finite fixed point for possible memory targets |
+| [Consumable resources](https://github.com/eyereasoner/eyepl/blob/main/examples/linear-logic-resources.pl) | Resource lists prevent spending one token twice |
+| [Constructive logic](https://github.com/eyereasoner/eyepl/blob/main/examples/intuitionistic-logic-kripke.pl) | Formula terms evaluated in a finite information-growth model |
 
 The airport example has 7,698 airports and 37,274 directed flight links. It
 finds three routes from Ostend to Prague with at most two intermediate stops.
@@ -175,7 +177,7 @@ entire closure. Use files for large proofs:
 
 ```sh
 printf '?- why.\n?- check.\n' > /tmp/taxonomy-requests.pl
-./target/release/wheye examples/deep-taxonomy-100000.pl /tmp/taxonomy-requests.pl > /tmp/taxonomy.txt
+./target/release/eyepl examples/deep-taxonomy-100000.pl /tmp/taxonomy-requests.pl > /tmp/taxonomy.txt
 ```
 
 Tests bound counted dispatch/matching work and proof size, including a
@@ -206,8 +208,8 @@ division by zero, and non-finite results are errors. Integer arithmetic does
 not wrap. Rounding functions require real inputs; use `float(X)` for explicit
 conversion. `round(-2.5)` is `-2`, with halfway cases toward positive infinity.
 Integer power `2 ^ (-1)` is a type error; `2.0 ^ (-1)` is `0.5`.
-See the [complete builtin tables](https://eyereasoner.github.io/wheye/SPEC/#6-built-in-predicates)
-and [arithmetic rules](https://eyereasoner.github.io/wheye/SPEC/#7-arithmetic).
+See the [complete builtin tables](https://eyereasoner.github.io/eyepl/SPEC/#6-built-in-predicates)
+and [arithmetic rules](https://eyereasoner.github.io/eyepl/SPEC/#7-arithmetic).
 
 ## Collect completed answers
 
@@ -256,7 +258,8 @@ that need caller inputs use demand-driven tables; a `table` declaration makes
 all clauses of that predicate demand-driven. Variant calls share work and
 recursive consumers resume as answers arrive. Tabling does not guarantee
 termination for arbitrary programs. Limits and the playground's Stop button
-bound a run.
+bound a run. A derived fact larger than 16 MiB, such as a string doubled on each
+firing, ends the run as incomplete instead of exhausting memory.
 
 `fresh(Witness)` is an explicit witness operation with ordinary predicate-call
 syntax. It can only end a range-restricted rule and must bind a new output variable.
@@ -270,8 +273,8 @@ certificate checker verifies C8 for the voucher example, and the examiners
 example shows a known examiner preventing a fresh one:
 
 ```sh
-./target/release/wheye examples/orders.pl
-./target/release/wheye examples/examiners.pl
+./target/release/eyepl examples/orders.pl
+./target/release/eyepl examples/examiners.pl
 ```
 
 ## Keep and independently check evidence
@@ -280,15 +283,15 @@ Add `?- why.` after a query to print its certificate, and `?- check.` to
 verify that certificate. The orders example includes both:
 
 ```sh
-./target/release/wheye examples/orders.pl > /tmp/orders.txt
+./target/release/eyepl examples/orders.pl > /tmp/orders.txt
 ```
 
-There is one proof format, starting with `wheye-proof 1`. It lists supporting
+There is one proof format, starting with `eyepl-proof 1`. It lists supporting
 source facts, rule applications, pure decisions, required closed boundaries
 and demanded-call patterns, and claims for the preceding ordinary query.
 `% Rule` comments show the source rules used; verification uses the supplied
 source program. To save a standalone certificate, retain the section starting
-at `wheye-proof 1` up to the next request. The Rust API accepts saved evidence
+at `eyepl-proof 1` up to the next request. The Rust API accepts saved evidence
 with `Certificate::parse` and `check`; goal-check requests do not become claims.
 The checker validates the supplied evidence; it does not call the evaluator,
 activate tables, or repair missing facts. C5 recomputes builtins and aggregates.
@@ -307,11 +310,11 @@ no positive claim.
 ## Use the command line
 
 ```sh
-wheye FILE...
-wheye -
-wheye rules.pl data.pl
-wheye -h
-wheye -v
+eyepl FILE...
+eyepl -
+eyepl rules.pl data.pl
+eyepl -h
+eyepl -v
 ```
 
 Only `-h` (help) and `-v` (version) are options. `-` reads source from stdin;
@@ -328,8 +331,8 @@ separate ordered lists; keep source file order when checking saved evidence.
 ## Embed the engine
 
 ```rust
-use wheye::{check, parse, reason, Limits};
-fn main() -> Result<(), wheye::Error> {
+use eyepl::{check, parse, reason, Limits};
+fn main() -> Result<(), eyepl::Error> {
     let program = parse("human(socrates). mortal(X):-human(X). ?- mortal(Who).")?;
     let run = reason(&program, Limits::default())?;
     print!("{}", run.output(&program)?);
@@ -345,7 +348,7 @@ same string interface as the browser: `execute(source, Limits::default())`. Both
 return `Ok(report)` when semantic checking finishes, even for an invalid proof.
 Inspect **`report.valid()`** or call **`report.require_valid()?`** before accepting
 it. `report.conditions` lists the nine conditions; `report.failures` gives
-specific diagnostics. `report.condition(wheye::Condition::C9)` selects one.
+specific diagnostics. `report.condition(eyepl::Condition::C9)` selects one.
 Malformed input and resource exhaustion return errors.
 
 ## Implementation
@@ -410,12 +413,12 @@ graph run natively to avoid exhausting browser memory.
 After an intentional output change, regenerate and review the goldens:
 
 ```sh
-WHEYE_UPDATE_GOLDENS=1 cargo test --release --locked --test examples -- --nocapture
+EYEPL_UPDATE_GOLDENS=1 cargo test --release --locked --test examples -- --nocapture
 ```
 
 ```sh
 python3 -m http.server 8766 --bind 127.0.0.1
-google-chrome --headless --remote-debugging-port=9226 --user-data-dir=/tmp/wheye-browser about:blank
+google-chrome --headless --remote-debugging-port=9226 --user-data-dir=/tmp/eyepl-browser about:blank
 node tests/browser.mjs
 ```
 
@@ -457,10 +460,10 @@ Skip the push if it already succeeded, and create the GitHub release only if it 
 
 The **Deploy GitHub Pages** workflow builds the site on pushes to `main` and can also be started manually. Set the repository's Pages source to **GitHub Actions**. The workflow checks the website and committed WebAssembly package, renders the guide and specification with Jekyll, and deploys the resulting static artifact.
 
-Open the published [guide](https://eyereasoner.github.io/wheye/), [specification](https://eyereasoner.github.io/wheye/SPEC/), or [playground](https://eyereasoner.github.io/wheye/playground/). Documentation links in this repository point to those rendered pages. The `playground.html` route remains available too.
+Open the published [overview](https://eyereasoner.github.io/eyepl/), [guide](https://eyereasoner.github.io/eyepl/GUIDE/), [specification](https://eyereasoner.github.io/eyepl/SPEC/), or [playground](https://eyereasoner.github.io/eyepl/playground/). Documentation links in this repository point to those rendered pages. The `playground.html` route remains available too.
 
-`GUIDE.md` supplies the guide at the site root; `SPEC.md` supplies the specification.
-`node scripts/prepare-pages.mjs` prepares `_pages/` for the Jekyll build; `_site/` holds the rendered artifact. Both directories are ignored by Git. The Pages action supplies `PAGES_BASE_PATH`, so local links and assets work beneath `/wheye/` or a different configured prefix. The site uses the committed `pkg/`; changing the package version requires rebuilding it before publishing. The deployment check rejects a browser package whose exported version differs from `Cargo.toml`.
+`README.md` supplies the site root, `GUIDE.md` the guide at `GUIDE/`, and `SPEC.md` the specification at `SPEC/`.
+`node scripts/prepare-pages.mjs` prepares `_pages/` for the Jekyll build; `_site/` holds the rendered artifact. Both directories are ignored by Git. The Pages action supplies `PAGES_BASE_PATH`, so local links and assets work beneath `/eyepl/` or a different configured prefix. The site uses the committed `pkg/`; changing the package version requires rebuilding it before publishing. The deployment check rejects a browser package whose exported version differs from `Cargo.toml`.
 
 
 

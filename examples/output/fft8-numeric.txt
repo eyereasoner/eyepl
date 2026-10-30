@@ -2,7 +2,7 @@
 Bins = [c(28.0, 0.0), c(-4.0, 9.65685425), c(-4.0, 4.0), c(-4.0, 1.65685425), c(-4.0, 0.0), c(-4.0, -1.65685425), c(-4.0, -4.0), c(-4.0, -9.65685425)].
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: c_add(c(A, B), c(C, D), c(E, F)) :- E is '+'(A, C), F is '+'(B, D).
 % Rule 2: c_sub(c(A, B), c(C, D), c(E, F)) :- E is '-'(A, C), F is '-'(B, D).
 % Rule 3: c_mul(c(A, B), c(C, D), c(E, F)) :- E is '-'('*'(A, C), '*'(B, D)), F is '+'('*'(A, D), '*'(B, C)).

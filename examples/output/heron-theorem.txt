@@ -19,7 +19,7 @@ Case = t7, Status = invalid_sides.
 Area = 6.0.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: radicand(Case, R) :- triangle(Case, A, B, C), A > 0, B > 0, C > 0, S is '/'('+'('+'(A, B), C), 2), R is '*'('*'('*'(S, '-'(S, A)), '-'(S, B)), '-'(S, C)).
 % Rule 5: area(Case, Area) :- radicand(Case, R), R >= 0, Area is sqrt(R).
 step 1 source 1 : triangle(t1, 3, 4, 5).

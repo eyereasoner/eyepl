@@ -1,4 +1,4 @@
-% ISO integer bit operations under Wheye's unbounded signed integer model.
+% ISO integer bit operations under eyepl's unbounded signed integer model.
 ?- X is 13 /\ 6.
 ?- X is 13 \/ 6.
 ?- X is \ 13.

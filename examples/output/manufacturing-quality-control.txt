@@ -10,7 +10,7 @@ Run = line8_shift_b, Status = capable_process.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: upper_margin_mm(Run, Margin) :- spec(Run, upper_mm, Upper), summary(Run, mean_mm, Mean), Margin is '-'(Upper, Mean).
 % Rule 2: lower_margin_mm(Run, Margin) :- summary(Run, mean_mm, Mean), spec(Run, lower_mm, Lower), Margin is '-'(Mean, Lower).
 % Rule 3: nearest_spec_margin_mm(Run, Margin) :- upper_margin_mm(Run, Uppermargin), lower_margin_mm(Run, Lowermargin), Margin is min(Uppermargin, Lowermargin).

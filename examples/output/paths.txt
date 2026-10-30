@@ -6,7 +6,7 @@ Who = ben.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: reaches(From, To) :- follows(From, To).
 % Rule 2: reaches(From, ada) :- reaches(From, Via), follows(Via, ada).
 step 1 source 2 : follows(ben, cara).

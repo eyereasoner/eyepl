@@ -1,17 +1,17 @@
-//! Wheye implements Midlog reasoning, with a separate certificate checker.
+//! eyepl implements reasoning for the eyepl rule language, with a separate certificate checker.
 //!
 //! Parse a program with [`parse`], evaluate it with [`reason`], and inspect
 //! answers or save a [`Certificate`]. Checking replays recorded applications;
 //! it does not run the evaluator or establish answer completeness.
 //!
 //! ```
-//! use wheye::{check, parse, reason, Limits};
+//! use eyepl::{check, parse, reason, Limits};
 //! let program = parse("human(socrates). mortal(X) :- human(X). ?- mortal(Who).")?;
 //! let run = reason(&program, Limits::default())?;
 //! let report = check(&program, &run.certificate(&program))?;
 //! assert!(report.valid());
 //! assert_eq!(report.claims, 1);
-//! # Ok::<(), wheye::Error>(())
+//! # Ok::<(), eyepl::Error>(())
 //! ```
 
 mod arithmetic;

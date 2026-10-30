@@ -2,7 +2,7 @@
 Polygon = sample, Area = 7.5.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: area([_point], 0) :- .
 % Rule 2: area([[A, B], [C, D] | Rest], Total) :- area([[C, D] | Rest], Subtotal), Ad is '*'(A, D), Bc is '*'(B, C), Cross is '-'(Ad, Bc), Half is '/'(Cross, 2.0), Total is '+'(Half, Subtotal).
 % Rule 3: polygon_area(sample, Area) :- sample_polygon(Points), area(Points, Area).

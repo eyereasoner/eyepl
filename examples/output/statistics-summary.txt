@@ -11,7 +11,7 @@ Variance = 4.0.
 Stddev = 2.0.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: sum([X | Xs], Total) :- sum(Xs, Rest), Total is '+'(X, Rest).
 % Rule 2: mean(Name, Mean) :- sample(Name, Values), sum(Values, Total), length(Values, Count), Mean is '/'(Total, Count).
 % Rule 3: squared_error_sum([], _mean, 0.0) :- .

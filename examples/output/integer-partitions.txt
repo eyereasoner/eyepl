@@ -8,7 +8,7 @@ Kind = cumulative_p_1_to_8, Count = 66.
 Count = 5.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 3: partitions(0, _k, 1) :- .
 % Rule 4: partitions(N, 0, 0) :- N > 0.
 % Rule 5: partitions(N, K, Count) :- N > 0, K > 0, K > N, K1 is '-'(K, 1), partitions(N, K1, Count).

@@ -14,7 +14,7 @@ Wall = wall1, Status = high_heat_loss.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: temperature_difference(Wall, Deltat) :- wall(Wall, indoor_C, Indoor), wall(Wall, outdoor_C, Outdoor), Deltat is '-'(Indoor, Outdoor).
 % Rule 2: thermal_resistance(Wall, Resistance) :- wall(Wall, thickness_m, Thickness), wall(Wall, conductivity_W_mK, Conductivity), wall(Wall, area_m2, Area), Conductance is '*'(Conductivity, Area), Resistance is '/'(Thickness, Conductance).
 % Rule 3: heat_loss(Wall, Heatloss) :- temperature_difference(Wall, Deltat), thermal_resistance(Wall, Resistance), Heatloss is '/'(Deltat, Resistance).

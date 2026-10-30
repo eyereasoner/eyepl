@@ -35,7 +35,7 @@ What = 0.0.
 What = -2.3363408269090766.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 12: 'left-distance'(Function, _Calc1) :- input(Function, Input), real(Input, Real), imaginary(Input, Imaginary), _Calc1 is sqrt('+'('^'('+'(1, Real), 2), '^'(Imaginary, 2))).
 % Rule 13: 'right-distance'(Function, _Calc1) :- input(Function, Input), real(Input, Real), imaginary(Input, Imaginary), _Calc1 is sqrt('+'('^'('-'(1, Real), 2), '^'(Imaginary, 2))).
 % Rule 15: average(Function, _Calc1) :- 'left-distance'(Function, Left), 'right-distance'(Function, Right), _Calc1 is '/'('+'(Left, Right), 2).

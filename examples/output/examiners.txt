@@ -5,7 +5,7 @@ Course = philosophy, Examiner = russell.
 Course = philosophy, Count = 1.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: student(Person) :- participant(Course, Person).
 % Rule 2: examiner(Course, Person) :- teacher(Course, Person), \+ (student(Person)).
 % Rule 4: examiners(Course, Count) :- participant(Course, Person), aggregate_all(count, (examiner(Course, Examiner)), Count).

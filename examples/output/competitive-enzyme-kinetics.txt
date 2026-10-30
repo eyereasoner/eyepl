@@ -14,7 +14,7 @@ Assay = assay1, Status = significant_inhibition.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: competitive_multiplier(Assay, Multiplier) :- assay(Assay, inhibitor_uM, Inhibitor), assay(Assay, ki_uM, Ki), Ratio is '/'(Inhibitor, Ki), Multiplier is '+'(1.0, Ratio).
 % Rule 2: effective_km(Assay, Effectivekm) :- assay(Assay, km_uM, Km), competitive_multiplier(Assay, Multiplier), Effectivekm is '*'(Km, Multiplier).
 % Rule 3: uninhibited_rate(Assay, Rate) :- assay(Assay, vmax_uM_s, Vmax), assay(Assay, substrate_uM, Substrate), assay(Assay, km_uM, Km), Numerator is '*'(Vmax, Substrate), Denominator is '+'(Km, Substrate), Rate is '/'(Numerator, Denominator).

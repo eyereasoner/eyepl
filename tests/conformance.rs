@@ -1,8 +1,8 @@
-//! File-based checks of ISO compatibility and Midlog restrictions.
+//! File-based checks of ISO compatibility and eyepl restrictions.
+use eyepl::{check, parse, reason, Certificate, Limits, Request};
 use std::collections::BTreeSet;
 use std::fs;
 use std::path::{Path, PathBuf};
-use wheye::{check, parse, reason, Certificate, Limits, Request};
 
 fn directory(group: &str) -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -149,7 +149,7 @@ fn iso_subset_answers_and_certificates() {
 }
 
 #[test]
-fn iso_error_conditions_use_specific_wheye_diagnostics() {
+fn iso_error_conditions_use_specific_eyepl_diagnostics() {
     verify("errors", "error", error);
 }
 

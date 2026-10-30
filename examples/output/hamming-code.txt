@@ -2,7 +2,7 @@
 Name = packet1, Syndrome = 5, Corrected = [1, 0, 1, 1, 0, 1, 0], Payload = [1, 0, 1, 0].
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: decode([B1, B2, B3, B4, B5, B6, B7], Syndrome, Corrected, [D1, D2, D3, D4]) :- bit(B1), bit(B2), bit(B3), bit(B4), bit(B5), bit(B6), bit(B7), S1 is mod('+'('+'('+'(B1, B3), B5), B7), 2), S2 is mod('+'('+'('+'(B2, B3), B6), B7), 2), S4 is mod('+'('+'('+'(B4, B5), B6), B7), 2), Syndrome is '+'('+'(S1, '*'(2, S2)), '*'(4, S4)), correct([B1, B2, B3, B4, B5, B6, B7], 1, Syndrome, Corrected), Corrected = [_, _, D1, _, D2, D3, D4].
 % Rule 2: correct([], _, _, []) :- .
 % Rule 3: correct([Bit | Rest], Position, Syndrome, [Fixed | Tail]) :- correct_bit(Position, Syndrome, Bit, Fixed), Next is '+'(Position, 1), correct(Rest, Next, Syndrome, Tail).

@@ -16,7 +16,7 @@ Animal = mythic, Status = true.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 4: wings(X, false) :- mammal(X).
 % Rule 6: wings(X, true) :- bat(X).
 % Rule 13: wing_status(X, both) :- wings(X, true), wings(X, false).

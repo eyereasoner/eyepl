@@ -7,7 +7,7 @@ Turbine = t789, Reason = problem_based_maintenance.
 Turbine = t101, Reason = performance_based_maintenance.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: needs_maintenance(Turbine, time_based_maintenance) :- turbine(Turbine, _, LastMaint, _, _), LastMaint >= 12.
 % Rule 2: needs_maintenance(Turbine, age_based_maintenance) :- turbine(Turbine, Age, LastMaint, _, _), Age > 10, LastMaint >= 6.
 % Rule 3: needs_maintenance(Turbine, problem_based_maintenance) :- turbine(Turbine, _, _, [_ | _], _).

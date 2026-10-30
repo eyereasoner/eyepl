@@ -1,6 +1,6 @@
-# Working on wheye
+# Working on eyepl
 
-Wheye is a small Rust relational reasoner with a native CLI and a WebAssembly
+eyepl is a small Rust relational reasoner with a native CLI and a WebAssembly
 playground. Describe implemented behavior and distinguish it from design goals.
 Keep diagnostics specific and user-facing text direct.
 
@@ -19,22 +19,22 @@ Keep diagnostics specific and user-facing text direct.
   After editing them, run `node scripts/index-examples.mjs` to update fingerprints
   used for short share links and restoring older bundled examples.
   `examples/output/*.txt` are exact golden transcripts for every program;
-  update intentional output changes with `WHEYE_UPDATE_GOLDENS=1 cargo test
+  update intentional output changes with `EYEPL_UPDATE_GOLDENS=1 cargo test
   --release --locked --test examples -- --nocapture` and review their diffs.
 - `tests/`: language, CLI, proof, worker, Pages, browser, and release checks.
 - `benches/taxonomy.rs`: standalone taxonomy timing benchmark.
 - `playground.html`, `playground.css`, `playground.js`, `playground-worker.js`:
   browser UI and cancellable worker. `pkg/` is the committed WebAssembly build.
-- `README.md`: brief project entry point. `GUIDE.md`: the full guide at the Pages
-  site root. `SPEC.md`: language and proof contract.
+- `README.md`: brief project entry point and Pages site root. `GUIDE.md`: the
+  full guide at `GUIDE/`. `SPEC.md`: language and proof contract.
 - `scripts/`: checks, browser build, Pages staging, version label syncing, and
   reproducible taxonomy generation and scaling measurements.
   `release`: release entry point. `.github/workflows/`: CI and Pages deployment.
 
 ## Language and proofs
 
-Read `SPEC.md` before changing language or proof behavior. Wheye implements
-Midlog, a relational rule language with structural terms, lists, exact integers,
+Read `SPEC.md` before changing language or proof behavior. eyepl implements
+eyepl, a relational rule language with structural terms, lists, exact integers,
 finite real arithmetic,
 stratified negation, aggregate_all/3, demand-driven tabling, source-selected goal checks, proof certificates,
 and final-rule fresh/1 witnesses. Keep pure decisions out of ordinary indexes.
@@ -65,8 +65,8 @@ small-graph oracle test. Keep implementation, specification, and examples consis
 
 ```sh
 cargo build --release --locked
-./target/release/wheye examples/socrates.pl
-./target/release/wheye examples/orders.pl
+./target/release/eyepl examples/socrates.pl
+./target/release/eyepl examples/orders.pl
 ./scripts/test-all
 cargo clippy --target wasm32-unknown-unknown --lib --locked -- -D warnings
 ./scripts/build-playground
@@ -98,12 +98,12 @@ results should be redirected to files rather than printed in full.
 
 ## Website
 
-`scripts/prepare-pages.mjs` stages the guide, specification, playground, and assets
+`scripts/prepare-pages.mjs` stages the README, guide, specification, playground, and assets
 in `_pages/`. The Pages workflow renders Jekyll into `_site/` and deploys it on
 pushes to `main`. Both output directories are ignored.
 
 Keep documentation links pointed at rendered Pages URLs; code and example links
-can point at GitHub. Preserve the configured base path (normally `/wheye/`),
+can point at GitHub. Preserve the configured base path (normally `/eyepl/`),
 `/playground/`, and `playground.html`. Run `node tests/pages.mjs` and verify the
 rendered site in a browser after website changes. Version tests require the
 committed Wasm, README, guide, specification, and playground to match

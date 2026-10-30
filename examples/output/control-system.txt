@@ -3,7 +3,7 @@ Actuator = actuator1, Command = 39.27346198678276.
 Actuator = actuator2, Command = 26.08.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: control1(actuator1, C) :- measurement10(input1, M1), measurement2(input2, true), measurement3(disturbance1, D1), C1 is '*'(M1, 19.6), C2 is '/'(log(D1), log(10)), C is '-'(C1, C2).
 % Rule 2: control1(actuator2, C) :- observation3(state3, P3), measurement4(output2, M4), target2(output2, T2), E is '-'(T2, M4), D is '-'(P3, M4), C1 is '*'(5.8, E), N is '/'(7.3, E), C2 is '*'(N, D), C is '+'(C1, C2).
 % Rule 3: measurement10(I, M) :- measurement1(I, [M1, M2]), M1 < M2, M3 is '-'(M2, M1), M is sqrt(M3).
@@ -35,7 +35,7 @@ answer 1 [21]
 Value = 45.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 4: measurement10(I, M1) :- measurement1(I, [M1, M2]), M1 >= M2.
 step 1 source 2 : measurement1(disturbance2, [45, 39]).
 step 2 builtin : '>='(45, 39).

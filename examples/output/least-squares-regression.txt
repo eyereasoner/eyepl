@@ -2,7 +2,7 @@
 Name = demo, Slope = 0.8, Intercept = 1.5, R2 = 0.64.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: stats([point(X, Y) | Rest], N, SX, SY, SXX, SXY, SYY) :- stats(Rest, N0, X0, Y0, XX0, XY0, YY0), N is '+'(N0, 1), SX is '+'(X0, X), SY is '+'(Y0, Y), SXX is '+'(XX0, '*'(X, X)), SXY is '+'(XY0, '*'(X, Y)), SYY is '+'(YY0, '*'(Y, Y)).
 % Rule 2: regression(Points, Slope, Intercept, R2) :- stats(Points, N, SX, SY, SXX, SXY, SYY), N >= 2, DX is '-'('*'(N, SXX), '*'(SX, SX)), DY is '-'('*'(N, SYY), '*'(SY, SY)), DX > 0, DY > 0, Cross is '-'('*'(N, SXY), '*'(SX, SY)), Slope is '/'(Cross, DX), Intercept is '/'('-'(SY, '*'(Slope, SX)), N), R2 is '/'('*'(Cross, Cross), '*'(DX, DY)).
 % Rule 3: fit(Name, Slope, Intercept, R2) :- dataset(Name, Points), regression(Points, Slope, Intercept, R2).

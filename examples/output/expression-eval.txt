@@ -2,7 +2,7 @@
 Name = example, Value = 12.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: value(Node, Value) :- literal(Node, Value).
 % Rule 2: value(Node, Value) :- expression(Node, Operation, Left, Right), value(Left, L), value(Right, R), calculate(Operation, L, R, Value).
 % Rule 3: calculate(add, L, R, Value) :- Value is '+'(L, R).

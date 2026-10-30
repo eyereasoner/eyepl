@@ -8,7 +8,7 @@ Name = nested_possibility, World = w1, Formula = diamond(and(atom(clear), atom(c
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: atomic_value(W, P, true) :- true_at(W, P).
 % Rule 3: successors(W, Worlds) :- world(W), aggregate_all(list(Next), (accessible(W, Next)), Worlds).
 % Rule 5: evaluate(W, atom(P), Value) :- atomic_value(W, P, Value).

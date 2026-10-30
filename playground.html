@@ -3,23 +3,27 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Run Midlog programs, get answers, and check proof certificates with Wheye.">
-  <title>wheye playground</title>
+  <meta name="description" content="Run eyepl programs, get answers, and check their proof certificates.">
+  <title>The eyepl Playground</title>
   <link rel="icon" href="assets/eye.png" type="image/png">
   <link rel="stylesheet" href="playground.css">
 </head>
 <body>
   <main>
+    <nav class="site-nav" aria-label="Project">
+      <a href="https://eyereasoner.github.io/eyepl/GUIDE/">Guide</a>
+      <a href="https://eyereasoner.github.io/eyepl/playground/" aria-current="page">Playground</a>
+      <a href="https://eyereasoner.github.io/eyepl/SPEC/">Specification</a>
+      <a href="https://github.com/eyereasoner/eyepl">Repository ↗</a>
+    </nav>
     <header class="masthead">
-      <a class="brand" href="./" aria-label="wheye home"><img src="assets/eye.png" width="64" height="64" alt=""><span class="brand-copy"><span class="brand-name">Wheye playground<span class="version" id="version">v0.3.1</span></span></span></a>
-      <nav class="site-nav" aria-label="Project">
-        <a href="https://eyereasoner.github.io/wheye/">Guide</a>
-        <a href="https://eyereasoner.github.io/wheye/playground/" aria-current="page">Playground</a>
-        <a href="https://eyereasoner.github.io/wheye/SPEC/">Specification</a>
-        <a href="https://github.com/eyereasoner/wheye">Repository ↗</a>
-      </nav>
+      <img class="logo" src="assets/eye.png" alt="" width="64" height="64">
+      <div class="header-copy">
+        <h1 id="title">The eyepl Playground</h1>
+        <p>Write an eyepl program or try an example.</p>
+        <p class="hint">Version <strong id="version">0.3.2</strong></p>
+      </div>
     </header>
-    <h1 id="title" class="sr-only">Wheye playground</h1>
     <section class="workspace" aria-label="Reasoning playground">
       <div class="toolbar">
         <div class="actions">
@@ -167,8 +171,8 @@
       <div id="share-box" class="share-box" hidden><label for="share-url">Your share link</label><input id="share-url" readonly><button type="button" id="close-share" aria-label="Close share link">×</button></div>
       <div class="editors">
         <section class="panel" aria-labelledby="source-heading">
-          <div class="panel-heading"><h2 id="source-heading"><span class="dot green"></span>Midlog program</h2><span>.pl</span></div>
-          <label class="sr-only" for="source">Midlog facts, rules, and queries</label>
+          <div class="panel-heading"><h2 id="source-heading"><span class="dot green"></span>eyepl program</h2><span>.pl</span></div>
+          <label class="sr-only" for="source">eyepl facts, rules, and queries</label>
           <div class="editor" id="editor">
           <pre id="source-highlight" class="highlight" aria-hidden="true"></pre>
           <textarea id="source" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-describedby="source-hint">% A first conclusion

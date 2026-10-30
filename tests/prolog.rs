@@ -1,6 +1,6 @@
-use wheye::{check, parse, reason, Certificate, Condition, Justification, Limits, Value};
+use eyepl::{check, parse, reason, Certificate, Condition, Justification, Limits, Value};
 
-fn checked(source: &str) -> (wheye::Program, wheye::Run, Certificate) {
+fn checked(source: &str) -> (eyepl::Program, eyepl::Run, Certificate) {
     let program = parse(source).unwrap();
     let run = reason(&program, Limits::default()).unwrap();
     let certificate = run.certificate(&program);
@@ -156,7 +156,7 @@ fn c5_rejects_arithmetic_results_that_violate_iso_corrigenda() {
     ] {
         let program = parse(&format!("?- X is {expression}.")).unwrap();
         let certificate = Certificate::parse(&format!(
-            "wheye-proof 1\nstep 1 builtin : is({old_result}, {expression}).\nanswer 1 [1]\n"
+            "eyepl-proof 1\nstep 1 builtin : is({old_result}, {expression}).\nanswer 1 [1]\n"
         ))
         .unwrap();
         let report = check(&program, &certificate).unwrap();
@@ -167,7 +167,7 @@ fn c5_rejects_arithmetic_results_that_violate_iso_corrigenda() {
     // A type error must not become successful negative evidence either.
     let program = parse("?- \\+ (0.5 is 2 ^ (-1)).").unwrap();
     let certificate = Certificate::parse(
-        "wheye-proof 1\nstep 1 not-builtin : is(0.5, 2 ^ (-1)).\nanswer 1 [1]\n",
+        "eyepl-proof 1\nstep 1 not-builtin : is(0.5, 2 ^ (-1)).\nanswer 1 [1]\n",
     )
     .unwrap();
     let report = check(&program, &certificate).unwrap();
@@ -294,7 +294,7 @@ fn aggregate_results_and_producer_locals_have_independent_scopes() {
 fn c8_rejects_an_uncreated_witness_in_a_universal_clause() {
     let program = parse("anything(X). ?- anything(X).").unwrap();
     let certificate = Certificate::parse(
-        "wheye-proof 1\nstep 1 rule 1 [] : anything(~\"forged\").\nanswer 1 [1]\n",
+        "eyepl-proof 1\nstep 1 rule 1 [] : anything(~\"forged\").\nanswer 1 [1]\n",
     )
     .unwrap();
     let report = check(&program, &certificate).unwrap();

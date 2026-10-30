@@ -17,7 +17,7 @@ Kind = best_schedule, Value = [op(j1_mill, 2, 5), op(j1_lathe, 6, 8), op(j2_lath
 Makespan = 9.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: between(Low, High, Low) :- Low =< High.
 % Rule 2: between(Low, High, Value) :- Low < High, Next is '+'(Low, 1), between(Next, High, Value).
 % Rule 3: nonoverlap(_starta, Enda, Startb, _endb) :- Enda =< Startb.
@@ -198,13 +198,13 @@ step 170 aggregate r6 1 1 : '$aggregate:r6:1'([], 9).
 step 171 rule 6 [170,134] : best_schedule(9, [op(j1_mill, 0, 3), op(j1_lathe, 3, 5), op(j2_lathe, 0, 2), op(j2_mill, 5, 9), op(j3_mill, 3, 5), op(j3_lathe, 5, 8)]).
 step 172 rule 7 [171] : job_shop_answer(best_makespan, 9).
 boundary 1 level 0 [57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169]
-demand 1 : between(0, 6, _WheyeCall0).
-demand 1 : between(1, 6, _WheyeCall0).
-demand 1 : between(2, 6, _WheyeCall0).
-demand 1 : between(3, 6, _WheyeCall0).
-demand 1 : between(4, 6, _WheyeCall0).
-demand 1 : between(5, 6, _WheyeCall0).
-demand 1 : between(6, 6, _WheyeCall0).
+demand 1 : between(0, 6, _EyeplCall0).
+demand 1 : between(1, 6, _EyeplCall0).
+demand 1 : between(2, 6, _EyeplCall0).
+demand 1 : between(3, 6, _EyeplCall0).
+demand 1 : between(4, 6, _EyeplCall0).
+demand 1 : between(5, 6, _EyeplCall0).
+demand 1 : between(6, 6, _EyeplCall0).
 demand 1 : nonoverlap(0, 2, 2, 5).
 demand 1 : nonoverlap(0, 2, 3, 6).
 demand 1 : nonoverlap(0, 2, 5, 8).

@@ -9,7 +9,7 @@ true.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: is_a(Animal, animal) :- is_a(Animal, cat).
 step 1 source 1 : is_a(milo, cat).
 step 2 rule 1 [1] : is_a(milo, animal).

@@ -23,7 +23,7 @@ What = [1, 0, 0, 0, 0, 0, 0, blank].
 What = [1, blank].
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 2: runs(Case, [State, [], blank, []]) :- machine(Case, Machine), start(Machine, State), input(Case, []).
 % Rule 6: runs(Case, [NextState, [], blank, [Write | Right]]) :- runs(Case, [State, [], Read, Right]), machine(Case, Machine), transition([Machine, State, Read], [NextState, Write, left]).
 % Rule 7: runs(Case, [NextState, Left, Write, Right]) :- runs(Case, [State, Left, Read, Right]), machine(Case, Machine), transition([Machine, State, Read], [NextState, Write, stay]).

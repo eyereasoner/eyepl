@@ -5,7 +5,7 @@ A = s(zero), B = s(s(zero)).
 A = zero, B = s(s(s(zero))).
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: add(A, zero, A) :- .
 % Rule 2: add(A, s(B), s(C)) :- add(A, B, C).
 step 1 rule 1 [] : add(s(s(s(zero))), zero, s(s(s(zero)))).
@@ -27,7 +27,7 @@ answer 1 [10]
 Product = s(s(zero)), Sum = s(s(s(s(s(zero))))), Factorial = s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(zero)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))).
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: add(A, zero, A) :- .
 % Rule 2: add(A, s(B), s(C)) :- add(A, B, C).
 % Rule 3: multiply(_, zero, zero) :- .

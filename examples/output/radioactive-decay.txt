@@ -2,7 +2,7 @@
 Sample = demo, HalfLives = 2.0, Remaining = 20.0, Decayed = 60.0.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: decay(Sample, HalfLives, Remaining, Decayed) :- sample(Sample, Initial, HalfLife, Elapsed), Initial >= 0, HalfLife > 0, Elapsed >= 0, HalfLives is '/'(Elapsed, HalfLife), Remaining is '*'(Initial, '**'(0.5, HalfLives)), Decayed is '-'(Initial, Remaining).
 step 1 source 1 : sample(demo, 80.0, 8.0, 16.0).
 step 2 builtin : '>='(80.0, 0).

@@ -13,7 +13,7 @@ export async function syncVersion(directory = root) {
     ['README.md', [/(\*\*Version )[^*\n]+(\*\*)/g]],
     ['GUIDE.md', [/(Version \*\*)[^*\n]+(\*\*)/g]],
     ['SPEC.md', [/(Version \*\*)[^*\n]+(\*\*)/g]],
-    ['playground.html', [/(id="version">v)[^<\n]+(<\/span>)/g]],
+    ['playground.html', [/(id="version">)[^<\n]+(<\/strong>)/g]],
   ]) {
     let text = await readFile(resolve(directory, file), 'utf8');
     for (const pattern of patterns) {

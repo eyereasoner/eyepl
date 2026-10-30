@@ -54,71 +54,48 @@ main {
   margin:auto;
   padding:30px 48px
 }
+/* The site navigation sits on its own row above the playground title, and the
+   logo, title, and nav use the sizes of the other eyereasoner playgrounds. */
+main>.site-nav {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:8px 20px;
+  font-size:13px;
+  font-weight:650
+}
+.site-nav [aria-current="page"] {
+  text-decoration-thickness:2px
+}
 .masthead {
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  gap:18px
+  gap:16px;
+  margin:8px 0 22px
 }
-.brand {
-  display:flex;
-  align-items:center;
-  gap:12px;
-  text-decoration:none;
-  font-size:31px;
-  font-weight:850;
-  letter-spacing:-1.4px
-}
-.brand>span {
-  display:flex;
-  align-items:center;
-  gap:12px
-}
-.brand img {
-  object-fit:contain;
+.masthead .logo {
+  display:block;
   flex:none;
   border-radius:50%
 }
-.version {
-  font-size:11px;
-  letter-spacing:0;
-  font-weight:650;
-  background:#e9eee5;
-  padding:5px 8px;
-  border-radius:20px
-}
-.guide-link {
-  font-size:14px;
-  font-weight:650
-}
-.site-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 20px;
-  font-size: 13px;
-  font-weight: 650;
-}
-.site-nav [aria-current="page"] {
-  text-decoration-thickness: 2px;
-}
-.brand .brand-copy {
-  flex-direction:column;
-  align-items:flex-start;
-  gap:4px;
+.masthead .header-copy {
   min-width:0
 }
-.brand-name {
-  display:flex;
-  align-items:center;
-  gap:12px;
-  line-height:1.15
+.masthead h1 {
+  margin:0;
+  font-size:30px;
+  font-weight:650;
+  line-height:1.2;
+  letter-spacing:-.02em
 }
-.eyebrow {
-  letter-spacing:1.5px;
-  font-size:10px;
-  line-height:1.4;
-  font-weight:800;
-  color:#34713c
+.masthead p {
+  margin:6px 0 0;
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.55
+}
+.masthead .hint {
+  font-size:13px
 }
 h1 {
   font-size:clamp(32px,4.4vw,60px);
@@ -410,32 +387,6 @@ footer {
   main {
     padding:20px
   }
-  .masthead {
-    align-items:center
-  }
-  .brand {
-    font-size:26px
-  }
-  .brand img {
-    width:46px;
-    height:46px
-  }
-  .brand-name {
-    gap:8px
-  }
-  .brand .brand-copy {
-    gap:3px
-  }
-  .eyebrow {
-    font-size:9px;
-    letter-spacing:.5px
-  }
-  .guide-link {
-    font-size:12px
-  }
-  h1 {
-    letter-spacing:-1.4px
-  }
   .toolbar {
     padding:15px;
     align-items:stretch
@@ -494,29 +445,25 @@ footer {
     transition:none
   }
 }
-@media (max-width: 760px) {
-  .masthead {
-    flex-wrap: wrap;
+@media (max-width: 640px) {
+  main>.site-nav {
+    justify-content:flex-start;
+    gap:10px 16px;
+    font-size:12px
   }
-  .site-nav {
-    width: 100%;
-    gap: 10px 16px;
-    font-size: 12px;
+  .masthead {
+    align-items:flex-start;
+    gap:12px
+  }
+  .masthead .logo {
+    width:48px;
+    height:48px
+  }
+  .masthead h1 {
+    font-size:24px
   }
 }
 @media(max-width:760px) {
-  .brand {
-    font-size:24px;
-    gap:8px
-  }
-  .brand img {
-    width:42px;
-    height:42px
-  }
-  .guide-link {
-    font-size:11px;
-    white-space:nowrap
-  }
   .actions button {
     font-size:12px;
     white-space:nowrap

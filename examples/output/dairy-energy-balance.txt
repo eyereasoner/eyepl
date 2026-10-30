@@ -8,7 +8,7 @@ Cow = pasture, Balance = -8.0, SupportedMilk = 11.5, Status = near.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: maintenance(Cow, Energy) :- cow(Cow, Weight, _, _, _), Energy is '*'(0.08, Weight).
 % Rule 2: milk_energy(Cow, Energy) :- cow(Cow, _, Yield, _, _), Energy is '*'(3.2, Yield).
 % Rule 3: requirement(Cow, Energy) :- maintenance(Cow, M), milk_energy(Cow, Milk), Energy is '+'(M, Milk).

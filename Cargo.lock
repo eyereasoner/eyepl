@@ -21,6 +21,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4e7648175b45a9a48536d676f68d918270699102aa8dab5496df06904c914600"
 
 [[package]]
+name = "eyepl"
+version = "0.3.2"
+dependencies = [
+ "num-bigint",
+ "num-integer",
+ "num-traits",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "num-bigint"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -138,14 +148,4 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "23f0c9c52aa7cd7d77769a4cfe2a9adb1b331f489a41d912ce14513d5ab995c6"
 dependencies = [
  "unicode-ident",
-]
-
-[[package]]
-name = "wheye"
-version = "0.3.1"
-dependencies = [
- "num-bigint",
- "num-integer",
- "num-traits",
- "wasm-bindgen",
 ]

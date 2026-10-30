@@ -2,7 +2,7 @@
 Result = 1.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: pow_mod(_, 0, Modulus, Result) :- Modulus > 0, Result is mod(1, Modulus).
 % Rule 2: pow_mod(Base, Exponent, Modulus, Result) :- Exponent > 0, Modulus > 0, mod(Exponent, 2) =:= 0, Half is '//'(Exponent, 2), pow_mod(Base, Half, Modulus, Value), Result is mod('*'(Value, Value), Modulus).
 % Rule 3: pow_mod(Base, Exponent, Modulus, Result) :- Exponent > 0, Modulus > 0, mod(Exponent, 2) =:= 1, Half is '//'(Exponent, 2), pow_mod(Base, Half, Modulus, Value), Result is mod('*'('*'(Base, Value), Value), Modulus).

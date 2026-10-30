@@ -1,5 +1,5 @@
+use eyepl::{check, parse, parse_atom, reason, Limits, Program, Value};
 use std::collections::BTreeSet;
-use wheye::{check, parse, parse_atom, reason, Limits, Program, Value};
 
 fn output(source: &str) -> String {
     let program = parse(source).unwrap();
@@ -140,6 +140,44 @@ fn limits_fail_without_reporting_complete_answers() {
 }
 
 #[test]
+fn geometric_term_growth_is_an_incomplete_run() {
+    for source in [
+        "s(\"ab\"). s(Y) :- s(X), string_concat(X, X, Y). ?- s(X).",
+        "n(3). n(Y) :- n(X), Y is X * X. ?- n(X).",
+        "n(X) :- X is 7 ^ 1000000. m(Y) :- n(X), Y is X ^ 1000000. ?- m(X).",
+        "n(1). n(Y) :- n(X), Y is X << 1000000. ?- n(X).",
+    ] {
+        let error = reason(&parse(source).unwrap(), Limits::default())
+            .unwrap_err()
+            .to_string();
+        assert!(
+            error.contains("Incomplete: term size limit"),
+            "{source}: {error}"
+        );
+    }
+    let p = parse("w(f(a)). w(f(X)) :- w(X). ?- w(X).").unwrap();
+    let error = reason(
+        &p,
+        Limits {
+            max_term_bytes: 40,
+            ..Limits::default()
+        },
+    )
+    .unwrap_err()
+    .to_string();
+    assert!(error.contains("term size limit (40 bytes)"), "{error}");
+    let p = parse("w(f(f(f(f(f(f(f(f(f(f(a))))))))))). ?- w(X).").unwrap();
+    assert!(reason(
+        &p,
+        Limits {
+            max_term_bytes: 4,
+            ..Limits::default()
+        }
+    )
+    .is_ok());
+}
+
+#[test]
 fn unsafe_and_unsupported_programs_are_specific_errors() {
     for source in ["p :- q", "?- .", "p()."] {
         assert!(parse(source).is_err(), "accepted {source}");
@@ -172,7 +210,7 @@ fn values_round_trip_without_losing_identity() {
 fn library_cannot_bypass_safe_rule_validation() {
     let mut p = Program::default();
     let mut rule = parse("p(X) :- q(X).").unwrap().rules.remove(0);
-    rule.head.terms[0] = wheye::Term::Constant(Value::Witness("forged".into()));
+    rule.head.terms[0] = eyepl::Term::Constant(Value::Witness("forged".into()));
     p.rules.push(rule);
     assert!(reason(&p, Limits::default()).is_err());
 }

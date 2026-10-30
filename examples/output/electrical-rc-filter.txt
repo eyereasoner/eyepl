@@ -2,7 +2,7 @@
 Filter = filter1, Cutoff = 15.91549431.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: response(Filter, Tau, Cutoff) :- components(Filter, R, C), R > 0, C > 0, Tau is '*'(R, C), Cutoff is '/'(1, '*'('*'(2, pi), Tau)).
 % Rule 2: cutoff_hz(Filter, Rounded) :- response(Filter, _, Raw), Rounded is '/'(round('*'(Raw, 100000000)), 100000000).
 step 1 source 1 : components(filter1, 10000.0, 1e-6).

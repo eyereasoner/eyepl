@@ -5,7 +5,7 @@ Who = 'pat-h'.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: 'is-older-than'(Person, Years) :- birthday(Person, [BirthYear, BirthMonth, BirthDay]), date(today, [Year, Month, Day]), _Calc1 is '-'(Year, BirthYear), _Calc1 > Years.
 % Rule 4: is_a(test, 'passed-check') :- person(test, Person), 'age-limit'(test, Years), 'is-older-than'(Person, Years).
 step 1 source 1 : birthday('pat-h', [1944, 8, 21]).

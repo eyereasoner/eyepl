@@ -2,7 +2,7 @@
 Beam = demo, Delta = 3.90625.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: deflection_mm(Beam, Delta) :- beam(Beam, Force, Length, Modulus, Moment, _), Force >= 0, Length > 0, Modulus > 0, Moment > 0, Delta is '/'('*'('*'(1000, Force), '**'(Length, 3)), '*'('*'(3, Modulus), Moment)).
 step 1 source 1 : beam(demo, 1200.0, 2.5, 200000000000.0, 8e-6, 5.0).
 step 2 builtin : '>='(1200.0, 0).

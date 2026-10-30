@@ -2,7 +2,7 @@
 Path = [a, c, b, d, e, f], Cost = 13.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: valid_edges([edge(_, _, Weight) | Rest]) :- Weight >= 0, valid_edges(Rest).
 % Rule 2: undirected([edge(A, B, W) | Rest], [edge(A, B, W), edge(B, A, W) | Tail]) :- undirected(Rest, Tail).
 % Rule 3: seen(Node, [Node | _]) :- .

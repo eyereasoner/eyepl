@@ -11,7 +11,7 @@ What = luna.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: is_a(Person, friend) :- likes(Person, Friend), is_a(Friend, cat).
 step 1 source 1 : likes(milo, luna).
 step 2 source 2 : is_a(luna, cat).

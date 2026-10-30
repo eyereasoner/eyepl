@@ -2,7 +2,7 @@
 States = [[0, 0, 1], [0, 1, 1], [0, 1, 0], [1, 1, 0], [1, 1, 1], [1, 0, 1], [1, 0, 0], [0, 0, 0], [0, 0, 1]].
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: gcc([], _, []) :- .
 % Rule 2: gcc([C | Cs], S, [N | Ns]) :- gcc(C, S, N), gcc(Cs, N, Ns).
 % Rule 3: gcc(C, [Qa, Qb, Qc], [Za, Zb, Zc]) :- neta(Qa, Qb, D1), netb(Qa, Qb, Qc, D2, D3), dff(D1, C, Qc, Zc), dff(D2, C, Qa, Za), dff(D3, C, Qb, Zb).

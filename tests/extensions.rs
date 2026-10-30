@@ -1,7 +1,7 @@
+use eyepl::{check, parse, reason, Certificate, Condition, Limits, Value};
 use std::collections::BTreeSet;
-use wheye::{check, parse, reason, Certificate, Condition, Limits, Value};
 
-fn run(source: &str) -> (wheye::Program, wheye::Run) {
+fn run(source: &str) -> (eyepl::Program, eyepl::Run) {
     let program = parse(source).unwrap();
     let run = reason(&program, Limits::default()).unwrap();
     let proof = run.certificate(&program);
@@ -179,7 +179,8 @@ fn unsafe_modes_non_stratified_cycles_and_invalid_witnesses_are_rejected() {
         &p,
         Limits {
             max_facts: 30,
-            max_matches: 1000
+            max_matches: 1000,
+            ..Limits::default()
         }
     )
     .is_err());
@@ -322,7 +323,7 @@ fn strata_are_independent_of_source_order_and_merged_files() {
 fn explicit_checker_limits_cover_evidence_and_closed_model_matching() {
     let (p, r) = run(include_str!("../examples/orders.pl"));
     let c = r.certificate(&p);
-    assert!(wheye::check_with_limits(
+    assert!(eyepl::check_with_limits(
         &p,
         &c,
         Limits {
@@ -331,7 +332,7 @@ fn explicit_checker_limits_cover_evidence_and_closed_model_matching() {
         }
     )
     .is_err());
-    assert!(wheye::check_with_limits(
+    assert!(eyepl::check_with_limits(
         &p,
         &c,
         Limits {

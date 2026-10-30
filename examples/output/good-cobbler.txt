@@ -3,7 +3,7 @@ Person = joe, Trade = cobbler.
 Person = jane, Trade = carpenter.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: good_at(Person, Trade) :- description(Person, [good, Trade]).
 step 1 source 1 : description(joe, [good, cobbler]).
 step 2 source 2 : description(jane, [good, carpenter]).
@@ -17,7 +17,7 @@ Person = joe, Trade = cobbler.
 Person = jane, Trade = carpenter.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 2: classified_as(Person, Trade) :- description(Person, [good, Trade]).
 step 1 source 1 : description(joe, [good, cobbler]).
 step 2 source 2 : description(jane, [good, carpenter]).

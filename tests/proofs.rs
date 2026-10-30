@@ -1,4 +1,4 @@
-use wheye::{check, parse, reason, Certificate, Claim, Condition, Justification, Limits, Value};
+use eyepl::{check, parse, reason, Certificate, Claim, Condition, Justification, Limits, Value};
 
 const PROGRAM: &str = "p(a). p(b). edge(a,b). q(X) :- p(X). r(X,Y) :- q(X), edge(X,Y). ?- r(X,Y).";
 
@@ -45,7 +45,7 @@ fn missing_rule_premises_are_rejected() {
 #[test]
 fn wrong_head_and_inconsistent_rule_bindings_are_rejected() {
     let p = parse("p(a). edge(b,c). r(X,Y) :- p(X), edge(X,Y). ?- r(X,Y).").unwrap();
-    let forged = Certificate::parse("wheye-proof 1\nstep 1 source 1 : p(a).\nstep 2 source 2 : edge(b,c).\nstep 3 rule 1 [1,2] : r(a,c).\nanswer 1 [3]\n").unwrap();
+    let forged = Certificate::parse("eyepl-proof 1\nstep 1 source 1 : p(a).\nstep 2 source 2 : edge(b,c).\nstep 3 rule 1 [1,2] : r(a,c).\nanswer 1 [3]\n").unwrap();
     assert!(!check(&p, &forged).unwrap().valid());
     let mut c = certificate();
     c.steps.last_mut().unwrap().atom.values.reverse();
@@ -92,14 +92,14 @@ fn missing_and_zero_query_evidence_is_rejected() {
 fn malformed_metadata_and_variable_conclusions_are_rejected() {
     for text in [
         "other-proof 1\nstep 1 source 1 : p(a).\nanswer 1 [1]\n",
-        "wheye-proof 2",
-        "wheye-proof 1\nstep 0 source 1 : p(a).",
-        "wheye-proof 1\nstep 1 trusted 1 : p(a).",
-        "wheye-proof 1\nstep 1 source 1 : p(X).",
-        "wheye-proof 1\nstep 1 source 0 : p(a).",
-        "wheye-proof 1\nstep 1 source 1 extra : p(a).",
-        "wheye-proof 1\nanswer 1 [0]",
-        "wheye-proof 1\nunknown",
+        "eyepl-proof 2",
+        "eyepl-proof 1\nstep 0 source 1 : p(a).",
+        "eyepl-proof 1\nstep 1 trusted 1 : p(a).",
+        "eyepl-proof 1\nstep 1 source 1 : p(X).",
+        "eyepl-proof 1\nstep 1 source 0 : p(a).",
+        "eyepl-proof 1\nstep 1 source 1 extra : p(a).",
+        "eyepl-proof 1\nanswer 1 [0]",
+        "eyepl-proof 1\nunknown",
     ] {
         assert!(Certificate::parse(text).is_err(), "accepted {text}");
     }
@@ -183,19 +183,19 @@ fn source_limits_and_recorded_compound_arity_remain_enforced() {
     let deep = format!("p({}a{}).", "f(".repeat(300), ")".repeat(300));
     assert!(parse(&deep).unwrap_err().to_string().contains("nesting"));
     let recorded = format!("p({}a{}).", "f(".repeat(1024), ")".repeat(1024));
-    assert!(wheye::parse_atom(&recorded).is_ok());
+    assert!(eyepl::parse_atom(&recorded).is_ok());
     let unbound = format!("p({}X{}).", "f(".repeat(1024), ")".repeat(1024));
-    assert!(wheye::parse_atom(&unbound).is_err());
+    assert!(eyepl::parse_atom(&unbound).is_err());
     let wide = format!("p({}).", vec!["a"; 65].join(","));
     assert!(parse(&wide).is_err());
-    assert!(Certificate::parse(&format!("wheye-proof 1\nstep 1 source 1 : {wide}\n")).is_err());
+    assert!(Certificate::parse(&format!("eyepl-proof 1\nstep 1 source 1 : {wide}\n")).is_err());
     let nested_wide = format!("'$fresh:r1:1'({}).", wide.trim_end_matches('.'));
     assert!(Certificate::parse(&format!(
-        "wheye-proof 1\nstep 1 fresh 1 1 : {nested_wide}\n"
+        "eyepl-proof 1\nstep 1 fresh 1 1 : {nested_wide}\n"
     ))
     .is_err());
     for source in ["p(", "?- X is", "p([a,", "p(-"] {
         assert!(parse(source).is_err(), "accepted {source}");
-        assert!(Certificate::parse(&format!("wheye-proof 1\nstep 1 source 1 : {source}")).is_err());
+        assert!(Certificate::parse(&format!("eyepl-proof 1\nstep 1 source 1 : {source}")).is_err());
     }
 }

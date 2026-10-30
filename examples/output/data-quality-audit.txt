@@ -8,7 +8,7 @@ Subject = customer(c3), Reason = missing_email.
 Subject = order(o2), Reason = unknown_customer(c9).
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: length([_ | Rest], Count) :- length(Rest, Previous), Count is '+'(Previous, 1).
 % Rule 2: customer(Id) :- record(_, customer(Id, _)).
 % Rule 3: has_email(Id) :- record(_, email(Id, _)).
@@ -105,32 +105,32 @@ step 82 rule 5 [54,79] : finding(record(r11), unsupported_shape(shipment, 1)).
 step 83 rule 6 [36,80] : finding(customer(c3), missing_email).
 step 84 rule 9 [8,81] : finding(order(o2), unknown_customer(c9)).
 boundary 1 level 0 [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78]
-demand 1 : length([""], _WheyeCall0).
-demand 1 : length(["Ada"], _WheyeCall0).
-demand 1 : length(["Lin"], _WheyeCall0).
-demand 1 : length(["Mira"], _WheyeCall0).
-demand 1 : length(["ada.new@example.org"], _WheyeCall0).
-demand 1 : length(["ada@example.org"], _WheyeCall0).
-demand 1 : length([-5], _WheyeCall0).
-demand 1 : length([120], _WheyeCall0).
-demand 1 : length([45], _WheyeCall0).
-demand 1 : length([9], _WheyeCall0).
-demand 1 : length([], _WheyeCall0).
-demand 1 : length([c1, "Ada"], _WheyeCall0).
-demand 1 : length([c1, "ada.new@example.org"], _WheyeCall0).
-demand 1 : length([c1, "ada@example.org"], _WheyeCall0).
-demand 1 : length([c1, 120], _WheyeCall0).
-demand 1 : length([c2, ""], _WheyeCall0).
-demand 1 : length([c2, "Lin"], _WheyeCall0).
-demand 1 : length([c2, -5], _WheyeCall0).
-demand 1 : length([c2, 9], _WheyeCall0).
-demand 1 : length([c3, "Mira"], _WheyeCall0).
-demand 1 : length([c9, 45], _WheyeCall0).
-demand 1 : length([o1, c1, 120], _WheyeCall0).
-demand 1 : length([o1], _WheyeCall0).
-demand 1 : length([o2, c9, 45], _WheyeCall0).
-demand 1 : length([o3, c2, -5], _WheyeCall0).
-demand 1 : length([o3, c2, 9], _WheyeCall0).
+demand 1 : length([""], _EyeplCall0).
+demand 1 : length(["Ada"], _EyeplCall0).
+demand 1 : length(["Lin"], _EyeplCall0).
+demand 1 : length(["Mira"], _EyeplCall0).
+demand 1 : length(["ada.new@example.org"], _EyeplCall0).
+demand 1 : length(["ada@example.org"], _EyeplCall0).
+demand 1 : length([-5], _EyeplCall0).
+demand 1 : length([120], _EyeplCall0).
+demand 1 : length([45], _EyeplCall0).
+demand 1 : length([9], _EyeplCall0).
+demand 1 : length([], _EyeplCall0).
+demand 1 : length([c1, "Ada"], _EyeplCall0).
+demand 1 : length([c1, "ada.new@example.org"], _EyeplCall0).
+demand 1 : length([c1, "ada@example.org"], _EyeplCall0).
+demand 1 : length([c1, 120], _EyeplCall0).
+demand 1 : length([c2, ""], _EyeplCall0).
+demand 1 : length([c2, "Lin"], _EyeplCall0).
+demand 1 : length([c2, -5], _EyeplCall0).
+demand 1 : length([c2, 9], _EyeplCall0).
+demand 1 : length([c3, "Mira"], _EyeplCall0).
+demand 1 : length([c9, 45], _EyeplCall0).
+demand 1 : length([o1, c1, 120], _EyeplCall0).
+demand 1 : length([o1], _EyeplCall0).
+demand 1 : length([o2, c9, 45], _EyeplCall0).
+demand 1 : length([o3, c2, -5], _EyeplCall0).
+demand 1 : length([o3, c2, 9], _EyeplCall0).
 answer 1 [39]
 answer 1 [40]
 answer 1 [41]

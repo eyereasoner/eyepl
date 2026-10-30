@@ -5,7 +5,7 @@ Name = city_wet, Status = sufficient_in_model.
 Name = city_ice, Status = insufficient_in_model.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: distance(Name, Reaction, Braking, Total) :- scenario(Name, Speed, Mu, _), gravity(G), reaction_time(T), Speed >= 0, Mu > 0, Mu =< 1, G > 0, T >= 0, Reaction is '*'(Speed, T), Braking is '/'('*'(Speed, Speed), '*'('*'(2, Mu), G)), Total is '+'(Reaction, Braking).
 % Rule 2: gap_status(Name, sufficient_in_model) :- distance(Name, _, _, Total), scenario(Name, _, _, Available), Total =< Available.
 % Rule 3: gap_status(Name, insufficient_in_model) :- distance(Name, _, _, Total), scenario(Name, _, _, Available), Total > Available.

@@ -2,7 +2,7 @@
 Moves = [move(left, right), move(left, center), move(right, center), move(left, right), move(center, left), move(center, right), move(left, right)].
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: append([], Ys, Ys) :- .
 % Rule 2: append([X | Xs], Ys, [X | Zs]) :- append(Xs, Ys, Zs).
 % Rule 3: moves(1, From, To, _, [move(From, To)]) :- .

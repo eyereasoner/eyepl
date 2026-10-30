@@ -1,2 +1,2 @@
-% Disjunction is outside Wheye's control syntax.
+% Disjunction is outside eyepl's control syntax.
 ?- (true; true).

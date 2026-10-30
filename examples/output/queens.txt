@@ -96,7 +96,7 @@ Columns = [8, 4, 1, 3, 6, 2, 7, 5].
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: queens(N, Columns) :- N >= 0, columns(1, N, Available), place(Available, [], Columns).
 % Rule 2: columns(I, N, []) :- I > N.
 % Rule 3: columns(I, N, [I | Rest]) :- I =< N, Next is '+'(I, 1), columns(Next, N, Rest).

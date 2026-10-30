@@ -9,7 +9,7 @@ Person = ada, Class = pacifist.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: pacifist(Person) :- quaker(Person), \+ (nonpacifist(Person)).
 % Rule 2: nonpacifist(Person) :- republican(Person).
 % Rule 3: classification(Person, quaker) :- quaker(Person).

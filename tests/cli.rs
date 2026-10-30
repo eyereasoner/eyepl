@@ -1,9 +1,9 @@
+use eyepl::{check, parse, Certificate, Condition, Limits};
 use std::io::Write;
 use std::process::{Command, Stdio};
-use wheye::{check, parse, Certificate, Condition, Limits};
 
 fn cli(args: &[&str], input: &str) -> std::process::Output {
-    let mut child = Command::new(env!("CARGO_BIN_EXE_wheye"))
+    let mut child = Command::new(env!("CARGO_BIN_EXE_eyepl"))
         .args(args)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
@@ -19,7 +19,7 @@ fn cli(args: &[&str], input: &str) -> std::process::Output {
     child.wait_with_output().unwrap()
 }
 fn proof(text: &str) -> Certificate {
-    let start = text.find("wheye-proof 1\n").unwrap();
+    let start = text.find("eyepl-proof 1\n").unwrap();
     let end = text[start..]
         .find("\n?- check.")
         .map(|n| start + n)
@@ -36,7 +36,7 @@ fn source_requests_select_answers_proof_verification_and_results() {
         String::from_utf8_lossy(&result.stderr)
     );
     let text = String::from_utf8(result.stdout).unwrap();
-    assert!(text.starts_with("?- mortal(Who).\nWho = socrates.\n\n?- why.\nwheye-proof 1\n"));
+    assert!(text.starts_with("?- mortal(Who).\nWho = socrates.\n\n?- why.\neyepl-proof 1\n"));
     assert!(text
         .ends_with("\n?- check(mortal(socrates)).\ntrue.\n\n?- check(mortal(plato)).\nfalse.\n"));
     let certificate = proof(&text);
@@ -99,7 +99,7 @@ fn only_help_and_version_options_are_available() {
     }
     assert_eq!(
         String::from_utf8(cli(&["-v"], "").stdout).unwrap(),
-        format!("wheye {}\n", wheye::VERSION)
+        format!("eyepl {}\n", eyepl::VERSION)
     );
     assert_eq!(cli(&[], "").stdout, cli(&["-h"], "").stdout);
 }
@@ -116,7 +116,7 @@ fn malformed_input_and_missing_context_fail_without_partial_output() {
         assert!(result.stdout.is_empty());
         assert!(String::from_utf8(result.stderr)
             .unwrap()
-            .starts_with("wheye: "));
+            .starts_with("eyepl: "));
     }
     let result = cli(&["-"], "?- check(missing(X)).");
     assert!(result.status.success());
@@ -146,7 +146,7 @@ fn all_nine_conditions_and_forged_certificates_still_work() {
     let report = check(&program, &Certificate::parse(&forged).unwrap()).unwrap();
     assert!(!report.valid());
     assert!(report.condition(Condition::C5).failed > 0);
-    assert!(wheye::check_with_limits(
+    assert!(eyepl::check_with_limits(
         &program,
         &certificate,
         Limits {

@@ -1,19 +1,19 @@
-# <img src="assets/eye.png" alt="" width="48" height="48" align="middle"> wheye
+# <img src="assets/eye.png" alt="" width="48" height="48" align="absmiddle"> eyepl
 
-**Version 0.3.1**
+**Version 0.3.2**
 
-Wheye is a Rust reasoner for **Midlog**, a relational rule language between
+**eyepl** is a relational rule language and Rust reasoner between
 Datalog and Prolog: set semantics and fixed-point reasoning with Prolog-style
 clauses, structural terms, lists, arithmetic, stratified negation, aggregates,
 fresh witnesses, and proofs that are checked independently.
 
-- **[Playground](https://eyereasoner.github.io/wheye/playground/)**: run Midlog
+- **[Playground](https://eyereasoner.github.io/eyepl/playground/)**: run eyepl
   programs in your browser.
-- **[Guide](https://eyereasoner.github.io/wheye/)**: install, run, use the
-  library, and develop Wheye.
-- **[Specification](https://eyereasoner.github.io/wheye/SPEC/)**: the language,
+- **[Guide](https://eyereasoner.github.io/eyepl/GUIDE/)**: install, run, use the
+  library, and develop eyepl.
+- **[Specification](https://eyereasoner.github.io/eyepl/SPEC/)**: the language,
   evaluation, and C1–C9 proof contract.
-- **[Examples](https://github.com/eyereasoner/wheye/tree/main/examples/)**:
+- **[Examples](https://github.com/eyereasoner/eyepl/tree/main/examples/)**:
   runnable programs with their outputs.
 
 ```prolog

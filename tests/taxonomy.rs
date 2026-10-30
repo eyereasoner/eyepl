@@ -1,4 +1,4 @@
-use wheye::{check, parse, reason, Certificate, Condition, Limits, Value};
+use eyepl::{check, parse, reason, Certificate, Condition, Limits, Value};
 
 const DEPTHS: [usize; 5] = [10, 100, 1_000, 10_000, 100_000];
 fn source(depth: usize) -> String {

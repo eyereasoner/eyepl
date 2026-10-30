@@ -7,7 +7,7 @@ Terms = 11, Pi = 3.141736099261.
 Pi = 3.145238095238.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: series(K, Last, Sum, _, Sum) :- K > Last.
 % Rule 2: series(K, Last, Accumulated, Sign, Sum) :- K =< Last, Twice is '*'(2, K), Denominator is '*'('*'(Twice, '+'(Twice, 1)), '+'(Twice, 2)), Updated is '+'(Accumulated, '/'(Sign, Denominator)), Opposite is '-'(Sign), Next is '+'(K, 1), series(Next, Last, Updated, Opposite, Sum).
 % Rule 3: pi_approximation(Terms, Pi) :- Terms >= 0, series(1, Terms, 0.0, 1, Sum), Pi is '+'(3, '*'(4, Sum)).

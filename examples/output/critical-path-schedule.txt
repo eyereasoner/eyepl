@@ -23,7 +23,7 @@ Kind = critical_task, Value = requirements.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: member(Head, [Head | _]) :- .
 % Rule 2: member(Value, [_ | Rest]) :- member(Value, Rest).
 % Rule 3: depends(Task, Predecessor) :- task(Task, _, Predecessors), member(Predecessor, Predecessors).
@@ -188,102 +188,102 @@ step 148 rule 8 [147] : project_finish(23).
 step 149 rule 9 [148,11,139] : final_task(launch).
 step 150 rule 12 [149,46] : critical_task(launch).
 boundary 1 level 0 [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146]
-demand 1 : critical_chain(architecture, _WheyeCall0).
-demand 1 : critical_chain(backend, _WheyeCall0).
-demand 1 : critical_chain(database, _WheyeCall0).
-demand 1 : critical_chain(integration, _WheyeCall0).
-demand 1 : critical_chain(launch, _WheyeCall0).
-demand 1 : critical_chain(requirements, _WheyeCall0).
-demand 1 : critical_chain(security_review, _WheyeCall0).
+demand 1 : critical_chain(architecture, _EyeplCall0).
+demand 1 : critical_chain(backend, _EyeplCall0).
+demand 1 : critical_chain(database, _EyeplCall0).
+demand 1 : critical_chain(integration, _EyeplCall0).
+demand 1 : critical_chain(launch, _EyeplCall0).
+demand 1 : critical_chain(requirements, _EyeplCall0).
+demand 1 : critical_chain(security_review, _EyeplCall0).
 demand 1 : earliest_start(api_design, 2).
-demand 1 : earliest_start(api_design, _WheyeCall0).
+demand 1 : earliest_start(api_design, _EyeplCall0).
 demand 1 : earliest_start(architecture, 2).
-demand 1 : earliest_start(architecture, _WheyeCall0).
+demand 1 : earliest_start(architecture, _EyeplCall0).
 demand 1 : earliest_start(auth, 5).
-demand 1 : earliest_start(auth, _WheyeCall0).
+demand 1 : earliest_start(auth, _EyeplCall0).
 demand 1 : earliest_start(backend, 4).
 demand 1 : earliest_start(backend, 9).
-demand 1 : earliest_start(backend, _WheyeCall0).
+demand 1 : earliest_start(backend, _EyeplCall0).
 demand 1 : earliest_start(database, 5).
-demand 1 : earliest_start(database, _WheyeCall0).
+demand 1 : earliest_start(database, _EyeplCall0).
 demand 1 : earliest_start(frontend, 4).
-demand 1 : earliest_start(frontend, _WheyeCall0).
+demand 1 : earliest_start(frontend, _EyeplCall0).
 demand 1 : earliest_start(integration, 15).
 demand 1 : earliest_start(integration, 8).
 demand 1 : earliest_start(integration, 9).
-demand 1 : earliest_start(integration, _WheyeCall0).
+demand 1 : earliest_start(integration, _EyeplCall0).
 demand 1 : earliest_start(launch, 21).
 demand 1 : earliest_start(launch, 22).
-demand 1 : earliest_start(launch, _WheyeCall0).
+demand 1 : earliest_start(launch, _EyeplCall0).
 demand 1 : earliest_start(load_test, 19).
-demand 1 : earliest_start(load_test, _WheyeCall0).
-demand 1 : earliest_start(requirements, _WheyeCall0).
+demand 1 : earliest_start(load_test, _EyeplCall0).
+demand 1 : earliest_start(requirements, _EyeplCall0).
 demand 1 : earliest_start(security_review, 19).
-demand 1 : earliest_start(security_review, _WheyeCall0).
+demand 1 : earliest_start(security_review, _EyeplCall0).
 demand 1 : finish_time(api_design, 23).
-demand 1 : finish_time(api_design, _WheyeCall0).
+demand 1 : finish_time(api_design, _EyeplCall0).
 demand 1 : finish_time(architecture, 23).
-demand 1 : finish_time(architecture, _WheyeCall0).
+demand 1 : finish_time(architecture, _EyeplCall0).
 demand 1 : finish_time(auth, 23).
-demand 1 : finish_time(auth, _WheyeCall0).
+demand 1 : finish_time(auth, _EyeplCall0).
 demand 1 : finish_time(backend, 23).
-demand 1 : finish_time(backend, _WheyeCall0).
+demand 1 : finish_time(backend, _EyeplCall0).
 demand 1 : finish_time(database, 23).
-demand 1 : finish_time(database, _WheyeCall0).
+demand 1 : finish_time(database, _EyeplCall0).
 demand 1 : finish_time(frontend, 23).
-demand 1 : finish_time(frontend, _WheyeCall0).
+demand 1 : finish_time(frontend, _EyeplCall0).
 demand 1 : finish_time(integration, 23).
-demand 1 : finish_time(integration, _WheyeCall0).
+demand 1 : finish_time(integration, _EyeplCall0).
 demand 1 : finish_time(launch, 23).
-demand 1 : finish_time(launch, _WheyeCall0).
+demand 1 : finish_time(launch, _EyeplCall0).
 demand 1 : finish_time(load_test, 23).
-demand 1 : finish_time(load_test, _WheyeCall0).
+demand 1 : finish_time(load_test, _EyeplCall0).
 demand 1 : finish_time(requirements, 23).
-demand 1 : finish_time(requirements, _WheyeCall0).
+demand 1 : finish_time(requirements, _EyeplCall0).
 demand 1 : finish_time(security_review, 23).
-demand 1 : finish_time(security_review, _WheyeCall0).
-demand 1 : latest_finish([], _WheyeCall0).
+demand 1 : finish_time(security_review, _EyeplCall0).
+demand 1 : latest_finish([], _EyeplCall0).
 demand 1 : latest_finish([api_design, database], 4).
 demand 1 : latest_finish([api_design, database], 9).
-demand 1 : latest_finish([api_design, database], _WheyeCall0).
+demand 1 : latest_finish([api_design, database], _EyeplCall0).
 demand 1 : latest_finish([api_design], 4).
-demand 1 : latest_finish([api_design], _WheyeCall0).
+demand 1 : latest_finish([api_design], _EyeplCall0).
 demand 1 : latest_finish([architecture], 5).
-demand 1 : latest_finish([architecture], _WheyeCall0).
-demand 1 : latest_finish([auth], _WheyeCall0).
+demand 1 : latest_finish([architecture], _EyeplCall0).
+demand 1 : latest_finish([auth], _EyeplCall0).
 demand 1 : latest_finish([backend, frontend, auth], 15).
 demand 1 : latest_finish([backend, frontend, auth], 8).
 demand 1 : latest_finish([backend, frontend, auth], 9).
-demand 1 : latest_finish([backend, frontend, auth], _WheyeCall0).
-demand 1 : latest_finish([database], _WheyeCall0).
-demand 1 : latest_finish([frontend, auth], _WheyeCall0).
+demand 1 : latest_finish([backend, frontend, auth], _EyeplCall0).
+demand 1 : latest_finish([database], _EyeplCall0).
+demand 1 : latest_finish([frontend, auth], _EyeplCall0).
 demand 1 : latest_finish([integration], 19).
-demand 1 : latest_finish([integration], _WheyeCall0).
-demand 1 : latest_finish([load_test], _WheyeCall0).
+demand 1 : latest_finish([integration], _EyeplCall0).
+demand 1 : latest_finish([load_test], _EyeplCall0).
 demand 1 : latest_finish([requirements], 2).
-demand 1 : latest_finish([requirements], _WheyeCall0).
+demand 1 : latest_finish([requirements], _EyeplCall0).
 demand 1 : latest_finish([security_review, load_test], 21).
 demand 1 : latest_finish([security_review, load_test], 22).
-demand 1 : latest_finish([security_review, load_test], _WheyeCall0).
-demand 1 : member(_WheyeCall0, []).
-demand 1 : member(_WheyeCall0, [api_design, database]).
-demand 1 : member(_WheyeCall0, [api_design]).
-demand 1 : member(_WheyeCall0, [architecture]).
-demand 1 : member(_WheyeCall0, [auth]).
-demand 1 : member(_WheyeCall0, [backend, frontend, auth]).
-demand 1 : member(_WheyeCall0, [database]).
-demand 1 : member(_WheyeCall0, [frontend, auth]).
-demand 1 : member(_WheyeCall0, [integration]).
-demand 1 : member(_WheyeCall0, [load_test]).
-demand 1 : member(_WheyeCall0, [requirements]).
-demand 1 : member(_WheyeCall0, [security_review, load_test]).
+demand 1 : latest_finish([security_review, load_test], _EyeplCall0).
+demand 1 : member(_EyeplCall0, []).
+demand 1 : member(_EyeplCall0, [api_design, database]).
+demand 1 : member(_EyeplCall0, [api_design]).
+demand 1 : member(_EyeplCall0, [architecture]).
+demand 1 : member(_EyeplCall0, [auth]).
+demand 1 : member(_EyeplCall0, [backend, frontend, auth]).
+demand 1 : member(_EyeplCall0, [database]).
+demand 1 : member(_EyeplCall0, [frontend, auth]).
+demand 1 : member(_EyeplCall0, [integration]).
+demand 1 : member(_EyeplCall0, [load_test]).
+demand 1 : member(_EyeplCall0, [requirements]).
+demand 1 : member(_EyeplCall0, [security_review, load_test]).
 answer 2 [150]
 
 ?- earliest_start(integration, Start).
 Start = 15.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 4: earliest_start(Task, Start) :- task(Task, _, Predecessors), latest_finish(Predecessors, Start).
 % Rule 5: latest_finish([Predecessor | Rest], Latest) :- finish_time(Predecessor, Finish), latest_finish(Rest, Remaining), Latest is max(Finish, Remaining).
 % Rule 6: finish_time(Task, Finish) :- task(Task, Duration, _), earliest_start(Task, Start), Finish is '+'(Start, Duration).

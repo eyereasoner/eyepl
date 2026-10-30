@@ -1,4 +1,4 @@
-use wheye::{
+use eyepl::{
     check, parse, reason, Boundary, Certificate, Condition, Justification, Limits, Owner, Program,
     Value,
 };
@@ -24,20 +24,20 @@ fn inspect(source: &str, text: &str, condition: Condition) {
 fn c1_distinguishes_relational_premises_from_negative_and_builtin_decisions() {
     inspect(
         "p :- eq(a,a). ?- p.",
-        "wheye-proof 1\nstep 1 builtin : eq(a,a).\nstep 2 rule 1 [1] : p.\nanswer 1 [2]\n",
+        "eyepl-proof 1\nstep 1 builtin : eq(a,a).\nstep 2 rule 1 [1] : p.\nanswer 1 [2]\n",
         Condition::C1,
     );
-    inspect("p :- missing(a). ?- p.","wheye-proof 1\nstep 1 absent 1 : missing(a).\nstep 2 rule 1 [1] : p.\nboundary 1 level 0 []\nanswer 1 [2]\n",Condition::C1);
+    inspect("p :- missing(a). ?- p.","eyepl-proof 1\nstep 1 absent 1 : missing(a).\nstep 2 rule 1 [1] : p.\nboundary 1 level 0 []\nanswer 1 [2]\n",Condition::C1);
     inspect(
         "add(2,3,99). p(X):-X is 2 + 3. ?- p(X).",
-        "wheye-proof 1\nstep 1 source 1 : add(2,3,99).\nstep 2 rule 1 [1] : p(99).\nanswer 1 [2]\n",
+        "eyepl-proof 1\nstep 1 source 1 : add(2,3,99).\nstep 2 rule 1 [1] : p(99).\nanswer 1 [2]\n",
         Condition::C1,
     );
 }
 
 #[test]
 fn c2_rejects_boundary_evidence_later_than_the_negative_decision() {
-    inspect("p(a). q:-\\+ missing. ?- q.","wheye-proof 1\nstep 1 absent 1 : missing.\nstep 2 source 1 : p(a).\nstep 3 rule 1 [1] : q.\nboundary 1 level 0 [2]\nanswer 1 [3]\n",Condition::C2);
+    inspect("p(a). q:-\\+ missing. ?- q.","eyepl-proof 1\nstep 1 absent 1 : missing.\nstep 2 source 1 : p(a).\nstep 3 rule 1 [1] : q.\nboundary 1 level 0 [2]\nanswer 1 [3]\n",Condition::C2);
 }
 
 #[test]
@@ -106,7 +106,7 @@ fn c5_recomputes_arithmetic_and_never_trusts_a_recorded_result() {
     assert_eq!(check(&p, &c).unwrap().condition(Condition::C1).failed, 0);
     inspect(
         "?- a = b.",
-        "wheye-proof 1\nstep 1 builtin : eq(a,b).\nanswer 1 [1]\n",
+        "eyepl-proof 1\nstep 1 builtin : eq(a,b).\nanswer 1 [1]\n",
         Condition::C5,
     );
 }
@@ -131,13 +131,13 @@ fn c5_recomputes_aggregate_results_including_distinct_tuple_keys() {
 #[test]
 fn c6_rejects_a_negative_claim_that_hides_a_derivable_counterexample() {
     inspect("seed(a). blocked(X):-seed(X). allowed(X):-seed(X),\\+ blocked(X). ?- allowed(X).",
-        "wheye-proof 1\nstep 1 source 1 : seed(a).\nstep 2 absent 1 : blocked(a).\nstep 3 rule 2 [1,2] : allowed(a).\nboundary 1 level 0 [1]\nanswer 1 [3]\n",Condition::C6);
+        "eyepl-proof 1\nstep 1 source 1 : seed(a).\nstep 2 absent 1 : blocked(a).\nstep 3 rule 2 [1,2] : allowed(a).\nboundary 1 level 0 [1]\nanswer 1 [3]\n",Condition::C6);
 }
 
 #[test]
 fn c6_rejects_a_negative_claim_that_hides_an_input_fact() {
     inspect("blocked(a). allowed:-\\+ blocked(a). ?- allowed.",
-        "wheye-proof 1\nstep 1 absent 1 : blocked(a).\nstep 2 rule 1 [1] : allowed.\nboundary 1 level 0 []\nanswer 1 [2]\n",Condition::C6);
+        "eyepl-proof 1\nstep 1 absent 1 : blocked(a).\nstep 2 rule 1 [1] : allowed.\nboundary 1 level 0 []\nanswer 1 [2]\n",Condition::C6);
 }
 
 #[test]
@@ -164,7 +164,7 @@ fn c6_rejects_an_aggregate_over_an_incomplete_but_locally_consistent_boundary() 
 #[test]
 fn c6_detects_missing_derived_members_in_aggregate_boundaries() {
     inspect("p(a). p(b). q(X):-p(X). total(N):-aggregate_all(count, (q(X)), N). ?- total(N).",
-        "wheye-proof 1\nstep 1 source 1 : p(a).\nstep 2 source 2 : p(b).\nstep 3 rule 1 [1] : q(a).\nstep 4 aggregate r2 1 1 : '$aggregate:r2:1'(1).\nstep 5 rule 2 [4] : total(1).\nboundary 1 level 0 [1,2,3]\nanswer 1 [5]\n",Condition::C6);
+        "eyepl-proof 1\nstep 1 source 1 : p(a).\nstep 2 source 2 : p(b).\nstep 3 rule 1 [1] : q(a).\nstep 4 aggregate r2 1 1 : '$aggregate:r2:1'(1).\nstep 5 rule 2 [4] : total(1).\nboundary 1 level 0 [1,2,3]\nanswer 1 [5]\n",Condition::C6);
 }
 
 #[test]
@@ -221,7 +221,7 @@ fn c6_rejects_a_witness_introduced_although_a_fact_satisfies_its_conclusion() {
     let witness = r#"~"r1:g2:{\"X\": Symbol(\"a\")}""#;
     let forged = |boundary: &str| {
         format!(
-            "wheye-proof 1\nstep 1 source 1 : t(a, k).\nstep 2 source 2 : q(a).\n\
+            "eyepl-proof 1\nstep 1 source 1 : t(a, k).\nstep 2 source 2 : q(a).\n\
              step 3 absent 1 : '$satisfied:1'(a).\nstep 4 rule 3 [2,3] : '$lean:1'(a).\n\
              step 5 fresh 1 2 : '$fresh:r1:2'(a, {witness}).\n\
              step 6 rule 1 [4,5] : t(a, {witness}).\nboundary 1 level 0 {boundary}\nanswer 1 [6]\n"
@@ -271,12 +271,12 @@ fn c8_prevents_reuse_of_a_witness_from_a_different_firing() {
 fn c9_never_selects_a_test_as_an_ordinary_query_fact() {
     inspect(
         "?- eq(a,a).",
-        "wheye-proof 1\nstep 1 builtin : eq(a,a).\nanswer 1 [1]\n",
+        "eyepl-proof 1\nstep 1 builtin : eq(a,a).\nanswer 1 [1]\n",
         Condition::C9,
     );
     inspect(
         "?- missing(a).",
-        "wheye-proof 1\nstep 1 absent 1 : missing(a).\nboundary 1 level 0 []\nanswer 1 [1]\n",
+        "eyepl-proof 1\nstep 1 absent 1 : missing(a).\nboundary 1 level 0 []\nanswer 1 [1]\n",
         Condition::C9,
     );
 }

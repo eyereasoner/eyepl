@@ -5,7 +5,7 @@ Rank = 2, Clause = c3, Score = 97, Severity = high, Why = sharing_without_consen
 Rank = 1, Clause = c1, Score = 100, Severity = high, Why = no_removal_safeguards, Fix = add_notice_and_inform.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: has_notice(Clause) :- notice_days(Clause, Days), Days >= 0.
 % Rule 2: finding(Clause, Raw, no_removal_safeguards, add_notice_and_inform) :- permission(Clause, remove_account), importance(retention, Weight), \+ (has_notice(Clause)), \+ (safeguard(Clause, inform)), Raw is '+'(90, Weight).
 % Rule 3: finding(Clause, Raw, short_notice(Days, Required), increase_notice(Required)) :- permission(Clause, change_terms), notice_days(Clause, Days), required_notice(Required), Days < Required, importance(prior_notice, Weight), Raw is '+'(70, Weight).
@@ -89,19 +89,19 @@ step 69 rule 12 [50,44,46,65,38] : report(3, c2, 85, high, short_notice(3, 14), 
 step 70 rule 12 [57,55,47,66,39] : report(2, c3, 97, high, sharing_without_consent, require_consent).
 step 71 rule 12 [58,56,48,67,40] : report(1, c1, 100, high, no_removal_safeguards, add_notice_and_inform).
 boundary 1 level 0 [1,2,3,4,5,6,7,8,9,10,11,12,13,14,41,42,43,44,45,46,47,48]
-demand 1 : severity(100, _WheyeCall0).
-demand 1 : severity(70, _WheyeCall0).
-demand 1 : severity(85, _WheyeCall0).
-demand 1 : severity(97, _WheyeCall0).
+demand 1 : severity(100, _EyeplCall0).
+demand 1 : severity(70, _EyeplCall0).
+demand 1 : severity(85, _EyeplCall0).
+demand 1 : severity(97, _EyeplCall0).
 boundary 2 level 1 [1,2,3,4,5,6,7,8,9,10,11,12,13,14,41,42,43,44,45,46,47,48,49,50,54,55,56,57,58,59,60,61,62,63]
-demand 2 : higher(100, _WheyeCall0).
-demand 2 : higher(70, _WheyeCall0).
-demand 2 : higher(85, _WheyeCall0).
-demand 2 : higher(97, _WheyeCall0).
-demand 2 : severity(100, _WheyeCall0).
-demand 2 : severity(70, _WheyeCall0).
-demand 2 : severity(85, _WheyeCall0).
-demand 2 : severity(97, _WheyeCall0).
+demand 2 : higher(100, _EyeplCall0).
+demand 2 : higher(70, _EyeplCall0).
+demand 2 : higher(85, _EyeplCall0).
+demand 2 : higher(97, _EyeplCall0).
+demand 2 : severity(100, _EyeplCall0).
+demand 2 : severity(70, _EyeplCall0).
+demand 2 : severity(85, _EyeplCall0).
+demand 2 : severity(97, _EyeplCall0).
 answer 1 [68]
 answer 1 [69]
 answer 1 [70]

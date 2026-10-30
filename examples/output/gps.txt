@@ -37,7 +37,7 @@ What = direct.
 What = "Gent → Brugge → Oostende".
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: route([From, To], [Road]) :- road([From, To], Road).
 % Rule 2: route([From, To], [Road | Rest]) :- road([From, Via], Road), route([Via, To], Rest).
 % Rule 3: route(trip, Actions) :- location(traveller, From), destination(trip, To), route([From, To], Actions).

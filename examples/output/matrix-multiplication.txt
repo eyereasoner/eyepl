@@ -2,7 +2,7 @@
 Product = m(7, 2, 3, 1).
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: multiply(m(A, B, C, D), m(E, F, G, H), m(I, J, K, L)) :- I is '+'('*'(A, E), '*'(B, G)), J is '+'('*'(A, F), '*'(B, H)), K is '+'('*'(C, E), '*'(D, G)), L is '+'('*'(C, F), '*'(D, H)).
 % Rule 3: product(Left, Right, Product) :- matrix(Left, A), matrix(Right, B), multiply(A, B, Product).
 step 1 source 1 : matrix(a, m(1, 2, 0, 1)).

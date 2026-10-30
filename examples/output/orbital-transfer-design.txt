@@ -2,7 +2,7 @@
 Name = earth_mars, DeltaV = 5.593588, Days = 258.865827.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: hohmann(Name, DepartureDV, ArrivalDV, Days) :- transfer(Name, Mu, R1, R2), Mu > 0, R1 > 0, R2 > 0, Axis is '/'('+'(R1, R2), 2), DepartureDV is abs('-'(sqrt('*'(Mu, '-'('/'(2, R1), '/'(1, Axis)))), sqrt('/'(Mu, R1)))), ArrivalDV is abs('-'(sqrt('/'(Mu, R2)), sqrt('*'(Mu, '-'('/'(2, R2), '/'(1, Axis)))))), Days is '/'('*'(pi, sqrt('/'('**'(Axis, 3), Mu))), 86400).
 % Rule 2: transfer_report(Name, TotalDV, Days) :- hohmann(Name, Departure, Arrival, Time), TotalDV is '/'(round('*'('+'(Departure, Arrival), 1000000)), 1000000), Days is '/'(round('*'(Time, 1000000)), 1000000).
 step 1 source 1 : transfer(earth_mars, 132712440018.0, 149597870.7, 227939200.0).

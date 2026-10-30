@@ -5,7 +5,7 @@ Field = high_input, Status = over.
 Field = sandy_high_input, Status = over.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: balance(Field, Total, Lost, Available, Deficit, Surplus, Index) :- field(Field, Soil, Fertilizer, Loss, Demand), Soil >= 0, Fertilizer >= 0, Loss >= 0, Loss =< 1, Demand >= 0, Total is '+'(Soil, Fertilizer), Lost is '*'(Total, Loss), Available is '-'(Total, Lost), Deficit is max(0.0, '-'(Demand, Available)), Surplus is max(0.0, '-'(Available, Demand)), Index is '*'(Surplus, Loss).
 % Rule 2: status(Field, under) :- balance(Field, _, _, Available, _, _, _), field(Field, _, _, _, Demand), Available < '*'(0.9, Demand).
 % Rule 3: status(Field, balanced) :- balance(Field, _, _, Available, _, _, _), field(Field, _, _, _, Demand), Available >= '*'(0.9, Demand), Available =< '*'(1.1, Demand).

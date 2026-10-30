@@ -2,7 +2,7 @@
 Root = 1.4142135623731.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: f(1, X, Y) :- Y is '-'('*'(X, X), 2).
 % Rule 4: fd(1, X, Y) :- Y is '*'(2, X).
 % Rule 7: findRoot([N, X, Tolerance], X) :- f(N, X, FX), abs(FX) < Tolerance.

@@ -9,7 +9,7 @@ Kind = y_sum_1_to_8, Value = 568344.
 X = 665857, Y = 470832.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 3: pell(N, X, Y) :- N > 0, N1 is '-'(N, 1), pell(N1, X0, Y0), Ax is '*'(3, X0), By is '*'(4, Y0), X is '+'(Ax, By), Cx is '*'(2, X0), Dy is '*'(3, Y0), Y is '+'(Cx, Dy).
 step 1 source 1 : pell(0, 1, 0).
 step 2 builtin : '>'(1, 0).

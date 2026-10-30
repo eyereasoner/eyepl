@@ -1,5 +1,5 @@
+use eyepl::{check, parse, reason, Certificate, Condition, Limits, Program, Value};
 use std::collections::{BTreeMap, BTreeSet};
-use wheye::{check, parse, reason, Certificate, Condition, Limits, Program, Value};
 
 const SOURCE: &str = include_str!("../examples/path-discovery.pl");
 

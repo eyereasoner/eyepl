@@ -1,11 +1,11 @@
 [package]
-name = "wheye"
-version = "0.3.1"
+name = "eyepl"
+version = "0.3.2"
 edition = "2021"
 authors = ["Jos De Roo"]
 license = "MIT"
-description = "A Midlog reasoner with independently checked proof certificates."
-default-run = "wheye"
+description = "An eyepl reasoner with independently checked proof certificates."
+default-run = "eyepl"
 
 [lib]
 crate-type = ["rlib", "cdylib"]

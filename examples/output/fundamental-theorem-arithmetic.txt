@@ -14,7 +14,7 @@ Case = case, Count = 4.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: smallest_divisor_from(N, D, N) :- '*'(D, D) > N.
 % Rule 2: smallest_divisor_from(N, D, D) :- '*'(D, D) =< N, mod(N, D) =:= 0.
 % Rule 3: smallest_divisor_from(N, D, Factor) :- '*'(D, D) =< N, mod(N, D) =\= 0, Next is '+'(D, 1), smallest_divisor_from(N, Next, Factor).

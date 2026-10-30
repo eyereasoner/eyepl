@@ -9,7 +9,7 @@ Name = double_negated_branch_information, World = root, Formula = neg(neg(or(ato
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: leq(W, W) :- world(W).
 % Rule 2: leq(From, To) :- step(From, Mid), leq(Mid, To).
 % Rule 3: known(W, P) :- leq(Earlier, W), base(Earlier, P).

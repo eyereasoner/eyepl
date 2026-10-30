@@ -148,7 +148,7 @@ async function checkPlayground() {
   await navigate(`${base}#example=socrates`);
   const currentSocrates = await readFile(new URL('../examples/socrates.pl', import.meta.url), 'utf8');
   const legacySocrates = await readFile(new URL('fixtures/legacy-socrates.pl', import.meta.url), 'utf8');
-  await evaluate(`localStorage.setItem('wheye.playground.v1', JSON.stringify({source: ${JSON.stringify(legacySocrates)}}))`);
+  await evaluate(`localStorage.setItem('eyepl.playground.v1', JSON.stringify({source: ${JSON.stringify(legacySocrates)}}))`);
   await navigate(base);
   await wait(`document.getElementById("source").value === ${JSON.stringify(currentSocrates)}`, 'old autosave refreshed');
   assert.equal(new URL(await share()).hash, '#example=socrates');
@@ -161,10 +161,10 @@ async function checkPlayground() {
     assert.match(await run(), /checked: 2 steps, 1 claim/);
   }
   const draft = "human('Élodie'). ?- human(Who).";
-  await evaluate(`localStorage.setItem('wheye.playground.v1', JSON.stringify({source: ${JSON.stringify(draft)}}))`);
+  await evaluate(`localStorage.setItem('eyepl.playground.v1', JSON.stringify({source: ${JSON.stringify(draft)}}))`);
   await navigate(`${base}#${new URLSearchParams({ code: legacySocrates })}`, 'socrates');
   await delay(250);
-  assert.equal(await evaluate('JSON.parse(localStorage.getItem("wheye.playground.v1")).source'), draft);
+  assert.equal(await evaluate('JSON.parse(localStorage.getItem("eyepl.playground.v1")).source'), draft);
   const editedLegacy = legacySocrates + '\n% My own changes\n';
   await navigate(`${base}#${new URLSearchParams({ code: editedLegacy })}`);
   assert.equal(await evaluate('document.getElementById("source").value'), editedLegacy);
@@ -176,10 +176,10 @@ async function checkPlayground() {
   assert.deepEqual(await evaluate('[...document.querySelectorAll(".actions button")].map(button => button.textContent)'), ['Run', 'Stop', 'Share link', 'Create Gist share']);
   assert.deepEqual(await evaluate('[...document.querySelectorAll(".actions button")].map(button => getComputedStyle(button).backgroundColor)'), ['rgb(72, 230, 84)', 'rgb(255, 71, 47)', 'rgb(34, 189, 231)', 'rgb(252, 250, 68)']);
   assert.ok(await evaluate('!!document.querySelector(".toolbar #status") && !document.querySelector(".notes") && !document.querySelector("footer").textContent.includes("version")'));
-  assert.equal(await evaluate('document.getElementById("version").textContent'), `v${expectedVersion}`);
+  assert.equal(await evaluate('document.getElementById("version").textContent'), expectedVersion);
   const socrates = await run();
   assert.match(socrates, /\?- mortal\(Who\)\.\nWho = socrates/);
-  assert.match(socrates, /\?- why\.\nwheye-proof 1/);
+  assert.match(socrates, /\?- why\.\neyepl-proof 1/);
   assert.match(socrates, /\?- check\.\nchecked: 2 steps, 1 claim/);
   for (let id = 1; id <= 9; id++) assert.match(socrates, new RegExp(`C${id} `));
   const widths = await evaluate('[...document.querySelectorAll(".editors > .panel")].map(e => e.getBoundingClientRect().width)');
@@ -238,13 +238,13 @@ async function checkPlayground() {
   assert.match(await run(), /Élodie/);
 
   // Simulate GitHub so the real UI uploads and restores a Gist without publication.
-  const rawGist = 'https://gist.githubusercontent.com/example/123/raw/abc/wheye-playground-state.json';
+  const rawGist = 'https://gist.githubusercontent.com/example/123/raw/abc/eyepl-playground-state.json';
   const gistMock = `(() => {
     const original = window.fetch.bind(window);
     window.fetch = async (url, options) => {
       if (String(url) === 'https://api.github.com/gists') {
         window.gistUpload = JSON.parse(options.body);
-        return new Response(JSON.stringify({files:{'wheye-playground-state.json':{raw_url:${JSON.stringify(rawGist)}}}}), {status:201});
+        return new Response(JSON.stringify({files:{'eyepl-playground-state.json':{raw_url:${JSON.stringify(rawGist)}}}}), {status:201});
       }
       if (String(url) === ${JSON.stringify(rawGist)}) return new Response(JSON.stringify({source:${JSON.stringify(unicode)}}), {status:200});
       return original(url, options);
@@ -252,13 +252,13 @@ async function checkPlayground() {
   })()`;
   const injected = await command('Page.addScriptToEvaluateOnNewDocument', {source:gistMock});
   await evaluate(gistMock);
-  await evaluate("sessionStorage.setItem('wheye.playground.github.gistToken.v1', 'fake-browser-test-token')");
+  await evaluate("sessionStorage.setItem('eyepl.playground.github.gistToken.v1', 'fake-browser-test-token')");
   const runStatus = await evaluate('document.getElementById("status").textContent');
   const gistShared = await share('create-gist-share');
   assert.equal(new URL(gistShared).searchParams.get('stateurl'), rawGist);
   const uploaded = await evaluate('window.gistUpload');
   assert.equal(uploaded.public, false);
-  assert.equal(JSON.parse(uploaded.files['wheye-playground-state.json'].content).source, unicode);
+  assert.equal(JSON.parse(uploaded.files['eyepl-playground-state.json'].content).source, unicode);
   assert.equal(await evaluate('document.getElementById("status").textContent'), runStatus);
   await navigate(gistShared);
   await wait(`document.getElementById("source").value === ${JSON.stringify(unicode)}`, 'Gist restored');
@@ -266,7 +266,7 @@ async function checkPlayground() {
   assert.match(await run(), /Élodie/);
   assert.equal(new URL(await share()).search, '');
   await command('Page.removeScriptToEvaluateOnNewDocument', {identifier:injected.identifier});
-  await evaluate("sessionStorage.removeItem('wheye.playground.github.gistToken.v1')");
+  await evaluate("sessionStorage.removeItem('eyepl.playground.github.gistToken.v1')");
 
   await navigate(`${base}#example=socrates`);
   await evaluate('document.getElementById("run").click(); document.getElementById("stop").click()');
@@ -310,7 +310,7 @@ async function checkPlayground() {
     assert.match(await run(), /checked: 2 steps, 1 claim/);
     for (const [name, width, mobile] of [['desktop', 1280, false], ['mobile', 390, true]]) {
       await command('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile });
-      for (const route of ['', 'SPEC/']) {
+      for (const route of ['', 'GUIDE/', 'SPEC/']) {
         const url = new URL(route, pagesRoot).href;
         await command('Page.navigate', { url });
         await wait(`location.href === ${JSON.stringify(url)} && document.readyState === "complete" && !!document.querySelector(".documentation h1")`, 'rendered documentation');
@@ -322,7 +322,8 @@ async function checkPlayground() {
           return ids.filter((id, index) => ids.indexOf(id) !== index);
         })()`), [], 'Documentation IDs must be unique');
         const links = await evaluate('[...document.querySelectorAll("a[href]")].map(a => a.href)');
-        assert.ok(links.every(link => !/\.md(?:#|$)/.test(link)), 'documentation links should open rendered pages');
+        assert.ok(links.every(link => new URL(link).origin !== new URL(pagesRoot).origin || !/\.md(?:#|$)/.test(link)),
+          'documentation links should open rendered pages');
         for (const link of new Set(links)) {
           const target = new URL(link);
           if (target.origin !== new URL(pagesRoot).origin) continue;
@@ -336,14 +337,14 @@ async function checkPlayground() {
             })`), `broken fragment: ${link}`);
           }
         }
-        if (route) {
+        if (route === 'SPEC/') {
           assert.ok(await evaluate('!!document.getElementById("132-proof-conditions")'), 'proof contract anchor missing');
           assert.ok(await evaluate(`(() => {
             const label = [...document.querySelectorAll('dt')].find(dt => dt.textContent === '[GUIDE]');
-            return label?.nextElementSibling?.querySelector('a')?.href === ${JSON.stringify(pagesRoot)};
+            return label?.nextElementSibling?.querySelector('a')?.href === ${JSON.stringify(new URL('GUIDE/', pagesRoot).href)};
           })()`), 'The final guide reference must render as a working link');
         }
-        await screenshot(`${route ? 'specification' : 'guide'}-${name}`);
+        await screenshot(`${{ '': 'readme', 'GUIDE/': 'guide', 'SPEC/': 'specification' }[route]}-${name}`);
       }
     }
   }

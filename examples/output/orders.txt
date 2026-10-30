@@ -2,7 +2,7 @@
 Customer = ada, Voucher = ~"r3:g2:{\"Customer\": Symbol(\"ada\"), \"Total\": Integer(15)}", Total = 15.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: subtotal(Customer, Total) :- customer(Customer), aggregate_all(sum(Price), (line(Customer, Item, Price)), Total).
 % Rule 2: eligible(Customer, Total) :- subtotal(Customer, Total), \+ (blocked(Customer)), Total >= 10.
 % Rule 3: voucher(Customer, Voucher, Total) :- '$lean:1'(Customer, Total), fresh(Voucher).

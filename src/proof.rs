@@ -380,8 +380,8 @@ impl Certificate {
     }
     fn read(source: &str) -> Result<Self, Error> {
         let mut lines = source.lines();
-        if lines.next() != Some("wheye-proof 1") {
-            return Err(Error::new("Expected certificate header: wheye-proof 1."));
+        if lines.next() != Some("eyepl-proof 1") {
+            return Err(Error::new("Expected certificate header: eyepl-proof 1."));
         }
         let mut result = Self::default();
         let mut claims = false;
@@ -512,7 +512,7 @@ fn list(f: &mut fmt::Formatter<'_>, ids: &[usize]) -> fmt::Result {
 }
 impl fmt::Display for Certificate {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        writeln!(f, "wheye-proof 1")?;
+        writeln!(f, "eyepl-proof 1")?;
         for (i, s) in self.steps.iter().enumerate() {
             write!(f, "step {} ", i + 1)?;
             match &s.justification {
@@ -554,7 +554,7 @@ impl fmt::Display for Certificate {
         Ok(())
     }
 }
-/// The nine proof conditions for Midlog.
+/// The nine proof conditions for eyepl.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum Condition {
     C1,

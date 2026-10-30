@@ -1,6 +1,6 @@
 let ready;
 async function engine() {
-  ready ??= import('./pkg/wheye.js').then(async module => {
+  ready ??= import('./pkg/eyepl.js').then(async module => {
     await module.default();
     return module;
   });

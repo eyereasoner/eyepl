@@ -8,7 +8,7 @@ Kind = summatory_phi_30, Count = 278.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: in_range(Low, High, Low) :- Low =< High.
 % Rule 2: in_range(Low, High, Value) :- Low < High, Next is '+'(Low, 1), in_range(Next, High, Value).
 % Rule 3: gcd(A, 0, A) :- A >= 0.

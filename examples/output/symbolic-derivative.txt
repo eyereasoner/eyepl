@@ -8,7 +8,7 @@ Name = product, Derivative = add(mul(add(const(1), const(0)), mul(add(pow(var(x)
 Derivative = add(mul(const(1), var(x)), mul(var(x), const(1))).
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 2: d(var(X), X, const(1)) :- .
 % Rule 6: d(mul(U, V), X, add(mul(Du, V), mul(U, Dv))) :- d(U, X, Du), d(V, X, Dv).
 % Rule 10: derivative_result(Name, Derivative) :- expr(Name, Expr), d(Expr, x, Derivative).

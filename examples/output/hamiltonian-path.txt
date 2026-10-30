@@ -8,7 +8,7 @@ Last = v4.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: not_member(_, []) :- .
 % Rule 2: not_member(X, [Y | Rest]) :- X \= Y, not_member(X, Rest).
 % Rule 3: adjacent(V, U) :- edge(V, U).

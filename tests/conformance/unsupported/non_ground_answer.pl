@@ -1,2 +1,2 @@
-% Wheye requires displayed answers to be ground.
+% eyepl requires displayed answers to be ground.
 ?- X = Y.

@@ -3,7 +3,7 @@ Who = milo.
 Who = rex.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: is_a(Player, 'ready-player') :- is_a(Player, player), \+ (needs(Player, rest)).
 % Rule 2: needs(Player, rest) :- is_a(Player, 'tired-player').
 step 1 source 1 : is_a(milo, player).
@@ -27,7 +27,7 @@ Who = rex.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 2: needs(Player, rest) :- is_a(Player, 'tired-player').
 step 1 source 1 : is_a(milo, player).
 step 2 source 2 : is_a(luna, player).
@@ -42,7 +42,7 @@ answer 3 [6]
 false.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 
 ?- aggregate_all(count, (is_a(Subject, 'ready-player')), Result).
 Result = 2.

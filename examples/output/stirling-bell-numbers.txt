@@ -8,7 +8,7 @@ Kind = stirling_12_5, Count = 1379400.
 Count = 15.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 2: binomial(N, 0, 1) :- N > 0.
 % Rule 3: binomial(N, N, 1) :- N > 0.
 % Rule 4: binomial(N, K, C) :- N > 0, K > 0, K < N, N1 is '-'(N, 1), K1 is '-'(K, 1), binomial(N1, K1, Left), binomial(N1, K, Right), C is '+'(Left, Right).

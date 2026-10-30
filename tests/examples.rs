@@ -1,8 +1,8 @@
+use eyepl::{check, parse, reason, Certificate, Limits, Request};
 use std::collections::BTreeSet;
 use std::fs;
 use std::path::Path;
 use std::time::Instant;
-use wheye::{check, parse, reason, Certificate, Limits, Request};
 
 fn verify(path: &Path, update: bool) -> Result<(), Box<dyn std::error::Error>> {
     let source = fs::read_to_string(path)?;
@@ -66,7 +66,7 @@ fn all_examples_match_goldens_and_pass_c1_c9() {
         .collect();
     paths.sort();
     assert!(paths.len() >= 91);
-    let update = std::env::var("WHEYE_UPDATE_GOLDENS").as_deref() == Ok("1");
+    let update = std::env::var("EYEPL_UPDATE_GOLDENS").as_deref() == Ok("1");
     let mut failures = Vec::new();
     for path in &paths {
         let started = Instant::now();

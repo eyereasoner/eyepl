@@ -6,7 +6,7 @@ Moves = [goat, nothing, cabbage, goat, wolf, nothing, goat], Cost = 7.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: unsafe(state(Person, Wolf, Goat, Cabbage)) :- side(Person), side(Wolf), side(Goat), side(Cabbage), Wolf = Goat, Person \= Goat.
 % Rule 2: unsafe(state(Person, Wolf, Goat, Cabbage)) :- side(Person), side(Wolf), side(Goat), side(Cabbage), Goat = Cabbage, Person \= Goat.
 % Rule 3: safe(state(Person, Wolf, Goat, Cabbage)) :- side(Person), side(Wolf), side(Goat), side(Cabbage), \+ (unsafe(state(Person, Wolf, Goat, Cabbage))).
@@ -288,34 +288,34 @@ demand 1 : member(state(west, west, west, east), [state(west, west, west, west)]
 demand 1 : member(state(west, west, west, west), []).
 demand 1 : member(state(west, west, west, west), [state(east, west, east, west), state(west, west, west, west)]).
 demand 1 : member(state(west, west, west, west), [state(west, west, west, west)]).
-demand 1 : move(state(east, east, east, east), _WheyeCall0, _WheyeCall1).
-demand 1 : move(state(east, east, east, west), _WheyeCall0, _WheyeCall1).
-demand 1 : move(state(east, east, west, east), _WheyeCall0, _WheyeCall1).
-demand 1 : move(state(east, west, east, east), _WheyeCall0, _WheyeCall1).
-demand 1 : move(state(east, west, east, west), _WheyeCall0, _WheyeCall1).
-demand 1 : move(state(west, east, west, east), _WheyeCall0, _WheyeCall1).
-demand 1 : move(state(west, east, west, west), _WheyeCall0, _WheyeCall1).
-demand 1 : move(state(west, west, east, west), _WheyeCall0, _WheyeCall1).
-demand 1 : move(state(west, west, west, east), _WheyeCall0, _WheyeCall1).
-demand 1 : move(state(west, west, west, west), _WheyeCall0, _WheyeCall1).
+demand 1 : move(state(east, east, east, east), _EyeplCall0, _EyeplCall1).
+demand 1 : move(state(east, east, east, west), _EyeplCall0, _EyeplCall1).
+demand 1 : move(state(east, east, west, east), _EyeplCall0, _EyeplCall1).
+demand 1 : move(state(east, west, east, east), _EyeplCall0, _EyeplCall1).
+demand 1 : move(state(east, west, east, west), _EyeplCall0, _EyeplCall1).
+demand 1 : move(state(west, east, west, east), _EyeplCall0, _EyeplCall1).
+demand 1 : move(state(west, east, west, west), _EyeplCall0, _EyeplCall1).
+demand 1 : move(state(west, west, east, west), _EyeplCall0, _EyeplCall1).
+demand 1 : move(state(west, west, west, east), _EyeplCall0, _EyeplCall1).
+demand 1 : move(state(west, west, west, west), _EyeplCall0, _EyeplCall1).
 boundary 2 level 1 [1,2,3,4,9,10,11,12,13,14,15,16,17,18,19,22,23,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163]
-demand 2 : crossings(state(east, east, east, east), state(east, east, east, east), [state(east, east, east, east), state(west, east, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
-demand 2 : crossings(state(east, east, east, east), state(east, east, east, east), [state(east, east, east, east), state(west, east, west, east), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
-demand 2 : crossings(state(east, east, east, west), state(east, east, east, east), [state(east, east, east, west), state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
-demand 2 : crossings(state(east, east, east, west), state(east, east, east, east), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
-demand 2 : crossings(state(east, east, west, east), state(east, east, east, east), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
-demand 2 : crossings(state(east, east, west, east), state(east, east, east, east), [state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
-demand 2 : crossings(state(east, west, east, east), state(east, east, east, east), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
-demand 2 : crossings(state(east, west, east, east), state(east, east, east, east), [state(east, west, east, east), state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
-demand 2 : crossings(state(east, west, east, west), state(east, east, east, east), [state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
-demand 2 : crossings(state(west, east, west, east), state(east, east, east, east), [state(west, east, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
-demand 2 : crossings(state(west, east, west, east), state(east, east, east, east), [state(west, east, west, east), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
-demand 2 : crossings(state(west, east, west, west), state(east, east, east, east), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
-demand 2 : crossings(state(west, east, west, west), state(east, east, east, east), [state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
-demand 2 : crossings(state(west, west, east, west), state(east, east, east, east), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
-demand 2 : crossings(state(west, west, west, east), state(east, east, east, east), [state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
-demand 2 : crossings(state(west, west, west, east), state(east, east, east, east), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
-demand 2 : crossings(state(west, west, west, west), state(east, east, east, east), [state(west, west, west, west)], _WheyeCall0, _WheyeCall1, _WheyeCall2).
+demand 2 : crossings(state(east, east, east, east), state(east, east, east, east), [state(east, east, east, east), state(west, east, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _EyeplCall0, _EyeplCall1, _EyeplCall2).
+demand 2 : crossings(state(east, east, east, east), state(east, east, east, east), [state(east, east, east, east), state(west, east, west, east), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _EyeplCall0, _EyeplCall1, _EyeplCall2).
+demand 2 : crossings(state(east, east, east, west), state(east, east, east, east), [state(east, east, east, west), state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _EyeplCall0, _EyeplCall1, _EyeplCall2).
+demand 2 : crossings(state(east, east, east, west), state(east, east, east, east), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _EyeplCall0, _EyeplCall1, _EyeplCall2).
+demand 2 : crossings(state(east, east, west, east), state(east, east, east, east), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _EyeplCall0, _EyeplCall1, _EyeplCall2).
+demand 2 : crossings(state(east, east, west, east), state(east, east, east, east), [state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _EyeplCall0, _EyeplCall1, _EyeplCall2).
+demand 2 : crossings(state(east, west, east, east), state(east, east, east, east), [state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _EyeplCall0, _EyeplCall1, _EyeplCall2).
+demand 2 : crossings(state(east, west, east, east), state(east, east, east, east), [state(east, west, east, east), state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _EyeplCall0, _EyeplCall1, _EyeplCall2).
+demand 2 : crossings(state(east, west, east, west), state(east, east, east, east), [state(east, west, east, west), state(west, west, west, west)], _EyeplCall0, _EyeplCall1, _EyeplCall2).
+demand 2 : crossings(state(west, east, west, east), state(east, east, east, east), [state(west, east, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _EyeplCall0, _EyeplCall1, _EyeplCall2).
+demand 2 : crossings(state(west, east, west, east), state(east, east, east, east), [state(west, east, west, east), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _EyeplCall0, _EyeplCall1, _EyeplCall2).
+demand 2 : crossings(state(west, east, west, west), state(east, east, east, east), [state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _EyeplCall0, _EyeplCall1, _EyeplCall2).
+demand 2 : crossings(state(west, east, west, west), state(east, east, east, east), [state(west, east, west, west), state(east, east, west, east), state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _EyeplCall0, _EyeplCall1, _EyeplCall2).
+demand 2 : crossings(state(west, west, east, west), state(east, east, east, east), [state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _EyeplCall0, _EyeplCall1, _EyeplCall2).
+demand 2 : crossings(state(west, west, west, east), state(east, east, east, east), [state(west, west, west, east), state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _EyeplCall0, _EyeplCall1, _EyeplCall2).
+demand 2 : crossings(state(west, west, west, east), state(east, east, east, east), [state(west, west, west, east), state(east, west, east, east), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)], _EyeplCall0, _EyeplCall1, _EyeplCall2).
+demand 2 : crossings(state(west, west, west, west), state(east, east, east, east), [state(west, west, west, west)], _EyeplCall0, _EyeplCall1, _EyeplCall2).
 demand 2 : member(state(east, east, east, east), []).
 demand 2 : member(state(east, east, east, east), [state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
 demand 2 : member(state(east, east, east, east), [state(east, east, west, east), state(west, east, west, west), state(east, east, east, west), state(west, west, east, west), state(east, west, east, west), state(west, west, west, west)]).
@@ -417,16 +417,16 @@ demand 2 : member(state(west, west, west, east), [state(west, west, west, west)]
 demand 2 : member(state(west, west, west, west), []).
 demand 2 : member(state(west, west, west, west), [state(east, west, east, west), state(west, west, west, west)]).
 demand 2 : member(state(west, west, west, west), [state(west, west, west, west)]).
-demand 2 : move(state(east, east, east, east), _WheyeCall0, _WheyeCall1).
-demand 2 : move(state(east, east, east, west), _WheyeCall0, _WheyeCall1).
-demand 2 : move(state(east, east, west, east), _WheyeCall0, _WheyeCall1).
-demand 2 : move(state(east, west, east, east), _WheyeCall0, _WheyeCall1).
-demand 2 : move(state(east, west, east, west), _WheyeCall0, _WheyeCall1).
-demand 2 : move(state(west, east, west, east), _WheyeCall0, _WheyeCall1).
-demand 2 : move(state(west, east, west, west), _WheyeCall0, _WheyeCall1).
-demand 2 : move(state(west, west, east, west), _WheyeCall0, _WheyeCall1).
-demand 2 : move(state(west, west, west, east), _WheyeCall0, _WheyeCall1).
-demand 2 : move(state(west, west, west, west), _WheyeCall0, _WheyeCall1).
+demand 2 : move(state(east, east, east, east), _EyeplCall0, _EyeplCall1).
+demand 2 : move(state(east, east, east, west), _EyeplCall0, _EyeplCall1).
+demand 2 : move(state(east, east, west, east), _EyeplCall0, _EyeplCall1).
+demand 2 : move(state(east, west, east, east), _EyeplCall0, _EyeplCall1).
+demand 2 : move(state(east, west, east, west), _EyeplCall0, _EyeplCall1).
+demand 2 : move(state(west, east, west, east), _EyeplCall0, _EyeplCall1).
+demand 2 : move(state(west, east, west, west), _EyeplCall0, _EyeplCall1).
+demand 2 : move(state(west, west, east, west), _EyeplCall0, _EyeplCall1).
+demand 2 : move(state(west, west, west, east), _EyeplCall0, _EyeplCall1).
+demand 2 : move(state(west, west, west, west), _EyeplCall0, _EyeplCall1).
 answer 2 [165]
 
 ?- check.

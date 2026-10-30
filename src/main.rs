@@ -1,12 +1,12 @@
+use eyepl::{parse_document, reason, Error, Limits, Program, VERSION};
 use std::io::{self, Read};
 use std::process::ExitCode;
-use wheye::{parse_document, reason, Error, Limits, Program, VERSION};
 
-const HELP: &str = "wheye — a Midlog reasoner
+const HELP: &str = "eyepl — a relational rule reasoner
 
-Usage: wheye FILE...
-       wheye -
-       wheye -h | -v
+Usage: eyepl FILE...
+       eyepl -
+       eyepl -h | -v
 
   -h  Show this help
   -v  Show the version
@@ -44,7 +44,7 @@ fn run() -> Result<String, Error> {
         }
         match arg.as_str() {
             "-h" => return Ok(HELP.into()),
-            "-v" => return Ok(format!("wheye {VERSION}\n")),
+            "-v" => return Ok(format!("eyepl {VERSION}\n")),
             "--" => positional = true,
             "-" => files.push(arg),
             value if value.starts_with('-') => {
@@ -75,7 +75,7 @@ fn main() -> ExitCode {
             ExitCode::SUCCESS
         }
         Err(error) => {
-            eprintln!("wheye: {error}");
+            eprintln!("eyepl: {error}");
             ExitCode::FAILURE
         }
     }

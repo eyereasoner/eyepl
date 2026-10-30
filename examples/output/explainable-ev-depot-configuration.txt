@@ -2,7 +2,7 @@
 Site = depot_a, Product = fleet22.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: blocker(Site, Product, insufficient_site_power(Available, Needed)) :- site(Site, Available, _, _, _), charger(Product, _, Needed, _, _, _), Available < Needed.
 % Rule 2: blocker(Site, Product, insufficient_charge_rate(Offered, Required)) :- site(Site, _, Required, _, _), charger(Product, Offered, _, _, _, _), Offered < Required.
 % Rule 3: blocker(Site, Product, connector_mismatch(Offered, Required)) :- site(Site, _, _, Required, _), charger(Product, _, _, Offered, _, _), Offered \= Required.
@@ -58,7 +58,7 @@ Site = depot_a, Product = legacy22, Change = choose_connector(ccs2).
 Site = depot_a, Product = rapid50, ExtraKw = 20.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 13: power_upgrade(Site, Product, ExtraKw) :- site(Site, Available, RequiredCharge, Connector, Supply), charger(Product, OfferedCharge, Needed, Connector, Supply, _), OfferedCharge >= RequiredCharge, Needed > Available, ExtraKw is '-'(Needed, Available).
 step 1 source 1 : site(depot_a, 60, 22, ccs2, three_phase).
 step 2 source 3 : charger(rapid50, 50, 80, ccs2, three_phase, 900000).

@@ -2,7 +2,7 @@
 WholeList = 1, TwoElements = 3, BaseCase = 3, Fixed = 5.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: buggy_list_max([X], X) :- .
 % Rule 2: buggy_list_max([X | Rest], M) :- buggy_list_max(Rest, Before), X > Before, M = Before.
 % Rule 3: buggy_list_max([X | Rest], X) :- buggy_list_max(Rest, Before), X =< Before.

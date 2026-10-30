@@ -1,7 +1,7 @@
 % Finding grandparents
 %
 % Two generations of parent relationships connect a small family.
-% Wheye joins those relationships to identify grandparents.
+% eyepl joins those relationships to identify grandparents.
 % Repeated variables require the same person across both premises.
 
 parent(ada, bea).

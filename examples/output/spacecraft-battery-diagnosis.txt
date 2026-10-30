@@ -12,7 +12,7 @@ Pack = bp1, Action = isolate_and_cool.
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 2: metric(Pack, resistive_heating_w, Heating) :- telemetry(Pack, current_a, Current), telemetry(Pack, internal_resistance_ohm, Resistance), CurrentSquared is '*'(Current, Current), Heating is '*'(CurrentSquared, Resistance).
 % Rule 3: over_temperature(Pack) :- telemetry(Pack, temperature_c, Temperature), safety_limit(max_safe_temperature_c, Maximum), Temperature > Maximum.
 % Rule 4: rapid_heating(Pack) :- telemetry(Pack, temperature_rise_c_per_min, Rate), safety_limit(max_temperature_rise_c_per_min, Maximum), Rate > Maximum.

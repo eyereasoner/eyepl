@@ -8,7 +8,7 @@ true.
 What = 'low-sugar'.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: 'case-insight'(Case, Insight) :- envelope(Case, Envelope), insight(Envelope, Insight).
 % Rule 3: is_a(Case, 'low-sugar-case') :- household(Case, Household), condition(Household, "Diabetes").
 % Rule 4: 'derived-need'([Case, Insight], 'low-sugar') :- is_a(Case, 'low-sugar-case'), 'case-insight'(Case, Insight).

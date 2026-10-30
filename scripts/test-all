@@ -8,10 +8,10 @@ started=$EPOCHREALTIME
 checks=0
 failed=0
 heading='' dim='' good='' bad='' reset=''
-export WHEYE_TEST_COLOR=0
+export EYEPL_TEST_COLOR=0
 if [[ -z ${NO_COLOR+x} && ( -t 1 || ${FORCE_COLOR:-0} != 0 ) ]]; then
   heading=$'\033[1;36m' dim=$'\033[2m' good=$'\033[32m' bad=$'\033[31m' reset=$'\033[0m'
-  export WHEYE_TEST_COLOR=1 CARGO_TERM_COLOR=always
+  export EYEPL_TEST_COLOR=1 CARGO_TERM_COLOR=always
 fi
 elapsed() { awk -v s="$1" -v e="$EPOCHREALTIME" 'BEGIN { printf "%.2f", e-s }'; }
 run_check() {
@@ -31,7 +31,7 @@ run_check() {
 # Check source formatting before running the behavior and proof regressions.
 run_check 'Formatting' 'Rust source follows the repository format.' cargo fmt --check
 # Build once and time each native test, including every example and its golden.
-run_check 'Native tests and goldens' 'Midlog, ISO compatibility, CLI, C1–C9, forged proofs, graph oracles, and all example outputs.' node scripts/test-rust.mjs
+run_check 'Native tests and goldens' 'eyepl, ISO compatibility, CLI, C1–C9, forged proofs, graph oracles, and all example outputs.' node scripts/test-rust.mjs
 # Rustdoc examples remain separate from native test executables.
 run_check 'API examples' 'Compile and run the examples in the public Rust API documentation.' cargo test --release --locked --doc
 # Check production code, tests, and benchmarks for warnings.

@@ -8,7 +8,7 @@ Kind = first_ten_sum, Count = 6918.
 Count = 14.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: catalan(N, Count) :- N > 0, Last is '-'(N, 1), convolution(0, Last, Count).
 % Rule 2: convolution(I, Last, 0) :- I > Last.
 % Rule 3: convolution(I, Last, Count) :- I =< Last, J is '-'(Last, I), catalan(I, Left), catalan(J, Right), Next is '+'(I, 1), convolution(Next, Last, Rest), Count is '+'('*'(Left, Right), Rest).

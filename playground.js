@@ -1,8 +1,8 @@
 const $ = id => document.getElementById(id);
 const examples = new Set(['abstract-interpretation', 'access-control-policy', 'ackermann', 'age', 'aggregation', 'agri-drought-relief', 'animals', 'arithmetic', 'battery-dispatch', 'bayes-diagnosis', 'beam-deflection', 'binomial-vandermonde', 'braking-distance', 'buck-converter-design', 'canary-release', 'catalan-convolution', 'collatz', 'competitive-enzyme-kinetics', 'complex', 'continued-fraction-sqrt2', 'control-system', 'critical-path-schedule', 'dairy-energy-balance', 'data-quality-audit', 'declarative-fault-localization', 'deep-taxonomy-10', 'deep-taxonomy-100', 'deep-taxonomy-1000', 'deep-taxonomy-10000', 'deep-taxonomy-100000', 'delfour', 'deontic-logic', 'dijkstra', 'dog-license', 'drone-corridor-planner', 'easter', 'electrical-rc-filter', 'examiners', 'explainable-ev-depot-configuration', 'expression-eval', 'family', 'family-cousins', 'fft8-numeric', 'fibonacci', 'field-nitrogen-balance', 'flute-puzzle', 'french-cities', 'friends', 'fundamental-theorem-arithmetic', 'gcd-bezout-identity', 'goldbach', 'good-cobbler', 'gps', 'grammar', 'gray-code-counter', 'hamiltonian-path', 'hamming-code', 'hanoi', 'heat-loss', 'heron-theorem', 'ideal-gas-law', 'integer-partitions', 'interval-relations', 'intuitionistic-logic-kripke', 'inventory', 'job-shop-scheduling', 'kaprekar-6174', 'knapsack-optimization', 'lagrange-cosets', 'law-of-cosines', 'least-squares-regression', 'linear-logic-resources', 'list-collection', 'lists', 'manufacturing-quality-control', 'matrix-multiplication', 'modal-logic-kripke', 'modular-exponentiation', 'monkey-bananas', 'negation', 'network-sla', 'newton-raphson', 'nilakantha-pi', 'nixon-diamond', 'observability-log-correlation', 'orbital-transfer-design', 'orders', 'owl-property-chain', 'padovan', 'paraconsistent-animals', 'path-discovery', 'paths', 'peano', 'peasant', 'pell-equation', 'pendulum-period', 'permissions', 'pointer-analysis', 'policy-risk', 'polynomial', 'quadratic-formula', 'queens', 'radioactive-decay', 'rdf', 'research-portal', 'sbom-vulnerability-response', 'schema-inference', 'service-outage-recovery', 'shoelace-polygon-area', 'shortest-path', 'sieve', 'socrates', 'spacecraft-battery-diagnosis', 'state-transitions', 'statistics-summary', 'stirling-bell-numbers', 'symbolic-derivative', 'term-structure', 'text-processing', 'totient-summatory', 'turing', 'type-inference', 'unification', 'values', 'vector-similarity', 'weighted-interval-scheduling', 'wind-turbine', 'witnesses', 'wolf-goat-cabbage']);
-const storageKey = 'wheye.playground.v1';
-const gistTokenKey = 'wheye.playground.github.gistToken.v1';
-const gistFile = 'wheye-playground-state.json';
+const storageKey = 'eyepl.playground.v1';
+const gistTokenKey = 'eyepl.playground.github.gistToken.v1';
+const gistFile = 'eyepl-playground-state.json';
 const contentSizedInput = globalThis.CSS?.supports('field-sizing', 'content') ?? false;
 let worker = null;
 let ready = null;
@@ -85,7 +85,7 @@ const tokens = /(%[^\n]*|\/\*[\s\S]*?(?:\*\/|$))|("(?:[^"\\]|\\.|"")*"?)|('(?:[^
 const escapeHtml = text => text.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
 // Coloring copies the text into spans; very large programs and results stay plain.
 const colorLimit = 200000;
-/** Midlog source and results share one lexical coloring, following the tokenizer's token kinds. */
+/** eyepl source and results share one lexical coloring, following the tokenizer's token kinds. */
 function highlight(text) {
   let html = '';
   let at = 0;
@@ -146,7 +146,7 @@ function ensureWorker() {
     current.onmessage = ({ data }) => {
       if (current !== worker) return;
       if (data.kind === 'ready') {
-        $('version').textContent = `v${data.version}`;
+        $('version').textContent = data.version;
         cancelReady = null;
         resolve(current);
       } else if (data.kind === 'fatal') {
@@ -257,7 +257,7 @@ async function createGistUrl(state, token) {
   const { response, payload } = await gistRequest('https://api.github.com/gists', {
     method: 'POST',
     headers: { Accept: 'application/vnd.github+json', 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ description: 'Wheye playground shared program', public: false,
+    body: JSON.stringify({ description: 'eyepl playground shared program', public: false,
       files: { [gistFile]: { content: JSON.stringify(state, null, 2) + '\n' } } }),
   });
   if (!response.ok) {

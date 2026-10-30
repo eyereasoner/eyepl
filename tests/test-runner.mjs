@@ -7,7 +7,7 @@ import { join } from 'node:path';
 import { formatReport, parseResults } from '../scripts/test-report.mjs';
 
 async function fixture(t) {
-  const directory = await mkdtemp(join(tmpdir(), 'wheye-runner-'));
+  const directory = await mkdtemp(join(tmpdir(), 'eyepl-runner-'));
   t.after(() => rm(directory, { recursive: true, force: true }));
   const bin = join(directory, 'bin');
   await mkdir(bin);
@@ -20,9 +20,9 @@ async function checksFixture(t) {
   await mkdir(join(directory, 'scripts'));
   await copyFile(new URL('../scripts/test-all', import.meta.url), join(directory, 'scripts/test-all'));
   const log = join(directory, 'calls');
-  env.WHEYE_RUNNER_LOG = log;
+  env.EYEPL_RUNNER_LOG = log;
   for (const command of ['cargo', 'node']) {
-    await writeFile(join(bin, command), `#!/usr/bin/env bash\nprintf '${command} %s\\n' "$*" >> "$WHEYE_RUNNER_LOG"\n${command === 'cargo' ? 'if [[ $1 == fmt ]]; then exit 7; fi' : ''}\n`, { mode: 0o755 });
+    await writeFile(join(bin, command), `#!/usr/bin/env bash\nprintf '${command} %s\\n' "$*" >> "$EYEPL_RUNNER_LOG"\n${command === 'cargo' ? 'if [[ $1 == fmt ]]; then exit 7; fi' : ''}\n`, { mode: 0o755 });
   }
   return { ...setup, log };
 }

@@ -104,7 +104,7 @@ impl Run {
                 used[rule - 1] = true;
             }
         }
-        let mut text = String::from("wheye-proof 1\n");
+        let mut text = String::from("eyepl-proof 1\n");
         for (index, rule) in program.rules.iter().enumerate() {
             if used[index] {
                 text.push_str(&format!("% Rule {}: {}\n", index + 1, rule));

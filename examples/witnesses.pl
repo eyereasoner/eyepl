@@ -1,7 +1,7 @@
 % A distinct ticket for each visitor
 %
 % Each registered visitor receives a ticket with a fresh opaque identity.
-% Wheye creates one witness per visitor that has no ticket yet, and another
+% eyepl creates one witness per visitor that has no ticket yet, and another
 % rule can carry that same identity onward. The proof checker verifies its
 % origin under C8.
 

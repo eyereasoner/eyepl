@@ -11,7 +11,7 @@ Norm = 8.774964387392123.
 Similarity = 0.3654869423239036.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: dot([A | As], [B | Bs], Dot) :- Product is '*'(A, B), dot(As, Bs, Rest), Dot is '+'(Product, Rest).
 % Rule 2: sum_squares([X | Xs], Total) :- Squared is '**'(X, 2), sum_squares(Xs, Rest), Total is '+'(Squared, Rest).
 % Rule 3: norm(Vector, Norm) :- sum_squares(Vector, Sumsquares), Norm is '**'(Sumsquares, 0.5).

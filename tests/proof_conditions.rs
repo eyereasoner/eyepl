@@ -1,4 +1,4 @@
-use wheye::{
+use eyepl::{
     check, parse, reason, Certificate, Claim, Condition, Justification, Limits, ProofLocation,
     Report, Step,
 };
@@ -58,12 +58,12 @@ fn valid_reports_list_all_nine_conditions_and_exact_counts() {
 
 #[test]
 fn c1_rejects_forged_facts_heads_and_inconsistent_rule_bindings() {
-    let report = inspect(SOCRATES, "wheye-proof 1\nstep 1 source 1 : human(plato).\nstep 2 rule 1 [1] : mortal(plato).\nanswer 1 [2]\n");
+    let report = inspect(SOCRATES, "eyepl-proof 1\nstep 1 source 1 : human(plato).\nstep 2 rule 1 [1] : mortal(plato).\nanswer 1 [2]\n");
     fails(&report, Condition::C1);
     assert_eq!(report.failures[0].location, ProofLocation::Step(1));
-    let report = inspect(SOCRATES, "wheye-proof 1\nstep 1 source 1 : human(socrates).\nstep 2 rule 1 [1] : mortal(plato).\nanswer 1 [2]\n");
+    let report = inspect(SOCRATES, "eyepl-proof 1\nstep 1 source 1 : human(socrates).\nstep 2 rule 1 [1] : mortal(plato).\nanswer 1 [2]\n");
     fails(&report, Condition::C1);
-    let report = inspect("p(a). edge(b,c). r(X,Y) :- p(X), edge(X,Y). ?- r(X,Y).", "wheye-proof 1\nstep 1 source 1 : p(a).\nstep 2 source 2 : edge(b,c).\nstep 3 rule 1 [1,2] : r(a,c).\nanswer 1 [3]\n");
+    let report = inspect("p(a). edge(b,c). r(X,Y) :- p(X), edge(X,Y). ?- r(X,Y).", "eyepl-proof 1\nstep 1 source 1 : p(a).\nstep 2 source 2 : edge(b,c).\nstep 3 rule 1 [1,2] : r(a,c).\nanswer 1 [3]\n");
     fails(&report, Condition::C1);
 }
 
@@ -71,23 +71,23 @@ fn c1_rejects_forged_facts_heads_and_inconsistent_rule_bindings() {
 fn c2_rejects_a_self_justifying_cycle_and_acyclic_forward_references() {
     let report = inspect(
         "p(X) :- p(X). ?- p(X).",
-        "wheye-proof 1\nstep 1 rule 1 [1] : p(a).\nanswer 1 [1]\n",
+        "eyepl-proof 1\nstep 1 rule 1 [1] : p(a).\nanswer 1 [1]\n",
     );
     fails(&report, Condition::C2);
     assert_eq!(report.condition(Condition::C1).failed, 0);
     let report = inspect(
         "p(a). q(X) :- p(X). ?- q(X).",
-        "wheye-proof 1\nstep 1 rule 1 [2] : q(a).\nstep 2 source 1 : p(a).\nanswer 1 [1]\n",
+        "eyepl-proof 1\nstep 1 rule 1 [2] : q(a).\nstep 2 source 1 : p(a).\nanswer 1 [1]\n",
     );
     fails(&report, Condition::C2);
 }
 
 #[test]
 fn c3_rejects_duplicate_steps_and_duplicate_projected_answers() {
-    let report = inspect("p(a). ?- p(X).", "wheye-proof 1\nstep 1 source 1 : p(a).\nstep 2 source 1 : p(a).\nanswer 1 [1]\nanswer 1 [2]\n");
+    let report = inspect("p(a). ?- p(X).", "eyepl-proof 1\nstep 1 source 1 : p(a).\nstep 2 source 1 : p(a).\nanswer 1 [1]\nanswer 1 [2]\n");
     fails(&report, Condition::C3);
     assert_eq!(report.condition(Condition::C3).failed, 2);
-    let report = inspect("p(a). p(b). ?- p(_).", "wheye-proof 1\nstep 1 source 1 : p(a).\nstep 2 source 2 : p(b).\nanswer 1 [1]\nanswer 1 [2]\n");
+    let report = inspect("p(a). p(b). ?- p(_).", "eyepl-proof 1\nstep 1 source 1 : p(a).\nstep 2 source 2 : p(b).\nanswer 1 [1]\nanswer 1 [2]\n");
     fails(&report, Condition::C3);
 }
 
@@ -95,7 +95,7 @@ fn c3_rejects_duplicate_steps_and_duplicate_projected_answers() {
 fn c4_reports_missing_references_without_panicking_or_running_dependent_checks() {
     let report = inspect(
         SOCRATES,
-        "wheye-proof 1\nstep 1 rule 999 [999] : mortal(socrates).\nanswer 999 [999]\n",
+        "eyepl-proof 1\nstep 1 rule 999 [999] : mortal(socrates).\nanswer 999 [999]\n",
     );
     fails(&report, Condition::C4);
     assert_eq!(report.condition(Condition::C4).failed, 4);
@@ -112,20 +112,20 @@ fn c4_reports_missing_references_without_panicking_or_running_dependent_checks()
 fn c7_rejects_unrelated_steps_and_input_facts_disguised_as_derived_output() {
     let report = inspect(
         "p(a). p(b). ?- p(X).",
-        "wheye-proof 1\nstep 1 source 1 : p(a).\nstep 2 source 2 : p(b).\nanswer 1 [1]\n",
+        "eyepl-proof 1\nstep 1 source 1 : p(a).\nstep 2 source 2 : p(b).\nanswer 1 [1]\n",
     );
     fails(&report, Condition::C7);
     assert_eq!(report.failures[0].location, ProofLocation::Step(2));
     let report = inspect(
         "p(a). q(a). p(X) :- q(X).",
-        "wheye-proof 1\nstep 1 source 2 : q(a).\nstep 2 rule 1 [1] : p(a).\nderived 2\n",
+        "eyepl-proof 1\nstep 1 source 2 : q(a).\nstep 2 rule 1 [1] : p(a).\nderived 2\n",
     );
     fails(&report, Condition::C7);
     assert_eq!(report.condition(Condition::C1).failed, 0);
     // A query may still select that same supported input fact.
     let report = inspect(
         "p(a). q(a). p(X) :- q(X). ?- p(X).",
-        "wheye-proof 1\nstep 1 source 2 : q(a).\nstep 2 rule 1 [1] : p(a).\nanswer 1 [2]\n",
+        "eyepl-proof 1\nstep 1 source 2 : q(a).\nstep 2 rule 1 [1] : p(a).\nanswer 1 [2]\n",
     );
     assert!(report.valid(), "{report}");
 }
@@ -133,7 +133,7 @@ fn c7_rejects_unrelated_steps_and_input_facts_disguised_as_derived_output() {
 #[test]
 fn c9_requires_complete_consistent_query_selection() {
     for evidence in ["[1]", "[1,2]"] {
-        let report = inspect("p(a). q(b). ?- p(X), q(X).", &format!("wheye-proof 1\nstep 1 source 1 : p(a).\nstep 2 source 2 : q(b).\nanswer 1 {evidence}\n"));
+        let report = inspect("p(a). q(b). ?- p(X), q(X).", &format!("eyepl-proof 1\nstep 1 source 1 : p(a).\nstep 2 source 2 : q(b).\nanswer 1 {evidence}\n"));
         fails(&report, Condition::C9);
     }
     let p = parse(SOCRATES).unwrap();
@@ -152,7 +152,7 @@ fn inapplicable_conditions_do_not_admit_unsupported_proof_justifications() {
         "answer 1",
     ] {
         let text =
-            format!("wheye-proof 1\nstep 1 {justification} : mortal(socrates).\nanswer 1 [1]\n");
+            format!("eyepl-proof 1\nstep 1 {justification} : mortal(socrates).\nanswer 1 [1]\n");
         let error = Certificate::parse(&text).unwrap_err().to_string();
         assert!(error.contains("[C3 justification]"), "{error}");
         assert!(Certificate::parse(&text)
@@ -167,7 +167,7 @@ fn inapplicable_conditions_do_not_admit_unsupported_proof_justifications() {
 #[test]
 fn all_independent_failures_are_reported_and_rechecking_is_repeatable() {
     let p = parse(SOCRATES).unwrap();
-    let c = Certificate::parse("wheye-proof 1\nstep 1 source 1 : human(plato).\nstep 2 rule 1 [1] : mortal(socrates).\nanswer 1 [2]\n").unwrap();
+    let c = Certificate::parse("eyepl-proof 1\nstep 1 source 1 : human(plato).\nstep 2 rule 1 [1] : mortal(socrates).\nanswer 1 [2]\n").unwrap();
     let report = check(&p, &c).unwrap();
     assert_eq!(report.condition(Condition::C1).failed, 2);
     assert_eq!(check(&p, &c).unwrap(), report);
@@ -176,7 +176,7 @@ fn all_independent_failures_are_reported_and_rechecking_is_repeatable() {
 
 #[test]
 fn empty_certificates_check_no_positive_claims_and_no_inapplicable_conditions() {
-    let report = inspect(SOCRATES, "wheye-proof 1\n");
+    let report = inspect(SOCRATES, "eyepl-proof 1\n");
     assert!(report.valid());
     assert_eq!((report.steps, report.claims), (0, 0));
     assert!(report
@@ -195,9 +195,9 @@ fn exhaustive_small_forged_certificates_never_establish_a_false_query_answer() {
     let p = parse("p(a). q(X) :- p(X). p(X) :- q(X). ?- q(Who).").unwrap();
     let atoms: Vec<_> = ["p(a).", "p(b).", "q(a).", "q(b)."]
         .iter()
-        .map(|text| wheye::parse_atom(text).unwrap())
+        .map(|text| eyepl::parse_atom(text).unwrap())
         .collect();
-    let expected = wheye::parse_atom("q(a).").unwrap();
+    let expected = eyepl::parse_atom("q(a).").unwrap();
     let mut justifications = vec![
         Justification::Source(0),
         Justification::Source(1),

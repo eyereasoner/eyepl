@@ -4,7 +4,7 @@ User = alice, Action = write.
 User = bob, Action = read.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: candidate(User, Action) :- role(User, Role), permits(Role, Action).
 % Rule 2: allowed(User, Action) :- candidate(User, Action), \+ (suspended(User)).
 step 1 source 1 : role(alice, editor).
@@ -34,7 +34,7 @@ Action = read.
 Action = write.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: candidate(User, Action) :- role(User, Role), permits(Role, Action).
 step 1 source 3 : role(carol, editor).
 step 2 source 4 : permits(editor, read).

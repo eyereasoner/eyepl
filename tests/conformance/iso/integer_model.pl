@@ -1,4 +1,4 @@
-% ISO permits unbounded integers; these cases exercise Wheye's choice.
+% ISO permits unbounded integers; these cases exercise eyepl's choice.
 ?- X is 9223372036854775807 + 1.
 ?- X is -9223372036854775808 - 1.
 ?- X is 9007199254740993 * 3.

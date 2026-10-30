@@ -4,7 +4,7 @@ Prefix = [a], Suffix = [b].
 Prefix = [a, b], Suffix = [].
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: append([], Ys, Ys) :- .
 % Rule 2: append([X | Xs], Ys, [X | Zs]) :- append(Xs, Ys, Zs).
 step 1 rule 1 [] : append([], [a, b], [a, b]).
@@ -21,7 +21,7 @@ answer 1 [6]
 true.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 3: matching_pair(pair(X, X)) :- .
 step 1 rule 3 [] : matching_pair(pair(same, same)).
 answer 2 [1]
@@ -33,7 +33,7 @@ false.
 Head = a, Tail = [b, c].
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 4: head_tail([Head | Tail], Head, Tail) :- .
 step 1 rule 4 [] : head_tail([a, b, c], a, [b, c]).
 answer 4 [1]

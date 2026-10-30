@@ -33,7 +33,7 @@ Log = l1, Name = flags, Value = '01'.
 User = alice, Trace = '4bf92f3577b34da6a3ce929d0e0e4736', Ip = '203.0.113.9'.
 
 ?- why.
-wheye-proof 1
+eyepl-proof 1
 % Rule 1: append([], Right, Right) :- .
 % Rule 2: append([Head | Rest], Right, [Head | Joined]) :- append(Rest, Right, Joined).
 % Rule 3: member(Head, [Head | _]) :- .
