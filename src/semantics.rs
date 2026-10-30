@@ -99,6 +99,20 @@ fn list(values: Vec<Value>) -> Value {
         Value::Compound(".".into(), vec![head, tail])
     })
 }
+/// The text of a proper list of one-character atoms.
+fn chars_text(v: &Value) -> Result<String, Error> {
+    items(v)
+        .and_then(|chars| {
+            chars
+                .into_iter()
+                .map(|c| match c {
+                    Value::Symbol(s) if s.chars().count() == 1 => s.chars().next(),
+                    _ => None,
+                })
+                .collect::<Option<String>>()
+        })
+        .ok_or_else(|| Error::new("Text characters must be a proper list of one-character atoms."))
+}
 fn items(v: &Value) -> Option<Vec<Value>> {
     let mut result = Vec::new();
     let mut cursor = v;
@@ -195,6 +209,27 @@ pub(crate) fn builtin(goal: &Goal, bindings: &Bindings) -> Result<Option<(Atom, 
                 _ => return Err(Error::new("string_concat requires two input strings.")),
             }
         }
+        ("atom_concat", [a, b, c]) => {
+            // Any two bound atoms determine the third, so every supported mode
+            // is a single decision; splitting a lone bound atom would enumerate.
+            let atom = |v: &Value| match v {
+                Value::Symbol(s) => Ok(Some(s.clone())),
+                Value::Variable(_) => Ok(None),
+                _ => Err(Error::new("atom_concat arguments must be atoms.")),
+            };
+            match (atom(a)?, atom(b)?, atom(c)?) {
+                (Some(x), Some(y), _) => {
+                    unify(c, &Value::Symbol(format!("{x}{y}").into()), &mut next)
+                }
+                (Some(x), None, Some(z)) => z
+                    .strip_prefix(x.as_str())
+                    .is_some_and(|rest| unify(b, &Value::Symbol(rest.into()), &mut next)),
+                (None, Some(y), Some(z)) => z
+                    .strip_suffix(y.as_str())
+                    .is_some_and(|rest| unify(a, &Value::Symbol(rest.into()), &mut next)),
+                _ => return Err(Error::new("atom_concat needs two bound atoms.")),
+            }
+        }
         ("string_length", [a, b]) => {
             require(a)?;
             let Value::Text(a) = a else {
@@ -243,6 +278,56 @@ pub(crate) fn builtin(goal: &Goal, bindings: &Bindings) -> Result<Option<(Atom, 
                     Value::Text(text.into())
                 };
                 unify(a, &v, &mut next)
+            }
+        }
+        ("atom_chars", [a, b]) => match a {
+            Value::Symbol(s) => unify(
+                b,
+                &list(
+                    s.chars()
+                        .map(|c| Value::Symbol(c.to_string().into()))
+                        .collect(),
+                ),
+                &mut next,
+            ),
+            Value::Variable(_) => {
+                require(b)?;
+                let text = chars_text(b)?;
+                unify(a, &Value::Symbol(text.into()), &mut next)
+            }
+            _ => {
+                return Err(Error::new(
+                    "The first text conversion argument has the wrong type.",
+                ))
+            }
+        },
+        ("number_chars", [a, b]) => {
+            if !matches!(
+                a,
+                Value::Variable(_) | Value::Integer(_) | Value::BigInteger(_) | Value::Real(_)
+            ) {
+                return Err(Error::new("number_chars needs a number."));
+            }
+            // A bound character list is read even when the number is bound,
+            // so `number_chars(1, ['0', '1'])` holds as in ISO.
+            if b.ground() {
+                let text = chars_text(b)?;
+                let number = crate::parser::number_text(&text).ok_or_else(|| {
+                    Error::new(format!("number_chars cannot read {text:?} as a number."))
+                })?;
+                unify(a, &number, &mut next)
+            } else {
+                require(a)?;
+                let text = a.to_string();
+                unify(
+                    b,
+                    &list(
+                        text.chars()
+                            .map(|c| Value::Symbol(c.to_string().into()))
+                            .collect(),
+                    ),
+                    &mut next,
+                )
             }
         }
         ("=..", [a, b]) => {

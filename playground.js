@@ -80,7 +80,7 @@ function save() {
   }, 200);
 }
 const keywords = new Set(['aggregate_all', 'fresh', 'table', 'why', 'check', 'is', 'mod', 'div', 'rem', 'xor', 'true', 'false']);
-const builtins = new Set(['count', 'sum', 'min', 'max', 'list', 'string_concat', 'string_length', 'contains_text', 'atom_codes', 'string_codes', 'abs', 'sign', 'sqrt', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'atan2', 'exp', 'log', 'log2', 'float', 'integer', 'truncate', 'round', 'ceiling', 'floor', 'gcd', 'msb', 'pi']);
+const builtins = new Set(['count', 'sum', 'min', 'max', 'list', 'atom_chars', 'atom_concat', 'number_chars', 'string_concat', 'string_length', 'contains_text', 'atom_codes', 'string_codes', 'abs', 'sign', 'sqrt', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'atan2', 'exp', 'log', 'log2', 'float', 'integer', 'truncate', 'round', 'ceiling', 'floor', 'gcd', 'msb', 'pi']);
 const tokens = /(%[^\n]*|\/\*[\s\S]*?(?:\*\/|$))|("(?:[^"\\]|\\.|"")*"?)|('(?:[^'\\]|\\.|'')*'?)|([A-Z_][A-Za-z0-9_]*)|(\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)|([a-z][A-Za-z0-9_]*)|(:-|\?-|\\\+)|([()[\]|,.~]|[=<>@+\-*\/\\^]+)/g;
 const escapeHtml = text => text.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
 // Coloring copies the text into spans; very large programs and results stay plain.

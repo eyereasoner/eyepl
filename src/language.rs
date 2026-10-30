@@ -223,8 +223,12 @@ pub(crate) fn bound_after(
                     let known = |i: usize| term_variables(&g.terms[i..i + 1]).is_subset(&bound);
                     let produces = match g.predicate.as_str() {
                         "is" => known(1),
-                        "=" | "=.." | "atom_codes" | "string_codes" => known(0) || known(1),
+                        "=" | "=.." | "atom_chars" | "atom_codes" | "number_chars"
+                        | "string_codes" => known(0) || known(1),
                         "string_concat" => known(0) && known(1),
+                        "atom_concat" => {
+                            (known(0) && known(1)) || (known(2) && (known(0) || known(1)))
+                        }
                         "string_length" => known(0),
                         "true" | "false" => true,
                         _ => vars.is_subset(&bound),

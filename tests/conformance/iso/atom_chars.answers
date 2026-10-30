@@ -1,0 +1,6 @@
+L = [a, b, c]
+A = abc
+L = []
+A = ''
+X = a, Y = b
+false

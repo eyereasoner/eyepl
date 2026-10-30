@@ -1,6 +1,6 @@
 # <img src="assets/eye.png" alt="" width="48" height="48" align="absmiddle"> eyepl specification
 
-Version **0.3.6**
+Version **0.3.7**
 
 **Status of this document.** This document defines the eyepl language,
 with the eyepl Rust reasoner as its reference implementation. It is the
@@ -253,7 +253,8 @@ Corrigendum 3, ISO Section 9.3.10.3(e) (Section 7.3 below).
 | Conjunction, `true/0`, and ground single-goal negation | 7.8, 8.15.1 | Sections 5.3, 6.2, and 8.1 |
 | Term construction and decomposition with `=../2` | 8.5.3 | Section 6.6 |
 | Arithmetic evaluation, comparison, and supported evaluable functors | 7.9, 8.6–8.7, 9 | Sections 6.3 and 7 |
-| Atom/code conversion | 8.16.5 | Section 6.5 |
+| Atom concatenation with two bound arguments | 8.16.2 | Section 6.5 |
+| Atom/character, atom/code, and number/character conversion | 8.16.4, 8.16.5, 8.16.7 | Section 6.5 |
 
 The table identifies supported areas, with the input modes and boundaries
 defined in this document. The [conformance corpus](https://github.com/eyereasoner/eyepl/tree/main/tests/conformance/)
@@ -578,8 +579,9 @@ variables are available before each goal when classifying rules:
 | Ordinary call | nothing | all its variables |
 | `true`, `false` | nothing | nothing |
 | `X \= Y` | every variable | nothing |
-| `X = Y`, `T =.. L`, `atom_codes(A, L)`, `string_codes(S, L)` | either argument fully bound | all variables |
+| `X = Y`, `T =.. L`, `atom_chars(A, L)`, `atom_codes(A, L)`, `number_chars(N, L)`, `string_codes(S, L)` | either argument fully bound | all variables |
 | `X is E` | `E` fully bound | all variables |
+| `atom_concat(A, B, C)` | any two of `A`, `B`, and `C` | all variables |
 | `string_concat(A, B, C)` | `A` and `B` | all variables |
 | `string_length(S, N)` | `S` | all variables |
 | Numeric and lexicographic comparisons, `contains_text/2` | every variable | nothing new |
@@ -617,8 +619,9 @@ an improper list or invalid number MUST raise an error.
 
 The complete set of built-in predicates is:
 `true/0`, `false/0`, `=/2`, `\=/2`, `is/2`, `</2`, `=</2`, `>/2`, `>=/2`,
-`=:=/2`, `=\=/2`, `@</2`, `@=</2`, `@>/2`, `@>=/2`, `=../2`, `atom_codes/2`,
-`string_codes/2`, `string_concat/3`, `string_length/2`, and `contains_text/2`.
+`=:=/2`, `=\=/2`, `@</2`, `@=</2`, `@>/2`, `@>=/2`, `=../2`, `atom_chars/2`,
+`atom_codes/2`, `atom_concat/3`, `number_chars/2`, `string_codes/2`,
+`string_concat/3`, `string_length/2`, and `contains_text/2`.
 `aggregate_all/3` and `fresh/1` are special forms (Section 8).
 
 ### 6.2 Control and Unification
@@ -651,7 +654,10 @@ standard order of terms; any other operand types MUST raise an error.
 
 | Predicate | Behavior |
 | --- | --- |
+| `atom_chars(Atom, Chars)` | Relates an atom to its list of one-character atoms. |
 | `atom_codes(Atom, Codes)` | Relates an atom to its list of Unicode scalar values. |
+| `atom_concat(A, B, C)` | Relates atoms with `C` the concatenation of `A` and `B`. With `A` and `B` bound it concatenates them; with `C` and one of `A` or `B` bound it removes that prefix or suffix from `C`, failing when `C` lacks it. A bound argument that is not an atom MUST raise an error. ISO's mode that enumerates the splits of `C` alone is not supported. |
+| `number_chars(Number, Chars)` | Relates a number to the one-character atoms that spell it. A bound list is read as one number token (Section 3), after optional leading layout and a minus sign; anything else MUST raise an error. Otherwise the number is written as in Section 11.4. |
 | `string_codes(String, Codes)` | Relates a string to its list of Unicode scalar values. |
 | `string_concat(A, B, C)` | Concatenates bound strings `A` and `B` and unifies the result with `C`. |
 | `string_length(S, N)` | Unifies `N` with the number of Unicode scalar values in bound string `S`. |

@@ -1,0 +1,9 @@
+A = 'hello world'
+A = abc
+A = abc
+true
+false
+B = ' world'
+A = 'hello '
+B = ''
+false

@@ -1,6 +1,6 @@
 # <img src="assets/eye.png" alt="" width="48" height="48" align="absmiddle"> eyepl guide
 
-Version **0.3.6**. Run eyepl programs in the native CLI or browser, get
+Version **0.3.7**. Run eyepl programs in the native CLI or browser, get
 answers, and inspect their independently checkable proofs. The
 [specification](https://eyereasoner.github.io/eyepl/SPEC/) defines the language
 and the [C1–C9 contract](https://eyereasoner.github.io/eyepl/SPEC/#132-proof-conditions).
@@ -180,6 +180,14 @@ the certificates under C1–C9.
 | [Pointer analysis](https://github.com/eyereasoner/eyepl/blob/main/examples/pointer-analysis.pl) | A finite fixed point for possible memory targets |
 | [Consumable resources](https://github.com/eyereasoner/eyepl/blob/main/examples/linear-logic-resources.pl) | Resource lists prevent spending one token twice |
 | [Constructive logic](https://github.com/eyereasoner/eyepl/blob/main/examples/intuitionistic-logic-kripke.pl) | Formula terms evaluated in a finite information-growth model |
+
+RDF data reaches eyepl through
+[rdf-prolog-interchange](https://github.com/eyereasoner/rdf-prolog-interchange):
+`rdf-to-prolog` writes an RDF 1.2 dataset as ground
+`rdf(Subject, Predicate, Object, Graph)` facts, which eyepl loads like any other
+facts. Rules build and split IRIs with `atom_concat/3` and read numbers from
+literal text with `atom_chars/2` and `number_chars/2`. All 14 examples of that
+project run in eyepl.
 
 The airport example has 7,698 airports and 37,274 directed flight links. It
 finds three routes from Ostend to Prague with at most two intermediate stops.

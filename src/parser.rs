@@ -308,10 +308,15 @@ pub(crate) fn builtin_name(name: &str, arity: usize) -> bool {
             (name, arity),
             ("true" | "false", 0)
                 | (
-                    "contains_text" | "atom_codes" | "string_codes" | "string_length",
+                    "contains_text"
+                        | "atom_chars"
+                        | "atom_codes"
+                        | "number_chars"
+                        | "string_codes"
+                        | "string_length",
                     2
                 )
-                | ("string_concat", 3)
+                | ("atom_concat" | "string_concat", 3)
         )
 }
 fn term(value: Value) -> Term {
@@ -415,65 +420,53 @@ impl Parser {
                     }
                     self.position += 1;
                     parts.push(Part::EndPrimary);
-                    let value = match token {
-                        Token::Variable(name) if name == "_" => {
-                            self.anonymous += 1;
-                            Value::Variable(format!("_${}", self.anonymous).into())
-                        }
-                        Token::Variable(name) => Value::Variable(name),
-                        Token::Text(s) => Value::Text(s),
-                        Token::Number(s) => {
-                            if s.contains(['.', 'e', 'E']) {
-                                crate::arithmetic::real(
-                                    s.parse().map_err(|_| self.error("Invalid real number."))?,
-                                )?
-                            } else {
-                                crate::arithmetic::integer(
-                                    s.parse::<BigInt>()
-                                        .map_err(|_| self.error("Invalid integer."))?,
-                                )
+                    let value =
+                        match token {
+                            Token::Variable(name) if name == "_" => {
+                                self.anonymous += 1;
+                                Value::Variable(format!("_${}", self.anonymous).into())
                             }
-                        }
-                        Token::Name(name) => {
-                            if self.take("(") {
-                                parts.push(Part::Arguments(name, Vec::new()));
+                            Token::Variable(name) => Value::Variable(name),
+                            Token::Text(s) => Value::Text(s),
+                            Token::Number(s) => number_value(&s).map_err(|e| self.error(&e))?,
+                            Token::Name(name) => {
+                                if self.take("(") {
+                                    parts.push(Part::Arguments(name, Vec::new()));
+                                    parts.push(Part::Expression(0));
+                                    continue;
+                                }
+                                Value::Symbol(name)
+                            }
+                            Token::Symbol(s) if s == "(" => {
+                                parts.push(Part::Group);
                                 parts.push(Part::Expression(0));
                                 continue;
                             }
-                            Value::Symbol(name)
-                        }
-                        Token::Symbol(s) if s == "(" => {
-                            parts.push(Part::Group);
-                            parts.push(Part::Expression(0));
-                            continue;
-                        }
-                        Token::Symbol(s) if s == "[" => {
-                            if self.take("]") {
-                                Value::Nil
-                            } else {
-                                parts.push(Part::List(Vec::new()));
-                                parts.push(Part::Expression(0));
+                            Token::Symbol(s) if s == "[" => {
+                                if self.take("]") {
+                                    Value::Nil
+                                } else {
+                                    parts.push(Part::List(Vec::new()));
+                                    parts.push(Part::Expression(0));
+                                    continue;
+                                }
+                            }
+                            Token::Symbol(s) if matches!(s.as_str(), "-" | "+" | "\\") => {
+                                parts.push(Part::Prefix(s));
+                                parts.push(Part::Expression(5));
                                 continue;
                             }
-                        }
-                        Token::Symbol(s) if matches!(s.as_str(), "-" | "+" | "\\") => {
-                            parts.push(Part::Prefix(s));
-                            parts.push(Part::Expression(5));
-                            continue;
-                        }
-                        Token::Symbol(s) if s == "~" => {
-                            let Token::Text(s) = self.peek().clone() else {
-                                return Err(self.error("A witness needs a quoted identity."));
-                            };
-                            self.position += 1;
-                            Value::Witness(s)
-                        }
-                        _ => {
-                            return Err(self.error(
+                            Token::Symbol(s) if s == "~" => {
+                                let Token::Text(s) = self.peek().clone() else {
+                                    return Err(self.error("A witness needs a quoted identity."));
+                                };
+                                self.position += 1;
+                                Value::Witness(s)
+                            }
+                            _ => return Err(self.error(
                                 "Expected an atom, number, string, variable, compound, or list.",
-                            ))
-                        }
-                    };
+                            )),
+                        };
                     values.push((value, u8::MAX));
                 }
                 Part::EndPrimary => self.depth -= 1,
@@ -921,6 +914,48 @@ pub fn parse(source: &str) -> Result<Program, Error> {
 /// not be planned twice.
 pub fn parse_document(source: &str) -> Result<Program, Error> {
     Parser::new(source)?.program()
+}
+fn number_value(spelling: &str) -> Result<Value, String> {
+    if spelling.contains(['.', 'e', 'E']) {
+        crate::arithmetic::real(
+            spelling
+                .parse()
+                .map_err(|_| "Invalid real number.".to_string())?,
+        )
+        .map_err(|e| e.to_string())
+    } else {
+        Ok(crate::arithmetic::integer(
+            spelling
+                .parse::<BigInt>()
+                .map_err(|_| "Invalid integer.".to_string())?,
+        ))
+    }
+}
+/// The number spelled by `text`: one number token, after optional leading
+/// layout and a minus sign, as `number_chars/2` reads it.
+pub(crate) fn number_text(text: &str) -> Option<Value> {
+    let text = text.trim_start();
+    let (negative, digits) = match text.strip_prefix('-') {
+        Some(rest) => (true, rest),
+        None => (false, text),
+    };
+    let tokens = tokenize(digits).ok()?;
+    let [(Token::Number(spelling), _), (Token::End, _)] = tokens.as_slice() else {
+        return None;
+    };
+    if !digits.starts_with(|c: char| c.is_ascii_digit()) || digits.trim_end() != digits {
+        return None;
+    }
+    let value = number_value(spelling).ok()?;
+    if !negative {
+        return Some(value);
+    }
+    match value {
+        Value::Real(bits) => crate::arithmetic::real(-f64::from_bits(bits)).ok(),
+        Value::Integer(n) => Some(crate::arithmetic::integer(-BigInt::from(n))),
+        Value::BigInteger(n) => Some(crate::arithmetic::integer(-n)),
+        _ => None,
+    }
 }
 pub fn parse_atom(source: &str) -> Result<Atom, Error> {
     let mut p = Parser::new(source)?;

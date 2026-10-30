@@ -38,11 +38,12 @@ relevant standard areas, not a claim of complete coverage of those clauses.
 | Term construction (8.5) | `univ` | `=../2` construction and decomposition, atomic and compound terms, proper lists, later-bound arguments |
 | Arithmetic evaluation and comparison (7.9, 8.6-8.7, 9) | `arithmetic`, `quotients`, `functions`, `powers`, `rounding`, `operator_priorities` | ISO operator priorities and grouping, result types, all six comparisons, signed quotients/remainders, explicit `float/1` conversion, halfway rounding toward positive infinity, powers through Corrigendum 3, transcendental functions, extrema |
 | Integer model and bit operations (9) | `integer_model`, `bits` | Selected unbounded integer model, exact large results, signed bit operations and shifts |
-| Atomic conversion (8.16) | `atom_codes` | Both directions, empty atoms, output matching and mismatches on ASCII codes |
+| Atomic conversion (8.16) | `atom_codes`, `atom_chars`, `number_chars` | Both directions, empty atoms, output matching and mismatches, number spellings with signs, reals, exponents, and leading layout |
+| Atom concatenation (8.16.2) | `atom_concat` | Any two bound atoms: concatenation, prefix and suffix removal, empty atoms, matching and mismatching results |
 
 `errors/` exercises arithmetic instantiation, operand types, division and
 remainder by zero, function domains, overflow, unsupported evaluable functors,
-atom-code input requirements, invalid `=../2` construction, and an unclosed
+atom-code, atom-concatenation, and number-reading input requirements, invalid `=../2` construction, and an unclosed
 quote. Arithmetic cases include Corrigendum 3's negative integer-power type
 error, the zero and negative-base power domains, power underflow, float-only
 rounding inputs, the undefined `atan2(0,0)`, and invalid operator groupings.
@@ -54,7 +55,7 @@ ISO `error(Formal, Context)` exception terms or `catch/3` support.
 
 `unsupported/` requires rejection of improper lists (including canonical
 construction and runtime unification), unbound answers and successful unbound
-decision evidence, non-ground negation, negative dependency cycles, general
+decision evidence, enumerating the splits of an atom with `atom_concat/3`, non-ground negation, negative dependency cycles, general
 term ordering, disjunction, cut, and operator directives. A passing rejection
 is evidence of a language boundary, never evidence of ISO compatibility for that
 feature.

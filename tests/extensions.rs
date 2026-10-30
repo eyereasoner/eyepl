@@ -39,6 +39,12 @@ fn builtin_relations_calculate_and_check_closed_tuples() {
         answers("?- string_concat(\"hello\", \" world\", X)."),
         vec![vec![vec![Value::Text("hello world".into())]]]
     );
+    assert_eq!(
+        answers("?- atom_concat('https://example.org/', alice, X)."),
+        vec![vec![vec![Value::Symbol(
+            "https://example.org/alice".into()
+        )]]]
+    );
     for call in [
         "a = a",
         "1 \\= '1'",
@@ -354,4 +360,129 @@ fn witnesses_flow_through_negation_and_aggregation_across_multiple_boundaries() 
         assert!(condition.checked > 0, "{report}");
         assert_eq!(condition.not_applicable, None);
     }
+}
+
+#[test]
+fn atom_concat_decides_any_two_bound_atoms_and_rejects_other_types_and_modes() {
+    let atom = |name: &str| Value::Symbol(name.into());
+    assert_eq!(answers("?- atom_concat(ab, cd, abcd)."), vec![vec![vec![]]]);
+    assert_eq!(
+        answers("?- atom_concat(ab, cd, ab)."),
+        vec![Vec::<Vec<Value>>::new()]
+    );
+    assert_eq!(
+        answers("?- atom_concat('https://e/', N, 'https://e/bob')."),
+        vec![vec![vec![atom("bob")]]]
+    );
+    assert_eq!(
+        answers("?- atom_concat(P, bob, 'https://e/bob')."),
+        vec![vec![vec![atom("https://e/")]]]
+    );
+    assert_eq!(
+        answers("?- atom_concat('http://x/', N, 'https://e/bob')."),
+        vec![Vec::<Vec<Value>>::new()]
+    );
+    // A rule maps a known IRI back to its local name.
+    assert_eq!(
+        answers("iri(N, I) :- atom_concat('https://e/', N, I). ?- iri(N, 'https://e/bob')."),
+        vec![vec![vec![atom("bob")]]]
+    );
+    for source in [
+        "?- atom_concat(\"ab\", cd, X).",
+        "?- atom_concat(1, cd, X).",
+        "?- atom_concat(ab, cd, 5).",
+    ] {
+        let error = reason(&parse(source).unwrap(), Limits::default()).unwrap_err();
+        assert!(error
+            .to_string()
+            .contains("atom_concat arguments must be atoms"));
+    }
+    // Splitting a lone bound atom would enumerate; it is not a supported mode.
+    let error = parse("p(X, Y) :- atom_concat(X, Y, ab). ?- p(A, B).")
+        .and_then(|p| reason(&p, Limits::default()).map(|_| ()))
+        .unwrap_err();
+    assert!(
+        error
+            .to_string()
+            .contains("atom_concat needs two bound atoms"),
+        "{error}"
+    );
+
+    // C5 re-decides the concatenation recorded in a certificate.
+    let source = "iri(N, I) :- atom_concat('https://e/', N, I). ?- iri(x, I).";
+    let (program, run) = run(source);
+    let forged = run
+        .certificate(&program)
+        .to_string()
+        .replace("'https://e/x'", "'https://e/y'");
+    let report = check(&program, &Certificate::parse(&forged).unwrap()).unwrap();
+    assert!(!report.valid());
+    assert!(report.condition(Condition::C5).failed > 0, "{report}");
+}
+
+#[test]
+fn atom_chars_and_number_chars_convert_in_both_directions() {
+    let atom = |name: &str| Value::Symbol(name.into());
+    let chars = |text: &str| {
+        text.chars().rev().fold(Value::Nil, |tail, c| {
+            Value::Compound(".".into(), vec![atom(&c.to_string()), tail])
+        })
+    };
+    assert_eq!(
+        answers("?- atom_chars(abc, L)."),
+        vec![vec![vec![chars("abc")]]]
+    );
+    assert_eq!(
+        answers("?- atom_chars(A, [a, b, c])."),
+        vec![vec![vec![atom("abc")]]]
+    );
+    assert_eq!(
+        answers("?- atom_chars(abc, [a, b, c])."),
+        vec![vec![vec![]]]
+    );
+    assert_eq!(
+        answers("?- number_chars(42, L)."),
+        vec![vec![vec![chars("42")]]]
+    );
+    assert_eq!(
+        answers("?- number_chars(N, ['-', '1', '.', '5'])."),
+        vec![vec![vec![answers("?- X is -1.5.")[0][0][0].clone()]]]
+    );
+    assert_eq!(
+        answers("?- number_chars(N, [' ', '7'])."),
+        vec![vec![vec![Value::Integer(7)]]]
+    );
+    // A bound list is read, so a different spelling of the same number holds.
+    assert_eq!(
+        answers("?- number_chars(1, ['0', '1'])."),
+        vec![vec![vec![]]]
+    );
+    // Literal text from RDF becomes a number and back.
+    assert_eq!(
+        answers("t('42'). n(N) :- t(T), atom_chars(T, C), number_chars(N, C). ?- n(N)."),
+        vec![vec![vec![Value::Integer(42)]]]
+    );
+    for (source, message) in [
+        ("?- atom_chars(A, [a, bc]).", "one-character atoms"),
+        ("?- number_chars(N, [a]).", "cannot read \"a\" as a number"),
+        (
+            "?- number_chars(N, ['1', ' ']).",
+            "cannot read \"1 \" as a number",
+        ),
+        ("?- number_chars(abc, L).", "number_chars needs a number"),
+    ] {
+        let error = reason(&parse(source).unwrap(), Limits::default()).unwrap_err();
+        assert!(error.to_string().contains(message), "{source}: {error}");
+    }
+    // C5 re-reads the number recorded in a certificate.
+    let (program, run) =
+        run("t('42'). n(N) :- t(T), atom_chars(T, C), number_chars(N, C). ?- n(N).");
+    let forged = run
+        .certificate(&program)
+        .to_string()
+        .replace("number_chars(42,", "number_chars(43,");
+    assert_ne!(forged, run.certificate(&program).to_string());
+    let report = check(&program, &Certificate::parse(&forged).unwrap()).unwrap();
+    assert!(!report.valid());
+    assert!(report.condition(Condition::C5).failed > 0, "{report}");
 }
