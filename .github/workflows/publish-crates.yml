@@ -26,8 +26,6 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    env:
-      HAS_PUBLISH_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN != '' || secrets.CRATES_TOKEN != '' }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -55,34 +53,15 @@ jobs:
       - name: Verify packaged crate
         run: cargo publish --dry-run --locked --registry crates-io
 
-      - name: Check first-publication credentials
-        if: ${{ !inputs.dry_run && env.HAS_PUBLISH_TOKEN != 'true' }}
-        run: |
-          python3 - <<'PY'
-          from urllib.error import HTTPError
-          from urllib.request import Request, urlopen
-
-          request = Request('https://crates.io/api/v1/crates/eyepl',
-                            headers={'User-Agent': 'eyereasoner/eyepl publish-crates workflow'})
-          try:
-              with urlopen(request, timeout=30):
-                  pass
-          except HTTPError as error:
-              if error.code == 404:
-                  raise SystemExit('::error::The first crates.io publication needs the '
-                                   'CRATES_TOKEN or CARGO_REGISTRY_TOKEN Actions secret. Add a token that can '
-                                   'create eyepl and publish its versions, then rerun this workflow. '
-                                   'Publishing itself runs entirely in Actions.')
-              raise
-          PY
-
+      # crates.io accepts eyepl versions only through this workflow's trusted
+      # publisher, which exchanges the Actions identity for a short-lived token.
       - name: Authenticate with crates.io trusted publishing
-        if: ${{ !inputs.dry_run && env.HAS_PUBLISH_TOKEN != 'true' }}
+        if: ${{ !inputs.dry_run }}
         id: auth
         uses: rust-lang/crates-io-auth-action@v1
 
       - name: Publish to crates.io
         if: ${{ !inputs.dry_run }}
         env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN || secrets.CRATES_TOKEN || steps.auth.outputs.token }}
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
         run: cargo publish --locked --registry crates-io

@@ -1,6 +1,6 @@
 # <img src="assets/eye.png" alt="" width="48" height="48" align="absmiddle"> eyepl guide
 
-Version **0.3.5**. Run eyepl programs in the native CLI or browser, get
+Version **0.3.6**. Run eyepl programs in the native CLI or browser, get
 answers, and inspect their independently checkable proofs. The
 [specification](https://eyereasoner.github.io/eyepl/SPEC/) defines the language
 and the [C1–C9 contract](https://eyereasoner.github.io/eyepl/SPEC/#132-proof-conditions).
@@ -488,13 +488,13 @@ workflow can also publish an existing release through **Actions → Publish to
 crates.io → Run workflow**: enter its tag, such as `v0.3.3`. The optional
 dry-run input verifies the package without uploading it.
 
-For the first publication, configure the repository or organization Actions
-secret `CARGO_REGISTRY_TOKEN` (or `CRATES_TOKEN`) with a crates.io token permitted
-to create `eyepl` and publish its versions. The workflow uses it automatically;
-subsequent tag pushes need no publishing commands from a maintainer. After the
-crate exists, maintainers may configure a crates.io GitHub trusted publisher for
-owner `eyereasoner`, repository `eyepl`, and workflow `publish-crates.yml`, then
-remove the token secret; the workflow then obtains a short-lived token through OIDC.
+The workflow publishes through crates.io trusted publishing: it exchanges its
+GitHub Actions identity for a short-lived token, so no publishing secret is
+stored and tag pushes need no publishing commands from a maintainer. The crate's
+trusted publisher is owner `eyereasoner`, repository `eyepl`, and workflow
+`publish-crates.yml`, and the crate requires trusted publishing for new
+versions. Renaming the repository or the workflow file requires updating that
+entry on crates.io first.
 
 Zenodo archives each published GitHub release and assigns it a DOI, using the
 metadata in `.zenodo.json`. Enable the repository once in Zenodo's GitHub

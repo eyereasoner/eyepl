@@ -138,7 +138,8 @@ an annotated tag, pushes branch and tag atomically, and creates a GitHub release
 with `gh`. It needs authenticated Git and GitHub CLI access. A push to `main`
 runs CI and deploys Pages; the `v*` tag publishes the crate through
 `.github/workflows/publish-crates.yml`, and Zenodo archives the GitHub release
-using `.zenodo.json`. See the guide for the one-time crates.io and Zenodo setup.
+using `.zenodo.json`. The crate is published only through crates.io trusted publishing from that
+workflow; see the guide.
 
 If a release fails, inspect which steps completed and finish that version; do not
 blindly bump again. The guide documents publication recovery. Release tests use
