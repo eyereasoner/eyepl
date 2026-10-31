@@ -3,7 +3,7 @@
 [![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.23806469-blue.svg)](https://doi.org/10.5281/zenodo.23806469)
 [![crates.io](https://img.shields.io/crates/v/eyepl.svg)](https://crates.io/crates/eyepl)
 
-**Version 0.3.7**
+**Version 0.3.8**
 
 **eyepl** is a relational rule language and Rust reasoner between
 Datalog and Prolog: set semantics and fixed-point reasoning with Prolog-style

@@ -1,6 +1,6 @@
 # <img src="assets/eye.png" alt="" width="48" height="48" align="absmiddle"> eyepl specification
 
-Version **0.3.7**
+Version **0.3.8**
 
 **Status of this document.** This document defines the eyepl language,
 with the eyepl Rust reasoner as its reference implementation. It is the
