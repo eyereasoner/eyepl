@@ -179,6 +179,7 @@ the certificates under C1–C9.
 | [Catalan numbers](https://github.com/eyereasoner/eyepl/blob/main/examples/catalan-convolution.pl) | Tabled convolution with an explicit recursive sum |
 | [Pointer analysis](https://github.com/eyereasoner/eyepl/blob/main/examples/pointer-analysis.pl) | A finite fixed point for possible memory targets |
 | [Consumable resources](https://github.com/eyereasoner/eyepl/blob/main/examples/linear-logic-resources.pl) | Resource lists prevent spending one token twice |
+| [RDF 1.2 annotated claims](https://github.com/eyereasoner/eyepl/blob/main/examples/rdf12-annotated-claims.pl) | Reifiers, typed literals read as numbers, and ranked conflicting claims |
 | [Constructive logic](https://github.com/eyereasoner/eyepl/blob/main/examples/intuitionistic-logic-kripke.pl) | Formula terms evaluated in a finite information-growth model |
 
 RDF data reaches eyepl through
@@ -186,8 +187,12 @@ RDF data reaches eyepl through
 `rdf-to-prolog` writes an RDF 1.2 dataset as ground
 `rdf(Subject, Predicate, Object, Graph)` facts, which eyepl loads like any other
 facts. Rules build and split IRIs with `atom_concat/3` and read numbers from
-literal text with `atom_chars/2` and `number_chars/2`. All 14 examples of that
-project run in eyepl.
+literal text with `atom_chars/2` and `number_chars/2`, which fails on text that
+is not a number. All 14 examples of that project run in eyepl, and the eight
+`rdf12-*` examples here combine its RDF 1.2 data with its rules: triple terms,
+nested triple terms, annotations through `rdf:reifies`, ranked annotated
+claims, directional language strings, and TriG named graphs. Each one's
+answers convert back to the expected RDF with `prolog-to-rdf`.
 
 The airport example has 7,698 airports and 37,274 directed flight links. It
 finds three routes from Ostend to Prague with at most two intermediate stops.
