@@ -457,18 +457,17 @@ fn atom_chars_and_number_chars_convert_in_both_directions() {
         answers("?- number_chars(1, ['0', '1'])."),
         vec![vec![vec![]]]
     );
-    // Literal text from RDF becomes a number and back.
+    // Text that is not a number fails instead of raising an error.
+    assert!(answers("?- number_chars(N, [a]).")[0].is_empty());
+    assert!(answers("?- number_chars(N, ['1', ' ']).")[0].is_empty());
+    // Literal text from RDF becomes a number, and a literal that is not
+    // numeric is passed over.
     assert_eq!(
-        answers("t('42'). n(N) :- t(T), atom_chars(T, C), number_chars(N, C). ?- n(N)."),
+        answers("t('42'). t(abc). n(N) :- t(T), atom_chars(T, C), number_chars(N, C). ?- n(N)."),
         vec![vec![vec![Value::Integer(42)]]]
     );
     for (source, message) in [
         ("?- atom_chars(A, [a, bc]).", "one-character atoms"),
-        ("?- number_chars(N, [a]).", "cannot read \"a\" as a number"),
-        (
-            "?- number_chars(N, ['1', ' ']).",
-            "cannot read \"1 \" as a number",
-        ),
         ("?- number_chars(abc, L).", "number_chars needs a number"),
     ] {
         let error = reason(&parse(source).unwrap(), Limits::default()).unwrap_err();

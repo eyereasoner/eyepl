@@ -309,13 +309,15 @@ pub(crate) fn builtin(goal: &Goal, bindings: &Bindings) -> Result<Option<(Atom, 
                 return Err(Error::new("number_chars needs a number."));
             }
             // A bound character list is read even when the number is bound,
-            // so `number_chars(1, ['0', '1'])` holds as in ISO.
+            // so `number_chars(1, ['0', '1'])` holds as in ISO. Text that is
+            // not a number fails rather than raising ISO's syntax error, so a
+            // rule can pass over a literal that is not numeric.
             if b.ground() {
                 let text = chars_text(b)?;
-                let number = crate::parser::number_text(&text).ok_or_else(|| {
-                    Error::new(format!("number_chars cannot read {text:?} as a number."))
-                })?;
-                unify(a, &number, &mut next)
+                match crate::parser::number_text(&text) {
+                    Some(number) => unify(a, &number, &mut next),
+                    None => false,
+                }
             } else {
                 require(a)?;
                 let text = a.to_string();

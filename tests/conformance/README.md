@@ -43,7 +43,7 @@ relevant standard areas, not a claim of complete coverage of those clauses.
 
 `errors/` exercises arithmetic instantiation, operand types, division and
 remainder by zero, function domains, overflow, unsupported evaluable functors,
-atom-code, atom-concatenation, and number-reading input requirements, invalid `=../2` construction, and an unclosed
+atom-code and atom-concatenation input requirements, invalid `=../2` construction, and an unclosed
 quote. Arithmetic cases include Corrigendum 3's negative integer-power type
 error, the zero and negative-base power domains, power underflow, float-only
 rounding inputs, the undefined `atan2(0,0)`, and invalid operator groupings.
@@ -70,7 +70,8 @@ Engine behavior outside the shared ISO cases is covered by the ordinary
 regressions in `tests/prolog.rs`, including set semantics, table completion,
 the occurs check, and eyepl's numeric and text model. In particular, exact
 mixed numeric comparisons and distinct strings are documented implementation
-behavior. Rounding input types,
+behavior, and `number_chars/2` fails on text that is not a number where ISO
+raises a syntax error, which `tests/extensions.rs` checks. Rounding input types,
 `sign/1` result types, and integer-power error conditions are checked against
 the standard with Corrigenda 1–3. Forged certificates with the previous
 arithmetic results are rejected by C5 in `tests/prolog.rs`.

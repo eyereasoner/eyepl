@@ -657,7 +657,7 @@ standard order of terms; any other operand types MUST raise an error.
 | `atom_chars(Atom, Chars)` | Relates an atom to its list of one-character atoms. |
 | `atom_codes(Atom, Codes)` | Relates an atom to its list of Unicode scalar values. |
 | `atom_concat(A, B, C)` | Relates atoms with `C` the concatenation of `A` and `B`. With `A` and `B` bound it concatenates them; with `C` and one of `A` or `B` bound it removes that prefix or suffix from `C`, failing when `C` lacks it. A bound argument that is not an atom MUST raise an error. ISO's mode that enumerates the splits of `C` alone is not supported. |
-| `number_chars(Number, Chars)` | Relates a number to the one-character atoms that spell it. A bound list is read as one number token (Section 3), after optional leading layout and a minus sign; anything else MUST raise an error. Otherwise the number is written as in Section 11.4. |
+| `number_chars(Number, Chars)` | Relates a number to the one-character atoms that spell it. A bound list is read as one number token (Section 3), after optional leading layout and a minus sign; a list that spells no number fails, where ISO raises a syntax error, so a rule can pass over text that is not numeric. Otherwise the number is written as in Section 11.4. |
 | `string_codes(String, Codes)` | Relates a string to its list of Unicode scalar values. |
 | `string_concat(A, B, C)` | Concatenates bound strings `A` and `B` and unifies the result with `C`. |
 | `string_length(S, N)` | Unifies `N` with the number of Unicode scalar values in bound string `S`. |
