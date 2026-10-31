@@ -182,7 +182,7 @@ the certificates under C1–C9.
 | [Constructive logic](https://github.com/eyereasoner/eyepl/blob/main/examples/intuitionistic-logic-kripke.pl) | Formula terms evaluated in a finite information-growth model |
 
 RDF data reaches eyepl through
-[rdf-prolog-interchange](https://github.com/eyereasoner/rdf-prolog-interchange):
+[rdf-interchange](https://github.com/eyereasoner/rdf-interchange):
 `rdf-to-prolog` writes an RDF 1.2 dataset as ground
 `rdf(Subject, Predicate, Object, Graph)` facts, which eyepl loads like any other
 facts. Rules build and split IRIs with `atom_concat/3` and read numbers from
