@@ -6,8 +6,11 @@
 % with a nonlinear correction based on the previous observation.
 %
 % A measurement pair [A, B] contributes sqrt(B-A) when A < B, and A
-% otherwise. These are illustrative control formulas with supplied constants;
-% the second formula requires a nonzero difference from the target.
+% otherwise. These are illustrative control formulas with supplied constants.
+% Two of them are guarded, so no input can stop the run with an arithmetic
+% error: the compensation takes the logarithm of the disturbance only when it
+% is positive, and the nonlinear factor divides by the difference from the
+% target only when it is nonzero; on target, the nonlinear part is left out.
 
 measurement1(input1, [6, 11]).
 measurement1(disturbance2, [45, 39]).
@@ -29,6 +32,7 @@ control1(actuator1, C) :-
     measurement10(input1, M1),
     measurement2(input2, true),
     measurement3(disturbance1, D1),
+    D1 > 0,                     % the logarithm needs a positive disturbance
     C1 is M1 * 19.6,            % proportional part
     C2 is log(D1) / log(10),    % compensation part
     C is C1 - C2.               % simple feedforward control
@@ -40,9 +44,17 @@ control1(actuator2, C) :-
     E is T2 - M4,               % error
     D is P3 - M4,               % differential error
     C1 is 5.8 * E,              % proportional part
-    N is 7.3 / E,               % nonlinear factor
-    C2 is N * D,                % nonlinear differential part
+    nonlinear_part(E, D, C2),   % nonlinear differential part
     C is C1 + C2.               % PND feedback control
+
+% The nonlinear factor 7.3 / E grows without bound as the error shrinks, and
+% is undefined at zero error; on target, the nonlinear part is left out.
+nonlinear_part(E, D, C2) :-
+    E =\= 0,
+    N is 7.3 / E,               % nonlinear factor
+    C2 is N * D.
+nonlinear_part(E, _, 0) :-
+    E =:= 0.
 
 measurement10(I, M) :-
     measurement1(I, [M1, M2]),

@@ -13,14 +13,18 @@ proof_claim(1, answer(1, [4])).
 % Answer 2
 classified_as(joe, cobbler).
 classified_as(jane, carpenter).
+classified_as(sam, cobbler).
 
 % Reason 2
 proof_step(2, 1, description(joe, [good, cobbler]), source(1)).
 proof_step(2, 2, description(jane, [good, carpenter]), source(2)).
-proof_step(2, 3, classified_as(joe, cobbler), rule(2, [1])).
-proof_step(2, 4, classified_as(jane, carpenter), rule(2, [2])).
-proof_claim(2, answer(2, [3])).
+proof_step(2, 3, description(sam, [novice, cobbler]), source(3)).
+proof_step(2, 4, classified_as(joe, cobbler), rule(2, [1])).
+proof_step(2, 5, classified_as(jane, carpenter), rule(2, [2])).
+proof_step(2, 6, classified_as(sam, cobbler), rule(2, [3])).
 proof_claim(2, answer(2, [4])).
+proof_claim(2, answer(2, [5])).
+proof_claim(2, answer(2, [6])).
 
 % Goal check 3
 check_result(3, true).
